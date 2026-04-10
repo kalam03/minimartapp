@@ -453,8 +453,18 @@
               <td class="px-3 py-2 font-semibold">{{ invoice.grossAmount }}</td>
               <td class="px-3 py-2">{{ invoice.date }}</td>
               <td class="px-3 py-2">
-                <button class="text-blue-600 hover:text-blue-800 text-xs mr-2">View</button>
-                <button class="text-red-600 hover:text-red-800 text-xs">Print</button>
+                <button
+                  (click)="viewInvoice(invoice)"
+                  class="flex-1 px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100 transition"
+                >
+                  View
+                </button>
+                <button
+                  (click)="printInvoice(invoice)"
+                  class="flex-1 px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs hover:bg-gray-100 transition"
+                >
+                  Print
+                </button>
               </td>
             </tr>
           </tbody>

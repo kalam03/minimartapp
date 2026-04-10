@@ -1,3 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+/* Add to your component's CSS file */
+.invoice-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.invoice-table-container thead {
+  position: sticky;
+  top: 0;
+  background-color: #f9fafb;
+  z-index: 10;
+}
+
+/* For mobile devices */
+@media (max-width: 768px) {
+  .invoice-table-container {
+    max-height: 300px;
+  }
+  
+  .invoice-table-container table {
+    min-width: 600px; /* Ensures horizontal scroll on mobile */
+  }
+}
