@@ -604,6 +604,27 @@ export class PosBillingComponent implements OnInit {
       returnAmount: this.returnCash
     };
 
+const receipt1 = {
+      invoiceNo: newInvoice.invoiceNo,
+      saleDate: new Date(),
+      customerId:this.selectedCustomer?.id,
+      totalAmount: this.subtotal,
+      discount: this.discountAmount,
+      discountPercent: this.discountPercent,
+      transportCost: this.transportCost,
+      transport: this.transportType,
+      netAmount: this.grossAmount,
+      paymentType: this.selectedPaymentMethod,
+      paidAmount: this.paymentCash,
+      returnAmount: this.returnCash,
+      dueAmount: this.dueAmount,
+      items: this.cartItems,
+    };
+
+
+
+
+    console.log('Bill Submitted for api:', receipt1);
     console.log('Bill Submitted:', receipt);
     alert(`Bill Submitted Successfully!\nInvoice: ${newInvoice.invoiceNo}\nTotal: $${this.grossAmount.toFixed(2)}\nPayment: $${this.paymentCash.toFixed(2)}\nReturn: $${this.returnCash.toFixed(2)}`);
     
