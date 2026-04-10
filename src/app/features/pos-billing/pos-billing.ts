@@ -5,15 +5,7 @@ import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component'; 
 import { AlertService } from '../../shared/alert.service';
-
-export interface Customer {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  loyaltyPoints: number;
-}
+import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
 
 export interface CartItem {
   product: Product;
@@ -38,7 +30,11 @@ export interface Invoice {
   styleUrls: ['./pos-billing.css']
 })
 export class PosBillingComponent implements OnInit {
-  constructor(private productService: ProductService,  private alertService: AlertService) {}
+  constructor(
+    private productService: ProductService,
+     private customerService: CustomerService,
+      private alertService: AlertService
+    ) {}
   Math = Math;
 
   // ViewChild references for input elements
@@ -61,13 +57,7 @@ export class PosBillingComponent implements OnInit {
   selectedProduct: Product | null = null;
 
   // Customers Data
-  customers: Customer[] = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', phone: '+1 234 567 8900', address: '123 Main St, NY', loyaltyPoints: 450 },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '+1 234 567 8901', address: '456 Oak Ave, LA', loyaltyPoints: 780 },
-    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', phone: '+1 234 567 8902', address: '789 Pine Rd, TX', loyaltyPoints: 230 },
-    { id: 4, name: 'Sarah Williams', email: 'sarah@example.com', phone: '+1 234 567 8903', address: '321 Elm St, FL', loyaltyPoints: 1200 },
-    { id: 5, name: 'David Brown', email: 'david@example.com', phone: '+1 234 567 8904', address: '654 Maple Dr, WA', loyaltyPoints: 95 }
-  ];
+  customers: Customer[] = [];
 
   // Cart Items
   cartItems: CartItem[] = [];
@@ -106,7 +96,23 @@ export class PosBillingComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadCustomers();
     this.loadSampleInvoices();
+  }
+
+  loadCustomers(): void {
+      let Custfilters:CustomerFilter= {
+    tenantId: 1,
+  };
+    this.customerService.getAllCustomers(Custfilters).subscribe({
+      next: (data) => {
+        this.customers = data;
+        console.log('Customers loaded:', this.customers);
+      },
+      error: (err: any) => {
+        console.error('Error loading customers:', err);
+      }
+    });
   }
 
   loadProducts(): void {
@@ -205,7 +211,7 @@ export class PosBillingComponent implements OnInit {
   
   if (term.length > 0 && this.filteredCustomers.length > 0) {
     const exactMatch = this.filteredCustomers.find(customer => 
-      customer.name.toLowerCase() === term.toLowerCase() ||
+      customer.customerName?.toLowerCase() === term.toLowerCase() ||
       customer.phone === term
     );
     
@@ -301,18 +307,18 @@ scrollToSelectedCustomer(): void {
     const term = this.searchCustomerTerm.toLowerCase();
     
     let bestMatch = this.customers.find(customer => 
-      customer.name.toLowerCase() === term || customer.phone === this.searchCustomerTerm
+      customer.customerName?.toLowerCase() === term || customer.phone === this.searchCustomerTerm
     );
     
     if (!bestMatch) {
       bestMatch = this.customers.find(customer => 
-        customer.name.toLowerCase().startsWith(term)
+        customer.customerName?.toLowerCase().startsWith(term)
       );
     }
     
     if (!bestMatch) {
       bestMatch = this.customers.find(customer => 
-        customer.name.toLowerCase().includes(term)
+        customer.customerName?.toLowerCase().includes(term)
       );
     }
     
@@ -348,8 +354,8 @@ scrollToSelectedCustomer(): void {
   }
 
   selectCustomer(customer: Customer): void {
-    this.selectedCustomerId = customer.id;
-    this.searchCustomerTerm = customer.name;
+    this.selectedCustomerId = customer.customerId;
+    this.searchCustomerTerm = customer.customerName;
     this.showCustomerDropdown = false;
     this.selectedCustomerIndex = -1;
     this.discountPercent = 0;
@@ -430,15 +436,15 @@ scrollToSelectedCustomer(): void {
   get filteredCustomers(): Customer[] {
     if (!this.searchCustomerTerm) return [];
     return this.customers.filter(customer =>
-      customer.name.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
-      customer.email.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
+      customer.customerName?.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
+      customer.address.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
       customer.phone.includes(this.searchCustomerTerm)
     ).slice(0, 10);
   }
 
   // Get Selected Customer
   get selectedCustomer(): Customer | undefined {
-    return this.customers.find(c => c.id === this.selectedCustomerId);
+    return this.customers.find(c => c.customerId === this.selectedCustomerId);
   }
 
   // Helper method for product quantity
@@ -593,7 +599,7 @@ scrollToSelectedCustomer(): void {
     }
     const newInvoice: Invoice = {
       invoiceNo: 'INV-' + Date.now(),
-      customerName: this.selectedCustomer?.name || '',
+      customerName: this.selectedCustomer?.customerName || '',
       totalAmount: this.subtotal,
       discountAmount: this.discountAmount,
       grossAmount: this.grossAmount,
@@ -621,7 +627,7 @@ scrollToSelectedCustomer(): void {
 const receipt1 = {
       invoiceNo: newInvoice.invoiceNo,
       saleDate: new Date(),
-      customerId:this.selectedCustomer?.id,
+      customerId:this.selectedCustomer?.customerId,
       totalAmount: this.subtotal,
       discount: this.discountAmount,
       discountPercent: this.discountPercent,
