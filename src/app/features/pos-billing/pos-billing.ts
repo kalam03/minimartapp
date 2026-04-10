@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
+import { FinancialInputComponent } from '../../shared/financial-input.component'; 
 
 export interface Customer {
   id: number;
@@ -31,7 +32,7 @@ export interface Invoice {
 @Component({
   selector: 'app-pos-billing',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FinancialInputComponent],
   templateUrl: './pos-billing.html',
   styleUrls: ['./pos-billing.css']
 })
