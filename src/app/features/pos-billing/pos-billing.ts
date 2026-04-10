@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component'; 
+import { AlertService } from '../../shared/alert.service';
 
 export interface Customer {
   id: number;
@@ -37,7 +38,7 @@ export interface Invoice {
   styleUrls: ['./pos-billing.css']
 })
 export class PosBillingComponent implements OnInit {
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService,  private alertService: AlertService) {}
   Math = Math;
 
   // ViewChild references for input elements
@@ -463,7 +464,8 @@ scrollToSelectedCustomer(): void {
   // Add Product to Cart
   addToCart(): void {
     if (!this.selectedProduct) {
-      alert('Please select a product');
+  
+      this.alertService.info('Please select a product to add to the cart.', 'No Product Selected');
       setTimeout(() => {
         if (this.productSearchInput) {
           this.productSearchInput.nativeElement.focus();
