@@ -462,7 +462,7 @@ scrollToSelectedCustomer(): void {
   }
 
   // Add Product to Cart
-  addToCart(): void {
+  async addToCart() {
     if (!this.selectedProduct) {
   
       this.alertService.info('Please select a product to add to the cart.', 'No Product Selected');
@@ -477,7 +477,7 @@ scrollToSelectedCustomer(): void {
     const product = this.selectedProduct;
     
     if (this.productQuantity > product.stockQty) {
-      alert(`Only ${product.stockQty} items available in stock`);
+       await this.alertService.warning(`Only ${product.stockQty} items available in stock`);
       return;
     }
 
@@ -486,7 +486,7 @@ scrollToSelectedCustomer(): void {
     if (existingItem) {
       const newQuantity = existingItem.quantity + this.productQuantity;
       if (newQuantity > product.stockQty) {
-        alert(`Only ${product.stockQty} items available in stock`);
+        await this.alertService.warning(`Only ${product.stockQty} items available in stock`);
         return;
       }
       existingItem.quantity = newQuantity;
@@ -569,22 +569,22 @@ scrollToSelectedCustomer(): void {
   // Submit Bill
   async submitBill() {
     if (this.cartItems.length === 0) {
-      alert('Cart is empty. Please add items to continue.');
+      await this.alertService.warning('Cart is empty. Please add items to continue.');
       return;
     }
     
     if (!this.selectedCustomerId) {
-      alert('Please select a customer.');
+      await this.alertService.warning('Please select a customer.');
       return;
     }
 
     if (this.dueAmount > 0) {
-      alert(`Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`);
+      await this.alertService.warning(`Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`);
       return;
     }
 
     if (this.paymentCash < this.grossAmount) {
-      alert(`Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`);
+      await this.alertService.warning(`Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`);
       return;
     }
       const confirmed = await this.alertService.confirm(`Are you sure you want to submit the bill? Total: $${this.grossAmount.toFixed(2)}`, 'Confirm Bill Submission');
@@ -640,7 +640,7 @@ const receipt1 = {
 
     console.log('Bill Submitted for api:', receipt1);
     console.log('Bill Submitted:', receipt);
-    alert(`Bill Submitted Successfully!\nInvoice: ${newInvoice.invoiceNo}\nTotal: $${this.grossAmount.toFixed(2)}\nPayment: $${this.paymentCash.toFixed(2)}\nReturn: $${this.returnCash.toFixed(2)}`);
+    await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${newInvoice.invoiceNo}\nTotal: $${this.grossAmount.toFixed(2)}\nPayment: $${this.paymentCash.toFixed(2)}\nReturn: $${this.returnCash.toFixed(2)}`);
     
     this.resetForm();
   }
@@ -652,8 +652,8 @@ onQuantityKeydown(event: KeyboardEvent): void {
   }
 }
   // View invoice details
-  viewInvoice(invoice: Invoice): void {
-    alert(`Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`);
+  async viewInvoice(invoice: Invoice): Promise<void> {
+    await this.alertService.info(`Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`);
   }
 
   // Print invoice
