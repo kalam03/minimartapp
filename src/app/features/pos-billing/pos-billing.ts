@@ -143,9 +143,8 @@ export class PosBillingComponent implements OnInit {
   onProductSearch(term: string): void {
     this.searchProductTerm = term;
     this.showProductDropdown = term.length > 0;
-    this.selectedProductIndex = -1; // Reset selection when searching
+    this.selectedProductIndex = -1;
     
-    // Auto-select first product if exact match or best match
     if (term.length > 0 && this.filteredProducts.length > 0) {
       const exactMatch = this.filteredProducts.find(product => 
         product.productName?.toLowerCase() === term.toLowerCase()
@@ -153,16 +152,12 @@ export class PosBillingComponent implements OnInit {
       
       if (exactMatch) {
         this.selectProduct(exactMatch);
-      } else {
-        // Optional: Auto-select first product (uncomment if you want auto-select)
-        // this.selectedProductIndex = 0;
       }
     }
   }
 
   onProductKeydown(event: KeyboardEvent): void {
     if (!this.showProductDropdown || this.filteredProducts.length === 0) {
-      // If dropdown is closed and Enter is pressed, try to select best match
       if (event.key === 'Enter' && this.searchProductTerm.length > 0) {
         event.preventDefault();
         this.selectBestMatchProduct();
@@ -188,7 +183,6 @@ export class PosBillingComponent implements OnInit {
         if (this.selectedProductIndex >= 0 && this.selectedProductIndex < this.filteredProducts.length) {
           this.selectProduct(this.filteredProducts[this.selectedProductIndex]);
         } else if (this.filteredProducts.length > 0) {
-          // Select first product if none selected
           this.selectProduct(this.filteredProducts[0]);
         }
         break;
@@ -204,9 +198,8 @@ export class PosBillingComponent implements OnInit {
   onCustomerSearch(term: string): void {
     this.searchCustomerTerm = term;
     this.showCustomerDropdown = term.length > 0;
-    this.selectedCustomerIndex = -1; // Reset selection when searching
+    this.selectedCustomerIndex = -1;
     
-    // Auto-select first customer if exact match
     if (term.length > 0 && this.filteredCustomers.length > 0) {
       const exactMatch = this.filteredCustomers.find(customer => 
         customer.name.toLowerCase() === term.toLowerCase() ||
@@ -221,7 +214,6 @@ export class PosBillingComponent implements OnInit {
 
   onCustomerKeydown(event: KeyboardEvent): void {
     if (!this.showCustomerDropdown || this.filteredCustomers.length === 0) {
-      // If dropdown is closed and Enter is pressed, try to select best match
       if (event.key === 'Enter' && this.searchCustomerTerm.length > 0) {
         event.preventDefault();
         this.selectBestMatchCustomer();
@@ -247,7 +239,6 @@ export class PosBillingComponent implements OnInit {
         if (this.selectedCustomerIndex >= 0 && this.selectedCustomerIndex < this.filteredCustomers.length) {
           this.selectCustomer(this.filteredCustomers[this.selectedCustomerIndex]);
         } else if (this.filteredCustomers.length > 0) {
-          // Select first customer if none selected
           this.selectCustomer(this.filteredCustomers[0]);
         }
         break;
@@ -265,19 +256,16 @@ export class PosBillingComponent implements OnInit {
     
     const term = this.searchProductTerm.toLowerCase();
     
-    // Try to find exact match first
     let bestMatch = this.products.find(product => 
       product.productName?.toLowerCase() === term
     );
     
-    // If no exact match, try starts with
     if (!bestMatch) {
       bestMatch = this.products.find(product => 
         product.productName?.toLowerCase().startsWith(term)
       );
     }
     
-    // If still no match, try includes
     if (!bestMatch) {
       bestMatch = this.products.find(product => 
         product.productName?.toLowerCase().includes(term)
@@ -286,9 +274,6 @@ export class PosBillingComponent implements OnInit {
     
     if (bestMatch) {
       this.selectProduct(bestMatch);
-    } else if (this.products.length > 0) {
-      // Optional: Select first product if no match found
-      // this.selectProduct(this.products[0]);
     }
   }
 
@@ -297,19 +282,16 @@ export class PosBillingComponent implements OnInit {
     
     const term = this.searchCustomerTerm.toLowerCase();
     
-    // Try to find exact match by name or phone
     let bestMatch = this.customers.find(customer => 
       customer.name.toLowerCase() === term || customer.phone === this.searchCustomerTerm
     );
     
-    // If no exact match, try starts with
     if (!bestMatch) {
       bestMatch = this.customers.find(customer => 
         customer.name.toLowerCase().startsWith(term)
       );
     }
     
-    // If still no match, try includes
     if (!bestMatch) {
       bestMatch = this.customers.find(customer => 
         customer.name.toLowerCase().includes(term)
@@ -346,9 +328,8 @@ export class PosBillingComponent implements OnInit {
     this.showProductDropdown = false;
     this.selectedProductIndex = -1;
     
-    // Optional: Auto-focus on quantity input after selection
     setTimeout(() => {
-      const quantityInput = document.querySelector('input[placeholder*="Qty"]') as HTMLInputElement;
+      const quantityInput = document.querySelector('input[type="number"]') as HTMLInputElement;
       if (quantityInput) {
         quantityInput.focus();
       }
@@ -360,7 +341,6 @@ export class PosBillingComponent implements OnInit {
     this.searchCustomerTerm = customer.name;
     this.showCustomerDropdown = false;
     this.selectedCustomerIndex = -1;
-    // Reset discount percent when customer changes
     this.discountPercent = 0;
     this.calculateTotals();
   }
@@ -386,6 +366,31 @@ export class PosBillingComponent implements OnInit {
     this.calculateTotals();
   }
 
+  // Handle transport cost changes
+  onTransportCostChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.transportCost = isNaN(numValue) ? 0 : Math.max(0, numValue);
+    this.calculateTotals();
+  }
+
+  // Handle transport type changes
+  onTransportTypeChange(value: string): void {
+    this.transportType = value;
+    // Optional: Set predefined transport costs based on type
+    switch(value) {
+      case 'delivery':
+        // this.transportCost = 50; // Uncomment to set default delivery charge
+        break;
+      case 'courier':
+        // this.transportCost = 30; // Uncomment to set default courier charge
+        break;
+      case 'pickup':
+        // this.transportCost = 0; // Uncomment to set zero for pickup
+        break;
+    }
+    this.calculateTotals();
+  }
+
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event): void {
     const target = event.target as HTMLElement;
@@ -407,7 +412,7 @@ export class PosBillingComponent implements OnInit {
       product.productName?.toLowerCase().includes(term) ||
       product.categoryName?.toLowerCase().includes(term) ||
       product.barcode?.toLowerCase().includes(term)
-    ).slice(0, 10); // Limit to 10 results for better performance
+    ).slice(0, 10);
   }
 
   // Filtered Customers
@@ -417,7 +422,7 @@ export class PosBillingComponent implements OnInit {
       customer.name.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
       customer.phone.includes(this.searchCustomerTerm)
-    ).slice(0, 10); // Limit to 10 results for better performance
+    ).slice(0, 10);
   }
 
   // Get Selected Customer
@@ -449,7 +454,6 @@ export class PosBillingComponent implements OnInit {
   addToCart(): void {
     if (!this.selectedProduct) {
       alert('Please select a product');
-      // Focus on product search input
       setTimeout(() => {
         if (this.productSearchInput) {
           this.productSearchInput.nativeElement.focus();
@@ -460,7 +464,6 @@ export class PosBillingComponent implements OnInit {
 
     const product = this.selectedProduct;
     
-    // Check stock availability
     if (this.productQuantity > product.stockQty) {
       alert(`Only ${product.stockQty} items available in stock`);
       return;
@@ -487,7 +490,6 @@ export class PosBillingComponent implements OnInit {
     this.calculateTotals();
     this.resetProduct();
     
-    // Focus back on product search for next item
     setTimeout(() => {
       if (this.productSearchInput) {
         this.productSearchInput.nativeElement.focus();
@@ -522,6 +524,7 @@ export class PosBillingComponent implements OnInit {
     this.discountAmount = (this.subtotal * this.discountPercent) / 100;
     
     // Calculate gross amount (subtotal - discount + transport)
+    // Transport cost is properly added here
     this.grossAmount = this.subtotal - this.discountAmount + this.transportCost;
     
     // Ensure gross amount is not negative
@@ -531,6 +534,14 @@ export class PosBillingComponent implements OnInit {
     
     // Calculate return and due
     this.calculateReturnAndDue();
+    
+    // Debug log to verify calculations
+    console.log('Totals calculated:', {
+      subtotal: this.subtotal,
+      discount: this.discountAmount,
+      transport: this.transportCost,
+      gross: this.grossAmount
+    });
   }
 
   calculateReturnAndDue(): void {
@@ -545,7 +556,6 @@ export class PosBillingComponent implements OnInit {
 
   // Submit Bill
   submitBill(): void {
-    // Validation
     if (this.cartItems.length === 0) {
       alert('Cart is empty. Please add items to continue.');
       return;
@@ -566,7 +576,6 @@ export class PosBillingComponent implements OnInit {
       return;
     }
 
-    // Create invoice
     const newInvoice: Invoice = {
       invoiceNo: 'INV-' + Date.now(),
       customerName: this.selectedCustomer?.name || '',
@@ -576,10 +585,8 @@ export class PosBillingComponent implements OnInit {
       date: new Date().toLocaleDateString()
     };
 
-    // Add to invoices list
     this.invoices.unshift(newInvoice);
 
-    // Log receipt details
     const receipt = {
       invoiceNo: newInvoice.invoiceNo,
       date: new Date(),
@@ -599,7 +606,6 @@ export class PosBillingComponent implements OnInit {
     console.log('Bill Submitted:', receipt);
     alert(`Bill Submitted Successfully!\nInvoice: ${newInvoice.invoiceNo}\nTotal: $${this.grossAmount.toFixed(2)}\nPayment: $${this.paymentCash.toFixed(2)}\nReturn: $${this.returnCash.toFixed(2)}`);
     
-    // Reset form after successful submission
     this.resetForm();
   }
 

@@ -308,33 +308,19 @@
           </div>
 
           <!-- Transport & Payment - Compact -->
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-xs text-gray-500">Transport</label>
-              <select
-                [ngModel]="transportType"
-                (ngModelChange)="transportType = $event"
-                class="w-full px-2 py-1 text-sm border rounded-lg"
-              >
-                <option value="">Select</option>
-                <option value="pickup">Pickup</option>
-                <option value="delivery">Delivery</option>
-                <option value="courier">Courier</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-xs text-gray-500">Payment</label>
-              <select
-                [ngModel]="selectedPaymentMethod"
-                (ngModelChange)="selectedPaymentMethod = $event"
-                class="w-full px-2 py-1 text-sm border rounded-lg"
-              >
-                <option value="cash">💵 Cash</option>
-                <option value="card">💳 Card</option>
-                <option value="mobile">📱 Mobile</option>
-                <option value="bank">🏦 Bank</option>
-              </select>
-            </div>
+
+          <div>
+            <label class="text-xs text-gray-500">Transport</label>
+            <select
+              [ngModel]="transportType"
+              (ngModelChange)="onTransportTypeChange($event)"
+              class="w-full px-2 py-1 text-sm border rounded-lg"
+            >
+              <option value="">Select</option>
+              <option value="pickup">Pickup</option>
+              <option value="delivery">Delivery</option>
+              <option value="courier">Courier</option>
+            </select>
           </div>
         </div>
       </div>
@@ -366,7 +352,7 @@
               <input
                 type="number"
                 [ngModel]="transportCost"
-                (ngModelChange)="transportCost = $event"
+                (ngModelChange)="onTransportCostChange($event)"
                 class="w-24 px-2 py-0.5 text-right border rounded text-sm"
               />
             </div>
