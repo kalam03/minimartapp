@@ -1,33 +1,98 @@
+/* Only add custom styles that don't conflict with Tailwind */
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+/* Custom scrollbar for main content */
+main::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+main::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+main::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
 /* Custom scrollbar for sidebar */
-aside .overflow-y-auto::-webkit-scrollbar {
+aside::-webkit-scrollbar {
   width: 4px;
 }
 
-aside .overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
+aside::-webkit-scrollbar-track {
+  background: #374151;
 }
 
-aside .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
+aside::-webkit-scrollbar-thumb {
+  background: #4B5563;
+  border-radius: 4px;
 }
 
-aside .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+aside::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}
+
+/* Mobile menu animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  aside {
+    animation: slideIn 0.2s ease-out;
+  }
+  
+  .overlay {
+    animation: fadeIn 0.2s ease-out;
+  }
 }
 
 /* Smooth transitions */
 .transition-all {
-  transition: all 0.2s ease-in-out;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
-/* Focus styles */
-input:focus {
-  outline: none;
+/* Ensure content takes full height */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-/* Active link styles */
-a.active {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: white;
+/* Fix for router outlet */
+router-outlet {
+  display: none;
+}
+
+/* Ensure main content area scrolls properly */
+main {
+  scrollbar-width: thin;
 }

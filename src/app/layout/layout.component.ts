@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 
@@ -12,7 +12,9 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 export class LayoutComponent {
   // Sidebar state
   isSidebarOpen = signal(true);
+  isSidebarMinimized = signal(false);
   isMobileMenuOpen = signal(false);
+  isMobile = signal(false);
   
   // User data
   user = {
@@ -39,25 +41,65 @@ export class LayoutComponent {
     { icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', label: 'New Customer', color: 'purple' }
   ];
   
-  // Toggle sidebar
-  toggleSidebar(): void {
-    this.isSidebarOpen.update(state => !state);
+  constructor() {
+    this.checkScreenSize();
   }
   
-  // Toggle mobile menu
+  @HostListener('window:resize')
+  checkScreenSize(): void {
+    const isMobileView = window.innerWidth < 768;
+    this.isMobile.set(isMobileView);
+    
+    if (isMobileView) {
+      this.isSidebarOpen.set(false);
+      this.isSidebarMinimized.set(false);
+    } else {
+      this.isSidebarOpen.set(true);
+      this.isSidebarMinimized.set(false);
+    }
+  }
+  
+  toggleSidebar(): void {
+    if (this.isMobile()) {
+      this.toggleMobileMenu();
+    } else {
+      if (this.isSidebarOpen()) {
+        this.isSidebarMinimized.update(state => !state);
+      } else {
+        this.isSidebarOpen.set(true);
+        this.isSidebarMinimized.set(false);
+      }
+    }
+  }
+  
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update(state => !state);
+    if (this.isMobileMenuOpen()) {
+      this.isSidebarOpen.set(true);
+      this.isSidebarMinimized.set(false);
+    }
   }
   
-  // Close mobile menu
   closeMobileMenu(): void {
     this.isMobileMenuOpen.set(false);
+    if (this.isMobile()) {
+      this.isSidebarOpen.set(false);
+    }
   }
   
-  // Set active menu item
   setActiveItem(index: number): void {
     this.navItems.forEach((item, i) => {
       item.active = i === index;
     });
+  }
+  
+  getSidebarWidthClass(): string {
+    if (this.isMobile()) {
+      return this.isMobileMenuOpen() ? 'w-64' : 'w-0';
+    }
+    if (this.isSidebarMinimized()) {
+      return 'w-16'; // Reduced from w-20 to w-16 for more space
+    }
+    return 'w-64';
   }
 }

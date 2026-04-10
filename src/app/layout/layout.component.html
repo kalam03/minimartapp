@@ -1,168 +1,175 @@
-<div class="h-screen flex overflow-hidden bg-gray-50">
-  
-  <!-- Mobile Sidebar Overlay -->
-  <div *ngIf="isMobileMenuOpen()" 
-       (click)="closeMobileMenu()"
-       class="fixed inset-0 z-20 bg-black bg-opacity-50 transition-opacity lg:hidden"></div>
-  
-  <!-- Sidebar Drawer -->
-  <aside [class]="'fixed inset-y-0 left-0 z-30 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ' + 
-                 (isSidebarOpen() ? 'translate-x-0' : '-translate-x-full')">
-    
-    <!-- Sidebar Header -->
-    <div class="flex items-center justify-between p-4 border-b border-gray-200">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4"></path>
-          </svg>
-        </div>
-        <div>
-          <h1 class="text-xl font-bold text-gray-800">ShopMaster</h1>
-          <p class="text-xs text-gray-500">Admin Dashboard</p>
-        </div>
-      </div>
-      <button (click)="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 lg:hidden">
-        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+<div class="h-screen flex flex-col overflow-hidden bg-gray-50">
+  <!-- Mobile Header - Minimal -->
+  <div class="md:hidden fixed top-0 left-0 right-0 bg-white shadow-sm z-30 px-2 py-2">
+    <div class="flex justify-between items-center">
+      <button 
+        (click)="toggleMobileMenu()" 
+        class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
+      <div class="font-bold text-base bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        POS
+      </div>
+      <div class="w-5"></div>
     </div>
-    
-    <!-- User Profile Section -->
-    <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
-      <div class="flex items-center space-x-3">
-        <img [src]="user.avatar" alt="Avatar" class="w-12 h-12 rounded-full ring-2 ring-white">
-        <div>
-          <p class="font-semibold text-gray-800">{{ user.name }}</p>
-          <p class="text-xs text-gray-500">{{ user.email }}</p>
+  </div>
+
+  <!-- Sidebar Overlay (Mobile) -->
+  <div 
+    *ngIf="isMobile() && isMobileMenuOpen()" 
+    class="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
+    (click)="closeMobileMenu()"
+  ></div>
+
+  <!-- Sidebar -->
+  <aside 
+    [class]="'fixed left-0 top-0 h-full bg-gradient-to-b from-gray-900 to-gray-800 shadow-xl transition-all duration-300 z-50 overflow-y-auto ' + getSidebarWidthClass()"
+    [class.overflow-hidden]="isMobile() && !isMobileMenuOpen()"
+  >
+    <div class="flex flex-col h-full">
+      <!-- Logo Section - Compact -->
+      <div class="flex items-center justify-between p-3 border-b border-gray-700">
+        <div *ngIf="!isMobile() && (!isSidebarMinimized() || !isSidebarOpen())" class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">P</span>
+          </div>
+          <span *ngIf="!isSidebarMinimized()" class="text-white font-semibold text-sm">POS</span>
+        </div>
+        <div *ngIf="isSidebarMinimized() && !isMobile()" class="w-full flex justify-center">
+          <div class="w-7 h-7 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">P</span>
+          </div>
+        </div>
+        <button 
+          *ngIf="!isMobile()"
+          (click)="toggleSidebar()" 
+          class="p-1 rounded-lg hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
+        >
+          <svg *ngIf="!isSidebarMinimized()" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+          </svg>
+          <svg *ngIf="isSidebarMinimized()" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+          </svg>
+        </button>
+        <button 
+          *ngIf="isMobile()"
+          (click)="closeMobileMenu()" 
+          class="p-1 rounded-lg hover:bg-gray-700 transition-colors text-gray-400 hover:text-white"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- User Profile Section - Compact -->
+      <div *ngIf="!isSidebarMinimized() || isMobile()" class="p-3 border-b border-gray-700">
+        <div class="flex items-center gap-2">
+          <img [src]="user.avatar" alt="Avatar" class="w-8 h-8 rounded-full">
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-medium text-xs truncate">{{ user.name }}</p>
+            <p class="text-gray-400 text-xs truncate">{{ user.email }}</p>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Navigation Menu -->
-    <nav class="flex-1 overflow-y-auto p-4">
-      <div class="space-y-1">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Main Menu</p>
-        <a *ngFor="let item of navItems; let i = index"
-           [routerLink]="item.path"
-           (click)="setActiveItem(i); closeMobileMenu()"
-           [class]="'flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ' +
-                   (item.active ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100')">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
-          </svg>
-          <span class="font-medium">{{ item.label }}</span>
-          <span *ngIf="item.active" class="ml-auto">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-            </svg>
-          </span>
-        </a>
+      <div *ngIf="isSidebarMinimized() && !isMobile()" class="p-3 border-b border-gray-700 flex justify-center">
+        <img [src]="user.avatar" alt="Avatar" class="w-8 h-8 rounded-full">
       </div>
-      
-      <!-- Quick Actions -->
-      <div class="mt-8">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</p>
-        <div class="space-y-2">
-          <button *ngFor="let action of quickActions"
-                  class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-            <div [class]="'w-8 h-8 rounded-lg flex items-center justify-center bg-' + action.color + '-100'">
-              <svg class="w-4 h-4 text-{{ action.color }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="action.icon"></path>
+
+      <!-- Navigation Menu - Compact -->
+      <nav class="flex-1 overflow-y-auto py-2">
+        <ul class="space-y-0.5">
+          <li *ngFor="let item of navItems; let i = index">
+            <a 
+              [routerLink]="item.path"
+              (click)="setActiveItem(i)"
+              [class]="'flex items-center gap-2 px-3 py-2 text-xs transition-colors ' + 
+                (item.active ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white') +
+                (isSidebarMinimized() && !isMobile() ? ' justify-center' : '')"
+              [title]="isSidebarMinimized() && !isMobile() ? item.label : ''"
+            >
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
               </svg>
-            </div>
-            <span class="text-sm font-medium text-gray-700">{{ action.label }}</span>
+              <span *ngIf="!isSidebarMinimized() || isMobile()" class="text-xs">{{ item.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Quick Actions - Compact -->
+      <div *ngIf="!isSidebarMinimized() || isMobile()" class="p-3 border-t border-gray-700">
+        <p class="text-gray-400 text-xs uppercase tracking-wider mb-2">Quick</p>
+        <div class="space-y-1.5">
+          <button *ngFor="let action of quickActions" 
+            class="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-gray-300 hover:text-white">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="action.icon"></path>
+            </svg>
+            <span>{{ action.label }}</span>
           </button>
         </div>
       </div>
-    </nav>
-    
-    <!-- Sidebar Footer -->
-    <div class="p-4 border-t border-gray-200">
-      <button class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-        </svg>
-        <span class="font-medium">Logout</span>
-      </button>
+      <div *ngIf="isSidebarMinimized() && !isMobile()" class="p-3 border-t border-gray-700">
+        <div class="space-y-1.5">
+          <button *ngFor="let action of quickActions" 
+            class="w-full flex justify-center px-2 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-gray-300 hover:text-white"
+            [title]="action.label">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="action.icon"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </aside>
-  
-  <!-- Main Content Area -->
-  <div class="flex-1 flex flex-col overflow-hidden">
-    
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          
-          <!-- Left side - Menu button & Breadcrumb -->
-          <div class="flex items-center space-x-4">
-            <button (click)="toggleSidebar()" 
-                    class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-              </svg>
-            </button>
-            
-            <div class="hidden md:block">
-              <h2 class="text-lg font-semibold text-gray-800">Dashboard</h2>
-              <p class="text-sm text-gray-500">Welcome back, {{ user.name }}!</p>
-            </div>
-          </div>
-          
-          <!-- Right side - Actions -->
-          <div class="flex items-center space-x-3">
-            <!-- Search -->
-            <div class="hidden md:block relative">
-              <input type="text" 
-                     placeholder="Search..." 
-                     class="w-64 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-              <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-            </div>
-            
-            <!-- Notifications -->
-            <button class="p-2 rounded-lg hover:bg-gray-100 relative">
-              <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-              </svg>
-              <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-            
-            <!-- User Menu -->
-            <div class="relative group">
-              <button class="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100">
-                <img [src]="user.avatar" alt="Avatar" class="w-8 h-8 rounded-full">
-                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-              
-              <!-- Dropdown Menu -->
-              <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div class="py-2">
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                  <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Help</a>
-                  <hr class="my-1">
-                  <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</a>
-                </div>
-              </div>
+
+  <!-- Main Content - Fixed scrolling -->
+  <main 
+    class="flex-1 overflow-y-auto bg-gray-50"
+    [class.mt-12]="isMobile()"
+    [style.margin-left]="!isMobile() ? (isSidebarMinimized() ? '4rem' : '16rem') : '0'"
+  >
+    <!-- Desktop Header - Minimal -->
+    <div *ngIf="!isMobile()" class="bg-white border-b border-gray-200 sticky top-0 z-20">
+      <div class="px-3 py-2 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <button 
+            (click)="toggleSidebar()" 
+            class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+          <h1 class="text-sm font-semibold text-gray-800">Dashboard</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors relative">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+            <span class="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+          </button>
+          <div class="w-px h-5 bg-gray-200"></div>
+          <div class="flex items-center gap-1.5 cursor-pointer hover:bg-gray-50 rounded-lg px-1.5 py-1">
+            <img [src]="user.avatar" alt="Avatar" class="w-6 h-6 rounded-full">
+            <div class="hidden lg:block">
+              <p class="text-xs font-medium text-gray-700">{{ user.name }}</p>
+              <p class="text-xs text-gray-500">Admin</p>
             </div>
           </div>
         </div>
       </div>
-    </header>
-    
+    </div>
+
     <!-- Page Content -->
-    <main class="flex-1 overflow-y-auto bg-gray-50">
-      <div class="px-4 sm:px-6 lg:px-8 py-6">
-        <!-- Router Outlet for child components -->
-        <router-outlet></router-outlet>
-      </div>
-    </main>
-  </div>
+    <div class="p-4 md:p-6">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 </div>
