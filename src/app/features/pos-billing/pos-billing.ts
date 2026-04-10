@@ -3,13 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
-import { FinancialInputComponent } from '../../shared/financial-input.component'; 
+import { FinancialInputComponent } from '../../shared/financial-input.component';
 import { AlertService } from '../../shared/alert.service';
 import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
+import { SaleService } from '../../services/sale.service';
 
 export interface CartItem {
+  productId: number;
   product: Product;
   quantity: number;
+  unitPrice: number;
   subtotal: number;
 }
 
@@ -27,14 +30,15 @@ export interface Invoice {
   standalone: true,
   imports: [CommonModule, FormsModule, FinancialInputComponent],
   templateUrl: './pos-billing.html',
-  styleUrls: ['./pos-billing.css']
+  styleUrls: ['./pos-billing.css'],
 })
 export class PosBillingComponent implements OnInit {
   constructor(
     private productService: ProductService,
-     private customerService: CustomerService,
-      private alertService: AlertService
-    ) {}
+    private customerService: CustomerService,
+    private alertService: AlertService,
+    private saleService: SaleService
+  ) {}
   Math = Math;
 
   // ViewChild references for input elements
@@ -61,14 +65,14 @@ export class PosBillingComponent implements OnInit {
 
   // Cart Items
   cartItems: CartItem[] = [];
-  
+
   // Selected IDs
   selectedProductId: number | null = null;
   selectedCustomerId: number | null = null;
-  
+
   // Quantities
   productQuantity: number = 1;
-  
+
   // Payment Info
   subtotal: number = 0;
   discountAmount: number = 0;
@@ -80,7 +84,7 @@ export class PosBillingComponent implements OnInit {
   returnCash: number = 0;
   dueAmount: number = 0;
   grossAmount: number = 0;
-  
+
   // UI State
   searchProductTerm: string = '';
   searchCustomerTerm: string = '';
@@ -91,7 +95,7 @@ export class PosBillingComponent implements OnInit {
   filters: ProductFilter = {
     tenantId: null,
     isActive: true,
-    categoryId: null
+    categoryId: null,
   };
 
   ngOnInit(): void {
@@ -101,17 +105,16 @@ export class PosBillingComponent implements OnInit {
   }
 
   loadCustomers(): void {
-      let Custfilters:CustomerFilter= {
-    tenantId: 1,
-  };
+    let Custfilters: CustomerFilter = {
+      tenantId: 1,
+    };
     this.customerService.getAllCustomers(Custfilters).subscribe({
       next: (data) => {
         this.customers = data;
-        console.log('Customers loaded:', this.customers);
       },
       error: (err: any) => {
         console.error('Error loading customers:', err);
-      }
+      },
     });
   }
 
@@ -119,11 +122,10 @@ export class PosBillingComponent implements OnInit {
     this.productService.getAllProducts(this.filters).subscribe({
       next: (data) => {
         this.products = data;
-        console.log('Products loaded:', this.products);
       },
       error: (err: any) => {
         console.error('Error loading products:', err);
-      }
+      },
     });
   }
 
@@ -133,19 +135,19 @@ export class PosBillingComponent implements OnInit {
       {
         invoiceNo: 'INV-001',
         customerName: 'John Doe',
-        totalAmount: 150.00,
-        discountAmount: 10.00,
-        grossAmount: 140.00,
-        date: new Date().toLocaleDateString()
+        totalAmount: 150.0,
+        discountAmount: 10.0,
+        grossAmount: 140.0,
+        date: new Date().toLocaleDateString(),
       },
       {
         invoiceNo: 'INV-002',
         customerName: 'Jane Smith',
-        totalAmount: 250.00,
-        discountAmount: 25.00,
-        grossAmount: 225.00,
-        date: new Date().toLocaleDateString()
-      }
+        totalAmount: 250.0,
+        discountAmount: 25.0,
+        grossAmount: 225.0,
+        date: new Date().toLocaleDateString(),
+      },
     ];
   }
 
@@ -153,12 +155,12 @@ export class PosBillingComponent implements OnInit {
     this.searchProductTerm = term;
     this.showProductDropdown = term.length > 0;
     this.selectedProductIndex = -1;
-    
+
     if (term.length > 0 && this.filteredProducts.length > 0) {
-      const exactMatch = this.filteredProducts.find(product => 
-        product.productName?.toLowerCase() === term.toLowerCase()
+      const exactMatch = this.filteredProducts.find(
+        (product) => product.productName?.toLowerCase() === term.toLowerCase(),
       );
-      
+
       if (exactMatch) {
         this.selectProduct(exactMatch);
       }
@@ -177,25 +179,31 @@ export class PosBillingComponent implements OnInit {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        this.selectedProductIndex = Math.min(this.selectedProductIndex + 1, this.filteredProducts.length - 1);
+        this.selectedProductIndex = Math.min(
+          this.selectedProductIndex + 1,
+          this.filteredProducts.length - 1,
+        );
         this.scrollToSelectedProduct();
         break;
-      
+
       case 'ArrowUp':
         event.preventDefault();
         this.selectedProductIndex = Math.max(this.selectedProductIndex - 1, -1);
         this.scrollToSelectedProduct();
         break;
-      
+
       case 'Enter':
         event.preventDefault();
-        if (this.selectedProductIndex >= 0 && this.selectedProductIndex < this.filteredProducts.length) {
+        if (
+          this.selectedProductIndex >= 0 &&
+          this.selectedProductIndex < this.filteredProducts.length
+        ) {
           this.selectProduct(this.filteredProducts[this.selectedProductIndex]);
         } else if (this.filteredProducts.length > 0) {
           this.selectProduct(this.filteredProducts[0]);
         }
         break;
-      
+
       case 'Escape':
         event.preventDefault();
         this.showProductDropdown = false;
@@ -205,97 +213,108 @@ export class PosBillingComponent implements OnInit {
   }
 
   onCustomerSearch(term: string): void {
-  this.searchCustomerTerm = term;
-  this.showCustomerDropdown = term.length > 0;
-  this.selectedCustomerIndex = -1; // Reset selection when searching
-  
-  if (term.length > 0 && this.filteredCustomers.length > 0) {
-    const exactMatch = this.filteredCustomers.find(customer => 
-      customer.customerName?.toLowerCase() === term.toLowerCase() ||
-      customer.phone === term
-    );
-    
-    if (exactMatch) {
-      this.selectCustomer(exactMatch);
-    }
-  }
-}
+    this.searchCustomerTerm = term;
+    this.showCustomerDropdown = term.length > 0;
+    this.selectedCustomerIndex = -1; // Reset selection when searching
 
-// Update the onCustomerKeydown method
-onCustomerKeydown(event: KeyboardEvent): void {
-  console.log('Key pressed:', event.key, 'Dropdown visible:', this.showCustomerDropdown, 'Filtered count:', this.filteredCustomers.length);
-  
-  if (!this.showCustomerDropdown || this.filteredCustomers.length === 0) {
-    if (event.key === 'Enter' && this.searchCustomerTerm.length > 0) {
-      event.preventDefault();
-      this.selectBestMatchCustomer();
-    }
-    return;
-  }
+    if (term.length > 0 && this.filteredCustomers.length > 0) {
+      const exactMatch = this.filteredCustomers.find(
+        (customer) =>
+          customer.customerName?.toLowerCase() === term.toLowerCase() || customer.phone === term,
+      );
 
-  switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault();
-      this.selectedCustomerIndex = Math.min(this.selectedCustomerIndex + 1, this.filteredCustomers.length - 1);
-      console.log('Selected index:', this.selectedCustomerIndex);
-      this.scrollToSelectedCustomer();
-      break;
-    
-    case 'ArrowUp':
-      event.preventDefault();
-      this.selectedCustomerIndex = Math.max(this.selectedCustomerIndex - 1, -1);
-      console.log('Selected index:', this.selectedCustomerIndex);
-      this.scrollToSelectedCustomer();
-      break;
-    
-    case 'Enter':
-      event.preventDefault();
-      if (this.selectedCustomerIndex >= 0 && this.selectedCustomerIndex < this.filteredCustomers.length) {
-        this.selectCustomer(this.filteredCustomers[this.selectedCustomerIndex]);
-      } else if (this.filteredCustomers.length > 0) {
-        this.selectCustomer(this.filteredCustomers[0]);
+      if (exactMatch) {
+        this.selectCustomer(exactMatch);
       }
-      break;
-    
-    case 'Escape':
-      event.preventDefault();
-      this.showCustomerDropdown = false;
-      this.selectedCustomerIndex = -1;
-      break;
-  }
-}
-
-// Add the scrollToSelectedCustomer method
-scrollToSelectedCustomer(): void {
-  setTimeout(() => {
-    const selectedElement = document.querySelector('.customer-dropdown-item.selected');
-    if (selectedElement) {
-      selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
-  }, 0);
-}
+  }
+
+  // Update the onCustomerKeydown method
+  onCustomerKeydown(event: KeyboardEvent): void {
+    console.log(
+      'Key pressed:',
+      event.key,
+      'Dropdown visible:',
+      this.showCustomerDropdown,
+      'Filtered count:',
+      this.filteredCustomers.length,
+    );
+
+    if (!this.showCustomerDropdown || this.filteredCustomers.length === 0) {
+      if (event.key === 'Enter' && this.searchCustomerTerm.length > 0) {
+        event.preventDefault();
+        this.selectBestMatchCustomer();
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedCustomerIndex = Math.min(
+          this.selectedCustomerIndex + 1,
+          this.filteredCustomers.length - 1,
+        );
+        console.log('Selected index:', this.selectedCustomerIndex);
+        this.scrollToSelectedCustomer();
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedCustomerIndex = Math.max(this.selectedCustomerIndex - 1, -1);
+        console.log('Selected index:', this.selectedCustomerIndex);
+        this.scrollToSelectedCustomer();
+        break;
+
+      case 'Enter':
+        event.preventDefault();
+        if (
+          this.selectedCustomerIndex >= 0 &&
+          this.selectedCustomerIndex < this.filteredCustomers.length
+        ) {
+          this.selectCustomer(this.filteredCustomers[this.selectedCustomerIndex]);
+        } else if (this.filteredCustomers.length > 0) {
+          this.selectCustomer(this.filteredCustomers[0]);
+        }
+        break;
+
+      case 'Escape':
+        event.preventDefault();
+        this.showCustomerDropdown = false;
+        this.selectedCustomerIndex = -1;
+        break;
+    }
+  }
+
+  // Add the scrollToSelectedCustomer method
+  scrollToSelectedCustomer(): void {
+    setTimeout(() => {
+      const selectedElement = document.querySelector('.customer-dropdown-item.selected');
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }, 0);
+  }
 
   selectBestMatchProduct(): void {
     if (this.searchProductTerm.length === 0) return;
-    
+
     const term = this.searchProductTerm.toLowerCase();
-    
-    let bestMatch = this.products.find(product => 
-      product.productName?.toLowerCase() === term
-    );
-    
+
+    let bestMatch = this.products.find((product) => product.productName?.toLowerCase() === term);
+
     if (!bestMatch) {
-      bestMatch = this.products.find(product => 
-        product.productName?.toLowerCase().startsWith(term)
+      bestMatch = this.products.find((product) =>
+        product.productName?.toLowerCase().startsWith(term),
       );
     }
-    
+
     if (!bestMatch) {
-      bestMatch = this.products.find(product => 
-        product.productName?.toLowerCase().includes(term)
+      bestMatch = this.products.find((product) =>
+        product.productName?.toLowerCase().includes(term),
       );
     }
-    
+
     if (bestMatch) {
       this.selectProduct(bestMatch);
     }
@@ -303,25 +322,26 @@ scrollToSelectedCustomer(): void {
 
   selectBestMatchCustomer(): void {
     if (this.searchCustomerTerm.length === 0) return;
-    
+
     const term = this.searchCustomerTerm.toLowerCase();
-    
-    let bestMatch = this.customers.find(customer => 
-      customer.customerName?.toLowerCase() === term || customer.phone === this.searchCustomerTerm
+
+    let bestMatch = this.customers.find(
+      (customer) =>
+        customer.customerName?.toLowerCase() === term || customer.phone === this.searchCustomerTerm,
     );
-    
+
     if (!bestMatch) {
-      bestMatch = this.customers.find(customer => 
-        customer.customerName?.toLowerCase().startsWith(term)
+      bestMatch = this.customers.find((customer) =>
+        customer.customerName?.toLowerCase().startsWith(term),
       );
     }
-    
+
     if (!bestMatch) {
-      bestMatch = this.customers.find(customer => 
-        customer.customerName?.toLowerCase().includes(term)
+      bestMatch = this.customers.find((customer) =>
+        customer.customerName?.toLowerCase().includes(term),
       );
     }
-    
+
     if (bestMatch) {
       this.selectCustomer(bestMatch);
     }
@@ -336,15 +356,13 @@ scrollToSelectedCustomer(): void {
     }, 0);
   }
 
- 
-
   selectProduct(product: Product): void {
     this.selectedProduct = product;
     this.selectedProductId = product.productId;
     this.searchProductTerm = product.productName;
     this.showProductDropdown = false;
     this.selectedProductIndex = -1;
-    
+
     setTimeout(() => {
       const quantityInput = document.querySelector('input[type="number"]') as HTMLInputElement;
       if (quantityInput) {
@@ -394,7 +412,7 @@ scrollToSelectedCustomer(): void {
   onTransportTypeChange(value: string): void {
     this.transportType = value;
     // Optional: Set predefined transport costs based on type
-    switch(value) {
+    switch (value) {
       case 'delivery':
         // this.transportCost = 50; // Uncomment to set default delivery charge
         break;
@@ -425,26 +443,32 @@ scrollToSelectedCustomer(): void {
   get filteredProducts(): Product[] {
     if (!this.searchProductTerm) return [];
     const term = this.searchProductTerm.toLowerCase();
-    return this.products.filter(product => 
-      product.productName?.toLowerCase().includes(term) ||
-      product.categoryName?.toLowerCase().includes(term) ||
-      product.barcode?.toLowerCase().includes(term)
-    ).slice(0, 10);
+    return this.products
+      .filter(
+        (product) =>
+          product.productName?.toLowerCase().includes(term) ||
+          product.categoryName?.toLowerCase().includes(term) ||
+          product.barcode?.toLowerCase().includes(term),
+      )
+      .slice(0, 10);
   }
 
   // Filtered Customers
   get filteredCustomers(): Customer[] {
     if (!this.searchCustomerTerm) return [];
-    return this.customers.filter(customer =>
-      customer.customerName?.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
-      customer.address.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
-      customer.phone.includes(this.searchCustomerTerm)
-    ).slice(0, 10);
+    return this.customers
+      .filter(
+        (customer) =>
+          customer.customerName?.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
+          customer.address.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
+          customer.phone.includes(this.searchCustomerTerm),
+      )
+      .slice(0, 10);
   }
 
   // Get Selected Customer
   get selectedCustomer(): Customer | undefined {
-    return this.customers.find(c => c.customerId === this.selectedCustomerId);
+    return this.customers.find((c) => c.customerId === this.selectedCustomerId);
   }
 
   // Helper method for product quantity
@@ -470,7 +494,6 @@ scrollToSelectedCustomer(): void {
   // Add Product to Cart
   async addToCart() {
     if (!this.selectedProduct) {
-  
       this.alertService.info('Please select a product to add to the cart.', 'No Product Selected');
       setTimeout(() => {
         if (this.productSearchInput) {
@@ -481,14 +504,16 @@ scrollToSelectedCustomer(): void {
     }
 
     const product = this.selectedProduct;
-    
+
     if (this.productQuantity > product.stockQty) {
-       await this.alertService.warning(`Only ${product.stockQty} items available in stock`);
+      await this.alertService.warning(`Only ${product.stockQty} items available in stock`);
       return;
     }
 
-    const existingItem = this.cartItems.find(item => item.product.productId === product.productId);
-    
+    const existingItem = this.cartItems.find(
+      (item) => item.product.productId === product.productId,
+    );
+
     if (existingItem) {
       const newQuantity = existingItem.quantity + this.productQuantity;
       if (newQuantity > product.stockQty) {
@@ -499,15 +524,17 @@ scrollToSelectedCustomer(): void {
       existingItem.subtotal = existingItem.quantity * product.salePrice;
     } else {
       this.cartItems.push({
+        productId: product.productId,
         product: product,
         quantity: this.productQuantity,
-        subtotal: this.productQuantity * product.salePrice
+        unitPrice: product.salePrice,
+        subtotal: this.productQuantity * product.salePrice,
       });
     }
 
     this.calculateTotals();
     this.resetProduct();
-    
+
     setTimeout(() => {
       if (this.productSearchInput) {
         this.productSearchInput.nativeElement.focus();
@@ -537,28 +564,28 @@ scrollToSelectedCustomer(): void {
   calculateTotals(): void {
     // Calculate subtotal
     this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
-    
+
     // Calculate discount amount based on percentage
     this.discountAmount = (this.subtotal * this.discountPercent) / 100;
-    
+
     // Calculate gross amount (subtotal - discount + transport)
     // Transport cost is properly added here
     this.grossAmount = this.subtotal - this.discountAmount + this.transportCost;
-    
+
     // Ensure gross amount is not negative
     if (this.grossAmount < 0) {
       this.grossAmount = 0;
     }
-    
+
     // Calculate return and due
     this.calculateReturnAndDue();
-    
+
     // Debug log to verify calculations
     console.log('Totals calculated:', {
       subtotal: this.subtotal,
       discount: this.discountAmount,
       transport: this.transportCost,
-      gross: this.grossAmount
+      gross: this.grossAmount,
     });
   }
 
@@ -578,88 +605,85 @@ scrollToSelectedCustomer(): void {
       await this.alertService.warning('Cart is empty. Please add items to continue.');
       return;
     }
-    
+
     if (!this.selectedCustomerId) {
       await this.alertService.warning('Please select a customer.');
       return;
     }
 
-    if (this.dueAmount > 0) {
-      await this.alertService.warning(`Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`);
-      return;
+    // if (this.dueAmount > 0) {
+    //   await this.alertService.warning(
+    //     `Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`,
+    //   );
+    //   return;
+    // }
+
+    // if (this.paymentCash < this.grossAmount) {
+    //   await this.alertService.warning(
+    //     `Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`,
+    //   );
+    //   return;
+    // }
+    const confirmed = await this.alertService.confirm(
+      `Are you sure you want to submit the bill? Total: $${this.grossAmount.toFixed(2)}`,
+      'Confirm Bill Submission',
+    );
+    if (confirmed) {
+      const newInvoice: Invoice = {
+        invoiceNo: 'INV-' + Date.now(),
+        customerName: this.selectedCustomer?.customerName || '',
+        totalAmount: this.subtotal,
+        discountAmount: this.discountAmount,
+        grossAmount: this.grossAmount,
+        date: new Date().toLocaleDateString(),
+      };
+
+
+      const receipt = {
+        invoiceNo: newInvoice.invoiceNo,
+        saleDate: new Date(),
+        customerId: this.selectedCustomer?.customerId,
+        totalAmount: this.subtotal,
+        discount: this.discountAmount,
+        discountPercent: this.discountPercent,
+        transportCost: this.transportCost,
+        transport: this.transportType,
+        netAmount: this.grossAmount,
+        paymentType: this.selectedPaymentMethod,
+        paidAmount: this.paymentCash,
+        returnAmount: this.returnCash,
+        dueAmount: this.dueAmount,
+        items: this.cartItems,
+      };
+
+    console.log('Submitting receipt:', receipt);
+      this.saleService.createSale(receipt).subscribe({
+        next: async (response: any) => {
+           await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${response.invoiceNo}`);
+        },
+        error: (error) => {
+          console.error('Error recording sale:', error);
+          this.alertService.error('Error submitting bill', error.message || 'An error occurred while submitting the bill. Please try again.');
+        }
+      });
+
     }
 
-    if (this.paymentCash < this.grossAmount) {
-      await this.alertService.warning(`Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`);
-      return;
-    }
-      const confirmed = await this.alertService.confirm(`Are you sure you want to submit the bill? Total: $${this.grossAmount.toFixed(2)}`, 'Confirm Bill Submission');
-    if (!confirmed) {
-      return;
-    }
-    const newInvoice: Invoice = {
-      invoiceNo: 'INV-' + Date.now(),
-      customerName: this.selectedCustomer?.customerName || '',
-      totalAmount: this.subtotal,
-      discountAmount: this.discountAmount,
-      grossAmount: this.grossAmount,
-      date: new Date().toLocaleDateString()
-    };
-
-    this.invoices.unshift(newInvoice);
-
-    const receipt = {
-      invoiceNo: newInvoice.invoiceNo,
-      date: new Date(),
-      customer: this.selectedCustomer,
-      items: this.cartItems,
-      subtotal: this.subtotal,
-      discount: this.discountAmount,
-      discountPercent: this.discountPercent,
-      transportCost: this.transportCost,
-      transportType: this.transportType,
-      grossAmount: this.grossAmount,
-      paymentMethod: this.selectedPaymentMethod,
-      paymentAmount: this.paymentCash,
-      returnAmount: this.returnCash
-    };
-
-const receipt1 = {
-      invoiceNo: newInvoice.invoiceNo,
-      saleDate: new Date(),
-      customerId:this.selectedCustomer?.customerId,
-      totalAmount: this.subtotal,
-      discount: this.discountAmount,
-      discountPercent: this.discountPercent,
-      transportCost: this.transportCost,
-      transport: this.transportType,
-      netAmount: this.grossAmount,
-      paymentType: this.selectedPaymentMethod,
-      paidAmount: this.paymentCash,
-      returnAmount: this.returnCash,
-      dueAmount: this.dueAmount,
-      items: this.cartItems,
-    };
-
-
-
-
-    console.log('Bill Submitted for api:', receipt1);
-    console.log('Bill Submitted:', receipt);
-    await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${newInvoice.invoiceNo}\nTotal: $${this.grossAmount.toFixed(2)}\nPayment: $${this.paymentCash.toFixed(2)}\nReturn: $${this.returnCash.toFixed(2)}`);
-    
+    //this.invoices.unshift(newInvoice);
     this.resetForm();
   }
-// Add this method to handle Tab key on quantity input
-onQuantityKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Tab') {
-    event.preventDefault(); // Prevent default tab behavior
-    this.addToCart(); // Call add to cart function
+  // Add this method to handle Tab key on quantity input
+  onQuantityKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Tab') {
+      event.preventDefault(); // Prevent default tab behavior
+      this.addToCart(); // Call add to cart function
+    }
   }
-}
   // View invoice details
   async viewInvoice(invoice: Invoice): Promise<void> {
-    await this.alertService.info(`Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`);
+    await this.alertService.info(
+      `Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`,
+    );
   }
 
   // Print invoice
@@ -667,5 +691,4 @@ onQuantityKeydown(event: KeyboardEvent): void {
     console.log('Printing invoice:', invoice);
     alert(`Printing invoice ${invoice.invoiceNo}`);
   }
-
 }
