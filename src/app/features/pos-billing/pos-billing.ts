@@ -197,60 +197,75 @@ export class PosBillingComponent implements OnInit {
   }
 
   onCustomerSearch(term: string): void {
-    this.searchCustomerTerm = term;
-    this.showCustomerDropdown = term.length > 0;
-    this.selectedCustomerIndex = -1;
+  this.searchCustomerTerm = term;
+  this.showCustomerDropdown = term.length > 0;
+  this.selectedCustomerIndex = -1; // Reset selection when searching
+  
+  if (term.length > 0 && this.filteredCustomers.length > 0) {
+    const exactMatch = this.filteredCustomers.find(customer => 
+      customer.name.toLowerCase() === term.toLowerCase() ||
+      customer.phone === term
+    );
     
-    if (term.length > 0 && this.filteredCustomers.length > 0) {
-      const exactMatch = this.filteredCustomers.find(customer => 
-        customer.name.toLowerCase() === term.toLowerCase() ||
-        customer.phone === term
-      );
-      
-      if (exactMatch) {
-        this.selectCustomer(exactMatch);
-      }
+    if (exactMatch) {
+      this.selectCustomer(exactMatch);
     }
   }
+}
 
-  onCustomerKeydown(event: KeyboardEvent): void {
-    if (!this.showCustomerDropdown || this.filteredCustomers.length === 0) {
-      if (event.key === 'Enter' && this.searchCustomerTerm.length > 0) {
-        event.preventDefault();
-        this.selectBestMatchCustomer();
-      }
-      return;
+// Update the onCustomerKeydown method
+onCustomerKeydown(event: KeyboardEvent): void {
+  console.log('Key pressed:', event.key, 'Dropdown visible:', this.showCustomerDropdown, 'Filtered count:', this.filteredCustomers.length);
+  
+  if (!this.showCustomerDropdown || this.filteredCustomers.length === 0) {
+    if (event.key === 'Enter' && this.searchCustomerTerm.length > 0) {
+      event.preventDefault();
+      this.selectBestMatchCustomer();
     }
-
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        this.selectedCustomerIndex = Math.min(this.selectedCustomerIndex + 1, this.filteredCustomers.length - 1);
-        this.scrollToSelectedCustomer();
-        break;
-      
-      case 'ArrowUp':
-        event.preventDefault();
-        this.selectedCustomerIndex = Math.max(this.selectedCustomerIndex - 1, -1);
-        this.scrollToSelectedCustomer();
-        break;
-      
-      case 'Enter':
-        event.preventDefault();
-        if (this.selectedCustomerIndex >= 0 && this.selectedCustomerIndex < this.filteredCustomers.length) {
-          this.selectCustomer(this.filteredCustomers[this.selectedCustomerIndex]);
-        } else if (this.filteredCustomers.length > 0) {
-          this.selectCustomer(this.filteredCustomers[0]);
-        }
-        break;
-      
-      case 'Escape':
-        event.preventDefault();
-        this.showCustomerDropdown = false;
-        this.selectedCustomerIndex = -1;
-        break;
-    }
+    return;
   }
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      this.selectedCustomerIndex = Math.min(this.selectedCustomerIndex + 1, this.filteredCustomers.length - 1);
+      console.log('Selected index:', this.selectedCustomerIndex);
+      this.scrollToSelectedCustomer();
+      break;
+    
+    case 'ArrowUp':
+      event.preventDefault();
+      this.selectedCustomerIndex = Math.max(this.selectedCustomerIndex - 1, -1);
+      console.log('Selected index:', this.selectedCustomerIndex);
+      this.scrollToSelectedCustomer();
+      break;
+    
+    case 'Enter':
+      event.preventDefault();
+      if (this.selectedCustomerIndex >= 0 && this.selectedCustomerIndex < this.filteredCustomers.length) {
+        this.selectCustomer(this.filteredCustomers[this.selectedCustomerIndex]);
+      } else if (this.filteredCustomers.length > 0) {
+        this.selectCustomer(this.filteredCustomers[0]);
+      }
+      break;
+    
+    case 'Escape':
+      event.preventDefault();
+      this.showCustomerDropdown = false;
+      this.selectedCustomerIndex = -1;
+      break;
+  }
+}
+
+// Add the scrollToSelectedCustomer method
+scrollToSelectedCustomer(): void {
+  setTimeout(() => {
+    const selectedElement = document.querySelector('.customer-dropdown-item.selected');
+    if (selectedElement) {
+      selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, 0);
+}
 
   selectBestMatchProduct(): void {
     if (this.searchProductTerm.length === 0) return;
@@ -313,14 +328,7 @@ export class PosBillingComponent implements OnInit {
     }, 0);
   }
 
-  scrollToSelectedCustomer(): void {
-    setTimeout(() => {
-      const selectedElement = document.querySelector('.customer-dropdown-item.selected');
-      if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-    }, 0);
-  }
+ 
 
   selectProduct(product: Product): void {
     this.selectedProduct = product;
