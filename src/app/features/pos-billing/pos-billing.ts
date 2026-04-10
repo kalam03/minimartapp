@@ -1,9 +1,8 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
-
 
 export interface Customer {
   id: number;
@@ -20,23 +19,43 @@ export interface CartItem {
   subtotal: number;
 }
 
+export interface Invoice {
+  invoiceNo: string;
+  customerName: string;
+  totalAmount: number;
+  discountAmount: number;
+  grossAmount: number;
+  date: string;
+}
+
 @Component({
-  selector: 'app-pos-billing',  // ✅ Make sure selector matches
+  selector: 'app-pos-billing',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './pos-billing.html',  // ✅ Check file name
+  templateUrl: './pos-billing.html',
   styleUrls: ['./pos-billing.css']
 })
 export class PosBillingComponent implements OnInit {
   constructor(private productService: ProductService) {}
   Math = Math;
 
+  // ViewChild references for input elements
+  @ViewChild('productSearchInput') productSearchInput!: ElementRef;
+  @ViewChild('customerSearchInput') customerSearchInput!: ElementRef;
+
   // UI State
   showProductDropdown: boolean = false;
   showCustomerDropdown: boolean = false;
 
+  // Keyboard navigation indices
+  selectedProductIndex: number = -1;
+  selectedCustomerIndex: number = -1;
+
   // Products Data
   products: Product[] = [];
+
+  // Selected Product
+  selectedProduct: Product | null = null;
 
   // Customers Data
   customers: Customer[] = [
@@ -59,94 +78,346 @@ export class PosBillingComponent implements OnInit {
   
   // Payment Info
   subtotal: number = 0;
-  tax: number = 0;
-  discount: number = 0;
-  total: number = 0;
-  taxRate: number = 0.10; // 10% tax
+  discountAmount: number = 0;
+  discountPercent: number = 0;
+  transportCost: number = 0;
+  transportType: string = '';
+  selectedPaymentMethod: string = 'cash';
+  paymentCash: number = 0;
+  returnCash: number = 0;
+  dueAmount: number = 0;
+  grossAmount: number = 0;
   
   // UI State
   searchProductTerm: string = '';
   searchCustomerTerm: string = '';
-  selectedPaymentMethod: string = 'cash';
 
-  ngOnInit(): void {
-    this.loadProducts();
-    this.calculateTotals();
-  }
-    filters: ProductFilter = {
+  // Invoice History
+  invoices: Invoice[] = [];
+
+  filters: ProductFilter = {
     tenantId: null,
     isActive: true,
     categoryId: null
   };
+
+  ngOnInit(): void {
+    this.loadProducts();
+    this.loadSampleInvoices();
+  }
+
   loadProducts(): void {
-  
     this.productService.getAllProducts(this.filters).subscribe({
       next: (data) => {
         this.products = data;
         console.log('Products loaded:', this.products);
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.error('Error loading products:', err);
-        
       }
     });
   }
- 
-    onProductSearch(term: string) {
-    this.searchProductTerm = term;
-    this.showProductDropdown = term.length > 0;
+
+  loadSampleInvoices(): void {
+    // Sample invoice data
+    this.invoices = [
+      {
+        invoiceNo: 'INV-001',
+        customerName: 'John Doe',
+        totalAmount: 150.00,
+        discountAmount: 10.00,
+        grossAmount: 140.00,
+        date: new Date().toLocaleDateString()
+      },
+      {
+        invoiceNo: 'INV-002',
+        customerName: 'Jane Smith',
+        totalAmount: 250.00,
+        discountAmount: 25.00,
+        grossAmount: 225.00,
+        date: new Date().toLocaleDateString()
+      }
+    ];
   }
 
-  selectProduct(product: any) {
-    this.selectProduct = product;
+  onProductSearch(term: string): void {
+    this.searchProductTerm = term;
+    this.showProductDropdown = term.length > 0;
+    this.selectedProductIndex = -1; // Reset selection when searching
+    
+    // Auto-select first product if exact match or best match
+    if (term.length > 0 && this.filteredProducts.length > 0) {
+      const exactMatch = this.filteredProducts.find(product => 
+        product.productName?.toLowerCase() === term.toLowerCase()
+      );
+      
+      if (exactMatch) {
+        this.selectProduct(exactMatch);
+      } else {
+        // Optional: Auto-select first product (uncomment if you want auto-select)
+        // this.selectedProductIndex = 0;
+      }
+    }
+  }
+
+  onProductKeydown(event: KeyboardEvent): void {
+    if (!this.showProductDropdown || this.filteredProducts.length === 0) {
+      // If dropdown is closed and Enter is pressed, try to select best match
+      if (event.key === 'Enter' && this.searchProductTerm.length > 0) {
+        event.preventDefault();
+        this.selectBestMatchProduct();
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedProductIndex = Math.min(this.selectedProductIndex + 1, this.filteredProducts.length - 1);
+        this.scrollToSelectedProduct();
+        break;
+      
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedProductIndex = Math.max(this.selectedProductIndex - 1, -1);
+        this.scrollToSelectedProduct();
+        break;
+      
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedProductIndex >= 0 && this.selectedProductIndex < this.filteredProducts.length) {
+          this.selectProduct(this.filteredProducts[this.selectedProductIndex]);
+        } else if (this.filteredProducts.length > 0) {
+          // Select first product if none selected
+          this.selectProduct(this.filteredProducts[0]);
+        }
+        break;
+      
+      case 'Escape':
+        event.preventDefault();
+        this.showProductDropdown = false;
+        this.selectedProductIndex = -1;
+        break;
+    }
+  }
+
+  onCustomerSearch(term: string): void {
+    this.searchCustomerTerm = term;
+    this.showCustomerDropdown = term.length > 0;
+    this.selectedCustomerIndex = -1; // Reset selection when searching
+    
+    // Auto-select first customer if exact match
+    if (term.length > 0 && this.filteredCustomers.length > 0) {
+      const exactMatch = this.filteredCustomers.find(customer => 
+        customer.name.toLowerCase() === term.toLowerCase() ||
+        customer.phone === term
+      );
+      
+      if (exactMatch) {
+        this.selectCustomer(exactMatch);
+      }
+    }
+  }
+
+  onCustomerKeydown(event: KeyboardEvent): void {
+    if (!this.showCustomerDropdown || this.filteredCustomers.length === 0) {
+      // If dropdown is closed and Enter is pressed, try to select best match
+      if (event.key === 'Enter' && this.searchCustomerTerm.length > 0) {
+        event.preventDefault();
+        this.selectBestMatchCustomer();
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedCustomerIndex = Math.min(this.selectedCustomerIndex + 1, this.filteredCustomers.length - 1);
+        this.scrollToSelectedCustomer();
+        break;
+      
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedCustomerIndex = Math.max(this.selectedCustomerIndex - 1, -1);
+        this.scrollToSelectedCustomer();
+        break;
+      
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedCustomerIndex >= 0 && this.selectedCustomerIndex < this.filteredCustomers.length) {
+          this.selectCustomer(this.filteredCustomers[this.selectedCustomerIndex]);
+        } else if (this.filteredCustomers.length > 0) {
+          // Select first customer if none selected
+          this.selectCustomer(this.filteredCustomers[0]);
+        }
+        break;
+      
+      case 'Escape':
+        event.preventDefault();
+        this.showCustomerDropdown = false;
+        this.selectedCustomerIndex = -1;
+        break;
+    }
+  }
+
+  selectBestMatchProduct(): void {
+    if (this.searchProductTerm.length === 0) return;
+    
+    const term = this.searchProductTerm.toLowerCase();
+    
+    // Try to find exact match first
+    let bestMatch = this.products.find(product => 
+      product.productName?.toLowerCase() === term
+    );
+    
+    // If no exact match, try starts with
+    if (!bestMatch) {
+      bestMatch = this.products.find(product => 
+        product.productName?.toLowerCase().startsWith(term)
+      );
+    }
+    
+    // If still no match, try includes
+    if (!bestMatch) {
+      bestMatch = this.products.find(product => 
+        product.productName?.toLowerCase().includes(term)
+      );
+    }
+    
+    if (bestMatch) {
+      this.selectProduct(bestMatch);
+    } else if (this.products.length > 0) {
+      // Optional: Select first product if no match found
+      // this.selectProduct(this.products[0]);
+    }
+  }
+
+  selectBestMatchCustomer(): void {
+    if (this.searchCustomerTerm.length === 0) return;
+    
+    const term = this.searchCustomerTerm.toLowerCase();
+    
+    // Try to find exact match by name or phone
+    let bestMatch = this.customers.find(customer => 
+      customer.name.toLowerCase() === term || customer.phone === this.searchCustomerTerm
+    );
+    
+    // If no exact match, try starts with
+    if (!bestMatch) {
+      bestMatch = this.customers.find(customer => 
+        customer.name.toLowerCase().startsWith(term)
+      );
+    }
+    
+    // If still no match, try includes
+    if (!bestMatch) {
+      bestMatch = this.customers.find(customer => 
+        customer.name.toLowerCase().includes(term)
+      );
+    }
+    
+    if (bestMatch) {
+      this.selectCustomer(bestMatch);
+    }
+  }
+
+  scrollToSelectedProduct(): void {
+    setTimeout(() => {
+      const selectedElement = document.querySelector('.product-dropdown-item.selected');
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }, 0);
+  }
+
+  scrollToSelectedCustomer(): void {
+    setTimeout(() => {
+      const selectedElement = document.querySelector('.customer-dropdown-item.selected');
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }, 0);
+  }
+
+  selectProduct(product: Product): void {
+    this.selectedProduct = product;
     this.selectedProductId = product.productId;
     this.searchProductTerm = product.productName;
     this.showProductDropdown = false;
+    this.selectedProductIndex = -1;
+    
+    // Optional: Auto-focus on quantity input after selection
+    setTimeout(() => {
+      const quantityInput = document.querySelector('input[placeholder*="Qty"]') as HTMLInputElement;
+      if (quantityInput) {
+        quantityInput.focus();
+      }
+    }, 0);
   }
 
-
-  onCustomerSearch(term: string) {
-    this.searchCustomerTerm = term;
-    this.showCustomerDropdown = term.length > 0;
-  }
-
-  selectCustomer(customer: any) {
+  selectCustomer(customer: Customer): void {
     this.selectedCustomerId = customer.id;
     this.searchCustomerTerm = customer.name;
     this.showCustomerDropdown = false;
+    this.selectedCustomerIndex = -1;
+    // Reset discount percent when customer changes
+    this.discountPercent = 0;
+    this.calculateTotals();
   }
 
-  resetProduct() {
+  resetProduct(): void {
+    this.selectedProduct = null;
     this.selectedProductId = null;
     this.searchProductTerm = '';
     this.productQuantity = 1;
+    this.showProductDropdown = false;
+    this.selectedProductIndex = -1;
   }
-    @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event) {
+
+  resetForm(): void {
+    this.cartItems = [];
+    this.selectedCustomerId = null;
+    this.searchCustomerTerm = '';
+    this.discountPercent = 0;
+    this.transportCost = 0;
+    this.transportType = '';
+    this.selectedPaymentMethod = 'cash';
+    this.paymentCash = 0;
+    this.calculateTotals();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event): void {
     const target = event.target as HTMLElement;
-    if (!target.closest('.relative')) {
+    if (!target.closest('.product-search-container')) {
       this.showProductDropdown = false;
+      this.selectedProductIndex = -1;
+    }
+    if (!target.closest('.customer-search-container')) {
       this.showCustomerDropdown = false;
+      this.selectedCustomerIndex = -1;
     }
   }
+
   // Filtered Products
-get filteredProducts() {
+  get filteredProducts(): Product[] {
     if (!this.searchProductTerm) return [];
     const term = this.searchProductTerm.toLowerCase();
     return this.products.filter(product => 
       product.productName?.toLowerCase().includes(term) ||
       product.categoryName?.toLowerCase().includes(term) ||
       product.barcode?.toLowerCase().includes(term)
-    );
+    ).slice(0, 10); // Limit to 10 results for better performance
   }
 
   // Filtered Customers
   get filteredCustomers(): Customer[] {
+    if (!this.searchCustomerTerm) return [];
     return this.customers.filter(customer =>
       customer.name.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
       customer.phone.includes(this.searchCustomerTerm)
-    );
+    ).slice(0, 10); // Limit to 10 results for better performance
   }
 
   // Get Selected Customer
@@ -160,28 +431,51 @@ get filteredProducts() {
     this.productQuantity = isNaN(numValue) ? 1 : Math.max(1, numValue);
   }
 
-  // Helper method for discount
-  onDiscountChange(value: string | number): void {
+  // Helper method for discount percent
+  onDiscountPercentChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    this.discount = isNaN(numValue) ? 0 : numValue;
-    this.applyDiscount();
+    this.discountPercent = isNaN(numValue) ? 0 : Math.max(0, Math.min(100, numValue));
+    this.calculateTotals();
+  }
+
+  // Helper method for payment cash
+  onPaymentCashChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.paymentCash = isNaN(numValue) ? 0 : Math.max(0, numValue);
+    this.calculateReturnAndDue();
   }
 
   // Add Product to Cart
   addToCart(): void {
-    if (!this.selectedProductId) {
+    if (!this.selectedProduct) {
       alert('Please select a product');
+      // Focus on product search input
+      setTimeout(() => {
+        if (this.productSearchInput) {
+          this.productSearchInput.nativeElement.focus();
+        }
+      }, 0);
       return;
     }
 
-    const product = this.products.find(p => p.productId === this.selectedProductId);
-    if (!product) return;
+    const product = this.selectedProduct;
+    
+    // Check stock availability
+    if (this.productQuantity > product.stockQty) {
+      alert(`Only ${product.stockQty} items available in stock`);
+      return;
+    }
 
     const existingItem = this.cartItems.find(item => item.product.productId === product.productId);
     
     if (existingItem) {
-      existingItem.quantity += this.productQuantity;
-            existingItem.subtotal = existingItem.quantity * product.salePrice;
+      const newQuantity = existingItem.quantity + this.productQuantity;
+      if (newQuantity > product.stockQty) {
+        alert(`Only ${product.stockQty} items available in stock`);
+        return;
+      }
+      existingItem.quantity = newQuantity;
+      existingItem.subtotal = existingItem.quantity * product.salePrice;
     } else {
       this.cartItems.push({
         product: product,
@@ -191,25 +485,14 @@ get filteredProducts() {
     }
 
     this.calculateTotals();
-    this.selectedProductId = null;
-    this.productQuantity = 1;
-  }
-
-  // Update Cart Item Quantity
-  updateQuantity(item: CartItem, newQuantity: number): void {
-    if (newQuantity < 1) {
-      this.removeFromCart(item);
-      return;
-    }
+    this.resetProduct();
     
-    if (newQuantity > item.product.stockQty) {
-      alert(`Only ${item.product.stockQty} items available in stock`);
-      return;
-    }
-    
-    item.quantity = newQuantity;
-    item.subtotal = item.quantity * item.product.salePrice;
-    this.calculateTotals();
+    // Focus back on product search for next item
+    setTimeout(() => {
+      if (this.productSearchInput) {
+        this.productSearchInput.nativeElement.focus();
+      }
+    }, 0);
   }
 
   // Remove from Cart
@@ -221,41 +504,48 @@ get filteredProducts() {
     }
   }
 
-  // Apply Discount
-  applyDiscount(): void {
-    if (this.selectedCustomer && this.discount > 0) {
-      const maxDiscount = this.selectedCustomer.loyaltyPoints / 10;
-      if (this.discount > maxDiscount) {
-        alert(`Maximum discount for this customer is $${maxDiscount.toFixed(2)}`);
-        this.discount = maxDiscount;
-      }
-    }
-    this.calculateTotals();
-  }
-
-  // Calculate Totals
-  calculateTotals(): void {
-    this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
-    this.tax = this.subtotal * this.taxRate;
-    
-    if (this.discount > this.subtotal) {
-      this.discount = this.subtotal;
-    }
-    
-    this.total = this.subtotal + this.tax - this.discount;
-  }
-
   // Clear Cart
   clearCart(): void {
     if (confirm('Are you sure you want to clear the cart?')) {
       this.cartItems = [];
-      this.discount = 0;
+      this.discountPercent = 0;
       this.calculateTotals();
     }
   }
 
-  // Process Payment
-  processPayment(): void {
+  // Calculate Totals
+  calculateTotals(): void {
+    // Calculate subtotal
+    this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+    
+    // Calculate discount amount based on percentage
+    this.discountAmount = (this.subtotal * this.discountPercent) / 100;
+    
+    // Calculate gross amount (subtotal - discount + transport)
+    this.grossAmount = this.subtotal - this.discountAmount + this.transportCost;
+    
+    // Ensure gross amount is not negative
+    if (this.grossAmount < 0) {
+      this.grossAmount = 0;
+    }
+    
+    // Calculate return and due
+    this.calculateReturnAndDue();
+  }
+
+  calculateReturnAndDue(): void {
+    if (this.paymentCash >= this.grossAmount) {
+      this.returnCash = this.paymentCash - this.grossAmount;
+      this.dueAmount = 0;
+    } else {
+      this.returnCash = 0;
+      this.dueAmount = this.grossAmount - this.paymentCash;
+    }
+  }
+
+  // Submit Bill
+  submitBill(): void {
+    // Validation
     if (this.cartItems.length === 0) {
       alert('Cart is empty. Please add items to continue.');
       return;
@@ -266,27 +556,61 @@ get filteredProducts() {
       return;
     }
 
-    const receipt = {
+    if (this.dueAmount > 0) {
+      alert(`Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`);
+      return;
+    }
+
+    if (this.paymentCash < this.grossAmount) {
+      alert(`Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`);
+      return;
+    }
+
+    // Create invoice
+    const newInvoice: Invoice = {
       invoiceNo: 'INV-' + Date.now(),
+      customerName: this.selectedCustomer?.name || '',
+      totalAmount: this.subtotal,
+      discountAmount: this.discountAmount,
+      grossAmount: this.grossAmount,
+      date: new Date().toLocaleDateString()
+    };
+
+    // Add to invoices list
+    this.invoices.unshift(newInvoice);
+
+    // Log receipt details
+    const receipt = {
+      invoiceNo: newInvoice.invoiceNo,
       date: new Date(),
       customer: this.selectedCustomer,
       items: this.cartItems,
       subtotal: this.subtotal,
-      tax: this.tax,
-      discount: this.discount,
-      total: this.total,
-      paymentMethod: this.selectedPaymentMethod
+      discount: this.discountAmount,
+      discountPercent: this.discountPercent,
+      transportCost: this.transportCost,
+      transportType: this.transportType,
+      grossAmount: this.grossAmount,
+      paymentMethod: this.selectedPaymentMethod,
+      paymentAmount: this.paymentCash,
+      returnAmount: this.returnCash
     };
 
-    console.log('Payment Processed:', receipt);
-    alert(`Payment Successful!\nTotal: $${this.total.toFixed(2)}\nInvoice: ${receipt.invoiceNo}`);
+    console.log('Bill Submitted:', receipt);
+    alert(`Bill Submitted Successfully!\nInvoice: ${newInvoice.invoiceNo}\nTotal: $${this.grossAmount.toFixed(2)}\nPayment: $${this.paymentCash.toFixed(2)}\nReturn: $${this.returnCash.toFixed(2)}`);
     
-    // Reset after payment
-    this.cartItems = [];
-    this.selectedCustomerId = null;
-    this.discount = 0;
-    this.calculateTotals();
+    // Reset form after successful submission
+    this.resetForm();
   }
 
+  // View invoice details
+  viewInvoice(invoice: Invoice): void {
+    alert(`Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`);
+  }
 
+  // Print invoice
+  printInvoice(invoice: Invoice): void {
+    console.log('Printing invoice:', invoice);
+    alert(`Printing invoice ${invoice.invoiceNo}`);
+  }
 }
