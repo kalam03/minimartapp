@@ -567,7 +567,7 @@ scrollToSelectedCustomer(): void {
   }
 
   // Submit Bill
-  submitBill(): void {
+  async submitBill() {
     if (this.cartItems.length === 0) {
       alert('Cart is empty. Please add items to continue.');
       return;
@@ -587,7 +587,10 @@ scrollToSelectedCustomer(): void {
       alert(`Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`);
       return;
     }
-
+      const confirmed = await this.alertService.confirm(`Are you sure you want to submit the bill? Total: $${this.grossAmount.toFixed(2)}`, 'Confirm Bill Submission');
+    if (!confirmed) {
+      return;
+    }
     const newInvoice: Invoice = {
       invoiceNo: 'INV-' + Date.now(),
       customerName: this.selectedCustomer?.name || '',

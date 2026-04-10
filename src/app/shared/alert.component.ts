@@ -1,5 +1,5 @@
 // alert.component.ts
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,12 +8,12 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   template: `
     <div *ngIf="visible" class="fixed inset-0 z-50 overflow-y-auto" (click)="onOverlayClick($event)">
-      <!-- Backdrop with blur effect -->
-      <div class="fixed inset-0 backdrop-blur-md bg-white/30 transition-all"></div>
+      <!-- Backdrop with little blur -->
+      <div class="fixed inset-0 backdrop-blur-sm bg-black/10 transition-all"></div>
       
       <!-- Alert Modal -->
       <div class="flex min-h-full items-center justify-center p-4">
-        <div class="relative transform overflow-hidden rounded-lg bg-white shadow-2xl transition-all sm:w-full sm:max-w-md animate-in fade-in zoom-in duration-200">
+        <div class="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:w-full sm:max-w-md">
           <!-- Icon and Content -->
           <div class="p-6">
             <div class="flex items-start gap-4">
@@ -55,23 +55,7 @@ import { CommonModule } from '@angular/common';
         </div>
       </div>
     </div>
-  `,
-  styles: [`
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-    
-    .animate-in {
-      animation: fadeIn 0.2s ease-out;
-    }
-  `]
+  `
 })
 export class AlertComponent implements OnInit, OnDestroy {
   @Input() type: 'success' | 'error' | 'warning' | 'info' | 'confirm' = 'info';
@@ -101,6 +85,27 @@ export class AlertComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
+    }
+  }
+
+  // Listen for Enter key press
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnterKey(event: KeyboardEvent): void {
+    if (this.visible) {
+      event.preventDefault();
+      this.onConfirm();
+    }
+  }
+
+  // Listen for Escape key press
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscapeKey(event: KeyboardEvent): void {
+    if (this.visible && this.showCancel) {
+      event.preventDefault();
+      this.onCancel();
+    } else if (this.visible) {
+      event.preventDefault();
+      this.onConfirm();
     }
   }
 
