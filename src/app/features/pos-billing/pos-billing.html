@@ -123,6 +123,7 @@
                   type="number"
                   [ngModel]="productQuantity"
                   (ngModelChange)="onProductQuantityChange($event)"
+                   (keydown)="onQuantityKeydown($event)"
                   class="w-full text-center px-1 py-1 text-sm border rounded-lg"
                 />
                 <button

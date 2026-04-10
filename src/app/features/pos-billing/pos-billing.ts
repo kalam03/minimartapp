@@ -42,6 +42,7 @@ export class PosBillingComponent implements OnInit {
   // ViewChild references for input elements
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('customerSearchInput') customerSearchInput!: ElementRef;
+  @ViewChild('quantityInput') quantityInput!: ElementRef;
 
   // UI State
   showProductDropdown: boolean = false;
@@ -608,7 +609,13 @@ export class PosBillingComponent implements OnInit {
     
     this.resetForm();
   }
-
+// Add this method to handle Tab key on quantity input
+onQuantityKeydown(event: KeyboardEvent): void {
+  if (event.key === 'Tab') {
+    event.preventDefault(); // Prevent default tab behavior
+    this.addToCart(); // Call add to cart function
+  }
+}
   // View invoice details
   viewInvoice(invoice: Invoice): void {
     alert(`Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`);
@@ -619,4 +626,5 @@ export class PosBillingComponent implements OnInit {
     console.log('Printing invoice:', invoice);
     alert(`Printing invoice ${invoice.invoiceNo}`);
   }
+
 }
