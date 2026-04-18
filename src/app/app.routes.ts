@@ -24,16 +24,17 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/pos-billing/pos-billing').then((m) => m.PosBillingComponent),
       },
-      // {
-      //   path: 'products',
-      //   loadComponent: () =>
-      //     import('./features/products/products.component').then((m) => m.ProductsComponent),
-      // },
-      // {
-      //   path: 'customers',
-      //   loadComponent: () =>
-      //     import('./features/customers/customers.component').then((m) => m.CustomersComponent),
-      // },
+      {
+        path: 'Purchases',
+        loadComponent: () =>
+          import('./features/purchases/purchase.component').then((m) => m.PurchaseComponent),
+      },
+      
+      {
+        path: 'suppliers',
+        loadComponent: () =>
+          import('./features/suppliers/supplier.component').then((m) => m.SupplierComponent),
+      },
       // {
       //   path: 'reports',
       //   loadComponent: () =>

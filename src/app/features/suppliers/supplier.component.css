@@ -1,0 +1,39 @@
+/* Custom scrollbar for dropdowns */
+.max-h-60::-webkit-scrollbar {
+  width: 6px;
+}
+
+.max-h-60::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.max-h-60::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.max-h-60::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Smooth transitions */
+.transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Modal animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fixed.inset-0 > div {
+  animation: fadeIn 0.2s ease-out;
+}
