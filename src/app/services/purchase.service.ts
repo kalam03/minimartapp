@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface PurchaseItemDto {
   productId: number;
@@ -26,8 +27,7 @@ export interface PurchaseResponseDto {
   providedIn: 'root'
 })
 export class PurchaseService {
-
-  private baseUrl = '/api/purchases';
+private baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -35,7 +35,7 @@ export class PurchaseService {
   // CREATE PURCHASE
   // =========================
   createPurchase(payload: any): Observable<PurchaseResponseDto> {
-    return this.http.post<PurchaseResponseDto>(this.baseUrl, payload);
+    return this.http.post<PurchaseResponseDto>(this.baseUrl+"/purchases", payload);
   }
 
   // =========================

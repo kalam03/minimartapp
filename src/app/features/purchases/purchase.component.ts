@@ -3,15 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
+import { FinancialInputComponent } from '../../shared/financial-input.component';
 import { AlertService } from '../../shared/alert.service';
-// import { Supplier, SupplierFilter, SupplierService } from '../../services/supplier.service';
+import {  SupplierService } from '../../services/supplier.service';
 import { PurchaseService } from '../../services/purchase.service';
+import { Supplier } from '../../models/Supplier';
 
-export interface CartItem {
+export interface PurchaseCartItem {
   productId: number;
   product: Product;
   quantity: number;
-  costPrice: number;
+  unitPrice: number;
   subtotal: number;
 }
 
@@ -19,21 +21,24 @@ export interface PurchaseOrder {
   purchaseOrderNo: string;
   supplierName: string;
   totalAmount: number;
+  discountAmount: number;
+  grossAmount: number;
+  paidAmount: number;
+  dueAmount: number;
   date: string;
-  itemsCount: number;
 }
 
 @Component({
   selector: 'app-purchase',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FinancialInputComponent],
   templateUrl: './purchase.component.html',
   styleUrls: ['./purchase.component.css'],
 })
 export class PurchaseComponent implements OnInit {
   constructor(
     private productService: ProductService,
-    //private supplierService: SupplierService,
+    private supplierService: SupplierService,
     private alertService: AlertService,
     private purchaseService: PurchaseService
   ) {}
@@ -59,10 +64,10 @@ export class PurchaseComponent implements OnInit {
   selectedProduct: Product | null = null;
 
   // Suppliers Data
-  suppliers: any[] = [];
+  suppliers: Supplier[] = [];
 
   // Cart Items
-  cartItems: CartItem[] = [];
+  cartItems: PurchaseCartItem[] = [];
 
   // Selected IDs
   selectedProductId: number | null = null;
@@ -71,8 +76,17 @@ export class PurchaseComponent implements OnInit {
   // Quantities
   productQuantity: number = 1;
 
-  // Purchase Info
+  // Payment Info
   subtotal: number = 0;
+  discountAmount: number = 0;
+  discountPercent: number = 0;
+  transportCost: number = 0;
+  transportType: string = '';
+  selectedPaymentMethod: string = 'credit';
+  paymentAmount: number = 0;
+  returnAmount: number = 0;
+  dueAmount: number = 0;
+  grossAmount: number = 0;
 
   // UI State
   searchProductTerm: string = '';
@@ -90,21 +104,21 @@ export class PurchaseComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.loadSuppliers();
-    this.loadPurchaseOrders();
+    this.loadSamplePurchaseOrders();
   }
 
+  
+
   loadSuppliers(): void {
-    // let supplierFilters: SupplierFilter = {
-    //   tenantId: 1,
-    // };
-    // this.supplierService.getAllSuppliers(supplierFilters).subscribe({
-    //   next: (data:any) => {
-    //     this.suppliers = data;
-    //   },
-    //   error: (err: any) => {
-    //     console.error('Error loading suppliers:', err);
-    //   },
-    // });
+  
+    this.supplierService.getAllSuppliers().subscribe({
+      next: (response:any) => {
+       this.suppliers = response.data
+      },
+      error: (err: any) => {
+        console.error('Error loading suppliers:', err);
+      },
+    });
   }
 
   loadProducts(): void {
@@ -118,20 +132,30 @@ export class PurchaseComponent implements OnInit {
     });
   }
 
-  loadPurchaseOrders(): void {
-    this.purchaseService.getPurchases().subscribe({
-      next: (res: any) => {
-        if (res && res.data) {
-          this.purchaseOrders = res.data;
-        } else {
-          this.purchaseOrders = [];
-        }
+  loadSamplePurchaseOrders(): void {
+    // Sample purchase order data
+    this.purchaseOrders = [
+      {
+        purchaseOrderNo: 'PO-001',
+        supplierName: 'ABC Suppliers',
+        totalAmount: 5000.0,
+        discountAmount: 200.0,
+        grossAmount: 4800.0,
+        paidAmount: 3000.0,
+        dueAmount: 1800.0,
+        date: new Date().toLocaleDateString(),
       },
-      error: (err: any) => {
-        console.error('Error loading purchase orders:', err);
-        this.purchaseOrders = [];
+      {
+        purchaseOrderNo: 'PO-002',
+        supplierName: 'XYZ Distributors',
+        totalAmount: 7500.0,
+        discountAmount: 500.0,
+        grossAmount: 7000.0,
+        paidAmount: 7000.0,
+        dueAmount: 0.0,
+        date: new Date().toLocaleDateString(),
       },
-    });
+    ];
   }
 
   onProductSearch(term: string): void {
@@ -257,6 +281,15 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
+  scrollToSelectedProduct(): void {
+    setTimeout(() => {
+      const selectedElement = document.querySelector('.product-dropdown-item.selected');
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }, 0);
+  }
+
   scrollToSelectedSupplier(): void {
     setTimeout(() => {
       const selectedElement = document.querySelector('.supplier-dropdown-item.selected');
@@ -317,15 +350,6 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  scrollToSelectedProduct(): void {
-    setTimeout(() => {
-      const selectedElement = document.querySelector('.product-dropdown-item.selected');
-      if (selectedElement) {
-        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-    }, 0);
-  }
-
   selectProduct(product: Product): void {
     this.selectedProduct = product;
     this.selectedProductId = product.productId;
@@ -334,17 +358,20 @@ export class PurchaseComponent implements OnInit {
     this.selectedProductIndex = -1;
 
     setTimeout(() => {
-      if (this.quantityInput) {
-        this.quantityInput.nativeElement.focus();
+      const quantityInput = document.querySelector('input[type="number"]') as HTMLInputElement;
+      if (quantityInput) {
+        quantityInput.focus();
       }
     }, 0);
   }
 
-  selectSupplier(supplier: any): void {
+  selectSupplier(supplier: Supplier): void {
     this.selectedSupplierId = supplier.supplierId;
     this.searchSupplierTerm = supplier.supplierName;
     this.showSupplierDropdown = false;
     this.selectedSupplierIndex = -1;
+    this.discountPercent = 0;
+    this.calculateTotals();
   }
 
   resetProduct(): void {
@@ -360,6 +387,22 @@ export class PurchaseComponent implements OnInit {
     this.cartItems = [];
     this.selectedSupplierId = null;
     this.searchSupplierTerm = '';
+    this.discountPercent = 0;
+    this.transportCost = 0;
+    this.transportType = '';
+    this.selectedPaymentMethod = 'credit';
+    this.paymentAmount = 0;
+    this.calculateTotals();
+  }
+
+  onTransportCostChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.transportCost = isNaN(numValue) ? 0 : Math.max(0, numValue);
+    this.calculateTotals();
+  }
+
+  onTransportTypeChange(value: string): void {
+    this.transportType = value;
     this.calculateTotals();
   }
 
@@ -376,7 +419,6 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  // Filtered Products
   get filteredProducts(): Product[] {
     if (!this.searchProductTerm) return [];
     const term = this.searchProductTerm.toLowerCase();
@@ -390,8 +432,7 @@ export class PurchaseComponent implements OnInit {
       .slice(0, 10);
   }
 
-  // Filtered Suppliers
-  get filteredSuppliers(): any[] {
+  get filteredSuppliers(): Supplier[] {
     if (!this.searchSupplierTerm) return [];
     return this.suppliers
       .filter(
@@ -403,18 +444,27 @@ export class PurchaseComponent implements OnInit {
       .slice(0, 10);
   }
 
-  // Get Selected Supplier
-  get selectedSupplier(): any | undefined {
+  get selectedSupplier(): Supplier | undefined {
     return this.suppliers.find((s) => s.supplierId === this.selectedSupplierId);
   }
 
-  // Helper method for product quantity
   onProductQuantityChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
     this.productQuantity = isNaN(numValue) ? 1 : Math.max(1, numValue);
   }
 
-  // Add Product to Cart
+  onDiscountPercentChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.discountPercent = isNaN(numValue) ? 0 : Math.max(0, Math.min(100, numValue));
+    this.calculateTotals();
+  }
+
+  onPaymentAmountChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.paymentAmount = isNaN(numValue) ? 0 : Math.max(0, numValue);
+    this.calculateReturnAndDue();
+  }
+
   async addToCart() {
     if (!this.selectedProduct) {
       this.alertService.info('Please select a product to add to the cart.', 'No Product Selected');
@@ -440,7 +490,7 @@ export class PurchaseComponent implements OnInit {
         productId: product.productId,
         product: product,
         quantity: this.productQuantity,
-        costPrice: product.purchasePrice,
+        unitPrice: product.purchasePrice,
         subtotal: this.productQuantity * product.purchasePrice,
       });
     }
@@ -455,8 +505,7 @@ export class PurchaseComponent implements OnInit {
     }, 0);
   }
 
-  // Remove from Cart
-  removeFromCart(item: CartItem): void {
+  removeFromCart(item: PurchaseCartItem): void {
     const index = this.cartItems.indexOf(item);
     if (index > -1) {
       this.cartItems.splice(index, 1);
@@ -464,20 +513,36 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  // Clear Cart
   clearCart(): void {
     if (confirm('Are you sure you want to clear the cart?')) {
       this.cartItems = [];
+      this.discountPercent = 0;
       this.calculateTotals();
     }
   }
 
-  // Calculate Totals
   calculateTotals(): void {
     this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+    this.discountAmount = (this.subtotal * this.discountPercent) / 100;
+    this.grossAmount = this.subtotal - this.discountAmount + this.transportCost;
+
+    if (this.grossAmount < 0) {
+      this.grossAmount = 0;
+    }
+
+    this.calculateReturnAndDue();
   }
 
-  // Submit Purchase Order
+  calculateReturnAndDue(): void {
+    if (this.paymentAmount >= this.grossAmount) {
+      this.returnAmount = this.paymentAmount - this.grossAmount;
+      this.dueAmount = 0;
+    } else {
+      this.returnAmount = 0;
+      this.dueAmount = this.grossAmount - this.paymentAmount;
+    }
+  }
+
   async submitPurchase() {
     if (this.cartItems.length === 0) {
       await this.alertService.warning('Cart is empty. Please add items to continue.');
@@ -490,37 +555,63 @@ export class PurchaseComponent implements OnInit {
     }
 
     const confirmed = await this.alertService.confirm(
-      `Are you sure you want to submit the purchase order? Total: ৳${this.subtotal.toFixed(2)}`,
-      'Confirm Purchase',
+      `Are you sure you want to submit the purchase order? Total: $${this.grossAmount.toFixed(2)}`,
+      'Confirm Purchase Submission',
     );
-    
+
     if (confirmed) {
-      const purchaseData = {
-        supplierId: this.selectedSupplierId,
-        purchaseDate: new Date(),
+      const newPurchaseOrder: PurchaseOrder = {
+        purchaseOrderNo: 'PO-' + Date.now(),
+        supplierName: this.selectedSupplier?.supplierName || '',
         totalAmount: this.subtotal,
+        discountAmount: this.discountAmount,
+        grossAmount: this.grossAmount,
+        paidAmount: this.paymentAmount,
+        dueAmount: this.dueAmount,
+        date: new Date().toLocaleDateString(),
+      };
+
+      const purchaseData = {
+        purchaseOrderNo: newPurchaseOrder.purchaseOrderNo,
+        purchaseDate: new Date(),
+        supplierId: this.selectedSupplier?.supplierId,
+        totalAmount: this.subtotal,
+        discount: this.discountAmount,
+        discountPercent: this.discountPercent,
+        transportCost: this.transportCost,
+        transport: this.transportType,
+        netAmount: this.grossAmount,
+        paymentType: this.selectedPaymentMethod,
+        paidAmount: this.paymentAmount,
+        remarks:"new purchases added",
+        PaymentMethod:this.selectedPaymentMethod,
+        PaymentReferenceNo:newPurchaseOrder.purchaseOrderNo,
+        returnAmount: this.returnAmount,
+        dueAmount: this.dueAmount,
         items: this.cartItems.map(item => ({
           productId: item.product.productId,
           quantity: item.quantity,
-          costPrice: item.costPrice
+          unitCostPrice: item.unitPrice,
+          total: item.subtotal
         }))
       };
 
+      console.log('Submitting purchase:', purchaseData);
+      
       this.purchaseService.createPurchase(purchaseData).subscribe({
         next: async (response: any) => {
-          await this.alertService.success(`Purchase Order Created Successfully!\nPO No: ${response.purchaseOrderNo || 'PO-' + Date.now()}`);
+          await this.alertService.success(`Purchase Order Submitted Successfully!\nPO: ${response.purchaseOrderNo || newPurchaseOrder.purchaseOrderNo}`);
+          this.purchaseOrders.unshift(newPurchaseOrder);
           this.resetForm();
-          this.loadPurchaseOrders();
         },
         error: (error) => {
-          console.error('Error creating purchase:', error);
-          this.alertService.error('Error creating purchase order', error.message || 'An error occurred while creating the purchase order.');
+          console.error('Error recording purchase:', error);
+          this.alertService.error('Error submitting purchase order', error.message || 'An error occurred while submitting the purchase order. Please try again.');
         }
       });
     }
   }
 
-  // Add this method to handle Tab key on quantity input
   onQuantityKeydown(event: KeyboardEvent): void {
     if (event.key === 'Tab') {
       event.preventDefault();
@@ -528,16 +619,14 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  // View purchase order details
   async viewPurchaseOrder(order: PurchaseOrder): Promise<void> {
     await this.alertService.info(
-      `Purchase Order Details:\nPO No: ${order.purchaseOrderNo}\nSupplier: ${order.supplierName}\nTotal: ৳${order.totalAmount.toFixed(2)}\nItems: ${order.itemsCount}\nDate: ${order.date}`,
+      `Purchase Order Details:\nPO: ${order.purchaseOrderNo}\nSupplier: ${order.supplierName}\nTotal: $${order.totalAmount}\nDiscount: $${order.discountAmount}\nGross: $${order.grossAmount}\nPaid: $${order.paidAmount}\nDue: $${order.dueAmount}\nDate: ${order.date}`,
     );
   }
 
-  // Print purchase order
   printPurchaseOrder(order: PurchaseOrder): void {
     console.log('Printing purchase order:', order);
-    window.print();
+    alert(`Printing purchase order ${order.purchaseOrderNo}`);
   }
 }
