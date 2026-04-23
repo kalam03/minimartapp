@@ -486,8 +486,8 @@ interface DailyStats {
                     <div class="text-xs text-gray-400">{{ product.category }}</div>
                   </td>
                   <td class="px-6 py-3 text-right text-sm text-gray-600">{{ product.stock }} units</td>
-                  <td class="px-6 py-3 text-right text-sm text-gray-600">{{ product.purchasePrice | currency:'USD':'symbol':'1.2-2' }}</td>
-                  <td class="px-6 py-3 text-right font-semibold text-gray-800">{{ product.stock * product.purchasePrice | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td class="px-6 py-3 text-right text-sm text-gray-600">৳  {{ product.purchasePrice}}</td>
+                  <td class="px-6 py-3 text-right font-semibold text-gray-800">৳  {{ product.stock * product.purchasePrice }}</td>
                 </tr>
               </tbody>
             </table>
@@ -533,7 +533,7 @@ interface DailyStats {
                 <td class="px-6 py-3 text-right font-semibold" 
                     [class.text-green-600]="transaction.type === 'sale'" 
                     [class.text-orange-600]="transaction.type === 'purchase'">
-                  {{ transaction.amount | currency:'USD':'symbol':'1.2-2' }}
+                  ৳{{ transaction.amount }}
                 </td>
                 <td class="px-6 py-3">
                   <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">

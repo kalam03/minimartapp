@@ -86,7 +86,7 @@
                 >
                   <div class="font-semibold">{{ product.productName }}</div>
                   <div class="flex justify-between text-xs">
-                    <span class="text-blue-600">${{ product.salePrice.toFixed(2) }}</span>
+                    <span class="text-blue-600">৳{{ product.salePrice.toFixed(2) }}</span>
                     <span class="text-gray-400">Stock: {{ product.stockQty }}</span>
                   </div>
                 </div>
@@ -196,11 +196,11 @@
               <div class="flex-1">
                 <div class="font-semibold text-gray-800">{{ item.product.productName }}</div>
                 <div class="text-xs text-gray-500">
-                  {{ item.quantity }} x ${{ item.product.salePrice.toFixed(2) }}
+                  {{ item.quantity }} x ৳{{ item.product.salePrice.toFixed(2) }}
                 </div>
               </div>
               <div class="text-right">
-                <div class="font-bold text-gray-800">${{ item.subtotal.toFixed(2) }}</div>
+                <div class="font-bold text-gray-800">৳{{ item.subtotal.toFixed(2) }}</div>
                 <button
                   (click)="removeFromCart(item)"
                   class="text-red-400 text-xs hover:text-red-600"
@@ -351,7 +351,7 @@
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
               <span class="text-gray-600">Total:</span>
-              <span class="font-semibold">${{ subtotal.toFixed(2) }}</span>
+              <span class="font-semibold">৳{{ subtotal.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-600">Transport:</span>
@@ -364,11 +364,11 @@
             </div>
             <div class="flex justify-between text-red-600">
               <span>Discount:</span>
-              <span>-${{ discountAmount.toFixed(2) }}</span>
+              <span>-৳{{ discountAmount.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between pt-1 border-t font-bold">
               <span>Gross:</span>
-              <span class="text-green-600">${{ grossAmount.toFixed(2) }}</span>
+              <span class="text-green-600">৳{{ grossAmount.toFixed(2) }}</span>
             </div>
           </div>
 
