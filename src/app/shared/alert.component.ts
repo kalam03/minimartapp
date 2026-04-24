@@ -88,26 +88,29 @@ export class AlertComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Listen for Enter key press
-  @HostListener('document:keydown.enter', ['$event'])
-  handleEnterKey(event: KeyboardEvent): void {
-    if (this.visible) {
-      event.preventDefault();
-      this.onConfirm();
-    }
-  }
+ @HostListener('document:keydown.enter', ['$event'])
+handleEnterKey(event: Event): void {
+  const keyboardEvent = event as KeyboardEvent;
 
-  // Listen for Escape key press
-  @HostListener('document:keydown.escape', ['$event'])
-  handleEscapeKey(event: KeyboardEvent): void {
-    if (this.visible && this.showCancel) {
-      event.preventDefault();
-      this.onCancel();
-    } else if (this.visible) {
-      event.preventDefault();
-      this.onConfirm();
-    }
+  if (this.visible) {
+    keyboardEvent.preventDefault();
+    this.onConfirm();
   }
+}
+
+// Listen for Escape key press
+@HostListener('document:keydown.escape', ['$event'])
+handleEscapeKey(event: Event): void {
+  const keyboardEvent = event as KeyboardEvent;
+
+  if (this.visible && this.showCancel) {
+    keyboardEvent.preventDefault();
+    this.onCancel();
+  } else if (this.visible) {
+    keyboardEvent.preventDefault();
+    this.onConfirm();
+  }
+}
 
   getIconContainerClass(): string {
     const baseClass = 'rounded-full p-2';

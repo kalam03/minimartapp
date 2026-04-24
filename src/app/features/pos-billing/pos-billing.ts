@@ -7,6 +7,8 @@ import { FinancialInputComponent } from '../../shared/financial-input.component'
 import { AlertService } from '../../shared/alert.service';
 import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
 import { SaleService } from '../../services/sale.service';
+import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
+
 
 export interface CartItem {
   productId: number;
@@ -37,10 +39,17 @@ export class PosBillingComponent implements OnInit {
     private productService: ProductService,
     private customerService: CustomerService,
     private alertService: AlertService,
-    private saleService: SaleService
-  ) {}
-  Math = Math;
+    private saleService: SaleService,
+    private receiptService: ReceiptService
 
+  ) {
+    this.receiptData = this.receiptService.getReceiptData();
+  }
+  Math = Math;
+ @ViewChild('receiptContainer') receiptContainer!: ElementRef;
+  
+  receiptData: ReceiptData;
+  receiptHTML: string = '';
   // ViewChild references for input elements
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('customerSearchInput') customerSearchInput!: ElementRef;
@@ -687,8 +696,550 @@ export class PosBillingComponent implements OnInit {
   }
 
   // Print invoice
-  printInvoice(invoice: Invoice): void {
-    console.log('Printing invoice:', invoice);
-    alert(`Printing invoice ${invoice.invoiceNo}`);
+printInvoice(): void {
+  console.log('Printing invoice...');
+  
+  // Build receipt from current cart data instead of static data
+  const receiptHTML = this.buildReceiptFromCurrentSale();
+  
+  // Open print preview window
+  this.openPrintPreview(receiptHTML);
+}
+
+// Build receipt HTML from current cart items
+private buildReceiptFromCurrentSale(): string {
+  // Generate items with fixed-width columns for thermal printer
+  let itemsHtml = '';
+  
+  const formatItemLine = (product: string, price: number, qty: number, amount: number): string => {
+    const productCol = product.padEnd(20, ' ').substring(0, 20);
+    const priceCol = price.toString().padStart(8, ' ');
+    const qtyCol = qty.toString().padStart(6, ' ');
+    const amountCol = amount.toString().padStart(10, ' ');
+    return `${productCol}${priceCol}${qtyCol}${amountCol}`;
+  };
+  
+  if (this.cartItems.length === 0) {
+    itemsHtml = `
+      <pre class="item-pre">Item1                        10   100      1000</pre>
+      <pre class="item-pre">item2                        10   100      1000</pre>
+      <pre class="item-pre">item3                        10   100      1000</pre>
+    `;
+  } else {
+    this.cartItems.forEach((item) => {
+      const line = formatItemLine(
+        item.product.productName,
+        item.unitPrice,
+        item.quantity,
+        item.subtotal
+      );
+      itemsHtml += `<pre class="item-pre">${this.escapeHtml(line)}</pre>`;
+    });
+  }
+  
+  const customerMobile = this.selectedCustomer?.phone || '01611111111';
+  const generatedBy = 'admin1';
+  const subtotal = this.subtotal;
+  const transportCost = this.transportCost;
+  const totalAmount = subtotal + transportCost;
+  const discount = this.discountAmount;
+  const grossAmount = this.grossAmount;
+  const paid = this.paymentCash;
+  const due = this.dueAmount;
+  const paymentMethod = this.selectedPaymentMethod.toUpperCase();
+  const dateStr = new Date().toLocaleDateString('en-GB', { 
+    day: '2-digit', 
+    month: 'short', 
+    year: 'numeric' 
+  }).toUpperCase();
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>MiniMart Receipt</title>
+        <style>
+          body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            background: white;
+          }
+          .receipt {
+            max-width: 400px;
+            margin: 0 auto;
+            font-size: 12px;
+          }
+          .text-center { text-align: center; }
+          .separator { 
+            border-top: 1px dashed #000; 
+            margin: 5px 0;
+          }
+          .item-pre {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            margin: 2px 0;
+            white-space: pre;
+          }
+          .total-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 3px 0;
+          }
+          .due-line {
+            border-top: 1px double #000;
+            margin-top: 5px;
+            padding-top: 5px;
+            font-weight: bold;
+          }
+          @media print {
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt">
+          <div class="text-center">
+            <div><b>INVICE RECEIPT</b></div>
+            <div><b>Minimar Shop</b></div>
+            <div>Dhaka,mirpur-10,kazipara-123</div>
+            <div>Email:minimart@gmail.com,mobile:0151111111,0133211111</div>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+            <span>customer mobile:${customerMobile}</span>
+            <span>generate BY:${generatedBy}</span>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div>
+            <pre style="font-family: monospace; margin: 5px 0;">
+Product              Price  Qty    Amount
+==========================================================</pre>
+            ${itemsHtml}
+            <pre style="font-family: monospace;">==========================================================</pre>
+          </div>
+          
+          <div>
+            <div class="total-line">
+              <span>Subtotal :</span>
+              <span>${this.formatTk(subtotal).padStart(15)}</span>
+            </div>
+            <div class="total-line">
+              <span>Transport cost :</span>
+              <span>${this.formatTk(transportCost).padStart(15)}</span>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div>
+            <div class="total-line">
+              <span>Total :</span>
+              <span>${this.formatTk(totalAmount).padStart(20)}</span>
+            </div>
+            <div class="total-line">
+              <span>Discount :</span>
+              <span>${this.formatTk(discount).padStart(20)}</span>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div>
+            <div class="total-line">
+              <span>Gross :</span>
+              <span>${this.formatTk(grossAmount).padStart(20)}</span>
+            </div>
+            <div class="total-line">
+              <span>Paid :</span>
+              <span>${this.formatTk(paid).padStart(21)}</span>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="due-line">
+            <div class="total-line">
+              <span>Due</span>
+              <span>${this.formatTk(due).padStart(26)}</span>
+            </div>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div style="display: flex; justify-content: space-between;">
+            <span>Payment method : ${paymentMethod}</span>
+            <span>date:${dateStr}</span>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <div class="text-center">
+            ================Take Care your self==========================
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+// Open print preview window
+private openPrintPreview(receiptHTML: string): void {
+  const printWindow = window.open('', '_blank', 'width=500,height=700,toolbar=yes,scrollbars=yes,resizable=yes');
+  
+  if (!printWindow) {
+    this.alertService.warning('Please allow pop-ups to view receipt preview');
+    return;
+  }
+  
+  const styles = this.getReceiptStyles();
+  
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Receipt Preview - MiniMart POS</title>
+        <style>${styles}</style>
+      </head>
+      <body>
+        <div class="print-container">
+          <div class="toolbar">
+            <div class="toolbar-title">
+              🧾 Receipt Preview
+            </div>
+            <div class="toolbar-buttons">
+              <button class="btn-print" onclick="window.print()">
+                🖨️ Print Receipt
+              </button>
+              <button class="btn-close" onclick="window.close()">
+                ✖️ Close
+              </button>
+            </div>
+          </div>
+          <div class="receipt-wrapper">
+            ${receiptHTML}
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            console.log('Print preview loaded');
+          };
+        <\/script>
+      </body>
+    </html>
+  `);
+  
+  printWindow.document.close();
+}
+
+// Get receipt styles
+private getReceiptStyles(): string {
+  return `
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #f0f0f0;
+      font-family: 'Courier New', 'Monaco', monospace;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .print-container {
+      background: white;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 450px;
+      width: 100%;
+    }
+    
+    .toolbar {
+      background: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .toolbar-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .toolbar-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .toolbar button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    
+    .btn-print {
+      background: #27ae60;
+      color: white;
+    }
+    
+    .btn-print:hover {
+      background: #229954;
+    }
+    
+    .btn-close {
+      background: #e74c3c;
+      color: white;
+    }
+    
+    .btn-close:hover {
+      background: #c0392b;
+    }
+    
+    .receipt-wrapper {
+      padding: 20px;
+      background: white;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .thermal-receipt {
+      max-width: 350px;
+      width: 100%;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #000;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .bold {
+      font-weight: bold;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px dashed #000;
+      margin: 8px 0;
+    }
+    
+    .dashed {
+      border-top: 1px dashed #aaa;
+    }
+    
+    .shop-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .shop-address, .shop-contact {
+      font-size: 10px;
+      margin: 2px 0;
+    }
+    
+    .order-info, .payment-info {
+      margin: 10px 0;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+    
+    .items-header {
+      margin: 5px 0;
+    }
+    
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+    
+    .header-row {
+      font-weight: bold;
+    }
+    
+    .item-name {
+      flex: 2;
+      word-break: break-word;
+    }
+    
+    .item-qty {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .item-total {
+      flex: 1;
+      text-align: right;
+    }
+    
+    .totals {
+      margin: 10px 0;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+    }
+    
+    .due {
+      font-weight: bold;
+      border-top: 1px double #000;
+      margin-top: 5px;
+      padding-top: 5px;
+    }
+    
+    .due-amount {
+      color: #e74c3c;
+    }
+    
+    .paid-full {
+      margin-top: 5px;
+    }
+    
+    .paid-status {
+      color: #27ae60;
+      font-weight: bold;
+    }
+    
+    .footer {
+      margin-top: 15px;
+      font-size: 10px;
+    }
+    
+    .small-text {
+      font-size: 9px;
+      margin-top: 5px;
+    }
+    
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .toolbar {
+        display: none;
+      }
+      
+      .print-container {
+        box-shadow: none;
+        border-radius: 0;
+      }
+      
+      .receipt-wrapper {
+        padding: 0;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+      }
+      
+      .toolbar-buttons {
+        width: 100%;
+      }
+      
+      .toolbar button {
+        flex: 1;
+      }
+    }
+  `;
+}
+
+// Helper method to escape HTML
+private escapeHtml(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Helper method to format Taka
+private formatTk(amount: number): string {
+  if (isNaN(amount)) return '0 TK';
+  return amount.toFixed(2).replace(/\.00$/, '') + ' TK';
+}
+  generateReceipt(): void {
+    this.receiptHTML = this.receiptService.buildThermalReceiptHTML(this.receiptData);
+  }
+
+  printReceipt(): void {
+    this.receiptService.printReceipt(this.receiptHTML);
+  }
+
+  updateItem(index: number, field: keyof ReceiptItem, value: any): void {
+    // Update item
+    //this.receiptData.itemsDetailed[index][field] = value;
+    
+    // Recalculate item total
+    const item = this.receiptData.itemsDetailed[index];
+    item.total = item.quantity * item.unitPrice;
+    
+    // Update receipt service and regenerate
+    this.receiptService.updateReceiptData({ itemsDetailed: this.receiptData.itemsDetailed });
+    this.receiptData = this.receiptService.getReceiptData();
+    this.generateReceipt();
+  }
+
+  addNewItem(): void {
+    this.receiptData.itemsDetailed.push({
+      name: 'New Item',
+      quantity: 1,
+      unitPrice: 0,
+      total: 0
+    });
+    this.receiptService.updateReceiptData({ itemsDetailed: this.receiptData.itemsDetailed });
+    this.receiptData = this.receiptService.getReceiptData();
+    this.generateReceipt();
+  }
+
+  removeItem(index: number): void {
+    this.receiptData.itemsDetailed.splice(index, 1);
+    this.receiptService.updateReceiptData({ itemsDetailed: this.receiptData.itemsDetailed });
+    this.receiptData = this.receiptService.getReceiptData();
+    this.generateReceipt();
+  }
+
+  updateReceiptField(field: keyof ReceiptData, value: any): void {
+    this.receiptService.updateReceiptData({ [field]: value });
+    this.receiptData = this.receiptService.getReceiptData();
+    this.generateReceipt();
   }
 }

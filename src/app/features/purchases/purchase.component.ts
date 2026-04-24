@@ -5,7 +5,7 @@ import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
 import { AlertService } from '../../shared/alert.service';
-import {  SupplierService } from '../../services/supplier.service';
+import { SupplierService } from '../../services/supplier.service';
 import { PurchaseService } from '../../services/purchase.service';
 import { Supplier } from '../../models/Supplier';
 
@@ -40,7 +40,7 @@ export class PurchaseComponent implements OnInit {
     private productService: ProductService,
     private supplierService: SupplierService,
     private alertService: AlertService,
-    private purchaseService: PurchaseService
+    private purchaseService: PurchaseService,
   ) {}
   Math = Math;
 
@@ -107,13 +107,10 @@ export class PurchaseComponent implements OnInit {
     this.loadSamplePurchaseOrders();
   }
 
-  
-
   loadSuppliers(): void {
-  
     this.supplierService.getAllSuppliers().subscribe({
-      next: (response:any) => {
-       this.suppliers = response.data
+      next: (response: any) => {
+        this.suppliers = response.data;
       },
       error: (err: any) => {
         console.error('Error loading suppliers:', err);
@@ -583,31 +580,37 @@ export class PurchaseComponent implements OnInit {
         netAmount: this.grossAmount,
         paymentType: this.selectedPaymentMethod,
         paidAmount: this.paymentAmount,
-        remarks:"new purchases added",
-        PaymentMethod:this.selectedPaymentMethod,
-        PaymentReferenceNo:newPurchaseOrder.purchaseOrderNo,
+        remarks: 'new purchases added',
+        PaymentMethod: this.selectedPaymentMethod,
+        PaymentReferenceNo: newPurchaseOrder.purchaseOrderNo,
         returnAmount: this.returnAmount,
         dueAmount: this.dueAmount,
-        items: this.cartItems.map(item => ({
+        items: this.cartItems.map((item) => ({
           productId: item.product.productId,
           quantity: item.quantity,
           unitCostPrice: item.unitPrice,
-          total: item.subtotal
-        }))
+          total: item.subtotal,
+        })),
       };
 
       console.log('Submitting purchase:', purchaseData);
-      
+
       this.purchaseService.createPurchase(purchaseData).subscribe({
         next: async (response: any) => {
-          await this.alertService.success(`Purchase Order Submitted Successfully!\nPO: ${response.purchaseOrderNo || newPurchaseOrder.purchaseOrderNo}`);
+          await this.alertService.success(
+            `Purchase Order Submitted Successfully!\nPO: ${response.purchaseOrderNo || newPurchaseOrder.purchaseOrderNo}`,
+          );
           this.purchaseOrders.unshift(newPurchaseOrder);
           this.resetForm();
         },
         error: (error) => {
           console.error('Error recording purchase:', error);
-          this.alertService.error('Error submitting purchase order', error.message || 'An error occurred while submitting the purchase order. Please try again.');
-        }
+          this.alertService.error(
+            'Error submitting purchase order',
+            error.message ||
+              'An error occurred while submitting the purchase order. Please try again.',
+          );
+        },
       });
     }
   }
@@ -626,7 +629,19 @@ export class PurchaseComponent implements OnInit {
   }
 
   printPurchaseOrder(order: PurchaseOrder): void {
-    console.log('Printing purchase order:', order);
-    alert(`Printing purchase order ${order.purchaseOrderNo}`);
+    const printWindow = window.open('', '', 'width=300,height=600');
+
+    printWindow?.document.write(`
+    <pre>
+MiniMart POS
+Invoice: 1001
+Milk x2 = 160
+Total: 160 Tk 
+Thank You
+    </pre>
+  `);
+
+    printWindow?.document.close();
+    printWindow?.print();
   }
 }
