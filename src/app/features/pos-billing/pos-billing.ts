@@ -665,6 +665,16 @@ export class PosBillingComponent implements OnInit {
         items: this.cartItems,
       };
 
+      const receiptHtml = this.buildReceiptFromCurrentSale(receipt);
+  
+  // Open in new window for printing
+  const printWindow = window.open('', '_blank', 'width=400,height=600');
+  if (printWindow) {
+    printWindow.document.write(receiptHtml);
+    printWindow.document.close();
+  }
+  return
+
     console.log('Submitting receipt:', receipt);
       this.saleService.createSale(receipt).subscribe({
         next: async (response: any) => {
@@ -700,185 +710,403 @@ printInvoice(): void {
   console.log('Printing invoice...');
   
   // Build receipt from current cart data instead of static data
-  const receiptHTML = this.buildReceiptFromCurrentSale();
+  //const receiptHTML = this.buildReceiptFromCurrentSale();
   
   // Open print preview window
-  this.openPrintPreview(receiptHTML);
+ // this.openPrintPreview(receiptHTML);
 }
 
 // Build receipt HTML from current cart items
-private buildReceiptFromCurrentSale(): string {
-  // Generate items with fixed-width columns for thermal printer
-  let itemsHtml = '';
-  
-  const formatItemLine = (product: string, price: number, qty: number, amount: number): string => {
-    const productCol = product.padEnd(20, ' ').substring(0, 20);
-    const priceCol = price.toString().padStart(8, ' ');
-    const qtyCol = qty.toString().padStart(6, ' ');
-    const amountCol = amount.toString().padStart(10, ' ');
-    return `${productCol}${priceCol}${qtyCol}${amountCol}`;
+buildReceiptFromCurrentSale(receipt: any): string {
+  // Helper function to format currency
+  const formatTk = (amount: number): string => {
+    return `৳ ${amount.toFixed(2)}`;
   };
   
-  if (this.cartItems.length === 0) {
-    itemsHtml = `
-      <pre class="item-pre">Item1                        10   100      1000</pre>
-      <pre class="item-pre">item2                        10   100      1000</pre>
-      <pre class="item-pre">item3                        10   100      1000</pre>
-    `;
-  } else {
-    this.cartItems.forEach((item) => {
-      const line = formatItemLine(
-        item.product.productName,
-        item.unitPrice,
-        item.quantity,
-        item.subtotal
-      );
-      itemsHtml += `<pre class="item-pre">${this.escapeHtml(line)}</pre>`;
-    });
-  }
+  // Escape HTML special characters
+  const escapeHtml = (str: string): string => {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
   
-  const customerMobile = this.selectedCustomer?.phone || '01611111111';
-  const generatedBy = 'admin1';
-  const subtotal = this.subtotal;
-  const transportCost = this.transportCost;
-  const totalAmount = subtotal + transportCost;
-  const discount = this.discountAmount;
-  const grossAmount = this.grossAmount;
-  const paid = this.paymentCash;
-  const due = this.dueAmount;
-  const paymentMethod = this.selectedPaymentMethod.toUpperCase();
-  const dateStr = new Date().toLocaleDateString('en-GB', { 
+  // Format date
+  const formatDate = (date: Date): string => {
+    const d = new Date(date);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const seconds = d.getSeconds().toString().padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
+  
+  // Generate items HTML with fixed-width columns for thermal printer
+  let itemsHtml = '';
+  
+  // if (!receipt.items || receipt.items.length === 0) {
+  //   itemsHtml = '<pre class="item-pre">No items found</pre>';
+  // } else {
+  //   receipt.items.forEach((item: any) => {
+  //     // Format product name (max 20 chars)
+  //     let productName = item.product?.productName || item.productName || 'Unknown';
+  //     productName = productName.length > 20 ? productName.substring(0, 17) + '...' : productName;
+      
+  //     const price = item.unitPrice || item.product?.salePrice || 0;
+  //     const qty = item.quantity || 0;
+  //     const amount = item.subtotal || (price * qty);
+      
+  //     // Fixed-width column formatting for thermal printer
+  //     const productCol = productName.padEnd(20, ' ').substring(0, 20);
+  //     const priceCol = price.toFixed(2).padStart(8, ' ');
+  //     const qtyCol = qty.toString().padStart(5, ' ');
+  //     const amountCol = amount.toFixed(2).padStart(10, ' ');
+      
+  //     itemsHtml += `<pre class="item-pre">${escapeHtml(productCol)} ${priceCol} ${qtyCol} ${amountCol}</pre>`;
+  //   });
+  // }
+
+  const formatLine = (name: string, price: number, qty: number, total: number) => {
+    const col1 = name.padEnd(16).substring(0, 16);
+    const col2 = price.toFixed(0).padStart(6);
+    const col3 = qty.toString().padStart(4);
+    const col4 = total.toFixed(0).padStart(8);
+    return `${col1}${col2}${col3}${col4}`;
+  };
+
+  // 🔹 Items
+  receipt.items.forEach((item: any) => {
+    const line = formatLine(
+      item.product.productName,
+      item.unitPrice,
+      item.quantity,
+      item.subtotal
+    );
+    itemsHtml += `<pre class="item">${escapeHtml(line)}</pre>`;
+  });
+
+  
+  // Calculate values from receipt object
+  const subtotal = receipt.totalAmount || 0;
+  const discount = receipt.discount || 0;
+  const discountPercent = receipt.discountPercent || 0;
+  const transportCost = receipt.transportCost || 0;
+  const transport = receipt.transport || 'N/A';
+  const netAmount = receipt.netAmount || (subtotal - discount + transportCost);
+  const paidAmount = receipt.paidAmount || 0;
+  const returnAmount = receipt.returnAmount || 0;
+  const dueAmount = receipt.dueAmount || (netAmount - paidAmount);
+  const paymentType = receipt.paymentType || 'CASH';
+  const invoiceNo = receipt.invoiceNo || 'N/A';
+  const customerId = receipt.customerId || 'WALK-IN';
+  
+  // Get customer info (if available)
+  const customerName = receipt.customerName || 'Walk-in Customer';
+  const customerPhone = receipt.customerPhone || 'N/A';
+  
+  // Format date
+  const saleDate = formatDate(receipt.saleDate || new Date());
+  const dateStr = new Date(receipt.saleDate || new Date()).toLocaleDateString('en-GB', { 
     day: '2-digit', 
     month: 'short', 
     year: 'numeric' 
   }).toUpperCase();
+  
+  const timeStr = new Date(receipt.saleDate || new Date()).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
   
   return `
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
-        <title>MiniMart Receipt</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MiniMart Receipt - ${invoiceNo}</title>
         <style>
-          body {
-            font-family: 'Courier New', monospace;
+          * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
+          body {
+            font-family: 'Courier New', 'Monaco', monospace;
+            background: #f0f0f0;
             padding: 20px;
-            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
           }
+          
           .receipt {
-            max-width: 400px;
+            max-width: 350px;
+            width: 100%;
             margin: 0 auto;
-            font-size: 12px;
+            background: white;
+            padding: 16px 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           }
-          .text-center { text-align: center; }
+          
+          /* Thermal printer optimized */
+          @media print {
+            body {
+              background: white;
+              padding: 0;
+              margin: 0;
+            }
+            .receipt {
+              box-shadow: none;
+              padding: 8px;
+              max-width: 100%;
+            }
+            .no-print {
+              display: none;
+            }
+          }
+          
+          /* Mobile responsive */
+          @media (max-width: 480px) {
+            .receipt {
+              max-width: 100%;
+              padding: 12px 8px;
+            }
+            body {
+              padding: 10px;
+            }
+          }
+          
+          .text-center { 
+            text-align: center; 
+          }
+          
+          .text-right {
+            text-align: right;
+          }
+          
+          .text-left {
+            text-align: left;
+          }
+          
+          .shop-name {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+          }
+          
+          .shop-address {
+            font-size: 9px;
+            color: #555;
+            margin-top: 4px;
+          }
+          
           .separator { 
             border-top: 1px dashed #000; 
-            margin: 5px 0;
+            margin: 8px 0;
           }
+          
+          .separator-double {
+            border-top: 2px solid #000;
+            margin: 8px 0;
+          }
+          
           .item-pre {
             font-family: 'Courier New', monospace;
-            font-size: 11px;
+            font-size: 10px;
             margin: 2px 0;
             white-space: pre;
+            letter-spacing: 0.5px;
           }
+          
           .total-line {
             display: flex;
             justify-content: space-between;
-            margin: 3px 0;
+            margin: 4px 0;
+            font-size: 11px;
           }
+          
+          .total-line-bold {
+            font-weight: bold;
+            font-size: 12px;
+          }
+          
           .due-line {
             border-top: 1px double #000;
-            margin-top: 5px;
-            padding-top: 5px;
+            margin-top: 6px;
+            padding-top: 6px;
             font-weight: bold;
           }
-          @media print {
-            body { padding: 0; }
+          
+          .receipt-footer {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 9px;
+            color: #666;
+          }
+          
+          .invoice-info {
+            font-size: 9px;
+            margin: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 4px;
+          }
+          
+          .payment-method {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #f0f0f0;
+            font-weight: bold;
+          }
+          
+          .thankyou {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px dashed #000;
+            text-align: center;
+            font-style: italic;
+          }
+          
+          @page {
+            size: auto;
+            margin: 0mm;
           }
         </style>
       </head>
       <body>
         <div class="receipt">
+          <!-- Shop Header -->
           <div class="text-center">
-            <div><b>INVICE RECEIPT</b></div>
-            <div><b>Minimar Shop</b></div>
-            <div>Dhaka,mirpur-10,kazipara-123</div>
-            <div>Email:minimart@gmail.com,mobile:0151111111,0133211111</div>
-          </div>
-          
-          <div style="display: flex; justify-content: space-between; margin: 8px 0;">
-            <span>customer mobile:${customerMobile}</span>
-            <span>generate BY:${generatedBy}</span>
+            <div class="shop-name">🛒 MINIMART</div>
+            <div class="shop-address">Mirpur-10, Kazipara, Dhaka-1216</div>
+            <div class="shop-address">📞 01511-111111 | 01332-111111</div>
+            <div class="shop-address">✉ minimart@gmail.com</div>
           </div>
           
           <div class="separator"></div>
           
+          <!-- Invoice Info -->
+          <div class="invoice-info">
+            <span>INV: ${escapeHtml(invoiceNo)}</span>
+            <span>Date: ${dateStr}</span>
+          </div>
+          <div class="invoice-info">
+            <span>Time: ${timeStr}</span>
+            <span>Customer: ${escapeHtml(customerId.toString())}</span>
+          </div>
+          <div class="invoice-info">
+            <span>${escapeHtml(customerName)}</span>
+            <span>📱 ${escapeHtml(customerPhone)}</span>
+          </div>
+          
+          <div class="separator"></div>
+          
+          <!-- Items Header -->
           <div>
-            <pre style="font-family: monospace; margin: 5px 0;">
-Product              Price  Qty    Amount
-==========================================================</pre>
+            <pre class="item-pre" style="font-weight: bold;">
+Item               Price Qty    Amount
+--------------------------------------</pre>
             ${itemsHtml}
-            <pre style="font-family: monospace;">==========================================================</pre>
+            <div class="separator"></div>
           </div>
           
+          <!-- Totals -->
           <div>
             <div class="total-line">
-              <span>Subtotal :</span>
-              <span>${this.formatTk(subtotal).padStart(15)}</span>
+              <span>Subtotal:</span>
+              <span>${formatTk(subtotal)}</span>
             </div>
+            
+            ${discount > 0 ? `
             <div class="total-line">
-              <span>Transport cost :</span>
-              <span>${this.formatTk(transportCost).padStart(15)}</span>
+              <span>Discount (${discountPercent}%):</span>
+              <span>-${formatTk(discount)}</span>
             </div>
+            ` : ''}
+            
+            ${transportCost > 0 ? `
+            <div class="total-line">
+              <span>Transport (${escapeHtml(transport)}):</span>
+              <span>${formatTk(transportCost)}</span>
+            </div>
+            ` : ''}
           </div>
           
           <div class="separator"></div>
           
-          <div>
-            <div class="total-line">
-              <span>Total :</span>
-              <span>${this.formatTk(totalAmount).padStart(20)}</span>
-            </div>
-            <div class="total-line">
-              <span>Discount :</span>
-              <span>${this.formatTk(discount).padStart(20)}</span>
-            </div>
+          <!-- Net Amount -->
+          <div class="total-line total-line-bold">
+            <span>NET TOTAL:</span>
+            <span>${formatTk(netAmount)}</span>
           </div>
           
           <div class="separator"></div>
           
+          <!-- Payment Details -->
           <div>
             <div class="total-line">
-              <span>Gross :</span>
-              <span>${this.formatTk(grossAmount).padStart(20)}</span>
+              <span>Payment Method:</span>
+              <span class="payment-method">${escapeHtml(paymentType.toUpperCase())}</span>
             </div>
             <div class="total-line">
-              <span>Paid :</span>
-              <span>${this.formatTk(paid).padStart(21)}</span>
+              <span>Paid Amount:</span>
+              <span>${formatTk(paidAmount)}</span>
             </div>
+            ${returnAmount > 0 ? `
+            <div class="total-line">
+              <span>Return Amount:</span>
+              <span>${formatTk(returnAmount)}</span>
+            </div>
+            ` : ''}
           </div>
           
-          <div class="separator"></div>
-          
+          ${dueAmount > 0 ? `
           <div class="due-line">
-            <div class="total-line">
-              <span>Due</span>
-              <span>${this.formatTk(due).padStart(26)}</span>
+            <div class="total-line total-line-bold">
+              <span>DUE AMOUNT:</span>
+              <span style="color: #e74c3c;">${formatTk(dueAmount)}</span>
             </div>
           </div>
+          ` : ''}
+          
+          ${dueAmount === 0 && paidAmount > 0 ? `
+          <div class="due-line">
+            <div class="total-line total-line-bold">
+              <span>✅ PAID IN FULL</span>
+              <span>${formatTk(paidAmount)}</span>
+            </div>
+          </div>
+          ` : ''}
           
           <div class="separator"></div>
           
-          <div style="display: flex; justify-content: space-between;">
-            <span>Payment method : ${paymentMethod}</span>
-            <span>date:${dateStr}</span>
+          <!-- Footer -->
+          <div class="thankyou">
+            <div>⭐ Thank you for shopping! ⭐</div>
+            <div style="font-size: 8px; margin-top: 4px;">** This is a computer generated receipt **</div>
+            <div style="font-size: 8px;">** No signature required **</div>
           </div>
           
-          <div class="separator"></div>
+          <div class="receipt-footer">
+            <div>📞 For support: 01511-111111</div>
+            <div>🏠 Visit us again!</div>
+            <div style="margin-top: 4px;">✨ Have a great day! ✨</div>
+          </div>
           
-          <div class="text-center">
-            ================Take Care your self==========================
+          <!-- Print Button (only visible on screen) -->
+          <div class="no-print" style="text-align: center; margin-top: 20px;">
+            <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 4px;">
+              🖨️ Print Receipt
+            </button>
           </div>
         </div>
       </body>
