@@ -16,7 +16,7 @@ export class ProductService {
 
   getAllProducts(filter?: ProductFilter): Observable<Product[]> {
     let params = new HttpParams();
-    
+
     if (filter) {
       if (filter.tenantId !== null && filter.tenantId !== undefined) {
         params = params.set('tenantId', filter.tenantId.toString());
@@ -28,8 +28,8 @@ export class ProductService {
         params = params.set('categoryId', filter.categoryId.toString());
       }
     }
-    
-    return this.http.get<Product[]>(this.baseUrl + '/products', { params });
+
+    return this.http.get<Product[]>(this.baseUrl + '/products/all', { params });
   }
 
   // Get products by tenant
@@ -56,5 +56,20 @@ export class ProductService {
         observer.complete();
       });
     });
+  }
+
+  // Create product
+  createProduct(payload: any): Observable<Product> {
+    return this.http.post<Product>(this.baseUrl + '/products/Create', payload);
+  }
+
+  // Update product
+  updateProduct(id: number, payload: any): Observable<Product> {
+    return this.http.put<Product>(`${this.baseUrl}/products/${id}`, payload);
+  }
+
+  // Delete product
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/products/${id}`);
   }
 }
