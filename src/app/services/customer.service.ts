@@ -75,7 +75,7 @@ export class CustomerService {
       }
     }
     
-    return this.http.get<Customer[]>(this.baseUrl + '/customers', { params });
+    return this.http.get<Customer[]>(this.baseUrl + '/customers/all', { params });
   }
 
   // Get customer by ID
@@ -85,7 +85,7 @@ export class CustomerService {
 
   // Create customer
   createCustomer(request: CreateCustomerRequest): Observable<Customer> {
-    return this.http.post<Customer>(this.baseUrl + '/customers', request);
+    return this.http.post<Customer>(this.baseUrl + '/customers/Create', request);
   }
 
   // Update customer

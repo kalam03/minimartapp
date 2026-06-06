@@ -1,0 +1,83 @@
+/* Sortable column styling */
+th {
+  user-select: none;
+}
+
+th:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Smooth transitions */
+.transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Disabled pagination button */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom scrollbar for table */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Input focus states */
+input:focus {
+  outline: none;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+/* Action button styling */
+button[title="Edit"],
+button[title="Delete"] {
+  transition: all 0.2s ease-in-out;
+  font-weight: bold;
+}
+
+button[title="Edit"]:hover {
+  transform: scale(1.1);
+}
+
+button[title="Delete"]:hover {
+  transform: scale(1.1);
+}
+
+/* Gradient black theme */
+.bg-gradient-to-r.from-gray-900 {
+  background: linear-gradient(to right, #111827, #1f2937);
+}
+
+/* Compact row styling */
+td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  th, td {
+    padding: 0.5rem 0.5rem !important;
+    font-size: 0.75rem;
+  }
+}
