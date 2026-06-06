@@ -90,6 +90,7 @@ export class CustomerService {
 
   // Update customer
   updateCustomer(id: number, request: UpdateCustomerRequest): Observable<Customer> {
+    debugger;
     return this.http.put<Customer>(`${this.baseUrl}/customers/${id}`, request);
   }
 
