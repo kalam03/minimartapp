@@ -118,8 +118,11 @@ export class PosBillingComponent implements OnInit {
       tenantId: 1,
     };
     this.customerService.getAllCustomers(Custfilters).subscribe({
-      next: (data) => {
-        this.customers = data;
+      next: (data: any) => {
+        // API may return a paginated wrapper object instead of a plain array
+        this.customers = Array.isArray(data)
+          ? data
+          : (data?.data ?? data?.items ?? data?.customers ?? []);
       },
       error: (err: any) => {
         console.error('Error loading customers:', err);
@@ -129,8 +132,11 @@ export class PosBillingComponent implements OnInit {
 
   loadProducts(): void {
     this.productService.getAllProducts(this.filters).subscribe({
-      next: (data) => {
-        this.products = data;
+      next: (data: any) => {
+        // API may return a paginated wrapper object instead of a plain array
+        this.products = Array.isArray(data)
+          ? data
+          : (data?.data ?? data?.items ?? data?.products ?? []);
       },
       error: (err: any) => {
         console.error('Error loading products:', err);
@@ -450,7 +456,7 @@ export class PosBillingComponent implements OnInit {
 
   // Filtered Products
   get filteredProducts(): Product[] {
-    if (!this.searchProductTerm) return [];
+    if (!this.searchProductTerm || !Array.isArray(this.products)) return [];
     const term = this.searchProductTerm.toLowerCase();
     return this.products
       .filter(
@@ -464,7 +470,7 @@ export class PosBillingComponent implements OnInit {
 
   // Filtered Customers
   get filteredCustomers(): Customer[] {
-    if (!this.searchCustomerTerm) return [];
+    if (!this.searchCustomerTerm || !Array.isArray(this.customers)) return [];
     return this.customers
       .filter(
         (customer) =>
@@ -477,6 +483,7 @@ export class PosBillingComponent implements OnInit {
 
   // Get Selected Customer
   get selectedCustomer(): Customer | undefined {
+    if (!Array.isArray(this.customers)) return undefined;
     return this.customers.find((c) => c.customerId === this.selectedCustomerId);
   }
 
