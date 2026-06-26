@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CustomerService } from '../../services/customer.service';
 
 interface Transaction {
   id: number;
@@ -553,7 +554,29 @@ interface DailyStats {
     }
   `]
 })
+
+
 export class DashboardComponent {
+ customers: any[] = [];
+  constructor(private customerService: CustomerService) {}
+
+    ngOnInit(): void {
+      this.getAllCustomers();
+    }
+
+    getAllCustomers(): void {
+    this.customerService.getAllCustomers().subscribe({
+      next: (response: any) => {
+        this.customers = Array.isArray(response) ? response : response.data || [];
+        console.log('Customers loaded:', this.customers);
+      },
+      error: (err: any) => {
+        console.error('Error loading customers:', err);
+        this.customers = [];
+        
+      }
+    });
+  }
   // Enhanced Static Data
   private transactions: Transaction[] = [
     // Recent Sales
@@ -695,7 +718,7 @@ export class DashboardComponent {
   }
 
   get totalCustomers(): number {
-    return this.parties.filter(p => p.type === 'customer').length;
+    return this.customers.length;
   }
 
   get totalSuppliers(): number {
@@ -703,7 +726,7 @@ export class DashboardComponent {
   }
 
   get totalCustomerDue(): number {
-    return this.parties.filter(p => p.type === 'customer').reduce((sum, p) => sum + p.dueAmount, 0);
+    return this.customers.reduce((sum, customer) => sum + customer.dueAmount, 0);
   }
 
   get totalSupplierDebt(): number {
