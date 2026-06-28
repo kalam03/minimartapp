@@ -110,7 +110,10 @@ export class PurchaseComponent implements OnInit {
   loadSuppliers(): void {
     this.supplierService.getAllSuppliers().subscribe({
       next: (response: any) => {
-        this.suppliers = response.data;
+        // Handle both plain array and paginated wrapper responses
+        this.suppliers = Array.isArray(response)
+          ? response
+          : (response?.data ?? response?.items ?? response?.suppliers ?? []);
       },
       error: (err: any) => {
         console.error('Error loading suppliers:', err);
@@ -120,8 +123,11 @@ export class PurchaseComponent implements OnInit {
 
   loadProducts(): void {
     this.productService.getAllProducts(this.filters).subscribe({
-      next: (data) => {
-        this.products = data;
+      next: (data: any) => {
+        // Handle both plain array and paginated wrapper responses
+        this.products = Array.isArray(data)
+          ? data
+          : (data?.data ?? data?.items ?? data?.products ?? []);
       },
       error: (err: any) => {
         console.error('Error loading products:', err);
@@ -417,7 +423,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   get filteredProducts(): Product[] {
-    if (!this.searchProductTerm) return [];
+    if (!this.searchProductTerm || !Array.isArray(this.products)) return [];
     const term = this.searchProductTerm.toLowerCase();
     return this.products
       .filter(
@@ -430,7 +436,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   get filteredSuppliers(): Supplier[] {
-    if (!this.searchSupplierTerm) return [];
+    if (!this.searchSupplierTerm || !Array.isArray(this.suppliers)) return [];
     return this.suppliers
       .filter(
         (supplier) =>
@@ -442,6 +448,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   get selectedSupplier(): Supplier | undefined {
+    if (!Array.isArray(this.suppliers)) return undefined;
     return this.suppliers.find((s) => s.supplierId === this.selectedSupplierId);
   }
 
