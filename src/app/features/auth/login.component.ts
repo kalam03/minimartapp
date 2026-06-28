@@ -13,8 +13,9 @@ import { AlertService } from '../../shared/alert.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  username: string = '';
+  userName: string = '';
   password: string = '';
+  tenantId: number = 1;
   isLoading: boolean = false;
 
   constructor(
@@ -23,26 +24,25 @@ export class LoginComponent {
   ) {}
 
   onSubmit(): void {
-    if (!this.username || !this.password) {
+    if (!this.userName || !this.password) {
       this.alertService.warning('Please enter username and password', 'Validation Error');
       return;
     }
 
     this.isLoading = true;
-    
+
     this.authService.login({
-      username: this.username,
-      password: this.password
+      userName: this.userName,
+      password: this.password,
+      tenantId: this.tenantId
     }).subscribe({
-      next: (response) => {
-        console.log('Login successful', response);
-        this.alertService.success('Login successful!', 'Welcome');
+      next: () => {
         // Auth service handles redirect to dashboard
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Login failed', error);
-        this.alertService.error('Invalid username or password', 'Login Failed');
+        const msg = error?.error?.message || 'Invalid username or password';
+        this.alertService.error(msg, 'Login Failed');
       }
     });
   }

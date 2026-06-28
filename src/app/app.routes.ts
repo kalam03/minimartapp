@@ -11,7 +11,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard], // Protect all child routes
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -29,7 +29,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/purchases/purchase.component').then((m) => m.PurchaseComponent),
       },
-      
       {
         path: 'suppliers',
         loadComponent: () =>
@@ -45,16 +44,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/products/product.component').then((m) => m.ProductComponent),
       },
-      // {
-      //   path: 'reports',
-      //   loadComponent: () =>
-      //     import('./features/reports/reports.component').then((m) => m.ReportsComponent),
-      // },
-      // {
-      //   path: 'settings',
-      //   loadComponent: () =>
-      //     import('./features/settings/settings.component').then((m) => m.SettingsComponent),
-      // },
+      // ── Security Module ──────────────────────────────────────────────────
+      {
+        path: 'security/users',
+        loadComponent: () =>
+          import('./features/security/user-management.component').then(
+            (m) => m.UserManagementComponent
+          ),
+      },
+      {
+        path: 'security/roles',
+        loadComponent: () =>
+          import('./features/security/role-management.component').then(
+            (m) => m.RoleManagementComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'dashboard' },
