@@ -594,9 +594,8 @@ export class PurchaseComponent implements OnInit {
         dueAmount: this.dueAmount,
         items: this.cartItems.map((item) => ({
           productId: item.product.productId,
-          quantity: item.quantity,
-          unitCostPrice: item.unitPrice,
-          total: item.subtotal,
+          quantity: Number(item.quantity),
+          unitCostPrice: Number(item.unitPrice),
         })),
       };
 
