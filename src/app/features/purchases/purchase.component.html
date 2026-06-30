@@ -1,33 +1,5 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-20 to-gray-100 p-3 md:p-2">
+<div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
-    <!-- Header - Compact -->
-    <div class="mb-2">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <h1
-            class="text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent"
-          >
-            Purchase Management
-          </h1>
-          <p class="text-gray-500 text-xs">Mini Mart - Purchase Orders</p>
-        </div>
-        <div class="flex gap-2">
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Cart</p>
-            <p class="text-lg font-bold text-purple-600">{{ cartItems.length }}</p>
-          </div>
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Suppliers</p>
-            <p class="text-lg font-bold text-green-600">{{ suppliers.length }}</p>
-          </div>
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Products</p>
-            <p class="text-lg font-bold text-blue-600">{{ products.length }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- FIRST ROW: Product Selection + Cart Items -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
       <!-- LEFT: Product Selection - Compact -->
@@ -386,7 +358,7 @@
           <!-- Payment Section - Compact -->
           <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
             <div>
-              <label class="text-xs text-gray-500">Payment Amount</label>
+              <label class="text-xs text-gray-500">Amount Paid</label>
               <app-financial-input
                 [(ngModel)]="paymentAmount"
                 (ngModelChange)="onPaymentAmountChange($event)"
@@ -395,98 +367,26 @@
               ></app-financial-input>
             </div>
             <div>
-              <label class="text-xs text-gray-500">Return</label>
-              <input
-                type="text"
-                [value]="returnAmount.toFixed(2)"
-                readonly
-                class="w-full px-2 py-1 text-sm border rounded-lg bg-green-50 text-green-700"
-              />
+              <label class="text-xs text-gray-500">Due Amount</label>
+              <div class="w-full px-2 py-1 text-sm border rounded-lg bg-gray-50 font-semibold"
+                [class.text-red-600]="dueAmount > 0"
+                [class.text-green-600]="dueAmount <= 0">
+                ${{ dueAmount.toFixed(2) }}
+              </div>
             </div>
           </div>
 
-          <div class="mt-2">
-            <label class="text-xs text-gray-500">Due Amount</label>
-            <input
-              type="text"
-              [value]="dueAmount.toFixed(2)"
-              readonly
-              [class]="
-                'w-full px-2 py-1 text-sm border rounded-lg font-bold ' +
-                (dueAmount > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600')
-              "
-            />
-          </div>
-
-          <!-- Action Buttons - Compact -->
-          <div class="flex gap-2 mt-3">
-            <button
-              (click)="resetForm()"
-              class="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200"
-            >
-              Reset
-            </button>
-            <button
-              (click)="submitPurchase()"
-              class="flex-1 bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700"
-            >
-              Submit Purchase
-            </button>
-          </div>
+          <!-- Submit -->
+          <button
+            (click)="submitPurchase()"
+            class="w-full mt-3 text-white px-3 py-2 rounded-lg text-sm font-semibold transition"
+            style="background:#1a1c4e"
+            onmouseover="this.style.background='#252862'"
+            onmouseout="this.style.background='#1a1c4e'"
+          >
+            Submit Purchase Order
+          </button>
         </div>
-      </div>
-    </div>
-
-    
-    <!-- Purchase Order History Table - Compact -->
-    <div class="mt-4 bg-white rounded-xl shadow-md overflow-hidden border">
-      <div class="bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-2">
-        <h2 class="text-white font-semibold text-sm">Purchase Order History</h2>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-gray-50 text-xs">
-            <tr>
-              <th class="px-3 py-2 text-left">PO NO</th>
-              <th class="px-3 py-2 text-left">SUPPLIER</th>
-              <th class="px-3 py-2 text-left">TOTAL</th>
-              <th class="px-3 py-2 text-left">DISCOUNT</th>
-              <th class="px-3 py-2 text-left">NET</th>
-              <th class="px-3 py-2 text-left">PAID</th>
-              <th class="px-3 py-2 text-left">DUE</th>
-              <th class="px-3 py-2 text-left">DATE</th>
-              <th class="px-3 py-2 text-left">ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let order of purchaseOrders" class="border-b hover:bg-gray-50 text-sm">
-              <td class="px-3 py-2 font-medium text-blue-600">{{ order.purchaseOrderNo }}</td>
-              <td class="px-3 py-2">{{ order.supplierName }}</td>
-              <td class="px-3 py-2">${{ order.totalAmount.toFixed(2) }}</td>
-              <td class="px-3 py-2">${{ order.discountAmount.toFixed(2) }}</td>
-              <td class="px-3 py-2 font-semibold">${{ order.grossAmount.toFixed(2) }}</td>
-              <td class="px-3 py-2">${{ order.paidAmount.toFixed(2) }}</td>
-              <td class="px-3 py-2" [class.text-red-600]="order.dueAmount > 0">
-                ${{ order.dueAmount.toFixed(2) }}
-              </td>
-              <td class="px-3 py-2">{{ order.date }}</td>
-              <td class="px-3 py-2">
-                <button
-                  (click)="viewPurchaseOrder(order)"
-                  class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100 transition mr-1"
-                >
-                  View
-                </button>
-                <button
-                  (click)="printPurchaseOrder(order)"
-                  class="px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs hover:bg-gray-100 transition"
-                >
-                  Print
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>

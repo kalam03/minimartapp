@@ -1,11 +1,11 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
     <!-- Page Title -->
-    <div class="rounded-xl overflow-hidden border mb-3" style="background:#1a1c4e">
+    <!-- <div class="rounded-xl overflow-hidden border mb-3" style="background:#1a1c4e">
       <div class="px-3 py-2">
         <h1 class="text-white font-semibold text-sm">User Management</h1>
       </div>
-    </div>
+    </div> -->
 
     <!-- Toolbar -->
     <div class="bg-white rounded-xl shadow-md border mb-3 p-3">
@@ -29,25 +29,19 @@
           class="text-white px-3 py-1 text-xs rounded-lg transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
           Search
         </button>
-        <button (click)="openCreateForm()"
-          class="text-white px-3 py-1 text-xs rounded-lg transition flex items-center gap-1" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          Add User
-        </button>
+
       </div>
     </div>
 
     <!-- Create User Form -->
-    <div *ngIf="showCreateForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
-      <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
-        <h2 class="text-white font-semibold text-sm">Create New User</h2>
-        <button (click)="showCreateForm=false" class="text-white hover:text-blue-200">
+    <div class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
+      <div class="px-3 py-2" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-        </button>
+          Add New User
+        </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -69,11 +63,14 @@
             </select>
           </div>
         </div>
-        <div class="mt-4 flex gap-2 justify-end">
-          <button (click)="showCreateForm=false"
-            class="px-4 py-2 border border-gray-400 rounded-lg text-sm hover:bg-gray-50 transition">Cancel</button>
+        <div class="flex gap-2 mt-2 flex-wrap">
           <button (click)="submitCreate()"
-            class="text-white px-3 py-1 rounded-lg text-xs transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">Save User</button>
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Save User
+          </button>
+          <button (click)="openCreateForm()"
+            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
         </div>
       </div>
     </div>
@@ -284,3 +281,4 @@
     </div>
   </div>
 </div>
+                                                                                                                                                                                                                                                 
