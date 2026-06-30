@@ -474,12 +474,13 @@ export class PosBillingComponent implements OnInit {
   // Filtered Customers
   get filteredCustomers(): Customer[] {
     if (!this.searchCustomerTerm || !Array.isArray(this.customers)) return [];
+    const term = this.searchCustomerTerm.toLowerCase();
     return this.customers
       .filter(
         (customer) =>
-          customer.customerName?.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
-          customer.address.toLowerCase().includes(this.searchCustomerTerm.toLowerCase()) ||
-          customer.phone.includes(this.searchCustomerTerm),
+          customer.customerName?.toLowerCase().includes(term) ||
+          customer.address?.toLowerCase().includes(term) ||
+          customer.phone?.includes(this.searchCustomerTerm),
       )
       .slice(0, 10);
   }
