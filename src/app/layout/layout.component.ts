@@ -100,8 +100,8 @@ export class LayoutComponent {
   }
 
   getSidebarWidthClass(): string {
-    if (this.isMobile())           return this.isMobileMenuOpen() ? 'w-64' : 'w-0';
-    if (this.isSidebarMinimized()) return 'w-16';
-    return 'w-64';
+    if (this.isMobile())           return this.isMobileMenuOpen() ? 'w-52' : 'w-0';
+    if (this.isSidebarMinimized()) return 'w-14';
+    return 'w-52';
   }
 }
