@@ -375,9 +375,20 @@
           </div>
 
           <!-- Payment Section - Compact -->
-          <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
+          <div class="mt-2 pt-2 border-t">
+            <label class="text-xs text-gray-500">Payment Method</label>
+            <select
+              [(ngModel)]="selectedPaymentMethod"
+              class="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 mb-2"
+            >
+              <option value="cash">Cash</option>
+              <option value="bkash">Bkash</option>
+              <option value="bank">Bank</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-xs text-gray-500">Payment</label>
+              <label class="text-xs text-gray-500">Amount Paid</label>
               <app-financial-input
                 [(ngModel)]="paymentCash"
                 (ngModelChange)="onPaymentCashChange($event)"
