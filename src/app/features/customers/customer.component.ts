@@ -60,7 +60,10 @@ export class CustomerComponent implements OnInit {
         }
         break;
       case 'phone':
-        if (value && !/^[0-9\-\+\s]{7,20}$/.test(value)) {
+          if (!value) {
+          this.validationErrors.phone = 'Phone number is required';
+        }
+       else if (value && !/^[0-9\-\+\s]{7,20}$/.test(value)) {
           this.validationErrors.phone = 'Invalid phone format';
         }
         break;

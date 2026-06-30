@@ -97,6 +97,7 @@ export class PosBillingComponent implements OnInit {
   // UI State
   searchProductTerm: string = '';
   searchCustomerTerm: string = '';
+  customerPhone: string = '';
 
   // Invoice History
   invoices: Invoice[] = [];
@@ -389,6 +390,7 @@ export class PosBillingComponent implements OnInit {
   selectCustomer(customer: Customer): void {
     this.selectedCustomerId = customer.customerId;
     this.searchCustomerTerm = customer.customerName;
+    this.customerPhone = customer.phone || '';
     this.showCustomerDropdown = false;
     this.selectedCustomerIndex = -1;
     this.discountPercent = 0;
@@ -408,6 +410,7 @@ export class PosBillingComponent implements OnInit {
     this.cartItems = [];
     this.selectedCustomerId = null;
     this.searchCustomerTerm = '';
+    this.customerPhone = '';
     this.discountPercent = 0;
     this.transportCost = 0;
     this.transportType = '';
@@ -621,11 +624,12 @@ export class PosBillingComponent implements OnInit {
       await this.alertService.warning('Cart is empty. Please add items to continue.');
       return;
     }
-
-    if (!this.selectedCustomerId) {
-      await this.alertService.warning('Please select a customer.');
-      return;
-    }
+    console.log("customer ",this.selectedCustomer)
+    console.log("customerq2 ",this.customers)
+    // if (!this.selectedCustomerId) {
+    //   await this.alertService.warning('Please select a customer.');
+    //   return;
+    // }
 
     if (this.dueAmount > 0) {
       await this.alertService.warning(
@@ -659,6 +663,7 @@ export class PosBillingComponent implements OnInit {
         invoiceNo: newInvoice.invoiceNo,
         saleDate: new Date(),
         customerId: this.selectedCustomer?.customerId,
+        customerPhone: this.customerPhone,
         totalAmount: this.subtotal,
         discount: this.discountAmount,
         discountPercent: this.discountPercent,
