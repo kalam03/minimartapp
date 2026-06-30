@@ -1,38 +1,18 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-20 to-gray-100 p-3 md:p-2">
+<div class="px-3 py-1">
   <div class="max-w-8xl mx-auto">
-    <!-- Header - Compact -->
-    <div class="mb-2">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <h1
-            class="text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent"
-          >
-            Billing Dashboard
-          </h1>
-          <p class="text-gray-500 text-xs">Mini Mart</p>
-        </div>
-        <div class="flex gap-2">
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Cart</p>
-            <p class="text-lg font-bold text-purple-600">{{ cartItems.length }}</p>
-          </div>
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Customers</p>
-            <p class="text-lg font-bold text-green-600">{{ customers.length }}</p>
-          </div>
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Products</p>
-            <p class="text-lg font-bold text-blue-600">{{ products.length }}</p>
-          </div>
-        </div>
+    <!-- Page Title -->
+    <div class="rounded-xl overflow-hidden border mb-3" style="background:#1a1c4e">
+      <div class="px-3 py-2">
+        <h1 class="text-white font-semibold text-sm">Billing Dashboard</h1>
       </div>
     </div>
 
+
     <!-- FIRST ROW: Product Selection + Cart Items -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
       <!-- LEFT: Product Selection - Compact -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2">
+        <div class="px-3 py-2" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -56,7 +36,7 @@
                 (ngModelChange)="onProductSearch($event)"
                 (keydown)="onProductKeydown($event)"
                 placeholder="Search product..."
-                class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:outline-none"
               />
               <svg
                 class="absolute left-2 top-2 w-4 h-4 text-gray-400"
@@ -81,12 +61,12 @@
                   (click)="selectProduct(product)"
                   [class.selected]="selectedProductIndex === i"
                   [class.bg-blue-50]="selectedProductIndex === i"
-                  class="product-dropdown-item p-2 hover:bg-blue-50 cursor-pointer border-b text-sm"
+                  class="product-dropdown-item p-2 cursor-pointer border-b text-xs hover:bg-indigo-50"
                   [class.bg-blue-50]="selectedProductIndex === i"
                 >
                   <div class="font-semibold">{{ product.productName }}</div>
                   <div class="flex justify-between text-xs">
-                    <span class="text-blue-600">৳{{ product.salePrice.toFixed(2) }}</span>
+                    <span class="" style="color:#4f5faa">৳{{ product.salePrice.toFixed(2) }}</span>
                     <span class="text-gray-400">Stock: {{ product.stockQty }}</span>
                   </div>
                 </div>
@@ -146,18 +126,18 @@
           </div>
 
           <!-- Action Buttons - Compact -->
-          <div class="flex gap-2">
+          <div class="flex gap-2 mt-2">
             <button
               (click)="addToCart()"
-              class="flex-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
+              class="flex-1 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'"
             >
-              + Add
+              + Add to Cart
             </button>
             <button
               (click)="resetProduct()"
-              class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200"
+              class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200"
             >
-              Reset
+              Clear
             </button>
           </div>
         </div>
@@ -165,50 +145,46 @@
 
       <!-- RIGHT: Cart Items - Compact -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-2">
-          <div class="flex justify-between items-center">
-            <h2 class="text-white font-semibold text-sm flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6"
-                ></path>
-              </svg>
-              Cart ({{ cartItems.length }})
-            </h2>
-            <button
-              *ngIf="cartItems.length > 0"
-              (click)="clearCart()"
-              class="text-white/70 text-xs hover:text-white"
-            >
-              Clear
-            </button>
-          </div>
+        <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            Cart Items ({{ cartItems.length }})
+          </h2>
+          <button *ngIf="cartItems.length > 0" (click)="clearCart()"
+            class="text-xs px-2 py-0.5 rounded transition" style="color:#ACB3E7;border:1px solid #3a3d7a" onmouseover="this.style.background='#2e3270'" onmouseout="this.style.background='transparent'">
+            Clear All
+          </button>
         </div>
-        <div class="p-3 max-h-64 overflow-y-auto">
-          <div *ngIf="cartItems.length === 0" class="text-center py-6 text-gray-400 text-sm">
-            Cart is empty
-          </div>
-          <div *ngFor="let item of cartItems" class="mb-2 p-2 bg-gray-50 rounded-lg text-sm">
-            <div class="flex justify-between items-start">
-              <div class="flex-1">
-                <div class="font-semibold text-gray-800">{{ item.product.productName }}</div>
-                <div class="text-xs text-gray-500">
-                  {{ item.quantity }} x ৳{{ item.product.salePrice.toFixed(2) }}
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="font-bold text-gray-800">৳{{ item.subtotal.toFixed(2) }}</div>
-                <button
-                  (click)="removeFromCart(item)"
-                  class="text-red-400 text-xs hover:text-red-600"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
+        <div class="overflow-auto" style="max-height: 260px">
+          <table class="w-full text-xs" *ngIf="cartItems.length > 0">
+            <thead style="background:#1a1c4e;color:#e0e3f8" class="sticky top-0">
+              <tr>
+                <th class="px-2 py-1.5 text-left">Product</th>
+                <th class="px-2 py-1.5 text-center">Qty</th>
+                <th class="px-2 py-1.5 text-right">Price</th>
+                <th class="px-2 py-1.5 text-right">Total</th>
+                <th class="px-2 py-1.5 text-center">Del</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of cartItems" class="border-b hover:bg-indigo-50">
+                <td class="px-2 py-1.5 font-medium">{{ item.product.productName }}</td>
+                <td class="px-2 py-1.5 text-center">{{ item.quantity }}</td>
+                <td class="px-2 py-1.5 text-right">৳{{ item.unitPrice.toFixed(2) }}</td>
+                <td class="px-2 py-1.5 text-right font-semibold" style="color:#1a1c4e">৳{{ item.subtotal.toFixed(2) }}</td>
+                <td class="px-2 py-1.5 text-center">
+                  <button (click)="removeFromCart(item)" class="text-red-400 hover:text-red-600 font-bold text-base leading-none">×</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="cartItems.length === 0" class="flex flex-col items-center justify-center py-8 text-gray-400">
+            <svg class="w-8 h-8 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <p class="text-xs">Cart is empty</p>
           </div>
         </div>
       </div>
@@ -218,7 +194,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- LEFT: Customer Information - Compact -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-green-600 to-green-700 px-4 py-2">
+        <div class="px-3 py-2" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -240,7 +216,7 @@
               (ngModelChange)="onCustomerSearch($event)"
               (keydown)="onCustomerKeydown($event)"
               placeholder="Search customer..."
-              class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+              class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:outline-none"
             />
             <svg
               class="absolute left-2 top-2 w-4 h-4 text-gray-400"
@@ -265,7 +241,7 @@
                 (click)="selectCustomer(customer)"
                 [class.selected]="selectedCustomerIndex === i"
                 [class.bg-green-50]="selectedCustomerIndex === i"
-                class="customer-dropdown-item p-2 hover:bg-green-50 cursor-pointer border-b transition-colors"
+                class="customer-dropdown-item p-2 cursor-pointer border-b text-xs transition-colors hover:bg-indigo-50"
                 [class.bg-green-50]="selectedCustomerIndex === i"
               >
                 <div class="font-semibold text-sm">{{ customer.customerName }}</div>
@@ -290,7 +266,7 @@
                 [readonly]="!!selectedCustomerId"
                 maxlength="11"
                 placeholder="Enter phone"
-                [class]="'w-full px-2 py-1 text-sm border rounded-lg ' + (selectedCustomerId ? 'bg-gray-50' : 'focus:outline-none focus:ring-1 focus:ring-green-500')"
+                [class]="'w-full px-2 py-1 text-sm border rounded-lg ' + (selectedCustomerId ? 'bg-gray-50' : 'focus:outline-none focus:outline-none')"
               />
             </div>
 
@@ -299,7 +275,7 @@
               <app-financial-input
                 [(ngModel)]="discountPercent"
                 (ngModelChange)="onDiscountPercentChange($event)"
-                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:outline-none"
                 placeholder="0.00"
               ></app-financial-input>
             </div>
@@ -335,7 +311,7 @@
 
       <!-- RIGHT: Bill Information - Compact -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-orange-600 to-orange-700 px-4 py-2">
+        <div class="px-3 py-2" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -360,7 +336,7 @@
               <app-financial-input
                 [(ngModel)]="transportCost"
                 (ngModelChange)="onTransportCostChange($event)"
-                className="w-24 px-2 py-0.5 text-right border rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-24 px-2 py-0.5 text-right border rounded text-sm focus:outline-none focus:outline-none"
                 placeholder="0.00"
               ></app-financial-input>
             </div>
@@ -379,7 +355,7 @@
             <label class="text-xs text-gray-500">Payment Method</label>
             <select
               [(ngModel)]="selectedPaymentMethod"
-              class="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 mb-2"
+              class="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:outline-none mb-2"
             >
               <option value="cash">Cash</option>
               <option value="bkash">Bkash</option>
@@ -392,7 +368,7 @@
               <app-financial-input
                 [(ngModel)]="paymentCash"
                 (ngModelChange)="onPaymentCashChange($event)"
-                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:outline-none"
                 placeholder="0.00"
               ></app-financial-input>
             </div>
@@ -430,7 +406,7 @@
             </button>
             <button
               (click)="submitBill()"
-              class="flex-1 bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700"
+              class="flex-1 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'"
             >
               Submit
             </button>
@@ -439,50 +415,5 @@
       </div>
     </div>
 
-    <!-- Invoice Table - Compact -->
-    <!-- <div class="mt-4 bg-white rounded-xl shadow-md overflow-hidden border">
-      <div class="bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-2">
-        <h2 class="text-white font-semibold text-sm">Invoice History</h2>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-gray-50 text-xs">
-            <tr>
-              <th class="px-3 py-2 text-left">INVOICE NO</th>
-              <th class="px-3 py-2 text-left">CUSTOMER</th>
-              <th class="px-3 py-2 text-left">TOTAL</th>
-              <th class="px-3 py-2 text-left">DISCOUNT</th>
-              <th class="px-3 py-2 text-left">GROSS</th>
-              <th class="px-3 py-2 text-left">DATE</th>
-              <th class="px-3 py-2 text-left">ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let invoice of invoices" class="border-b hover:bg-gray-50 text-sm">
-              <td class="px-3 py-2">{{ invoice.invoiceNo }}</td>
-              <td class="px-3 py-2">{{ invoice.customerName }}</td>
-              <td class="px-3 py-2">{{ invoice.totalAmount }}</td>
-              <td class="px-3 py-2">{{ invoice.discountAmount }}</td>
-              <td class="px-3 py-2 font-semibold">{{ invoice.grossAmount }}</td>
-              <td class="px-3 py-2">{{ invoice.date }}</td>
-              <td class="px-3 py-2">
-                <button
-                  (click)="viewInvoice(invoice)"
-                  class="flex-1 px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs hover:bg-blue-100 transition"
-                >
-                  View
-                </button>
-                <button
-                  (click)="printInvoice()"
-                  class="flex-1 px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs hover:bg-gray-100 transition"
-                >
-                  Print
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div> -->
   </div>
 </div>

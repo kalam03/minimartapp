@@ -1,32 +1,16 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 p-3 md:p-4">
+<div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
-
-    <!-- Header -->
-    <div class="mb-6">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <div>
-          <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Role Management
-          </h1>
-          <p class="text-gray-500 text-xs">Define and manage application roles</p>
-        </div>
-        <div class="flex gap-2">
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Total Roles</p>
-            <p class="text-lg font-bold text-blue-600">{{ roles.length }}</p>
-          </div>
-          <div class="bg-white rounded-lg px-3 py-1 shadow-sm">
-            <p class="text-xs text-gray-500">Active</p>
-            <p class="text-lg font-bold text-green-600">{{ activeCount }}</p>
-          </div>
-        </div>
+    <!-- Page Title -->
+    <div class="rounded-xl overflow-hidden border mb-3" style="background:#1a1c4e">
+      <div class="px-3 py-2">
+        <h1 class="text-white font-semibold text-sm">Role Management</h1>
       </div>
     </div>
 
     <!-- Toolbar -->
-    <div class="flex justify-end mb-4">
+    <div class="flex justify-end mb-2">
       <button (click)="openCreateForm()"
-        class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+        class="text-white px-3 py-1 text-xs rounded-lg transition flex items-center gap-1" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
@@ -35,8 +19,8 @@
     </div>
 
     <!-- Role Form -->
-    <div *ngIf="showForm" class="bg-white rounded-xl shadow-md border mb-4 overflow-hidden">
-      <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-4 py-3 flex justify-between items-center">
+    <div *ngIf="showForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
+      <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
         <h2 class="text-white font-semibold text-sm">{{ editingId ? 'Edit Role' : 'Create New Role' }}</h2>
         <button (click)="showForm=false" class="text-white hover:text-gray-300">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,36 +28,36 @@
           </svg>
         </button>
       </div>
-      <div class="p-4">
+      <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Role Code *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Role Code *</label>
             <input type="text" [(ngModel)]="form.roleCode" placeholder="e.g. CASHIER"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 uppercase" />
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg focus:outline-none" style="focus:border-color:#ACB3E7" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Role Name *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Role Name *</label>
             <input type="text" [(ngModel)]="form.roleName" placeholder="e.g. Cashier"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg focus:outline-none" style="focus:border-color:#ACB3E7" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Description</label>
             <input type="text" [(ngModel)]="form.description" placeholder="Short description"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg focus:outline-none" style="focus:border-color:#ACB3E7" />
           </div>
           <div *ngIf="editingId" class="flex items-end pb-1">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" [(ngModel)]="form.isActive"
-                class="w-4 h-4 text-blue-600 rounded border-gray-300" />
+                class="w-4 h-4 text-blue-600 rounded border-gray-400" />
               <span class="text-sm font-medium text-gray-700">Active</span>
             </label>
           </div>
         </div>
         <div class="mt-4 flex gap-2 justify-end">
           <button (click)="showForm=false"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">Cancel</button>
+            class="px-4 py-2 border border-gray-400 rounded-lg text-sm hover:bg-gray-50 transition">Cancel</button>
           <button (click)="submitForm()"
-            class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm hover:bg-gray-900 transition">
+            class="text-white px-3 py-1 rounded-lg text-xs transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
             {{ editingId ? 'Update Role' : 'Save Role' }}
           </button>
         </div>
@@ -82,21 +66,21 @@
 
     <!-- Roles Table -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-      <div class="bg-gradient-to-r from-gray-900 to-gray-800 px-4 py-3">
+      <div class="px-3 py-2" style="background:#1a1c4e">
         <h2 class="text-white font-semibold text-sm">Roles List</h2>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 border-b border-gray-200">
+          <thead style="background:#1a1c4e;color:#e0e3f8">
             <tr>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">#</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Code</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Description</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Created By</th>
-              <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Created Date</th>
-              <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">#</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">Code</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">Name</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">Description</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">Status</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">Created By</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:#e0e3f8">Created Date</th>
+              <th class="px-3 py-2 text-right text-xs font-semibold" style="color:#e0e3f8">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
@@ -108,22 +92,22 @@
             </tr>
             <tr *ngFor="let role of roles; let i = index"
               class="hover:bg-gray-50 transition-colors">
-              <td class="px-4 py-3 text-gray-500 text-xs">{{ i + 1 }}</td>
+              <td class="px-3 py-1.5 text-gray-500 text-xs">{{ i + 1 }}</td>
               <td class="px-4 py-3">
                 <span class="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{{ role.roleCode }}</span>
               </td>
-              <td class="px-4 py-3 font-medium text-gray-800">{{ role.roleName }}</td>
-              <td class="px-4 py-3 text-gray-500 text-xs">{{ role.description || '—' }}</td>
+              <td class="px-3 py-1.5 font-medium text-gray-800">{{ role.roleName }}</td>
+              <td class="px-3 py-1.5 text-gray-500 text-xs">{{ role.description || '—' }}</td>
               <td class="px-4 py-3">
                 <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + (role.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">
                   {{ role.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td class="px-4 py-3 text-xs text-gray-500">{{ role.createdBy }}</td>
-              <td class="px-4 py-3 text-xs text-gray-500">{{ role.createdDate | date:'dd MMM yyyy' }}</td>
-              <td class="px-4 py-3 text-right">
+              <td class="px-3 py-1.5 text-xs text-gray-500">{{ role.createdBy }}</td>
+              <td class="px-3 py-1.5 text-xs text-gray-500">{{ role.createdDate | date:'dd MMM yyyy' }}</td>
+              <td class="px-3 py-1.5 text-right">
                 <button (click)="openEditForm(role)" title="Edit Role"
-                  class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition">
+                  class="p-1.5 rounded-lg transition" style="color:#1a1c4e" onmouseover="this.style.background='#eef0fc'" onmouseout="this.style.background='transparent'">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-2.828 1.172H7v-2a4 4 0 011.172-2.828z"></path>
@@ -135,6 +119,5 @@
         </table>
       </div>
     </div>
-
   </div>
 </div>
