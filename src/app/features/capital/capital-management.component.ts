@@ -102,6 +102,13 @@ export class CapitalManagementComponent implements OnInit {
 
   saveTransaction(): void {
     if (!this.validateForm()) return;
+
+    // Block debit when Net Capital is 0 or negative
+    if (this.form.drCr === 'D' && this.netCapital <= 0) {
+      this.alertService.warning('Insufficient capital! Please credit (add) funds before making a debit (expense/payment) entry.');
+      return;
+    }
+
     const payload = {
       txnTypeId:   +this.form.txnTypeId,
       txnDate:     this.form.txnDate,
