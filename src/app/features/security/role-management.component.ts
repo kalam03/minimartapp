@@ -100,40 +100,48 @@ export class RoleManagementComponent implements OnInit {
       return;
     }
 
-    if (this.editingId) {
-      const dto: UpdateRoleRequest = {
-        roleCode:    this.form.roleCode,
-        roleName:    this.form.roleName,
-        description: this.form.description,
-        isActive:    this.form.isActive
-      };
-      this.userService.updateRole(this.editingId, dto).subscribe({
-        next: () => {
-          this.alertService.success('Role updated.', 'Success');
-          this.showForm = false;
-          this.loadRoles();
-        },
-        error: (err) => {
-          this.alertService.error(err?.error?.message || 'Failed to update role.', 'Error');
-        }
-      });
-    } else {
-      const dto: CreateRoleRequest = {
-        roleCode:    this.form.roleCode,
-        roleName:    this.form.roleName,
-        description: this.form.description
-      };
-      this.userService.createRole(dto).subscribe({
-        next: () => {
-          this.alertService.success('Role created.', 'Success');
-          this.showForm = false;
-          this.loadRoles();
-        },
-        error: (err) => {
-          this.alertService.error(err?.error?.message || 'Failed to create role.', 'Error');
-        }
-      });
-    }
+    const msg = this.editingId
+      ? `Are you sure you want to update role "${this.form.roleName}"?`
+      : `Are you sure you want to create role "${this.form.roleName}"?`;
+
+    this.alertService.confirm(msg).then((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      if (this.editingId) {
+        const dto: UpdateRoleRequest = {
+          roleCode:    this.form.roleCode,
+          roleName:    this.form.roleName,
+          description: this.form.description,
+          isActive:    this.form.isActive
+        };
+        this.userService.updateRole(this.editingId, dto).subscribe({
+          next: () => {
+            this.alertService.success('Role updated.', 'Success');
+            this.openCreateForm();
+            this.loadRoles();
+          },
+          error: (err) => {
+            this.alertService.error(err?.error?.message || 'Failed to update role.', 'Error');
+          }
+        });
+      } else {
+        const dto: CreateRoleRequest = {
+          roleCode:    this.form.roleCode,
+          roleName:    this.form.roleName,
+          description: this.form.description
+        };
+        this.userService.createRole(dto).subscribe({
+          next: () => {
+            this.alertService.success('Role created.', 'Success');
+            this.openCreateForm();
+            this.loadRoles();
+          },
+          error: (err) => {
+            this.alertService.error(err?.error?.message || 'Failed to create role.', 'Error');
+          }
+        });
+      }
+    });
   }
 
   get activeCount(): number   { return this.roles.filter(r => r.isActive).length; }
