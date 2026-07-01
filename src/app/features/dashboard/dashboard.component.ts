@@ -523,57 +523,106 @@ interface DailyStats {
           </div>
         </div>
 
-        <!-- Recent Transactions -->
+        <!-- Recent Transactions (live from GL_TRANSACTION) -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-          <div class="px-3 py-2" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
             <h3 class="text-white font-semibold text-sm">Recent Transactions</h3>
+            <span class="text-xs" style="color:#ACB3E7">{{ recentTxnTotal }} total</span>
           </div>
+          <!-- Summary bar -->
+          <div class="grid grid-cols-3 divide-x border-b" style="background:#f5f6fd">
+            <div class="px-4 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Total Debit</p>
+              <p class="text-sm font-bold text-orange-600">৳{{ recentTxnTotalDebit | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-4 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Total Credit</p>
+              <p class="text-sm font-bold text-green-600">৳{{ recentTxnTotalCredit | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-4 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Revenue (C − D)</p>
+              <p class="text-sm font-bold"
+                [class.text-green-600]="recentRevenue >= 0"
+                [class.text-red-600]="recentRevenue < 0">৳{{ recentRevenue | number:'1.2-2' }}</p>
+            </div>
+          </div>
+          <!-- Search / Filter -->
           <div class="px-3 py-2 border-b flex gap-2">
-            <input type="text" [(ngModel)]="transactionSearch" placeholder="Search by party name…"
+            <input type="text" [(ngModel)]="recentTxnSearch" (input)="recentTxnPage=1; loadRecentTransactions()"
+              placeholder="Search by TXN no, reference, GL account, narration…"
               class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-            <select [(ngModel)]="transactionTypeFilter"
+            <select [(ngModel)]="recentTxnTypeFilter" (change)="recentTxnPage=1; loadRecentTransactions()"
               class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-              <option value="">All Types</option>
-              <option value="sale">Sale</option>
-              <option value="purchase">Purchase</option>
+              <option value="">All (D/C)</option>
+              <option value="D">Debit only</option>
+              <option value="C">Credit only</option>
             </select>
           </div>
+          <!-- Table -->
           <div class="overflow-x-auto">
             <table class="w-full text-xs">
               <thead style="background:#1a1c4e;color:#e0e3f8">
                 <tr>
+                  <th class="px-3 py-2 text-left">#</th>
                   <th class="px-3 py-2 text-left">Date</th>
-                  <th class="px-3 py-2 text-left">Type</th>
-                  <th class="px-3 py-2 text-left">Party</th>
+                  <th class="px-3 py-2 text-left">TXN No</th>
+                  <th class="px-3 py-2 text-left">Reference</th>
+                  <th class="px-3 py-2 text-left">GL Account</th>
+                  <th class="px-3 py-2 text-left">Mode</th>
+                  <th class="px-3 py-2 text-center">D/C</th>
                   <th class="px-3 py-2 text-right">Amount</th>
-                  <th class="px-3 py-2 text-left">Status</th>
+                  <th class="px-3 py-2 text-left">Narration</th>
+                  <th class="px-3 py-2 text-center">Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
-                <tr *ngFor="let t of filteredRecentTransactions" class="hover:bg-gray-50 transition">
-                  <td class="px-3 py-2 text-gray-600">{{ t.date }}</td>
-                  <td class="px-3 py-2">
-                    <span class="px-2 py-0.5 rounded-full text-xs font-medium"
-                          [class.bg-green-100]="t.type==='sale'" [class.text-green-700]="t.type==='sale'"
-                          [class.bg-orange-100]="t.type==='purchase'" [class.text-orange-700]="t.type==='purchase'">
-                      {{ t.type === 'sale' ? 'Sale' : 'Purchase' }}
+                <tr *ngFor="let t of recentTxnList; let i = index" class="hover:bg-gray-50 transition">
+                  <td class="px-3 py-2 text-gray-500">{{ (recentTxnPage-1)*recentTxnPageSize + i + 1 }}</td>
+                  <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ t.txnDate | date:'dd MMM yy' }}</td>
+                  <td class="px-3 py-2 font-medium" style="color:#1a1c4e">{{ t.txnNo }}</td>
+                  <td class="px-3 py-2 text-gray-500">{{ t.referenceNo || '-' }}</td>
+                  <td class="px-3 py-2 font-mono text-gray-600">{{ t.glAccount }}</td>
+                  <td class="px-3 py-2 text-gray-500">{{ t.txnMode || '-' }}</td>
+                  <td class="px-3 py-2 text-center">
+                    <span class="px-2 py-0.5 rounded-full font-medium"
+                      [class.bg-orange-100]="t.drCr==='D'" [class.text-orange-700]="t.drCr==='D'"
+                      [class.bg-green-100]="t.drCr==='C'" [class.text-green-700]="t.drCr==='C'">
+                      {{ t.drCr === 'D' ? 'Debit' : 'Credit' }}
                     </span>
                   </td>
-                  <td class="px-3 py-2 font-medium text-gray-800">{{ t.partyName }}</td>
                   <td class="px-3 py-2 text-right font-semibold"
-                      [class.text-green-600]="t.type==='sale'"
-                      [class.text-orange-600]="t.type==='purchase'">
+                    [class.text-orange-600]="t.drCr==='D'"
+                    [class.text-green-600]="t.drCr==='C'">
                     ৳{{ t.amount | number:'1.2-2' }}
                   </td>
-                  <td class="px-3 py-2">
-                    <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Completed</span>
+                  <td class="px-3 py-2 text-gray-500 max-w-[160px] truncate">{{ t.narration || '-' }}</td>
+                  <td class="px-3 py-2 text-center">
+                    <span class="px-2 py-0.5 rounded-full font-medium"
+                      [class.bg-green-100]="t.authStatus==='A'" [class.text-green-700]="t.authStatus==='A'"
+                      [class.bg-yellow-100]="t.authStatus!=='A'" [class.text-yellow-700]="t.authStatus!=='A'">
+                      {{ t.authStatus === 'A' ? 'Approved' : 'Pending' }}
+                    </span>
                   </td>
                 </tr>
-                <tr *ngIf="filteredRecentTransactions.length === 0">
-                  <td colspan="5" class="px-3 py-4 text-center text-gray-400">No transactions match</td>
+                <tr *ngIf="recentTxnList.length === 0">
+                  <td colspan="10" class="px-3 py-4 text-center text-gray-400">No transactions found</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <!-- Pagination -->
+          <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
+            <span class="text-gray-500">Page {{ recentTxnPage }} of {{ recentTxnTotalPages }}</span>
+            <div class="flex gap-1">
+              <button (click)="recentTxnPage=recentTxnPage-1; loadRecentTransactions()" [disabled]="recentTxnPage===1"
+                class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
+              <select [(ngModel)]="recentTxnPageSize" (change)="recentTxnPage=1; loadRecentTransactions()"
+                class="px-1 py-1 border rounded text-xs">
+                <option [value]="10">10</option><option [value]="20">20</option><option [value]="50">50</option>
+              </select>
+              <button (click)="recentTxnPage=recentTxnPage+1; loadRecentTransactions()" [disabled]="recentTxnPage>=recentTxnTotalPages"
+                class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">→</button>
+            </div>
           </div>
         </div>
 
@@ -616,9 +665,12 @@ export class DashboardComponent implements OnInit {
   // Top Products search
   topProductsSearch = '';
 
-  // Recent Transactions search/filter
-  transactionSearch = '';
-  transactionTypeFilter = '';
+  // Recent Transactions (live from GL_TRANSACTION)
+  recentTxnList: any[] = []; recentTxnTotal = 0;
+  recentTxnPage = 1; recentTxnPageSize = 20; recentTxnSearch = ''; recentTxnTypeFilter = '';
+  recentTxnTotalDebit = 0; recentTxnTotalCredit = 0;
+  get recentTxnTotalPages(): number { return Math.ceil(this.recentTxnTotal / this.recentTxnPageSize) || 1; }
+  get recentRevenue(): number { return this.recentTxnTotalCredit - this.recentTxnTotalDebit; }
 
   // Daily performance from API
   apiDailyPerformance: DailyPerformanceDto[] = [];
@@ -650,6 +702,7 @@ export class DashboardComponent implements OnInit {
     this.loadCustomerDue();
     this.loadSupplierDue();
     this.loadLowStock();
+    this.loadRecentTransactions();
   }
 
   getAllCustomers(): void {
@@ -698,6 +751,21 @@ export class DashboardComponent implements OnInit {
     this.saleService.getLowStock(this.lowStockSearch, this.lowStockThreshold, this.lowStockPage, this.lowStockPageSize).subscribe({
       next: (res) => { if (res.success) { this.lowStockList = res.data; this.lowStockTotal = res.totalCount; this.cdr.detectChanges(); } },
       error: (err) => console.error('Low stock error:', err)
+    });
+  }
+
+  loadRecentTransactions(): void {
+    this.saleService.getRecentTransactions(this.recentTxnSearch, this.recentTxnTypeFilter, this.recentTxnPage, this.recentTxnPageSize).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.recentTxnList        = res.data;
+          this.recentTxnTotal       = res.totalCount;
+          this.recentTxnTotalDebit  = res.totalDebit;
+          this.recentTxnTotalCredit = res.totalCredit;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('Recent transactions error:', err)
     });
   }
 
@@ -933,13 +1001,6 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  get filteredRecentTransactions(): Transaction[] {
-    let list = this.recentTransactions;
-    if (this.transactionTypeFilter) list = list.filter(t => t.type === this.transactionTypeFilter);
-    const q = this.transactionSearch.toLowerCase().trim();
-    if (q) list = list.filter(t => t.partyName.toLowerCase().includes(q));
-    return list;
-  }
 
   get dailyPerformance(): DailyStats[] {
     const last7Days = [];
