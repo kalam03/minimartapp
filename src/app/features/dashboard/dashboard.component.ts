@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
 import { PurchaseService, PurchaseSummaryDto } from '../../services/purchase.service';
+import { SaleService, SalesSummaryDto } from '../../services/sale.service';
 
 interface Transaction {
   id: number;
@@ -88,14 +89,53 @@ interface DailyStats {
           </div>
         </div>
 
+        <!-- Sales Summary from API -->
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+            <h3 class="text-white font-semibold text-sm">Sales Summary</h3>
+            <span *ngIf="salesSummaryLoading" class="text-xs" style="color:#ACB3E7">Loading…</span>
+            <span *ngIf="!salesSummaryLoading" class="text-xs" style="color:#ACB3E7">{{ startDate }} → {{ endDate }}</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-gray-100">
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Invoices</p>
+              <p class="text-base font-bold" style="color:#1a1c4e">{{ salesSummary.totalInvoices }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Total Sales</p>
+              <p class="text-base font-bold" style="color:#1a1c4e">৳{{ salesSummary.totalSales | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Discount</p>
+              <p class="text-base font-bold text-green-600">৳{{ salesSummary.totalDiscount | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Transport</p>
+              <p class="text-base font-bold text-orange-500">৳{{ salesSummary.totalTransport | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Net Amount</p>
+              <p class="text-base font-bold" style="color:#1a1c4e">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Paid</p>
+              <p class="text-base font-bold text-green-600">৳{{ salesSummary.totalPaid | number:'1.2-2' }}</p>
+            </div>
+            <div class="px-3 py-2 text-center">
+              <p class="text-xs text-gray-400 mb-0.5">Due</p>
+              <p class="text-base font-bold text-red-600">৳{{ salesSummary.totalDue | number:'1.2-2' }}</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Purchase Summary from API -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
           <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
             <h3 class="text-white font-semibold text-sm">Purchase Summary</h3>
-            <span *ngIf="summaryLoading" class="text-xs" style="color:#ACB3E7">Loading…</span>
-            <span *ngIf="!summaryLoading" class="text-xs" style="color:#ACB3E7">{{ startDate }} → {{ endDate }}</span>
+            <span *ngIf="purchaseSummaryLoading" class="text-xs" style="color:#ACB3E7">Loading…</span>
+            <span *ngIf="!purchaseSummaryLoading" class="text-xs" style="color:#ACB3E7">{{ startDate }} → {{ endDate }}</span>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 divide-x divide-y sm:divide-y-0 divide-gray-100">
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-gray-100">
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Invoices</p>
               <p class="text-base font-bold" style="color:#1a1c4e">{{ purchaseSummary.totalInvoices }}</p>
@@ -123,10 +163,6 @@ interface DailyStats {
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Due</p>
               <p class="text-base font-bold text-red-600">৳{{ purchaseSummary.totalDue | number:'1.2-2' }}</p>
-            </div>
-            <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Return</p>
-              <p class="text-base font-bold text-yellow-600">৳{{ purchaseSummary.totalReturn | number:'1.2-2' }}</p>
             </div>
           </div>
         </div>
@@ -474,17 +510,26 @@ export class DashboardComponent implements OnInit {
     totalInvoices: 0, totalPurchase: 0, totalDiscount: 0, totalTransport: 0,
     totalNetAmount: 0, totalPaid: 0, totalDue: 0, totalReturn: 0
   };
-  summaryLoading = false;
+  purchaseSummaryLoading = false;
+
+  // Sales summary from API
+  salesSummary: SalesSummaryDto = {
+    totalInvoices: 0, totalSales: 0, totalDiscount: 0, totalTransport: 0,
+    totalNetAmount: 0, totalPaid: 0, totalDue: 0
+  };
+  salesSummaryLoading = false;
 
   constructor(
     private customerService: CustomerService,
     private purchaseService: PurchaseService,
+    private saleService: SaleService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.getAllCustomers();
     this.loadPurchaseSummary();
+    this.loadSalesSummary();
   }
 
   getAllCustomers(): void {
@@ -501,16 +546,31 @@ export class DashboardComponent implements OnInit {
   }
 
   loadPurchaseSummary(): void {
-    this.summaryLoading = true;
+    this.purchaseSummaryLoading = true;
     this.purchaseService.getPurchaseSummary(this.startDate, this.endDate).subscribe({
       next: (res) => {
         if (res.success) this.purchaseSummary = res.data;
-        this.summaryLoading = false;
+        this.purchaseSummaryLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading purchase summary:', err);
-        this.summaryLoading = false;
+        this.purchaseSummaryLoading = false;
+      }
+    });
+  }
+
+  loadSalesSummary(): void {
+    this.salesSummaryLoading = true;
+    this.saleService.getSalesSummary(this.startDate, this.endDate).subscribe({
+      next: (res) => {
+        if (res.success) this.salesSummary = res.data;
+        this.salesSummaryLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading sales summary:', err);
+        this.salesSummaryLoading = false;
       }
     });
   }
@@ -754,12 +814,14 @@ export class DashboardComponent implements OnInit {
 
   filterByDate() {
     this.loadPurchaseSummary();
+    this.loadSalesSummary();
   }
 
   resetDateFilter() {
     this.startDate = this.todayDate;
     this.endDate = this.todayDate;
     this.loadPurchaseSummary();
+    this.loadSalesSummary();
   }
 
   quickFilter(event: Event) {
