@@ -125,6 +125,32 @@
             <p *ngIf="isFieldInvalid('drCr')" class="text-red-600 text-xs mt-1">{{ validationErrors['drCr'] }}</p>
           </div>
 
+          <!-- Customer dropdown (RECEIPT only) -->
+          <div *ngIf="needsCustomer">
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">Customer *</label>
+            <select [(ngModel)]="selectedCustomerId"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('customerId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">-- Select Customer --</option>
+              <option *ngFor="let c of customers" [value]="c.customerId">
+                {{ c.customerName }} — {{ c.phone }}
+              </option>
+            </select>
+            <p *ngIf="isFieldInvalid('customerId')" class="text-red-600 text-xs mt-1">{{ validationErrors['customerId'] }}</p>
+          </div>
+
+          <!-- Supplier dropdown (PAYMENT only) -->
+          <div *ngIf="needsSupplier">
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">Supplier *</label>
+            <select [(ngModel)]="selectedSupplierId"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('vendorId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">-- Select Supplier --</option>
+              <option *ngFor="let s of suppliers" [value]="s.supplierId">
+                {{ s.supplierName }} — {{ s.phone }}
+              </option>
+            </select>
+            <p *ngIf="isFieldInvalid('vendorId')" class="text-red-600 text-xs mt-1">{{ validationErrors['vendorId'] }}</p>
+          </div>
+
           <!-- TXN Mode -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Mode</label>
@@ -141,13 +167,19 @@
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
 
-          <!-- Narration -->
-          <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Narration</label>
-            <input type="text" [(ngModel)]="form.narration" placeholder="Short description"
+          <!-- User note (appended to auto-narration) -->
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Additional Note <span class="font-normal text-gray-400">(optional)</span></label>
+            <input type="text" [(ngModel)]="userNarration" placeholder="e.g. monthly rent, bonus payment…"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
 
+        </div>
+
+        <!-- Auto-generated narration preview -->
+        <div *ngIf="autoNarration" class="mt-3 px-3 py-2 rounded-lg border border-indigo-200 bg-indigo-50 text-xs text-indigo-900">
+          <p class="font-semibold mb-0.5" style="color:#1a1c4e">Narration (auto-generated)</p>
+          <p class="italic">{{ autoNarration }}</p>
         </div>
 
         <!-- Warning: no capital at all -->

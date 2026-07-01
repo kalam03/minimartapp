@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CapitalService } from '../../services/capital.service';
+import { CustomerService, Customer } from '../../services/customer.service';
+import { SupplierService } from '../../services/supplier.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
@@ -41,16 +43,89 @@ export class CapitalManagementComponent implements OnInit {
     amount:      null as number | null,
     referenceNo: '',
     txnMode:     'Cash',
-    narration:   '',
   };
-  isDrCrFixed       = false;
+  userNarration  = '';          // user's optional extra note
+  isDrCrFixed    = false;
   validationErrors: Record<string, string> = {};
+
+  // ── Party (customer / supplier) ───────────────────────────────────────
+  customers:        Customer[] = [];
+  suppliers:        any[]      = [];
+  selectedCustomerId  = 0;
+  selectedSupplierId  = 0;
+
+  get selectedCustomer(): Customer | null {
+    return this.customers.find(c => c.customerId === +this.selectedCustomerId) ?? null;
+  }
+  get selectedSupplier(): any | null {
+    return this.suppliers.find(s => s.supplierId === +this.selectedSupplierId) ?? null;
+  }
+
+  /** RECEIPT (id=4) needs a customer; PAYMENT (id=3) needs a supplier */
+  get needsCustomer(): boolean { return +this.form.txnTypeId === 4; }
+  get needsSupplier(): boolean { return +this.form.txnTypeId === 3; }
+
+  // ── Auto-generated narration ─────────────────────────────────────────
+  get autoNarration(): string {
+    const type   = this.txnTypes.find(t => t.id === +this.form.txnTypeId);
+    const amt    = (+this.form.amount! || 0).toFixed(2);
+    const gl     = this.form.glAccount || '—';
+    const note   = this.userNarration.trim();
+    const suffix = note ? `(${note})` : '';
+
+    if (!type) return '';
+
+    switch (type.code) {
+      case 'RECEIPT': {
+        const name  = this.selectedCustomer?.customerName ?? '';
+        const label = name ? `From customer ${name}` : 'From customer';
+        return `Received of BDT ${amt} ${label} by selling, Credit to account ${gl}${suffix}`;
+      }
+      case 'PAYMENT': {
+        const name  = this.selectedSupplier?.supplierName ?? '';
+        const label = name ? `made to vendor ${name}` : 'made to vendor';
+        return `Payment of BDT ${amt} ${label}, debited from account ${gl}${suffix}`;
+      }
+      case 'SALE':
+        return `Sales of BDT ${amt}, Credit to account ${gl}${suffix}`;
+      case 'PURCHASE':
+        return `Purchase of BDT ${amt}, debited from account ${gl}${suffix}`;
+      case 'EXPENSE':
+        return `Expense of BDT ${amt}, debited from account ${gl}${suffix}`;
+      case 'INCOME':
+        return `Income of BDT ${amt}, Credit to account ${gl}${suffix}`;
+      case 'TRANSFER': {
+        const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
+        return `Fund Transfer of BDT ${amt}, ${dir} account ${gl}${suffix}`;
+      }
+      case 'RETURN': {
+        const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
+        return `Return of BDT ${amt}, ${dir} account ${gl}${suffix}`;
+      }
+      case 'OPENING':
+        return `Opening Balance of BDT ${amt}, Credit to account ${gl}${suffix}`;
+      case 'CLOSING':
+        return `Closing Entry of BDT ${amt}, debited from account ${gl}${suffix}`;
+      case 'REFUND':
+        return `Refund of BDT ${amt}, Credit to account ${gl}${suffix}`;
+      case 'ADJUSTMENT': {
+        const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
+        return `Adjustment of BDT ${amt}, ${dir} account ${gl}${suffix}`;
+      }
+      case 'REVERSAL': {
+        const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
+        return `Reversal of BDT ${amt}, ${dir} account ${gl}${suffix}`;
+      }
+      default:
+        return `${type.name} of BDT ${amt}, account ${gl}${suffix}`;
+    }
+  }
 
   // ── Confirm dialog ────────────────────────────────────────────────────
   showConfirm       = false;
   confirmTitle      = '';
   confirmMessage    = '';
-  confirmType: 'normal' | 'warning' = 'normal';   // 'warning' = orange style
+  confirmType: 'normal' | 'warning' = 'normal';
   private _pendingPayload: any = null;
 
   // ── Transaction list ──────────────────────────────────────────────────
@@ -71,26 +146,54 @@ export class CapitalManagementComponent implements OnInit {
   get txnTotalPages(): number { return Math.ceil(this.txnTotal / this.txnPageSize) || 1; }
   get netCapital():    number { return this.txnTotalCredit - this.txnTotalDebit; }
 
-  /** True when the current debit amount would exceed available net capital */
   get debitExceedsCapital(): boolean {
-    return this.form.drCr === 'D'
-      && !!this.form.amount
-      && +this.form.amount > this.netCapital;
+    return this.form.drCr === 'D' && !!this.form.amount && +this.form.amount > this.netCapital;
   }
-
-  /** True when net capital is zero or negative (no funds at all) */
   get capitalDepleted(): boolean {
     return this.form.drCr === 'D' && this.netCapital <= 0;
   }
 
   constructor(
-    private capitalService: CapitalService,
-    private alertService:   AlertService,
-    private cdr:            ChangeDetectorRef
+    private capitalService:  CapitalService,
+    private customerService: CustomerService,
+    private supplierService: SupplierService,
+    private alertService:    AlertService,
+    private cdr:             ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.loadTenantInfo();
+    this.loadCustomers();
+    this.loadSuppliers();
     this.loadTransactions();
+  }
+
+  // ── Init loaders ──────────────────────────────────────────────────────
+  loadTenantInfo(): void {
+    this.capitalService.getTenantInfo().subscribe({
+      next: (res) => {
+        if (res.success && res.data?.phone) {
+          this.form.glAccount = res.data.phone;
+        }
+      },
+      error: () => {}   // non-critical; user can type manually
+    });
+  }
+
+  loadCustomers(): void {
+    this.customerService.getAllCustomers().subscribe({
+      next: (list) => { this.customers = list; },
+      error: () => {}
+    });
+  }
+
+  loadSuppliers(): void {
+    this.supplierService.getAllSuppliers().subscribe({
+      next: (res: any) => {
+        this.suppliers = Array.isArray(res) ? res : (res?.data ?? []);
+      },
+      error: () => {}
+    });
   }
 
   // ── Form logic ────────────────────────────────────────────────────────
@@ -103,6 +206,9 @@ export class CapitalManagementComponent implements OnInit {
     } else {
       this.isDrCrFixed = false;
     }
+    // Clear party selection when type changes
+    this.selectedCustomerId = 0;
+    this.selectedSupplierId = 0;
   }
 
   validateForm(): boolean {
@@ -115,31 +221,28 @@ export class CapitalManagementComponent implements OnInit {
       this.validationErrors['drCr'] = 'DR/CR is required';
     if (!this.form.amount || +this.form.amount <= 0)
       this.validationErrors['amount'] = 'Amount must be greater than 0';
+    if (this.needsCustomer && !+this.selectedCustomerId)
+      this.validationErrors['customerId'] = 'Customer is required for Receipt';
+    if (this.needsSupplier && !+this.selectedSupplierId)
+      this.validationErrors['vendorId'] = 'Supplier is required for Payment';
     return Object.keys(this.validationErrors).length === 0;
   }
 
   saveTransaction(): void {
     if (!this.validateForm()) return;
 
-    // Hard block: no capital at all
     if (this.capitalDepleted) {
-      this.alertService.warning(
-        'Insufficient capital! Net capital is ৳0.00. Please add a Credit entry first.'
-      );
+      this.alertService.warning('Insufficient capital! Net capital is ৳0.00. Please add a Credit entry first.');
       return;
     }
-
-    // Hard block: debit amount exceeds available net capital
     if (this.debitExceedsCapital) {
       this.alertService.warning(
         `Debit amount ৳${(+this.form.amount!).toLocaleString('en-US', { minimumFractionDigits: 2 })} ` +
-        `exceeds available net capital ৳${this.netCapital.toLocaleString('en-US', { minimumFractionDigits: 2 })}. ` +
-        `Transaction restricted.`
+        `exceeds available net capital ৳${this.netCapital.toLocaleString('en-US', { minimumFractionDigits: 2 })}. Transaction restricted.`
       );
       return;
     }
 
-    // Build payload
     const payload = {
       txnTypeId:   +this.form.txnTypeId,
       txnDate:     this.form.txnDate,
@@ -148,13 +251,21 @@ export class CapitalManagementComponent implements OnInit {
       amount:      +this.form.amount!,
       referenceNo: this.form.referenceNo || undefined,
       txnMode:     this.form.txnMode    || undefined,
-      narration:   this.form.narration  || undefined,
+      narration:   this.autoNarration   || undefined,
+      customerId:  this.needsCustomer && +this.selectedCustomerId ? +this.selectedCustomerId : undefined,
+      vendorId:    this.needsSupplier && +this.selectedSupplierId ? +this.selectedSupplierId : undefined,
     };
 
-    // Show confirm dialog
     this._pendingPayload = payload;
-    const typeName = this.txnTypes.find(t => t.id === payload.txnTypeId)?.name ?? '';
+    const typeName  = this.txnTypes.find(t => t.id === payload.txnTypeId)?.name ?? '';
     const drcrLabel = payload.drCr === 'D' ? 'Debit (Out)' : 'Credit (In)';
+
+    let partyLine = '';
+    if (this.needsCustomer && this.selectedCustomer)
+      partyLine = `<br><span class="text-gray-500 text-xs">Customer:</span> <strong>${this.selectedCustomer.customerName} — ${this.selectedCustomer.phone}</strong>`;
+    if (this.needsSupplier && this.selectedSupplier)
+      partyLine = `<br><span class="text-gray-500 text-xs">Supplier:</span> <strong>${this.selectedSupplier.supplierName} — ${this.selectedSupplier.phone}</strong>`;
+
     this.confirmTitle   = 'Confirm Transaction';
     this.confirmMessage =
       `You are about to save a <strong>${drcrLabel}</strong> transaction.<br>` +
@@ -162,7 +273,9 @@ export class CapitalManagementComponent implements OnInit {
       `<span class="text-gray-500 text-xs">Type:</span> <strong>${typeName}</strong><br>` +
       `<span class="text-gray-500 text-xs">GL Account:</span> <strong>${payload.glAccount}</strong><br>` +
       `<span class="text-gray-500 text-xs">Amount:</span> <strong>৳${payload.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong><br>` +
-      `<span class="text-gray-500 text-xs">Mode:</span> <strong>${payload.txnMode ?? '-'}</strong>`;
+      `<span class="text-gray-500 text-xs">Mode:</span> <strong>${payload.txnMode ?? '-'}</strong>` +
+      partyLine +
+      `<br><span class="text-gray-500 text-xs">Narration:</span> <em class="text-gray-600">${this.autoNarration}</em>`;
     this.confirmType    = payload.drCr === 'D' ? 'warning' : 'normal';
     this.showConfirm    = true;
   }
@@ -195,15 +308,17 @@ export class CapitalManagementComponent implements OnInit {
     this.form = {
       txnDate:     new Date().toISOString().split('T')[0],
       txnTypeId:   0,
-      glAccount:   '',
+      glAccount:   this.form.glAccount,   // keep GL account (tenant phone)
       drCr:        'C',
       amount:      null,
       referenceNo: '',
       txnMode:     'Cash',
-      narration:   '',
     };
-    this.isDrCrFixed      = false;
-    this.validationErrors = {};
+    this.userNarration      = '';
+    this.selectedCustomerId = 0;
+    this.selectedSupplierId = 0;
+    this.isDrCrFixed        = false;
+    this.validationErrors   = {};
   }
 
   isFieldInvalid(field: string): boolean {

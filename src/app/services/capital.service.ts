@@ -16,6 +16,8 @@ export interface CapitalTransactionDto {
   drCr: string;
   amount: number;
   currencyCode?: string;
+  customerId?: number;
+  vendorId?: number;
   narration?: string;
   authStatus?: string;
   createdBy: string;
@@ -33,6 +35,8 @@ export interface CreateCapitalTransactionRequest {
   referenceNo?: string;
   txnMode?: string;
   narration?: string;
+  customerId?: number;
+  vendorId?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -40,6 +44,10 @@ export class CapitalService {
   private baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
+
+  getTenantInfo(): Observable<{ success: boolean; data: { tenantId: number; tenantName: string; phone?: string; contactPerson?: string } }> {
+    return this.http.get<any>(`${this.baseUrl}/capital/tenant-info`);
+  }
 
   getTransactions(
     search: string,
