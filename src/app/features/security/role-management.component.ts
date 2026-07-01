@@ -31,6 +31,33 @@ export class RoleManagementComponent implements OnInit {
     isActive:    true
   };
 
+  validationErrors = {
+    roleCode: '',
+    roleName: '',
+    description: ''
+  };
+
+  validateField(field: string): void {
+    const val = (this.form as any)[field]?.toString().trim() || '';
+    this.validationErrors[field as keyof typeof this.validationErrors] = '';
+    if (field === 'roleCode') {
+      if (!val) this.validationErrors.roleCode = 'Role code is required';
+      else if (val.length > 20) this.validationErrors.roleCode = 'Max 20 characters';
+    }
+    if (field === 'roleName') {
+      if (!val) this.validationErrors.roleName = 'Role name is required';
+      else if (val.length > 100) this.validationErrors.roleName = 'Max 100 characters';
+    }
+  }
+
+  isFieldInvalid(field: string): boolean {
+    return !!this.validationErrors[field as keyof typeof this.validationErrors];
+  }
+
+  clearValidationErrors(): void {
+    this.validationErrors = { roleCode: '', roleName: '', description: '' };
+  }
+
   constructor(
     private userService: UserService,
     private alertService: AlertService,
@@ -50,6 +77,7 @@ export class RoleManagementComponent implements OnInit {
   openCreateForm(): void {
     this.editingId = null;
     this.form = { roleCode: '', roleName: '', description: '', isActive: true };
+    this.clearValidationErrors();
     this.showForm = true;
   }
 
@@ -61,12 +89,14 @@ export class RoleManagementComponent implements OnInit {
       description: role.description || '',
       isActive:    role.isActive
     };
+    this.clearValidationErrors();
     this.showForm = true;
   }
 
   submitForm(): void {
-    if (!this.form.roleCode || !this.form.roleName) {
-      this.alertService.warning('Role Code and Role Name are required.', 'Validation');
+    this.validateField('roleCode');
+    this.validateField('roleName');
+    if (this.isFieldInvalid('roleCode') || this.isFieldInvalid('roleName')) {
       return;
     }
 
