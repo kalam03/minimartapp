@@ -177,14 +177,9 @@ interface DailyStats {
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ filteredStats.sales | number:'1.2-2' }}</p>
-              <div class="flex items-center gap-1 mt-1">
-                <span class="text-xs px-1.5 py-0.5 rounded-full" [class.bg-green-100]="salesGrowth>=0" [class.bg-red-100]="salesGrowth<0">
-                  <span [class.text-green-600]="salesGrowth>=0" [class.text-red-600]="salesGrowth<0">{{ salesGrowth>=0?'+':'' }}{{ salesGrowth }}%</span>
-                </span>
-                <span class="text-xs text-gray-400">vs last period</span>
-              </div>
-              <p class="text-xs text-gray-400 mt-1">Today: ৳{{ todayStats.sales | number:'1.2-2' }}</p>
+              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
+              <p class="text-xs text-gray-400 mt-1">Net Amount</p>
+              <p class="text-xs text-gray-400 mt-0.5">Invoices: {{ salesSummary.totalInvoices }}</p>
             </div>
           </div>
 
@@ -196,14 +191,9 @@ interface DailyStats {
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ filteredStats.purchases | number:'1.2-2' }}</p>
-              <div class="flex items-center gap-1 mt-1">
-                <span class="text-xs px-1.5 py-0.5 rounded-full" [class.bg-green-100]="purchasesGrowth<=0" [class.bg-red-100]="purchasesGrowth>0">
-                  <span [class.text-green-600]="purchasesGrowth<=0" [class.text-red-600]="purchasesGrowth>0">{{ purchasesGrowth>=0?'+':'' }}{{ purchasesGrowth }}%</span>
-                </span>
-                <span class="text-xs text-gray-400">vs last period</span>
-              </div>
-              <p class="text-xs text-gray-400 mt-1">Today: ৳{{ todayStats.purchases | number:'1.2-2' }}</p>
+              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
+              <p class="text-xs text-gray-400 mt-1">Net Amount</p>
+              <p class="text-xs text-gray-400 mt-0.5">Invoices: {{ purchaseSummary.totalInvoices }}</p>
             </div>
           </div>
 
@@ -215,13 +205,12 @@ interface DailyStats {
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" [class.text-green-600]="filteredStats.profit>=0" [class.text-red-600]="filteredStats.profit<0">৳{{ filteredStats.profit | number:'1.2-2' }}</p>
-              <div class="flex items-center gap-1 mt-1">
-                <span class="text-xs px-1.5 py-0.5 rounded-full" [class.bg-green-100]="profitMargin>=0" [class.bg-red-100]="profitMargin<0">
-                  <span [class.text-green-600]="profitMargin>=0" [class.text-red-600]="profitMargin<0">Margin: {{ profitMargin }}%</span>
-                </span>
-              </div>
-              <p class="text-xs text-gray-400 mt-1">Today: ৳{{ todayStats.profit | number:'1.2-2' }}</p>
+              <p class="text-xl font-bold"
+                [class.text-green-600]="(salesSummary.totalNetAmount - purchaseSummary.totalNetAmount) >= 0"
+                [class.text-red-600]="(salesSummary.totalNetAmount - purchaseSummary.totalNetAmount) < 0">
+                ৳{{ (salesSummary.totalNetAmount - purchaseSummary.totalNetAmount) | number:'1.2-2' }}
+              </p>
+              <p class="text-xs text-gray-400 mt-1">Sales Net − Purchase Net</p>
             </div>
           </div>
 
@@ -233,10 +222,10 @@ interface DailyStats {
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" style="color:#1a1c4e">{{ totalTransactions }}</p>
+              <p class="text-xl font-bold" style="color:#1a1c4e">{{ salesSummary.totalInvoices + purchaseSummary.totalInvoices }}</p>
               <div class="flex gap-3 mt-1 text-xs">
-                <span class="text-green-600">Sales: {{ salesCount }}</span>
-                <span class="text-orange-500">Purchases: {{ purchasesCount }}</span>
+                <span class="text-green-600">Sales: {{ salesSummary.totalInvoices }}</span>
+                <span class="text-orange-500">Purchase: {{ purchaseSummary.totalInvoices }}</span>
               </div>
             </div>
           </div>
