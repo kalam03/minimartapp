@@ -182,7 +182,11 @@ export class CapitalManagementComponent implements OnInit {
 
   loadCustomers(): void {
     this.customerService.getAllCustomers().subscribe({
-      next: (list) => { this.customers = list; },
+      // API returns { success, data: Customer[] } — unwrap it
+      next: (res: any) => {
+        this.customers = Array.isArray(res) ? res : (res?.data ?? []);
+        this.cdr.detectChanges();
+      },
       error: () => {}
     });
   }
