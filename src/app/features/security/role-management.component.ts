@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -33,7 +33,8 @@ export class RoleManagementComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void { this.loadRoles(); }
@@ -41,7 +42,7 @@ export class RoleManagementComponent implements OnInit {
   loadRoles(): void {
     this.isLoading = true;
     this.userService.getRoles().subscribe({
-      next: (data) => { this.roles = data; this.isLoading = false; },
+      next: (data) => { this.roles = data; this.isLoading = false; this.cdr.detectChanges(); },
       error: () => { this.alertService.error('Failed to load roles.', 'Error'); this.isLoading = false; }
     });
   }
