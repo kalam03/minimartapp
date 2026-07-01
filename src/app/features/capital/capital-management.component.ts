@@ -14,7 +14,6 @@ import { AlertService } from '../../shared/alert.service';
 export class CapitalManagementComponent implements OnInit {
 
   // ── TXN Types (mirrors TXN_TYPE_MASTER insert) ─────────────────────
-  // autoDrCr: 'D' | 'C' = fixed; '' = user must select
   readonly txnTypes = [
     { id: 1,  code: 'SALE',       name: 'Sales Transaction',     autoDrCr: 'C' },
     { id: 2,  code: 'PURCHASE',   name: 'Purchase Transaction',  autoDrCr: 'D' },
@@ -44,26 +43,45 @@ export class CapitalManagementComponent implements OnInit {
     txnMode:     'Cash',
     narration:   '',
   };
-  isDrCrFixed   = false;
+  isDrCrFixed       = false;
   validationErrors: Record<string, string> = {};
 
+  // ── Confirm dialog ────────────────────────────────────────────────────
+  showConfirm       = false;
+  confirmTitle      = '';
+  confirmMessage    = '';
+  confirmType: 'normal' | 'warning' = 'normal';   // 'warning' = orange style
+  private _pendingPayload: any = null;
+
   // ── Transaction list ──────────────────────────────────────────────────
-  txnList:         any[]   = [];
-  txnTotal         = 0;
-  txnPage          = 1;
-  txnPageSize      = 20;
-  txnSearch        = '';
-  txnTypeFilter    = 0;
-  txnDrCrFilter    = '';
-  txnFromDate      = '';
-  txnToDate        = '';
-  txnTotalDebit    = 0;
-  txnTotalCredit   = 0;
-  isLoading        = false;
-  Math             = Math;
+  txnList:       any[]  = [];
+  txnTotal              = 0;
+  txnPage               = 1;
+  txnPageSize           = 20;
+  txnSearch             = '';
+  txnTypeFilter         = 0;
+  txnDrCrFilter         = '';
+  txnFromDate           = '';
+  txnToDate             = '';
+  txnTotalDebit         = 0;
+  txnTotalCredit        = 0;
+  isLoading             = false;
+  Math                  = Math;
 
   get txnTotalPages(): number { return Math.ceil(this.txnTotal / this.txnPageSize) || 1; }
   get netCapital():    number { return this.txnTotalCredit - this.txnTotalDebit; }
+
+  /** True when the current debit amount would exceed available net capital */
+  get debitExceedsCapital(): boolean {
+    return this.form.drCr === 'D'
+      && !!this.form.amount
+      && +this.form.amount > this.netCapital;
+  }
+
+  /** True when net capital is zero or negative (no funds at all) */
+  get capitalDepleted(): boolean {
+    return this.form.drCr === 'D' && this.netCapital <= 0;
+  }
 
   constructor(
     private capitalService: CapitalService,
@@ -80,7 +98,7 @@ export class CapitalManagementComponent implements OnInit {
     const type = this.txnTypes.find(t => t.id === +this.form.txnTypeId);
     if (!type) return;
     if (type.autoDrCr) {
-      this.form.drCr  = type.autoDrCr;
+      this.form.drCr   = type.autoDrCr;
       this.isDrCrFixed = true;
     } else {
       this.isDrCrFixed = false;
@@ -103,12 +121,25 @@ export class CapitalManagementComponent implements OnInit {
   saveTransaction(): void {
     if (!this.validateForm()) return;
 
-    // Block debit when Net Capital is 0 or negative
-    if (this.form.drCr === 'D' && this.netCapital <= 0) {
-      this.alertService.warning('Insufficient capital! Please credit (add) funds before making a debit (expense/payment) entry.');
+    // Hard block: no capital at all
+    if (this.capitalDepleted) {
+      this.alertService.warning(
+        'Insufficient capital! Net capital is ৳0.00. Please add a Credit entry first.'
+      );
       return;
     }
 
+    // Hard block: debit amount exceeds available net capital
+    if (this.debitExceedsCapital) {
+      this.alertService.warning(
+        `Debit amount ৳${(+this.form.amount!).toLocaleString('en-US', { minimumFractionDigits: 2 })} ` +
+        `exceeds available net capital ৳${this.netCapital.toLocaleString('en-US', { minimumFractionDigits: 2 })}. ` +
+        `Transaction restricted.`
+      );
+      return;
+    }
+
+    // Build payload
     const payload = {
       txnTypeId:   +this.form.txnTypeId,
       txnDate:     this.form.txnDate,
@@ -119,18 +150,45 @@ export class CapitalManagementComponent implements OnInit {
       txnMode:     this.form.txnMode    || undefined,
       narration:   this.form.narration  || undefined,
     };
-    this.capitalService.createTransaction(payload).subscribe({
+
+    // Show confirm dialog
+    this._pendingPayload = payload;
+    const typeName = this.txnTypes.find(t => t.id === payload.txnTypeId)?.name ?? '';
+    const drcrLabel = payload.drCr === 'D' ? 'Debit (Out)' : 'Credit (In)';
+    this.confirmTitle   = 'Confirm Transaction';
+    this.confirmMessage =
+      `You are about to save a <strong>${drcrLabel}</strong> transaction.<br>` +
+      `<br>` +
+      `<span class="text-gray-500 text-xs">Type:</span> <strong>${typeName}</strong><br>` +
+      `<span class="text-gray-500 text-xs">GL Account:</span> <strong>${payload.glAccount}</strong><br>` +
+      `<span class="text-gray-500 text-xs">Amount:</span> <strong>৳${payload.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong><br>` +
+      `<span class="text-gray-500 text-xs">Mode:</span> <strong>${payload.txnMode ?? '-'}</strong>`;
+    this.confirmType    = payload.drCr === 'D' ? 'warning' : 'normal';
+    this.showConfirm    = true;
+  }
+
+  confirmSubmit(): void {
+    this.showConfirm = false;
+    if (!this._pendingPayload) return;
+    this.capitalService.createTransaction(this._pendingPayload).subscribe({
       next: (res: any) => {
         if (res.success) {
-          this.alertService.success(`Transaction ${res.data?.txnNo} created successfully!`);
+          this.alertService.success(`Transaction ${res.data?.txnNo} saved successfully!`);
           this.resetForm();
           this.loadTransactions();
         }
+        this._pendingPayload = null;
       },
       error: (err: any) => {
-        this.alertService.error('Failed to create transaction: ' + (err.error?.message || err.message));
+        this.alertService.error('Failed to save transaction: ' + (err.error?.message || err.message));
+        this._pendingPayload = null;
       }
     });
+  }
+
+  cancelConfirm(): void {
+    this.showConfirm     = false;
+    this._pendingPayload = null;
   }
 
   resetForm(): void {
@@ -144,7 +202,7 @@ export class CapitalManagementComponent implements OnInit {
       txnMode:     'Cash',
       narration:   '',
     };
-    this.isDrCrFixed     = false;
+    this.isDrCrFixed      = false;
     this.validationErrors = {};
   }
 
