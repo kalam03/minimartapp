@@ -59,6 +59,13 @@ export const routes: Routes = [
             (m) => m.RoleManagementComponent
           ),
       },
+      {
+        path: 'capital',
+        loadComponent: () =>
+          import('./features/capital/capital-management.component').then(
+            (m) => m.CapitalManagementComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'dashboard' },

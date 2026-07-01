@@ -1,0 +1,308 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- ── Summary Cards ───────────────────────────────────────────────── -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+
+      <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+        <div class="px-3 py-2 border-b border-white border-opacity-10">
+          <p class="text-xs font-semibold" style="color:#ACB3E7">Net Capital</p>
+        </div>
+        <div class="px-3 py-2">
+          <p class="text-xl font-bold"
+            [class.text-green-400]="netCapital >= 0"
+            [class.text-red-400]="netCapital < 0">
+            ৳{{ netCapital | number:'1.2-2' }}
+          </p>
+          <p class="text-xs mt-1" style="color:#ACB3E7">Credit − Debit</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Credit (In)</p>
+        </div>
+        <div class="px-3 py-2">
+          <p class="text-xl font-bold text-green-600">৳{{ txnTotalCredit | number:'1.2-2' }}</p>
+          <p class="text-xs text-gray-400 mt-1">All incoming entries</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Debit (Out)</p>
+        </div>
+        <div class="px-3 py-2">
+          <p class="text-xl font-bold text-orange-600">৳{{ txnTotalDebit | number:'1.2-2' }}</p>
+          <p class="text-xs text-gray-400 mt-1">All outgoing entries</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Transactions</p>
+        </div>
+        <div class="px-3 py-2">
+          <p class="text-xl font-bold" style="color:#1a1c4e">{{ txnTotal }}</p>
+          <p class="text-xs text-gray-400 mt-1">Matching current filter</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Create Transaction Form ─────────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+      <div class="px-3 py-2" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          New Capital Transaction
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+
+          <!-- TXN Date -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Date *</label>
+            <input type="date" [(ngModel)]="form.txnDate"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <!-- TXN Type -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Type *</label>
+            <select [(ngModel)]="form.txnTypeId" (ngModelChange)="onTxnTypeChange()"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('txnTypeId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">-- Select Type --</option>
+              <option *ngFor="let t of txnTypes" [value]="t.id">{{ t.name }}</option>
+            </select>
+            <p *ngIf="isFieldInvalid('txnTypeId')" class="text-red-600 text-xs mt-1">{{ validationErrors['txnTypeId'] }}</p>
+          </div>
+
+          <!-- GL Account -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">GL Account *</label>
+            <input type="text" [(ngModel)]="form.glAccount" placeholder="e.g. 1001, 3001, 5001"
+              list="glAccountList"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('glAccount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <datalist id="glAccountList">
+              <option value="1001">1001 - Cash</option>
+              <option value="1002">1002 - Bank Account</option>
+              <option value="3001">3001 - Capital Account</option>
+              <option value="3002">3002 - Owner's Drawing</option>
+              <option value="4001">4001 - Income Account</option>
+              <option value="5001">5001 - Expense Account</option>
+            </datalist>
+            <p *ngIf="isFieldInvalid('glAccount')" class="text-red-600 text-xs mt-1">{{ validationErrors['glAccount'] }}</p>
+          </div>
+
+          <!-- Amount -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Amount (৳) *</label>
+            <input type="number" [(ngModel)]="form.amount" placeholder="0.00" step="0.01" min="0"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('amount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('amount')" class="text-red-600 text-xs mt-1">{{ validationErrors['amount'] }}</p>
+          </div>
+
+          <!-- DR / CR -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">DR / CR *</label>
+            <div *ngIf="isDrCrFixed" class="flex items-center gap-2 mt-1">
+              <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
+                [class.bg-orange-100]="form.drCr==='D'" [class.text-orange-700]="form.drCr==='D'"
+                [class.bg-green-100]="form.drCr==='C'"  [class.text-green-700]="form.drCr==='C'">
+                {{ form.drCr === 'D' ? '↓ Debit (D)' : '↑ Credit (C)' }}
+              </span>
+              <span class="text-xs text-gray-400">Auto-set by type</span>
+            </div>
+            <select *ngIf="!isDrCrFixed" [(ngModel)]="form.drCr"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('drCr') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option value="C">Credit (C) — Money In ↑</option>
+              <option value="D">Debit (D)  — Money Out ↓</option>
+            </select>
+            <p *ngIf="isFieldInvalid('drCr')" class="text-red-600 text-xs mt-1">{{ validationErrors['drCr'] }}</p>
+          </div>
+
+          <!-- TXN Mode -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Mode</label>
+            <select [(ngModel)]="form.txnMode"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <option *ngFor="let m of txnModes" [value]="m">{{ m }}</option>
+            </select>
+          </div>
+
+          <!-- Reference No -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Reference No</label>
+            <input type="text" [(ngModel)]="form.referenceNo" placeholder="Invoice / voucher ref"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <!-- Narration -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Narration</label>
+            <input type="text" [(ngModel)]="form.narration" placeholder="Short description"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <button (click)="saveTransaction()"
+            class="text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
+            style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Save Transaction
+          </button>
+          <button (click)="resetForm()"
+            class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Capital Transactions Grid ──────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm">Capital Transactions</h2>
+        <span class="text-xs" style="color:#ACB3E7">{{ txnTotal }} records</span>
+      </div>
+
+      <!-- Summary bar (full-dataset totals) -->
+      <div class="grid grid-cols-3 divide-x border-b" style="background:#f5f6fd">
+        <div class="px-4 py-2 text-center">
+          <p class="text-xs text-gray-400 mb-0.5">Total Debit (Out)</p>
+          <p class="text-sm font-bold text-orange-600">৳{{ txnTotalDebit | number:'1.2-2' }}</p>
+        </div>
+        <div class="px-4 py-2 text-center">
+          <p class="text-xs text-gray-400 mb-0.5">Total Credit (In)</p>
+          <p class="text-sm font-bold text-green-600">৳{{ txnTotalCredit | number:'1.2-2' }}</p>
+        </div>
+        <div class="px-4 py-2 text-center">
+          <p class="text-xs text-gray-400 mb-0.5">Net Capital (C − D)</p>
+          <p class="text-sm font-bold"
+            [class.text-green-600]="netCapital >= 0"
+            [class.text-red-600]="netCapital < 0">৳{{ netCapital | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="px-3 py-2 border-b">
+        <div class="flex flex-wrap gap-2">
+          <input type="date" [(ngModel)]="txnFromDate" (change)="applyFilters()"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36"
+            placeholder="From date">
+          <input type="date" [(ngModel)]="txnToDate" (change)="applyFilters()"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36"
+            placeholder="To date">
+          <select [(ngModel)]="txnTypeFilter" (change)="applyFilters()"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+            <option [value]="0">All Types</option>
+            <option *ngFor="let t of txnTypes" [value]="t.id">{{ t.name }}</option>
+          </select>
+          <select [(ngModel)]="txnDrCrFilter" (change)="applyFilters()"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+            <option value="">All (D/C)</option>
+            <option value="D">Debit (D)</option>
+            <option value="C">Credit (C)</option>
+          </select>
+          <input type="text" [(ngModel)]="txnSearch" (input)="applyFilters()"
+            placeholder="Search TXN no, ref, GL account, narration…"
+            class="flex-1 min-w-[200px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+          <button (click)="resetFilters()"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead style="background:#1a1c4e;color:#e0e3f8">
+            <tr>
+              <th class="px-3 py-2 text-left whitespace-nowrap">#</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">TXN No</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">Type</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">GL Account</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">D/C</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">Amount (৳)</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">Mode</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">Reference</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">Narration</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngIf="isLoading">
+              <td colspan="11" class="px-3 py-6 text-center text-gray-400">Loading…</td>
+            </tr>
+            <tr *ngIf="!isLoading && txnList.length === 0">
+              <td colspan="11" class="px-3 py-6 text-center text-gray-400">No transactions found</td>
+            </tr>
+            <tr *ngFor="let t of txnList; let i = index" class="hover:bg-gray-50 transition">
+              <td class="px-3 py-2 text-gray-500">{{ (txnPage-1)*txnPageSize + i + 1 }}</td>
+              <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ t.txnDate | date:'dd MMM yy' }}</td>
+              <td class="px-3 py-2 font-mono font-medium whitespace-nowrap" style="color:#1a1c4e">{{ t.txnNo }}</td>
+              <td class="px-3 py-2">
+                <span class="px-2 py-0.5 rounded text-xs font-medium"
+                  style="background:#eef0fc;color:#1a1c4e">{{ t.txnCode }}</span>
+              </td>
+              <td class="px-3 py-2 font-mono text-gray-700">{{ t.glAccount }}</td>
+              <td class="px-3 py-2 text-center">
+                <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                  [class.bg-orange-100]="t.drCr==='D'" [class.text-orange-700]="t.drCr==='D'"
+                  [class.bg-green-100]="t.drCr==='C'"  [class.text-green-700]="t.drCr==='C'">
+                  {{ t.drCr === 'D' ? '↓ Debit' : '↑ Credit' }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-right font-semibold"
+                [class.text-orange-600]="t.drCr==='D'"
+                [class.text-green-600]="t.drCr==='C'">
+                ৳{{ t.amount | number:'1.2-2' }}
+              </td>
+              <td class="px-3 py-2 text-gray-500">{{ t.txnMode || '-' }}</td>
+              <td class="px-3 py-2 text-gray-500">{{ t.referenceNo || '-' }}</td>
+              <td class="px-3 py-2 text-gray-500 max-w-[160px] truncate" [title]="t.narration">{{ t.narration || '-' }}</td>
+              <td class="px-3 py-2 text-center">
+                <span class="px-2 py-0.5 rounded-full text-xs font-medium"
+                  [class.bg-green-100]="t.authStatus==='A'" [class.text-green-700]="t.authStatus==='A'"
+                  [class.bg-yellow-100]="t.authStatus!=='A'" [class.text-yellow-700]="t.authStatus!=='A'">
+                  {{ t.authStatus === 'A' ? 'Approved' : 'Pending' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
+        <span class="text-gray-500">
+          Showing {{ txnList.length > 0 ? (txnPage-1)*txnPageSize + 1 : 0 }}
+          – {{ Math.min(txnPage*txnPageSize, txnTotal) }}
+          of {{ txnTotal }}
+        </span>
+        <div class="flex gap-1">
+          <button (click)="txnPage=txnPage-1; loadTransactions()" [disabled]="txnPage===1"
+            class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
+          <select [(ngModel)]="txnPageSize" (change)="txnPage=1; loadTransactions()"
+            class="px-1 py-1 border rounded text-xs">
+            <option [value]="10">10</option>
+            <option [value]="20">20</option>
+            <option [value]="50">50</option>
+          </select>
+          <button (click)="txnPage=txnPage+1; loadTransactions()" [disabled]="txnPage>=txnTotalPages"
+            class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">→</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
