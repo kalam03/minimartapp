@@ -55,22 +55,22 @@ interface DailyStats {
       <div class="max-w-8xl mx-auto">
 
         <!-- Date Filter -->
-        <div class="bg-white rounded-xl shadow-md border mb-3 p-3">
-          <div class="flex flex-wrap gap-3 items-end">
+        <div class="bg-white rounded-xl shadow-md border mb-3 p-4">
+          <div class="flex flex-wrap gap-4 items-end">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Start Date</label>
+              <label class="block text-sm font-semibold mb-1" style="color:#1a1c4e">Start Date</label>
               <input type="date" [(ngModel)]="startDate" (change)="filterByDate()"
-                class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                class="px-4 py-2.5 text-base border border-gray-400 rounded-lg outline-none w-[220px]">
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">End Date</label>
+              <label class="block text-sm font-semibold mb-1" style="color:#1a1c4e">End Date</label>
               <input type="date" [(ngModel)]="endDate" (change)="filterByDate()"
-                class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                class="px-4 py-2.5 text-base border border-gray-400 rounded-lg outline-none w-[220px]">
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Quick Filter</label>
+              <label class="block text-sm font-semibold mb-1" style="color:#1a1c4e">Quick Filter</label>
               <select (change)="quickFilter($event)"
-                class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                class="px-4 py-2.5 text-base border border-gray-400 rounded-lg outline-none w-[220px]">
                 <option value="">Custom Range</option>
                 <option value="today">Today</option>
                 <option value="yesterday">Yesterday</option>
@@ -80,7 +80,7 @@ interface DailyStats {
               </select>
             </div>
             <button (click)="resetDateFilter()"
-              class="px-3 py-1.5 text-xs rounded-lg font-semibold transition" style="background:#ACB3E7;color:#1a1c4e"
+              class="px-4 py-2 text-sm rounded-lg font-semibold transition" style="background:#ACB3E7;color:#1a1c4e"
               onmouseover="this.style.background='#c8ccee'" onmouseout="this.style.background='#ACB3E7'">
               Reset
             </button>
@@ -504,9 +504,9 @@ export class DashboardComponent {
   ];
 
   // Date filter properties
-  startDate: string = '';
-  endDate: string = '';
   todayDate: string = new Date().toISOString().split('T')[0];
+  startDate: string = this.todayDate;
+  endDate: string = this.todayDate;
 
   // Computed Properties for enhanced metrics
   get todayStats() {
@@ -686,8 +686,8 @@ export class DashboardComponent {
   }
 
   resetDateFilter() {
-    this.startDate = '';
-    this.endDate = '';
+    this.startDate = this.todayDate;
+    this.endDate = this.todayDate;
     console.log('Date filter reset');
   }
 
