@@ -3,6 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export interface DailyPerformanceDto {
+  date: string;
+  totalSales: number;
+  totalPurchases: number;
+  profit: number;
+}
+
 export interface SalesSummaryDto {
   totalInvoices: number;
   totalSales: number;
@@ -27,6 +34,12 @@ export class SaleService {
   getSalesSummary(fromDate: string, toDate: string): Observable<{ success: boolean; data: SalesSummaryDto }> {
     return this.http.get<{ success: boolean; data: SalesSummaryDto }>(
       `${this.baseUrl}/sales/summary?fromDate=${fromDate}&toDate=${toDate}`
+    );
+  }
+
+  getDailyPerformance(days: number = 7): Observable<{ success: boolean; data: DailyPerformanceDto[] }> {
+    return this.http.get<{ success: boolean; data: DailyPerformanceDto[] }>(
+      `${this.baseUrl}/dashboard/daily-performance?days=${days}`
     );
   }
 }

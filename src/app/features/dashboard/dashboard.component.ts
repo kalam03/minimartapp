@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
 import { PurchaseService, PurchaseSummaryDto } from '../../services/purchase.service';
-import { SaleService, SalesSummaryDto } from '../../services/sale.service';
+import { SaleService, SalesSummaryDto, DailyPerformanceDto } from '../../services/sale.service';
 
 interface Transaction {
   id: number;
@@ -291,16 +291,25 @@ interface DailyStats {
             </div>
           </div>
           <div class="p-3 overflow-x-auto">
-            <div class="flex gap-4 min-w-max">
-              <div *ngFor="let day of dailyPerformance" class="flex flex-col items-center">
+            <div *ngIf="apiDailyPerformance.length === 0" class="text-center py-6 text-gray-400 text-sm">
+              No data for the last 7 days
+            </div>
+            <div class="flex gap-6 min-w-max" *ngIf="apiDailyPerformance.length > 0">
+              <div *ngFor="let day of apiDailyPerformance" class="flex flex-col items-center">
                 <div class="text-xs text-gray-500 mb-1">{{ day.date | date:'MMM dd' }}</div>
                 <div class="flex gap-1 items-end h-24">
-                  <div class="w-6 rounded-t transition" style="background:#4ade80"
-                       [style.height.px]="getBarHeight(day.sales, maxDailyValue)"></div>
-                  <div class="w-6 rounded-t transition" style="background:#fb923c"
-                       [style.height.px]="getBarHeight(day.purchases, maxDailyValue)"></div>
+                  <div class="w-6 rounded-t transition-all" style="background:#4ade80;min-height:2px"
+                       [style.height.px]="getBarHeight(day.totalSales, apiMaxDailyValue)"
+                       [title]="'Sales: ৳' + day.totalSales"></div>
+                  <div class="w-6 rounded-t transition-all" style="background:#fb923c;min-height:2px"
+                       [style.height.px]="getBarHeight(day.totalPurchases, apiMaxDailyValue)"
+                       [title]="'Purchases: ৳' + day.totalPurchases"></div>
                 </div>
-                <div class="text-xs font-semibold mt-1" style="color:#1a1c4e">৳{{ day.profit | number:'1.0-0' }}</div>
+                <div class="text-xs font-semibold mt-1"
+                     [class.text-green-600]="day.profit >= 0"
+                     [class.text-red-500]="day.profit < 0">
+                  ৳{{ day.profit | number:'1.0-0' }}
+                </div>
               </div>
             </div>
           </div>
@@ -501,6 +510,14 @@ export class DashboardComponent implements OnInit {
   };
   purchaseSummaryLoading = false;
 
+  // Daily performance from API
+  apiDailyPerformance: DailyPerformanceDto[] = [];
+  get apiMaxDailyValue(): number {
+    if (!this.apiDailyPerformance.length) return 100;
+    const max = Math.max(...this.apiDailyPerformance.map(d => Math.max(d.totalSales, d.totalPurchases)));
+    return max > 0 ? max : 100;
+  }
+
   // Sales summary from API
   salesSummary: SalesSummaryDto = {
     totalInvoices: 0, totalSales: 0, totalDiscount: 0, totalTransport: 0,
@@ -519,6 +536,7 @@ export class DashboardComponent implements OnInit {
     this.getAllCustomers();
     this.loadPurchaseSummary();
     this.loadSalesSummary();
+    this.loadDailyPerformance();
   }
 
   getAllCustomers(): void {
@@ -546,6 +564,15 @@ export class DashboardComponent implements OnInit {
         console.error('Error loading purchase summary:', err);
         this.purchaseSummaryLoading = false;
       }
+    });
+  }
+
+  loadDailyPerformance(): void {
+    this.saleService.getDailyPerformance(7).subscribe({
+      next: (res) => {
+        if (res.success) { this.apiDailyPerformance = res.data; this.cdr.detectChanges(); }
+      },
+      error: (err) => console.error('Error loading daily performance:', err)
     });
   }
 
