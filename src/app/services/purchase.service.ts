@@ -23,39 +23,44 @@ export interface PurchaseResponseDto {
   totalAmount: number;
 }
 
+export interface PurchaseSummaryDto {
+  totalInvoices: number;
+  totalPurchase: number;
+  totalDiscount: number;
+  totalTransport: number;
+  totalNetAmount: number;
+  totalPaid: number;
+  totalDue: number;
+  totalReturn: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class PurchaseService {
-private baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
 
-  // =========================
-  // CREATE PURCHASE
-  // =========================
   createPurchase(payload: any): Observable<PurchaseResponseDto> {
-    return this.http.post<PurchaseResponseDto>(this.baseUrl+"/purchases", payload);
+    return this.http.post<PurchaseResponseDto>(this.baseUrl + '/purchases', payload);
   }
 
-  // =========================
-  // GET ALL PURCHASES
-  // =========================
   getPurchases(): Observable<PurchaseResponseDto[]> {
     return this.http.get<PurchaseResponseDto[]>(this.baseUrl);
   }
 
-  // =========================
-  // GET PURCHASE BY ID
-  // =========================
   getPurchaseById(id: number): Observable<PurchaseResponseDto> {
     return this.http.get<PurchaseResponseDto>(`${this.baseUrl}/${id}`);
   }
 
-  // =========================
-  // DELETE PURCHASE (optional)
-  // =========================
   deletePurchase(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+
+  getPurchaseSummary(fromDate: string, toDate: string): Observable<{ success: boolean; data: PurchaseSummaryDto }> {
+    return this.http.get<{ success: boolean; data: PurchaseSummaryDto }>(
+      `${this.baseUrl}/purchases/summary?fromDate=${fromDate}&toDate=${toDate}`
+    );
   }
 }

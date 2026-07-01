@@ -2,17 +2,13 @@
   <div class="max-w-8xl mx-auto">
     <!-- FIRST ROW: Product Selection + Cart Items -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-      <!-- LEFT: Product Selection - Compact -->
+      <!-- LEFT: Product Selection -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2">
+        <div class="px-4 py-2" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4"
-              ></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4"></path>
             </svg>
             Select Product
           </h2>
@@ -28,154 +24,110 @@
                 (ngModelChange)="onProductSearch($event)"
                 (keydown)="onProductKeydown($event)"
                 placeholder="Search product..."
-                class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                class="w-full px-3 py-1.5 pl-8 text-sm border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
               />
-              <svg
-                class="absolute left-2 top-2 w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                ></path>
+              <svg class="absolute left-2 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
               <!-- Product Dropdown -->
-              <div
-                *ngIf="showProductDropdown"
-                class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
-              >
+              <div *ngIf="showProductDropdown"
+                class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                 <div
                   *ngFor="let product of filteredProducts; let i = index"
                   (click)="selectProduct(product)"
                   [class.selected]="selectedProductIndex === i"
-                  [class.bg-blue-50]="selectedProductIndex === i"
-                  class="product-dropdown-item p-2 hover:bg-blue-50 cursor-pointer border-b text-sm"
-                >
+                  [style.background]="selectedProductIndex === i ? '#eef0fc' : ''"
+                  class="product-dropdown-item p-2 hover:bg-gray-50 cursor-pointer border-b text-sm">
                   <div class="font-semibold">{{ product.productName }}</div>
                   <div class="flex justify-between text-xs">
-                    <span class="text-blue-600">${{ product.purchasePrice.toFixed(2) }}</span>
+                    <span style="color:#1a1c4e" class="font-medium">৳{{ product.purchasePrice.toFixed(2) }}</span>
                     <span class="text-gray-400">Stock: {{ product.stockQty }}</span>
                   </div>
                 </div>
-                <div
-                  *ngIf="filteredProducts.length === 0"
-                  class="p-2 text-center text-gray-500 text-sm"
-                >
+                <div *ngIf="filteredProducts.length === 0" class="p-2 text-center text-gray-500 text-sm">
                   No products found
                 </div>
               </div>
             </div>
           </div>
-          <!-- Product Details Row - Compact -->
+
+          <!-- Product Details Row -->
           <div class="grid grid-cols-3 gap-2 mb-2">
             <div>
-              <label class="text-xs text-gray-500">Cost Price</label>
-              <input
-                type="text"
-                [value]="(selectedProduct?.purchasePrice || 0).toFixed(2)"
-                readonly
-                class="w-full px-2 py-1 text-sm border rounded-lg bg-gray-50"
-              />
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Cost Price</label>
+              <input type="text" [value]="(selectedProduct?.purchasePrice || 0).toFixed(2)" readonly
+                class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50" />
             </div>
             <div>
-              <label class="text-xs text-gray-500">Qty</label>
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Qty</label>
               <div class="flex items-center gap-1">
-                <button
-                  (click)="productQuantity = Math.max(1, productQuantity - 1)"
-                  class="w-6 h-6 rounded bg-gray-100 text-sm font-bold"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
+                <button (click)="productQuantity = Math.max(1, productQuantity - 1)"
+                  class="w-6 h-6 rounded text-sm font-bold border border-gray-300 hover:bg-gray-100">-</button>
+                <input type="number"
                   [ngModel]="productQuantity"
                   (ngModelChange)="onProductQuantityChange($event)"
                   (keydown)="onQuantityKeydown($event)"
-                  class="w-full text-center px-1 py-1 text-sm border rounded-lg"
-                />
-                <button
-                  (click)="productQuantity = productQuantity + 1"
-                  class="w-6 h-6 rounded bg-gray-100 text-sm font-bold"
-                >
-                  +
-                </button>
+                  class="w-full text-center px-1 py-1 text-sm border border-gray-300 rounded-lg" />
+                <button (click)="productQuantity = productQuantity + 1"
+                  class="w-6 h-6 rounded text-sm font-bold border border-gray-300 hover:bg-gray-100">+</button>
               </div>
             </div>
             <div>
-              <label class="text-xs text-gray-500">Total</label>
-              <input
-                type="text"
-                [value]="((selectedProduct?.purchasePrice || 0) * productQuantity).toFixed(2)"
-                readonly
-                class="w-full px-2 py-1 text-sm border rounded-lg bg-green-50 text-green-700 font-semibold"
-              />
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Total</label>
+              <input type="text"
+                [value]="((selectedProduct?.purchasePrice || 0) * productQuantity).toFixed(2)" readonly
+                class="w-full px-2 py-1 text-sm border rounded-lg font-semibold"
+                style="background:#eef0fc;color:#1a1c4e" />
             </div>
           </div>
 
-          <!-- Action Buttons - Compact -->
+          <!-- Action Buttons -->
           <div class="flex gap-2">
-            <button
-              (click)="addToCart()"
-              class="flex-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
-            >
+            <button (click)="addToCart()"
+              class="flex-1 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition"
+              style="background:#1a1c4e"
+              onmouseover="this.style.background='#252862'"
+              onmouseout="this.style.background='#1a1c4e'">
               + Add to Cart
             </button>
-            <button
-              (click)="resetProduct()"
-              class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200"
-            >
+            <button (click)="resetProduct()"
+              class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition">
               Reset
             </button>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: Cart Items - Compact -->
+      <!-- RIGHT: Cart Items -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-2">
-          <div class="flex justify-between items-center">
-            <h2 class="text-white font-semibold text-sm flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6"
-                ></path>
-              </svg>
-              Cart ({{ cartItems.length }})
-            </h2>
-            <button
-              *ngIf="cartItems.length > 0"
-              (click)="clearCart()"
-              class="text-white/70 text-xs hover:text-white"
-            >
-              Clear All
-            </button>
-          </div>
+        <div class="px-4 py-2 flex justify-between items-center" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6"></path>
+            </svg>
+            Cart ({{ cartItems.length }})
+          </h2>
+          <button *ngIf="cartItems.length > 0" (click)="clearCart()"
+            class="text-white text-xs opacity-70 hover:opacity-100 transition">
+            Clear All
+          </button>
         </div>
         <div class="p-3 max-h-64 overflow-y-auto">
           <div *ngIf="cartItems.length === 0" class="text-center py-6 text-gray-400 text-sm">
             Cart is empty
           </div>
-          <div *ngFor="let item of cartItems" class="mb-2 p-2 bg-gray-50 rounded-lg text-sm">
+          <div *ngFor="let item of cartItems" class="mb-2 p-2 rounded-lg text-sm" style="background:#f5f6fd">
             <div class="flex justify-between items-start">
               <div class="flex-1">
                 <div class="font-semibold text-gray-800">{{ item.product.productName }}</div>
                 <div class="text-xs text-gray-500">
-                  {{ item.quantity }} x ${{ item.product.purchasePrice.toFixed(2) }}
+                  {{ item.quantity }} × ৳{{ item.product.purchasePrice.toFixed(2) }}
                 </div>
               </div>
               <div class="text-right">
-                <div class="font-bold text-gray-800">${{ item.subtotal.toFixed(2) }}</div>
-                <button
-                  (click)="removeFromCart(item)"
-                  class="text-red-400 text-xs hover:text-red-600"
-                >
+                <div class="font-bold" style="color:#1a1c4e">৳{{ item.subtotal.toFixed(2) }}</div>
+                <button (click)="removeFromCart(item)" class="text-red-400 text-xs hover:text-red-600 transition">
                   Remove
                 </button>
               </div>
@@ -187,17 +139,13 @@
 
     <!-- SECOND ROW: Supplier Information + Purchase Summary -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <!-- LEFT: Supplier Information - Compact -->
+      <!-- LEFT: Supplier Information -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-green-600 to-green-700 px-4 py-2">
+        <div class="px-4 py-2" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              ></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
             Supplier Information
           </h2>
@@ -212,86 +160,59 @@
               (ngModelChange)="onSupplierSearch($event)"
               (keydown)="onSupplierKeydown($event)"
               placeholder="Search supplier..."
-              class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+              class="w-full px-3 py-1.5 pl-8 text-sm border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
             />
-            <svg
-              class="absolute left-2 top-2 w-4 h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
+            <svg class="absolute left-2 top-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
             <!-- Supplier Dropdown -->
-            <div
-              *ngIf="showSupplierDropdown"
-              class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
-            >
+            <div *ngIf="showSupplierDropdown"
+              class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
               <div
                 *ngFor="let supplier of filteredSuppliers; let i = index"
                 (click)="selectSupplier(supplier)"
                 [class.selected]="selectedSupplierIndex === i"
-                [class.bg-green-50]="selectedSupplierIndex === i"
-                class="supplier-dropdown-item p-2 hover:bg-green-50 cursor-pointer border-b transition-colors"
-              >
+                [style.background]="selectedSupplierIndex === i ? '#eef0fc' : ''"
+                class="supplier-dropdown-item p-2 hover:bg-gray-50 cursor-pointer border-b transition-colors">
                 <div class="font-semibold text-sm">{{ supplier.supplierName }}</div>
                 <div class="text-xs text-gray-500">{{ supplier.phone }}</div>
               </div>
-              <div
-                *ngIf="filteredSuppliers.length === 0"
-                class="p-2 text-center text-gray-500 text-sm"
-              >
+              <div *ngIf="filteredSuppliers.length === 0" class="p-2 text-center text-gray-500 text-sm">
                 No suppliers found
               </div>
             </div>
           </div>
 
-          <!-- Supplier Details - Compact Grid -->
+          <!-- Supplier Details -->
           <div class="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <label class="text-xs text-gray-500">Contact</label>
-              <input
-                type="text"
-                [value]="selectedSupplier?.phone || ''"
-                readonly
-                class="w-full px-2 py-1 text-sm border rounded-lg bg-gray-50"
-              />
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Contact</label>
+              <input type="text" [value]="selectedSupplier?.phone || ''" readonly
+                class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50" />
             </div>
             <div>
-              <label class="text-xs text-gray-500">Discount %</label>
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Discount %</label>
               <app-financial-input
                 [(ngModel)]="discountPercent"
                 (ngModelChange)="onDiscountPercentChange($event)"
-                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
-                placeholder="0.00"
-              ></app-financial-input>
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                placeholder="0.00">
+              </app-financial-input>
             </div>
           </div>
 
           <div class="mb-2">
-            <label class="text-xs text-gray-500">Address</label>
-            <textarea
-              rows="1"
-              [value]="selectedSupplier?.address || ''"
-              readonly
-              class="w-full px-2 py-1 text-sm border rounded-lg bg-gray-50"
-            ></textarea>
+            <label class="text-xs font-semibold" style="color:#1a1c4e">Address</label>
+            <textarea rows="1" [value]="selectedSupplier?.address || ''" readonly
+              class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50"></textarea>
           </div>
 
           <!-- Transport & Payment -->
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-xs text-gray-500">Transport</label>
-              <select
-                [ngModel]="transportType"
-                (ngModelChange)="onTransportTypeChange($event)"
-                class="w-full px-2 py-1 text-sm border rounded-lg"
-              >
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Transport</label>
+              <select [ngModel]="transportType" (ngModelChange)="onTransportTypeChange($event)"
+                class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg">
                 <option value="">Select</option>
                 <option value="pickup">Pickup</option>
                 <option value="delivery">Delivery</option>
@@ -299,12 +220,9 @@
               </select>
             </div>
             <div>
-              <label class="text-xs text-gray-500">Payment Method</label>
-              <select
-                [ngModel]="selectedPaymentMethod"
-                (ngModelChange)="selectedPaymentMethod = $event"
-                class="w-full px-2 py-1 text-sm border rounded-lg"
-              >
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Payment Method</label>
+              <select [ngModel]="selectedPaymentMethod" (ngModelChange)="selectedPaymentMethod = $event"
+                class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg">
                 <option value="cash">Cash</option>
                 <option value="credit">Credit</option>
                 <option value="bank">Bank Transfer</option>
@@ -314,76 +232,70 @@
         </div>
       </div>
 
-      <!-- RIGHT: Purchase Summary - Compact -->
+      <!-- RIGHT: Purchase Summary -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="bg-gradient-to-r from-orange-600 to-orange-700 px-4 py-2">
+        <div class="px-4 py-2" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              ></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
             Purchase Summary
           </h2>
         </div>
         <div class="p-3">
-          <!-- Bill Summary - Compact -->
+          <!-- Bill Summary -->
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
               <span class="text-gray-600">Subtotal:</span>
-              <span class="font-semibold">${{ subtotal.toFixed(2) }}</span>
+              <span class="font-semibold" style="color:#1a1c4e">৳{{ subtotal.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-600">Transport:</span>
               <app-financial-input
                 [(ngModel)]="transportCost"
                 (ngModelChange)="onTransportCostChange($event)"
-                className="w-24 px-2 py-0.5 text-right border rounded text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
-                placeholder="0.00"
-              ></app-financial-input>
+                className="w-24 px-2 py-0.5 text-right border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                placeholder="0.00">
+              </app-financial-input>
             </div>
             <div class="flex justify-between text-red-600">
               <span>Discount:</span>
-              <span>-${{ discountAmount.toFixed(2) }}</span>
+              <span>-৳{{ discountAmount.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between pt-1 border-t font-bold">
-              <span>Net Amount:</span>
-              <span class="text-green-600">${{ grossAmount.toFixed(2) }}</span>
+              <span style="color:#1a1c4e">Net Amount:</span>
+              <span class="text-green-600">৳{{ grossAmount.toFixed(2) }}</span>
             </div>
           </div>
 
-          <!-- Payment Section - Compact -->
+          <!-- Payment Section -->
           <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
             <div>
-              <label class="text-xs text-gray-500">Amount Paid</label>
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Amount Paid</label>
               <app-financial-input
                 [(ngModel)]="paymentAmount"
                 (ngModelChange)="onPaymentAmountChange($event)"
-                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
-                placeholder="0.00"
-              ></app-financial-input>
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                placeholder="0.00">
+              </app-financial-input>
             </div>
             <div>
-              <label class="text-xs text-gray-500">Due Amount</label>
-              <div class="w-full px-2 py-1 text-sm border rounded-lg bg-gray-50 font-semibold"
+              <label class="text-xs font-semibold" style="color:#1a1c4e">Due Amount</label>
+              <div class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50 font-semibold"
                 [class.text-red-600]="dueAmount > 0"
                 [class.text-green-600]="dueAmount <= 0">
-                ${{ dueAmount.toFixed(2) }}
+                ৳{{ dueAmount.toFixed(2) }}
               </div>
             </div>
           </div>
 
           <!-- Submit -->
-          <button
-            (click)="submitPurchase()"
+          <button (click)="submitPurchase()"
             class="w-full mt-3 text-white px-3 py-2 rounded-lg text-sm font-semibold transition"
             style="background:#1a1c4e"
             onmouseover="this.style.background='#252862'"
-            onmouseout="this.style.background='#1a1c4e'"
-          >
+            onmouseout="this.style.background='#1a1c4e'">
             Submit Purchase Order
           </button>
         </div>
