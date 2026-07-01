@@ -154,19 +154,22 @@
 
     <!-- Products Table Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-      <!-- <div class="px-3 py-2" style="background:#1a1c4e">
-        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-            ></path>
-          </svg>
-          Product List ({{ products.length }} total)
-        </h2>
-      </div> -->
+      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm">Product List</h2>
+        <span class="text-xs" style="color:#ACB3E7">{{ filteredProducts.length }} of {{ products.length }} products</span>
+      </div>
+      <div class="px-3 py-2 border-b flex flex-wrap gap-2">
+        <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
+          placeholder="Search by name, barcode, category…"
+          class="flex-1 min-w-[180px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        <select [(ngModel)]="categoryFilter" (ngModelChange)="currentPage=1"
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+        <button (click)="searchText=''; categoryFilter=''; currentPage=1"
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+      </div>
 
       <!-- Table -->
       <div class="overflow-x-auto">
@@ -252,7 +255,7 @@
       <!-- Pagination Controls -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
-          Showing {{ paginatedProducts.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, products.length) }} of {{ products.length }} products
+          Showing {{ paginatedProducts.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, filteredProducts.length) }} of {{ filteredProducts.length }} products<span *ngIf="filteredProducts.length !== products.length" class="text-gray-400"> (filtered from {{ products.length }})</span>
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">

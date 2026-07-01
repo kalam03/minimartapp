@@ -51,6 +51,8 @@ export class ProductComponent implements OnInit {
   currentPage = 1;
   sortBy = 'productName';
   sortOrder: 'asc' | 'desc' = 'asc';
+  searchText = '';
+  categoryFilter: number | '' = '';
 
   constructor(
     private productService: ProductService,
@@ -248,8 +250,20 @@ export class ProductComponent implements OnInit {
     this.currentPage = 1;
   }
 
+  get filteredProducts(): any[] {
+    const q = this.searchText.toLowerCase().trim();
+    return this.products.filter(p => {
+      const matchesSearch = !q ||
+        (p.productName || '').toLowerCase().includes(q) ||
+        (p.barcode || '').toLowerCase().includes(q) ||
+        this.getCategoryName(p.categoryId).toLowerCase().includes(q);
+      const matchesCategory = this.categoryFilter === '' || p.categoryId == this.categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }
+
   get sortedProducts(): any[] {
-    const sorted = [...this.products].sort((a, b) => {
+    const sorted = [...this.filteredProducts].sort((a, b) => {
       let aVal = a[this.sortBy];
       let bVal = b[this.sortBy];
 
@@ -270,7 +284,7 @@ export class ProductComponent implements OnInit {
   }
 
   get totalPages(): number {
-    return Math.ceil(this.products.length / this.pageSize);
+    return Math.ceil(this.filteredProducts.length / this.pageSize) || 1;
   }
 
   nextPage(): void {

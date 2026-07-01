@@ -34,6 +34,7 @@ export class CustomerComponent implements OnInit {
   currentPage = 1;
   sortBy = 'customerName';
   sortOrder: 'asc' | 'desc' = 'asc';
+  searchText = '';
 
   constructor(
     private customerService: CustomerService,
@@ -211,8 +212,18 @@ export class CustomerComponent implements OnInit {
     this.currentPage = 1;
   }
 
+  get filteredCustomers(): any[] {
+    const q = this.searchText.toLowerCase().trim();
+    if (!q) return this.customers;
+    return this.customers.filter(c =>
+      (c.customerName || '').toLowerCase().includes(q) ||
+      (c.phone || '').toLowerCase().includes(q) ||
+      (c.address || '').toLowerCase().includes(q)
+    );
+  }
+
   get sortedCustomers(): any[] {
-    const sorted = [...this.customers].sort((a, b) => {
+    const sorted = [...this.filteredCustomers].sort((a, b) => {
       let aVal = a[this.sortBy];
       let bVal = b[this.sortBy];
 
@@ -233,7 +244,7 @@ export class CustomerComponent implements OnInit {
   }
 
   get totalPages(): number {
-    return Math.ceil(this.customers.length / this.pageSize);
+    return Math.ceil(this.filteredCustomers.length / this.pageSize) || 1;
   }
 
   nextPage(): void {

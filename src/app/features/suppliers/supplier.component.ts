@@ -40,6 +40,7 @@ export class SupplierComponent implements OnInit {
   currentPage = 1;
   sortBy = 'supplierName';
   sortOrder: 'asc' | 'desc' = 'asc';
+  searchText = '';
 
   constructor(
     private supplierService: SupplierService,
@@ -219,8 +220,20 @@ export class SupplierComponent implements OnInit {
     this.currentPage = 1;
   }
 
+  get filteredSuppliers(): any[] {
+    const q = this.searchText.toLowerCase().trim();
+    if (!q) return this.suppliers;
+    return this.suppliers.filter(s =>
+      (s.supplierName || '').toLowerCase().includes(q) ||
+      (s.phone || '').toLowerCase().includes(q) ||
+      (s.email || '').toLowerCase().includes(q) ||
+      (s.address || '').toLowerCase().includes(q) ||
+      (s.contactPerson || '').toLowerCase().includes(q)
+    );
+  }
+
   get sortedSuppliers(): any[] {
-    const sorted = [...this.suppliers].sort((a, b) => {
+    const sorted = [...this.filteredSuppliers].sort((a, b) => {
       let aVal = a[this.sortBy];
       let bVal = b[this.sortBy];
 
@@ -241,7 +254,7 @@ export class SupplierComponent implements OnInit {
   }
 
   get totalPages(): number {
-    return Math.ceil(this.suppliers.length / this.pageSize);
+    return Math.ceil(this.filteredSuppliers.length / this.pageSize) || 1;
   }
 
   nextPage(): void {

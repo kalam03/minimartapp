@@ -144,6 +144,24 @@ export class RoleManagementComponent implements OnInit {
     });
   }
 
+  searchText = '';
+  statusFilter = '';   // '' | 'active' | 'inactive'
+
+  get filteredRoles(): RoleResponse[] {
+    const q = this.searchText.toLowerCase().trim();
+    return this.roles.filter(r => {
+      const matchesSearch = !q ||
+        (r.roleCode   || '').toLowerCase().includes(q) ||
+        (r.roleName   || '').toLowerCase().includes(q) ||
+        (r.description|| '').toLowerCase().includes(q);
+      const matchesStatus =
+        this.statusFilter === '' ||
+        (this.statusFilter === 'active'   &&  r.isActive) ||
+        (this.statusFilter === 'inactive' && !r.isActive);
+      return matchesSearch && matchesStatus;
+    });
+  }
+
   get activeCount(): number   { return this.roles.filter(r => r.isActive).length; }
   get inactiveCount(): number { return this.roles.filter(r => !r.isActive).length; }
 }

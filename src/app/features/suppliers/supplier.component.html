@@ -165,19 +165,17 @@
 
     <!-- Suppliers Table Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-      <!-- <div class="px-3 py-2" style="background:#1a1c4e">
-        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-            ></path>
-          </svg>
-          Supplier List ({{ suppliers.length }} total)
-        </h2>
-      </div> -->
+      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm">Supplier List</h2>
+        <span class="text-xs" style="color:#ACB3E7">{{ filteredSuppliers.length }} of {{ suppliers.length }} suppliers</span>
+      </div>
+      <div class="px-3 py-2 border-b flex gap-2">
+        <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
+          placeholder="Search by name, phone, email, address, contact person…"
+          class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        <button (click)="searchText=''; currentPage=1"
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+      </div>
 
       <!-- Table -->
       <div class="overflow-x-auto">
@@ -264,7 +262,7 @@
       <!-- Pagination Controls -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
-          Showing {{ paginatedSuppliers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, suppliers.length) }} of {{ suppliers.length }} suppliers
+          Showing {{ paginatedSuppliers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, filteredSuppliers.length) }} of {{ filteredSuppliers.length }} suppliers<span *ngIf="filteredSuppliers.length !== suppliers.length" class="text-gray-400"> (filtered from {{ suppliers.length }})</span>
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">
