@@ -417,8 +417,9 @@ interface DailyStats {
           </div>
         </div>
 
-        <!-- Low Stock Alert (full width) -->
-        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+        <!-- Low Stock Alert + Top Products (side by side, 6 col each) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden">
           <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
             <h3 class="text-white font-semibold text-sm">Low Stock Alert</h3>
             <div class="flex items-center gap-2">
@@ -485,31 +486,36 @@ interface DailyStats {
           </div>
         </div>
 
-        <!-- Top Products by Inventory Value -->
-        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+          <!-- Top Products by Inventory Value -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2" style="background:#1a1c4e">
               <h3 class="text-white font-semibold text-sm">Top Products by Inventory Value</h3>
+            </div>
+            <div class="px-3 py-2 border-b">
+              <input type="text" [(ngModel)]="topProductsSearch" placeholder="Search by product name or category…"
+                class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
                 <thead style="background:#1a1c4e;color:#e0e3f8">
                   <tr>
                     <th class="px-3 py-2 text-left">Product</th>
+                    <th class="px-3 py-2 text-left">Category</th>
                     <th class="px-3 py-2 text-right">Stock</th>
                     <th class="px-3 py-2 text-right">Unit Price</th>
                     <th class="px-3 py-2 text-right">Total Value</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                  <tr *ngFor="let p of topProductsByValue" class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-2">
-                      <div class="font-medium text-gray-800">{{ p.name }}</div>
-                      <div class="text-gray-400">{{ p.category }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-right text-gray-600">{{ p.stock }} units</td>
+                  <tr *ngFor="let p of filteredTopProducts" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2 font-medium text-gray-800">{{ p.name }}</td>
+                    <td class="px-3 py-2 text-gray-500">{{ p.category }}</td>
+                    <td class="px-3 py-2 text-right text-gray-600">{{ p.stock }}</td>
                     <td class="px-3 py-2 text-right text-gray-600">৳{{ p.purchasePrice | number:'1.2-2' }}</td>
                     <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳{{ (p.stock * p.purchasePrice) | number:'1.2-2' }}</td>
+                  </tr>
+                  <tr *ngIf="filteredTopProducts.length === 0">
+                    <td colspan="5" class="px-3 py-4 text-center text-gray-400">No products match</td>
                   </tr>
                 </tbody>
               </table>
@@ -521,6 +527,16 @@ interface DailyStats {
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
           <div class="px-3 py-2" style="background:#1a1c4e">
             <h3 class="text-white font-semibold text-sm">Recent Transactions</h3>
+          </div>
+          <div class="px-3 py-2 border-b flex gap-2">
+            <input type="text" [(ngModel)]="transactionSearch" placeholder="Search by party name…"
+              class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+            <select [(ngModel)]="transactionTypeFilter"
+              class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+              <option value="">All Types</option>
+              <option value="sale">Sale</option>
+              <option value="purchase">Purchase</option>
+            </select>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-xs">
@@ -534,7 +550,7 @@ interface DailyStats {
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
-                <tr *ngFor="let t of recentTransactions" class="hover:bg-gray-50 transition">
+                <tr *ngFor="let t of filteredRecentTransactions" class="hover:bg-gray-50 transition">
                   <td class="px-3 py-2 text-gray-600">{{ t.date }}</td>
                   <td class="px-3 py-2">
                     <span class="px-2 py-0.5 rounded-full text-xs font-medium"
@@ -552,6 +568,9 @@ interface DailyStats {
                   <td class="px-3 py-2">
                     <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Completed</span>
                   </td>
+                </tr>
+                <tr *ngIf="filteredRecentTransactions.length === 0">
+                  <td colspan="5" class="px-3 py-4 text-center text-gray-400">No transactions match</td>
                 </tr>
               </tbody>
             </table>
@@ -593,6 +612,13 @@ export class DashboardComponent implements OnInit {
   lowStockList: any[] = []; lowStockTotal = 0;
   lowStockPage = 1; lowStockPageSize = 10; lowStockSearch = ''; lowStockThreshold = 10;
   get lowStockTotalPages(): number { return Math.ceil(this.lowStockTotal / this.lowStockPageSize) || 1; }
+
+  // Top Products search
+  topProductsSearch = '';
+
+  // Recent Transactions search/filter
+  transactionSearch = '';
+  transactionTypeFilter = '';
 
   // Daily performance from API
   apiDailyPerformance: DailyPerformanceDto[] = [];
@@ -898,6 +924,21 @@ export class DashboardComponent implements OnInit {
     return this.transactions
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 10);
+  }
+
+  get filteredTopProducts(): Product[] {
+    const q = this.topProductsSearch.toLowerCase().trim();
+    return this.topProductsByValue.filter(p =>
+      !q || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+    );
+  }
+
+  get filteredRecentTransactions(): Transaction[] {
+    let list = this.recentTransactions;
+    if (this.transactionTypeFilter) list = list.filter(t => t.type === this.transactionTypeFilter);
+    const q = this.transactionSearch.toLowerCase().trim();
+    if (q) list = list.filter(t => t.partyName.toLowerCase().includes(q));
+    return list;
   }
 
   get dailyPerformance(): DailyStats[] {
