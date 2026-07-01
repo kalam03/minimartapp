@@ -317,9 +317,17 @@ interface DailyStats {
 
         <!-- Customer Due & Supplier Debt -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
+
+          <!-- Customer Due -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2" style="background:#1a1c4e">
-              <h3 class="text-white font-semibold text-sm">Top 10 Customers by Due Amount</h3>
+            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+              <h3 class="text-white font-semibold text-sm">Customers by Due Amount</h3>
+              <span class="text-xs" style="color:#ACB3E7">{{ customerDueTotal }} total</span>
+            </div>
+            <div class="px-3 py-2 border-b">
+              <input type="text" [(ngModel)]="customerDueSearch" (input)="customerDuePage=1; loadCustomerDue()"
+                placeholder="Search by name or phone…"
+                class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
@@ -327,33 +335,48 @@ interface DailyStats {
                   <tr>
                     <th class="px-3 py-2 text-left">#</th>
                     <th class="px-3 py-2 text-left">Customer</th>
+                    <th class="px-3 py-2 text-left">Phone</th>
                     <th class="px-3 py-2 text-right">Due Amount</th>
-                    <th class="px-3 py-2 text-right">Total Sales</th>
-                    <th class="px-3 py-2 text-left">Contact</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                  <tr *ngFor="let c of topCustomerDue; let i = index" class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-2 text-gray-500">#{{ i+1 }}</td>
-                    <td class="px-3 py-2">
-                      <div class="font-medium text-gray-800">{{ c.name }}</div>
-                      <div class="text-gray-400">ID: {{ c.id }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-right">
-                      <span class="font-bold text-red-600">৳{{ c.dueAmount | number:'1.2-2' }}</span>
-                      <div class="text-gray-400">Limit: ৳{{ c.creditLimit | number:'1.0-0' }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-right text-gray-600">৳{{ c.totalSales | number:'1.2-2' }}</td>
+                  <tr *ngFor="let c of customerDueList; let i = index" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2 text-gray-500">{{ (customerDuePage-1)*customerDuePageSize + i + 1 }}</td>
+                    <td class="px-3 py-2 font-medium text-gray-800">{{ c.customerName }}</td>
                     <td class="px-3 py-2 text-gray-500">{{ c.phone || '-' }}</td>
+                    <td class="px-3 py-2 text-right font-bold text-red-600">৳{{ c.dueAmount | number:'1.2-2' }}</td>
+                  </tr>
+                  <tr *ngIf="customerDueList.length === 0">
+                    <td colspan="4" class="px-3 py-4 text-center text-gray-400">No records found</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+            <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
+              <span class="text-gray-500">Page {{ customerDuePage }} of {{ customerDueTotalPages }}</span>
+              <div class="flex gap-1">
+                <button (click)="customerDuePage=customerDuePage-1; loadCustomerDue()" [disabled]="customerDuePage===1"
+                  class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
+                <select [(ngModel)]="customerDuePageSize" (change)="customerDuePage=1; loadCustomerDue()"
+                  class="px-1 py-1 border rounded text-xs">
+                  <option [value]="10">10</option><option [value]="25">25</option><option [value]="50">50</option>
+                </select>
+                <button (click)="customerDuePage=customerDuePage+1; loadCustomerDue()" [disabled]="customerDuePage>=customerDueTotalPages"
+                  class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">→</button>
+              </div>
+            </div>
           </div>
 
+          <!-- Supplier Due -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2" style="background:#1a1c4e">
-              <h3 class="text-white font-semibold text-sm">Top 10 Suppliers by Debt</h3>
+            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+              <h3 class="text-white font-semibold text-sm">Suppliers by Due Amount</h3>
+              <span class="text-xs" style="color:#ACB3E7">{{ supplierDueTotal }} total</span>
+            </div>
+            <div class="px-3 py-2 border-b">
+              <input type="text" [(ngModel)]="supplierDueSearch" (input)="supplierDuePage=1; loadSupplierDue()"
+                placeholder="Search by name or phone…"
+                class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
@@ -361,63 +384,109 @@ interface DailyStats {
                   <tr>
                     <th class="px-3 py-2 text-left">#</th>
                     <th class="px-3 py-2 text-left">Supplier</th>
-                    <th class="px-3 py-2 text-right">Debt Amount</th>
-                    <th class="px-3 py-2 text-right">Total Purchases</th>
-                    <th class="px-3 py-2 text-left">Contact</th>
+                    <th class="px-3 py-2 text-left">Phone</th>
+                    <th class="px-3 py-2 text-right">Due Amount</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                  <tr *ngFor="let s of topSupplierDebt; let i = index" class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-2 text-gray-500">#{{ i+1 }}</td>
-                    <td class="px-3 py-2">
-                      <div class="font-medium text-gray-800">{{ s.name }}</div>
-                      <div class="text-gray-400">ID: {{ s.id }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-right font-bold text-orange-600">৳{{ s.dueAmount | number:'1.2-2' }}</td>
-                    <td class="px-3 py-2 text-right text-gray-600">৳{{ s.totalPurchases | number:'1.2-2' }}</td>
+                  <tr *ngFor="let s of supplierDueList; let i = index" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2 text-gray-500">{{ (supplierDuePage-1)*supplierDuePageSize + i + 1 }}</td>
+                    <td class="px-3 py-2 font-medium text-gray-800">{{ s.supplierName }}</td>
                     <td class="px-3 py-2 text-gray-500">{{ s.phone || '-' }}</td>
+                    <td class="px-3 py-2 text-right font-bold text-orange-600">৳{{ s.dueAmount | number:'1.2-2' }}</td>
+                  </tr>
+                  <tr *ngIf="supplierDueList.length === 0">
+                    <td colspan="4" class="px-3 py-4 text-center text-gray-400">No records found</td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
+              <span class="text-gray-500">Page {{ supplierDuePage }} of {{ supplierDueTotalPages }}</span>
+              <div class="flex gap-1">
+                <button (click)="supplierDuePage=supplierDuePage-1; loadSupplierDue()" [disabled]="supplierDuePage===1"
+                  class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
+                <select [(ngModel)]="supplierDuePageSize" (change)="supplierDuePage=1; loadSupplierDue()"
+                  class="px-1 py-1 border rounded text-xs">
+                  <option [value]="10">10</option><option [value]="25">25</option><option [value]="50">50</option>
+                </select>
+                <button (click)="supplierDuePage=supplierDuePage+1; loadSupplierDue()" [disabled]="supplierDuePage>=supplierDueTotalPages"
+                  class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">→</button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Low Stock & Top Products -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
-          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2" style="background:#1a1c4e">
-              <h3 class="text-white font-semibold text-sm">Low Stock Alert</h3>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-xs">
-                <thead style="background:#1a1c4e;color:#e0e3f8">
-                  <tr>
-                    <th class="px-3 py-2 text-left">Product</th>
-                    <th class="px-3 py-2 text-left">Category</th>
-                    <th class="px-3 py-2 text-right">Stock</th>
-                    <th class="px-3 py-2 text-right">Reorder</th>
-                    <th class="px-3 py-2 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr *ngFor="let p of lowStockProducts" class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-2">
-                      <div class="font-medium text-gray-800">{{ p.name }}</div>
-                      <div class="text-gray-400">{{ p.location || 'Main Store' }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-gray-600">{{ p.category }}</td>
-                    <td class="px-3 py-2 text-right font-bold text-red-600">{{ p.stock }} units</td>
-                    <td class="px-3 py-2 text-right text-gray-600">{{ p.reorderLevel }} units</td>
-                    <td class="px-3 py-2 text-right">
-                      <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Critical</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        <!-- Low Stock Alert (full width) -->
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+            <h3 class="text-white font-semibold text-sm">Low Stock Alert</h3>
+            <div class="flex items-center gap-2">
+              <span class="text-xs" style="color:#ACB3E7">Threshold ≤</span>
+              <input type="number" [(ngModel)]="lowStockThreshold" (change)="lowStockPage=1; loadLowStock()"
+                class="w-14 px-1 py-0.5 text-xs border rounded text-center" min="1">
+              <span class="text-xs" style="color:#ACB3E7">{{ lowStockTotal }} items</span>
             </div>
           </div>
+          <div class="px-3 py-2 border-b">
+            <input type="text" [(ngModel)]="lowStockSearch" (input)="lowStockPage=1; loadLowStock()"
+              placeholder="Search by product name or barcode…"
+              class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead style="background:#1a1c4e;color:#e0e3f8">
+                <tr>
+                  <th class="px-3 py-2 text-left">#</th>
+                  <th class="px-3 py-2 text-left">Product</th>
+                  <th class="px-3 py-2 text-left">Category</th>
+                  <th class="px-3 py-2 text-left">Barcode</th>
+                  <th class="px-3 py-2 text-right">Stock Qty</th>
+                  <th class="px-3 py-2 text-right">Purchase Price</th>
+                  <th class="px-3 py-2 text-right">Sale Price</th>
+                  <th class="px-3 py-2 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let p of lowStockList; let i = index" class="hover:bg-gray-50 transition">
+                  <td class="px-3 py-2 text-gray-500">{{ (lowStockPage-1)*lowStockPageSize + i + 1 }}</td>
+                  <td class="px-3 py-2 font-medium text-gray-800">{{ p.productName }}</td>
+                  <td class="px-3 py-2 text-gray-500">{{ p.categoryName }}</td>
+                  <td class="px-3 py-2 text-gray-400 font-mono">{{ p.barcode || '-' }}</td>
+                  <td class="px-3 py-2 text-right font-bold text-red-600">{{ p.stockQty }}</td>
+                  <td class="px-3 py-2 text-right text-gray-600">৳{{ p.purchasePrice | number:'1.2-2' }}</td>
+                  <td class="px-3 py-2 text-right text-gray-600">৳{{ p.salePrice | number:'1.2-2' }}</td>
+                  <td class="px-3 py-2 text-center">
+                    <span class="px-2 py-0.5 rounded-full font-medium"
+                      [class.bg-red-100]="p.stockQty === 0" [class.text-red-700]="p.stockQty === 0"
+                      [class.bg-orange-100]="p.stockQty > 0" [class.text-orange-700]="p.stockQty > 0">
+                      {{ p.stockQty === 0 ? 'Out of Stock' : 'Low Stock' }}
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="lowStockList.length === 0">
+                  <td colspan="8" class="px-3 py-4 text-center text-gray-400">No low stock items found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
+            <span class="text-gray-500">Page {{ lowStockPage }} of {{ lowStockTotalPages }}</span>
+            <div class="flex gap-1">
+              <button (click)="lowStockPage=lowStockPage-1; loadLowStock()" [disabled]="lowStockPage===1"
+                class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
+              <select [(ngModel)]="lowStockPageSize" (change)="lowStockPage=1; loadLowStock()"
+                class="px-1 py-1 border rounded text-xs">
+                <option [value]="10">10</option><option [value]="25">25</option><option [value]="50">50</option>
+              </select>
+              <button (click)="lowStockPage=lowStockPage+1; loadLowStock()" [disabled]="lowStockPage>=lowStockTotalPages"
+                class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">→</button>
+            </div>
+          </div>
+        </div>
 
+        <!-- Top Products by Inventory Value -->
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2" style="background:#1a1c4e">
               <h3 class="text-white font-semibold text-sm">Top Products by Inventory Value</h3>
@@ -510,6 +579,21 @@ export class DashboardComponent implements OnInit {
   };
   purchaseSummaryLoading = false;
 
+  // Customer Due
+  customerDueList: any[] = []; customerDueTotal = 0;
+  customerDuePage = 1; customerDuePageSize = 10; customerDueSearch = '';
+  get customerDueTotalPages(): number { return Math.ceil(this.customerDueTotal / this.customerDuePageSize) || 1; }
+
+  // Supplier Due
+  supplierDueList: any[] = []; supplierDueTotal = 0;
+  supplierDuePage = 1; supplierDuePageSize = 10; supplierDueSearch = '';
+  get supplierDueTotalPages(): number { return Math.ceil(this.supplierDueTotal / this.supplierDuePageSize) || 1; }
+
+  // Low Stock
+  lowStockList: any[] = []; lowStockTotal = 0;
+  lowStockPage = 1; lowStockPageSize = 10; lowStockSearch = ''; lowStockThreshold = 10;
+  get lowStockTotalPages(): number { return Math.ceil(this.lowStockTotal / this.lowStockPageSize) || 1; }
+
   // Daily performance from API
   apiDailyPerformance: DailyPerformanceDto[] = [];
   get apiMaxDailyValue(): number {
@@ -537,6 +621,9 @@ export class DashboardComponent implements OnInit {
     this.loadPurchaseSummary();
     this.loadSalesSummary();
     this.loadDailyPerformance();
+    this.loadCustomerDue();
+    this.loadSupplierDue();
+    this.loadLowStock();
   }
 
   getAllCustomers(): void {
@@ -564,6 +651,27 @@ export class DashboardComponent implements OnInit {
         console.error('Error loading purchase summary:', err);
         this.purchaseSummaryLoading = false;
       }
+    });
+  }
+
+  loadCustomerDue(): void {
+    this.saleService.getCustomerDue(this.customerDueSearch, this.customerDuePage, this.customerDuePageSize).subscribe({
+      next: (res) => { if (res.success) { this.customerDueList = res.data; this.customerDueTotal = res.totalCount; this.cdr.detectChanges(); } },
+      error: (err) => console.error('Customer due error:', err)
+    });
+  }
+
+  loadSupplierDue(): void {
+    this.saleService.getSupplierDue(this.supplierDueSearch, this.supplierDuePage, this.supplierDuePageSize).subscribe({
+      next: (res) => { if (res.success) { this.supplierDueList = res.data; this.supplierDueTotal = res.totalCount; this.cdr.detectChanges(); } },
+      error: (err) => console.error('Supplier due error:', err)
+    });
+  }
+
+  loadLowStock(): void {
+    this.saleService.getLowStock(this.lowStockSearch, this.lowStockThreshold, this.lowStockPage, this.lowStockPageSize).subscribe({
+      next: (res) => { if (res.success) { this.lowStockList = res.data; this.lowStockTotal = res.totalCount; this.cdr.detectChanges(); } },
+      error: (err) => console.error('Low stock error:', err)
     });
   }
 
