@@ -51,62 +51,26 @@ interface DailyStats {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="space-y-6 p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-      
-      <!-- Header with Quick Actions -->
-      <div class="bg-white rounded-2xl shadow-lg p-6">
-        <div class="flex flex-wrap justify-between items-center">
-          <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Shop Management Dashboard
-            </h1>
-            <p class="text-gray-500 mt-1">Real-time business intelligence & analytics</p>
-          </div>
-          <div class="flex gap-3">
-            <button class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              New Sale
-            </button>
-            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              New Purchase
-            </button>
-          </div>
-        </div>
-      </div>
+    <div class="px-3 py-2">
+      <div class="max-w-8xl mx-auto">
 
-      <!-- Enhanced Date Filter -->
-      <div class="bg-white rounded-2xl shadow-lg p-5">
-        <div class="flex flex-wrap gap-4 items-end justify-between">
-          <div class="flex gap-4 flex-wrap">
+        <!-- Date Filter -->
+        <div class="bg-white rounded-xl shadow-md border mb-3 p-3">
+          <div class="flex flex-wrap gap-3 items-end">
             <div>
-              <label class="text-sm font-medium text-gray-700 block mb-1">Start Date</label>
-              <input 
-                type="date" 
-                [(ngModel)]="startDate" 
-                (change)="filterByDate()"
-                class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Start Date</label>
+              <input type="date" [(ngModel)]="startDate" (change)="filterByDate()"
+                class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700 block mb-1">End Date</label>
-              <input 
-                type="date" 
-                [(ngModel)]="endDate" 
-                (change)="filterByDate()"
-                class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">End Date</label>
+              <input type="date" [(ngModel)]="endDate" (change)="filterByDate()"
+                class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-700 block mb-1">Quick Filters</label>
-              <select 
-                (change)="quickFilter($event)"
-                class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
-              >
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Quick Filter</label>
+              <select (change)="quickFilter($event)"
+                class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="">Custom Range</option>
                 <option value="today">Today</option>
                 <option value="yesterday">Yesterday</option>
@@ -115,436 +79,338 @@ interface DailyStats {
                 <option value="quarter">This Quarter</option>
               </select>
             </div>
+            <button (click)="resetDateFilter()"
+              class="px-3 py-1.5 text-xs rounded-lg font-semibold transition" style="background:#ACB3E7;color:#1a1c4e"
+              onmouseover="this.style.background='#c8ccee'" onmouseout="this.style.background='#ACB3E7'">
+              Reset
+            </button>
           </div>
-          <button 
-            (click)="resetDateFilter()"
-            class="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-          >
-            Reset Filters
-          </button>
         </div>
-      </div>
 
-      <!-- Key Metrics Cards with Trends -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Sales Card -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition group">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm text-gray-500 font-medium">Total Sales</p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ filteredStats.sales | currency:'USD':'symbol':'1.2-2' }}</p>
-              <div class="flex items-center gap-2 mt-2">
-                <span class="text-xs px-2 py-1 rounded-full" [class.bg-green-100]="salesGrowth >= 0" [class.bg-red-100]="salesGrowth < 0">
-                  <span [class.text-green-600]="salesGrowth >= 0" [class.text-red-600]="salesGrowth < 0">
-                    {{ salesGrowth >= 0 ? '+' : '' }}{{ salesGrowth }}%
-                  </span>
-                </span>
-                <span class="text-xs text-gray-500">vs last period</span>
-              </div>
-            </div>
-            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- KPI Cards Row 1 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Sales</p>
+              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-          </div>
-          <div class="mt-3 pt-3 border-t border-gray-100">
-            <p class="text-xs text-gray-400">Today: {{ todayStats.sales | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>
-        </div>
-
-        <!-- Purchases Card -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition group">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm text-gray-500 font-medium">Total Purchases</p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ filteredStats.purchases | currency:'USD':'symbol':'1.2-2' }}</p>
-              <div class="flex items-center gap-2 mt-2">
-                <span class="text-xs px-2 py-1 rounded-full" [class.bg-green-100]="purchasesGrowth <= 0" [class.bg-red-100]="purchasesGrowth > 0">
-                  <span [class.text-green-600]="purchasesGrowth <= 0" [class.text-red-600]="purchasesGrowth > 0">
-                    {{ purchasesGrowth >= 0 ? '+' : '' }}{{ purchasesGrowth }}%
-                  </span>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ filteredStats.sales | number:'1.2-2' }}</p>
+              <div class="flex items-center gap-1 mt-1">
+                <span class="text-xs px-1.5 py-0.5 rounded-full" [class.bg-green-100]="salesGrowth>=0" [class.bg-red-100]="salesGrowth<0">
+                  <span [class.text-green-600]="salesGrowth>=0" [class.text-red-600]="salesGrowth<0">{{ salesGrowth>=0?'+':'' }}{{ salesGrowth }}%</span>
                 </span>
-                <span class="text-xs text-gray-500">vs last period</span>
+                <span class="text-xs text-gray-400">vs last period</span>
               </div>
+              <p class="text-xs text-gray-400 mt-1">Today: ৳{{ todayStats.sales | number:'1.2-2' }}</p>
             </div>
-            <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Purchases</p>
+              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
             </div>
-          </div>
-          <div class="mt-3 pt-3 border-t border-gray-100">
-            <p class="text-xs text-gray-400">Today: {{ todayStats.purchases | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>
-        </div>
-
-        <!-- Profit Card -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition group">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm text-gray-500 font-medium">Net Profit</p>
-              <p class="text-3xl font-bold mt-1" [class.text-green-600]="filteredStats.profit >= 0" [class.text-red-600]="filteredStats.profit < 0">
-                {{ filteredStats.profit | currency:'USD':'symbol':'1.2-2' }}
-              </p>
-              <div class="flex items-center gap-2 mt-2">
-                <span class="text-xs px-2 py-1 rounded-full" [class.bg-green-100]="profitMargin >= 0" [class.bg-red-100]="profitMargin < 0">
-                  <span [class.text-green-600]="profitMargin >= 0" [class.text-red-600]="profitMargin < 0">
-                    Margin: {{ profitMargin }}%
-                  </span>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ filteredStats.purchases | number:'1.2-2' }}</p>
+              <div class="flex items-center gap-1 mt-1">
+                <span class="text-xs px-1.5 py-0.5 rounded-full" [class.bg-green-100]="purchasesGrowth<=0" [class.bg-red-100]="purchasesGrowth>0">
+                  <span [class.text-green-600]="purchasesGrowth<=0" [class.text-red-600]="purchasesGrowth>0">{{ purchasesGrowth>=0?'+':'' }}{{ purchasesGrowth }}%</span>
                 </span>
+                <span class="text-xs text-gray-400">vs last period</span>
               </div>
+              <p class="text-xs text-gray-400 mt-1">Today: ৳{{ todayStats.purchases | number:'1.2-2' }}</p>
             </div>
-            <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Net Profit</p>
+              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
               </svg>
             </div>
-          </div>
-          <div class="mt-3 pt-3 border-t border-gray-100">
-            <p class="text-xs text-gray-400">Today: {{ todayStats.profit | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>
-        </div>
-
-        <!-- Transaction Count Card -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition group">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-sm text-gray-500 font-medium">Transactions</p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ totalTransactions }}</p>
-              <div class="flex gap-3 mt-2 text-xs">
-                <span class="text-green-600">Sales: {{ salesCount }}</span>
-                <span class="text-orange-600">Purchases: {{ purchasesCount }}</span>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold" [class.text-green-600]="filteredStats.profit>=0" [class.text-red-600]="filteredStats.profit<0">৳{{ filteredStats.profit | number:'1.2-2' }}</p>
+              <div class="flex items-center gap-1 mt-1">
+                <span class="text-xs px-1.5 py-0.5 rounded-full" [class.bg-green-100]="profitMargin>=0" [class.bg-red-100]="profitMargin<0">
+                  <span [class.text-green-600]="profitMargin>=0" [class.text-red-600]="profitMargin<0">Margin: {{ profitMargin }}%</span>
+                </span>
               </div>
+              <p class="text-xs text-gray-400 mt-1">Today: ৳{{ todayStats.profit | number:'1.2-2' }}</p>
             </div>
-            <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Transactions</p>
+              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Secondary Metrics Row -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl shadow-lg p-5 text-white">
-          <div class="flex justify-between items-center">
-            <div>
-              <p class="text-sm opacity-90">Total Customers</p>
-              <p class="text-3xl font-bold mt-1">{{ totalCustomers }}</p>
-              <p class="text-xs opacity-75 mt-1">Active accounts</p>
-            </div>
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="mt-3 pt-3 border-t border-white/20">
-            <p class="text-xs">Total Due: {{ totalCustomerDue | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-5 text-white">
-          <div class="flex justify-between items-center">
-            <div>
-              <p class="text-sm opacity-90">Total Suppliers</p>
-              <p class="text-3xl font-bold mt-1">{{ totalSuppliers }}</p>
-              <p class="text-xs opacity-75 mt-1">Active vendors</p>
-            </div>
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="mt-3 pt-3 border-t border-white/20">
-            <p class="text-xs">Total Debt: {{ totalSupplierDebt | currency:'USD':'symbol':'1.2-2' }}</p>
-          </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl shadow-lg p-5 text-white">
-          <div class="flex justify-between items-center">
-            <div>
-              <p class="text-sm opacity-90">Inventory Value</p>
-              <p class="text-3xl font-bold mt-1">{{ inventoryValue | currency:'USD':'symbol':'1.2-2' }}</p>
-              <p class="text-xs opacity-75 mt-1">{{ totalProducts }} products</p>
-            </div>
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-              </svg>
-            </div>
-          </div>
-          <div class="mt-3 pt-3 border-t border-white/20">
-            <p class="text-xs">Low Stock Items: {{ lowStockProducts.length }}</p>
-          </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-lg p-5 text-white">
-          <div class="flex justify-between items-center">
-            <div>
-              <p class="text-sm opacity-90">Avg. Transaction</p>
-              <p class="text-3xl font-bold mt-1">{{ avgTransactionValue | currency:'USD':'symbol':'1.2-2' }}</p>
-              <p class="text-xs opacity-75 mt-1">Per transaction</p>
-            </div>
-            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Daily Performance Chart (Simplified) -->
-      <div class="bg-white rounded-2xl shadow-lg p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-gray-800">Daily Performance (Last 7 Days)</h3>
-          <div class="flex gap-3">
-            <span class="flex items-center gap-1 text-xs">
-              <div class="w-3 h-3 bg-green-500 rounded"></div>
-              <span>Sales</span>
-            </span>
-            <span class="flex items-center gap-1 text-xs">
-              <div class="w-3 h-3 bg-orange-500 rounded"></div>
-              <span>Purchases</span>
-            </span>
-          </div>
-        </div>
-        <div class="overflow-x-auto">
-          <div class="flex gap-4 min-w-max">
-            <div *ngFor="let day of dailyPerformance" class="flex flex-col items-center">
-              <div class="text-xs text-gray-500 mb-2">{{ day.date | date:'MMM dd' }}</div>
-              <div class="flex gap-1 items-end h-32">
-                <div class="w-8 bg-green-400 rounded-t hover:bg-green-500 transition" 
-                     [style.height.px]="getBarHeight(day.sales, maxDailyValue)"></div>
-                <div class="w-8 bg-orange-400 rounded-t hover:bg-orange-500 transition" 
-                     [style.height.px]="getBarHeight(day.purchases, maxDailyValue)"></div>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold" style="color:#1a1c4e">{{ totalTransactions }}</p>
+              <div class="flex gap-3 mt-1 text-xs">
+                <span class="text-green-600">Sales: {{ salesCount }}</span>
+                <span class="text-orange-500">Purchases: {{ purchasesCount }}</span>
               </div>
-              <div class="text-xs font-semibold mt-2">P: {{ day.profit | currency:'USD':'symbol':'1.0-0' }}</div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Top Due Lists with Enhanced Details -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Customer Due -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              Top 10 Customers by Due Amount
-            </h3>
-            <p class="text-xs text-red-100 mt-1">Highest outstanding payments</p>
+        <!-- KPI Cards Row 2 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+            <div class="px-3 py-2 border-b border-white border-opacity-10">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Customers</p>
+            </div>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold text-white">{{ totalCustomers }}</p>
+              <p class="text-xs mt-1" style="color:#ACB3E7">Active accounts</p>
+              <p class="text-xs mt-1 text-white opacity-70">Due: ৳{{ totalCustomerDue | number:'1.2-2' }}</p>
+            </div>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Due Amount</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Sales</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                 </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <tr *ngFor="let customer of topCustomerDue; let i = index" class="hover:bg-gray-50 transition">
-                  <td class="px-6 py-3 text-sm font-semibold text-gray-500">#{{ i+1 }}</td>
-                  <td class="px-6 py-3">
-                    <div class="font-medium text-gray-800">{{ customer.name }}</div>
-                    <div class="text-xs text-gray-400">ID: {{ customer.id }}</div>
-                  </td>
-                  <td class="px-6 py-3 text-right">
-                    <span class="text-red-600 font-bold">{{ customer.dueAmount | currency:'USD':'symbol':'1.2-2' }}</span>
-                    <div class="text-xs text-gray-400">Limit: {{ customer.creditLimit | currency:'USD':'symbol':'1.0-0' }}</div>
-                  </td>
-                  <td class="px-6 py-3 text-right text-sm text-gray-600">{{ customer.totalSales | currency:'USD':'symbol':'1.2-2' }}</td>
-                  <td class="px-6 py-3 text-sm text-gray-500">{{ customer.phone || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
+
+          <div class="rounded-xl border overflow-hidden" style="background:#252862">
+            <div class="px-3 py-2 border-b border-white border-opacity-10">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Suppliers</p>
+            </div>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold text-white">{{ totalSuppliers }}</p>
+              <p class="text-xs mt-1" style="color:#ACB3E7">Active vendors</p>
+              <p class="text-xs mt-1 text-white opacity-70">Debt: ৳{{ totalSupplierDebt | number:'1.2-2' }}</p>
+            </div>
+          </div>
+
+          <div class="rounded-xl border overflow-hidden" style="background:#3a3d7a">
+            <div class="px-3 py-2 border-b border-white border-opacity-10">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Inventory Value</p>
+            </div>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold text-white">৳{{ inventoryValue | number:'1.0-0' }}</p>
+              <p class="text-xs mt-1" style="color:#ACB3E7">{{ totalProducts }} products</p>
+              <p class="text-xs mt-1 text-white opacity-70">Low stock: {{ lowStockProducts.length }}</p>
+            </div>
+          </div>
+
+          <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+            <div class="px-3 py-2 border-b border-white border-opacity-10">
+              <p class="text-xs font-semibold" style="color:#ACB3E7">Avg. Transaction</p>
+            </div>
+            <div class="px-3 py-2">
+              <p class="text-xl font-bold text-white">৳{{ avgTransactionValue | number:'1.2-2' }}</p>
+              <p class="text-xs mt-1" style="color:#ACB3E7">Per transaction</p>
+            </div>
           </div>
         </div>
 
-        <!-- Supplier Debt -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-              </svg>
-              Top 10 Suppliers by Debt (Owed to Us)
-            </h3>
-            <p class="text-xs text-orange-100 mt-1">Suppliers who owe money to the shop</p>
+        <!-- Daily Performance -->
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+            <h3 class="text-white font-semibold text-sm">Daily Performance (Last 7 Days)</h3>
+            <div class="flex gap-3">
+              <span class="flex items-center gap-1 text-xs" style="color:#ACB3E7">
+                <span class="inline-block w-3 h-3 rounded" style="background:#4ade80"></span> Sales
+              </span>
+              <span class="flex items-center gap-1 text-xs" style="color:#ACB3E7">
+                <span class="inline-block w-3 h-3 rounded" style="background:#fb923c"></span> Purchases
+              </span>
+            </div>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Supplier</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Debt Amount</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Purchases</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                 </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <tr *ngFor="let supplier of topSupplierDebt; let i = index" class="hover:bg-gray-50 transition">
-                  <td class="px-6 py-3 text-sm font-semibold text-gray-500">#{{ i+1 }}</td>
-                  <td class="px-6 py-3">
-                    <div class="font-medium text-gray-800">{{ supplier.name }}</div>
-                    <div class="text-xs text-gray-400">ID: {{ supplier.id }}</div>
-                  </td>
-                  <td class="px-6 py-3 text-right">
-                    <span class="text-orange-600 font-bold">{{ supplier.dueAmount | currency:'USD':'symbol':'1.2-2' }}</span>
-                  </td>
-                  <td class="px-6 py-3 text-right text-sm text-gray-600">{{ supplier.totalPurchases | currency:'USD':'symbol':'1.2-2' }}</td>
-                  <td class="px-6 py-3 text-sm text-gray-500">{{ supplier.phone || '-' }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="p-3 overflow-x-auto">
+            <div class="flex gap-4 min-w-max">
+              <div *ngFor="let day of dailyPerformance" class="flex flex-col items-center">
+                <div class="text-xs text-gray-500 mb-1">{{ day.date | date:'MMM dd' }}</div>
+                <div class="flex gap-1 items-end h-24">
+                  <div class="w-6 rounded-t transition" style="background:#4ade80"
+                       [style.height.px]="getBarHeight(day.sales, maxDailyValue)"></div>
+                  <div class="w-6 rounded-t transition" style="background:#fb923c"
+                       [style.height.px]="getBarHeight(day.purchases, maxDailyValue)"></div>
+                </div>
+                <div class="text-xs font-semibold mt-1" style="color:#1a1c4e">৳{{ day.profit | number:'1.0-0' }}</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Inventory & Alerts Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Low Stock Alert -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 px-6 py-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-              Low Stock Alert (Below Reorder Level)
-            </h3>
-            <p class="text-xs text-yellow-100 mt-1">Items requiring immediate attention</p>
+        <!-- Customer Due & Supplier Debt -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2" style="background:#1a1c4e">
+              <h3 class="text-white font-semibold text-sm">Top 10 Customers by Due Amount</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs">
+                <thead style="background:#1a1c4e;color:#e0e3f8">
+                  <tr>
+                    <th class="px-3 py-2 text-left">#</th>
+                    <th class="px-3 py-2 text-left">Customer</th>
+                    <th class="px-3 py-2 text-right">Due Amount</th>
+                    <th class="px-3 py-2 text-right">Total Sales</th>
+                    <th class="px-3 py-2 text-left">Contact</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr *ngFor="let c of topCustomerDue; let i = index" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2 text-gray-500">#{{ i+1 }}</td>
+                    <td class="px-3 py-2">
+                      <div class="font-medium text-gray-800">{{ c.name }}</div>
+                      <div class="text-gray-400">ID: {{ c.id }}</div>
+                    </td>
+                    <td class="px-3 py-2 text-right">
+                      <span class="font-bold text-red-600">৳{{ c.dueAmount | number:'1.2-2' }}</span>
+                      <div class="text-gray-400">Limit: ৳{{ c.creditLimit | number:'1.0-0' }}</div>
+                    </td>
+                    <td class="px-3 py-2 text-right text-gray-600">৳{{ c.totalSales | number:'1.2-2' }}</td>
+                    <td class="px-3 py-2 text-gray-500">{{ c.phone || '-' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2" style="background:#1a1c4e">
+              <h3 class="text-white font-semibold text-sm">Top 10 Suppliers by Debt</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs">
+                <thead style="background:#1a1c4e;color:#e0e3f8">
+                  <tr>
+                    <th class="px-3 py-2 text-left">#</th>
+                    <th class="px-3 py-2 text-left">Supplier</th>
+                    <th class="px-3 py-2 text-right">Debt Amount</th>
+                    <th class="px-3 py-2 text-right">Total Purchases</th>
+                    <th class="px-3 py-2 text-left">Contact</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr *ngFor="let s of topSupplierDebt; let i = index" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2 text-gray-500">#{{ i+1 }}</td>
+                    <td class="px-3 py-2">
+                      <div class="font-medium text-gray-800">{{ s.name }}</div>
+                      <div class="text-gray-400">ID: {{ s.id }}</div>
+                    </td>
+                    <td class="px-3 py-2 text-right font-bold text-orange-600">৳{{ s.dueAmount | number:'1.2-2' }}</td>
+                    <td class="px-3 py-2 text-right text-gray-600">৳{{ s.totalPurchases | number:'1.2-2' }}</td>
+                    <td class="px-3 py-2 text-gray-500">{{ s.phone || '-' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Low Stock & Top Products -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2" style="background:#1a1c4e">
+              <h3 class="text-white font-semibold text-sm">Low Stock Alert</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs">
+                <thead style="background:#1a1c4e;color:#e0e3f8">
+                  <tr>
+                    <th class="px-3 py-2 text-left">Product</th>
+                    <th class="px-3 py-2 text-left">Category</th>
+                    <th class="px-3 py-2 text-right">Stock</th>
+                    <th class="px-3 py-2 text-right">Reorder</th>
+                    <th class="px-3 py-2 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr *ngFor="let p of lowStockProducts" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2">
+                      <div class="font-medium text-gray-800">{{ p.name }}</div>
+                      <div class="text-gray-400">{{ p.location || 'Main Store' }}</div>
+                    </td>
+                    <td class="px-3 py-2 text-gray-600">{{ p.category }}</td>
+                    <td class="px-3 py-2 text-right font-bold text-red-600">{{ p.stock }} units</td>
+                    <td class="px-3 py-2 text-right text-gray-600">{{ p.reorderLevel }} units</td>
+                    <td class="px-3 py-2 text-right">
+                      <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Critical</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+            <div class="px-3 py-2" style="background:#1a1c4e">
+              <h3 class="text-white font-semibold text-sm">Top Products by Inventory Value</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs">
+                <thead style="background:#1a1c4e;color:#e0e3f8">
+                  <tr>
+                    <th class="px-3 py-2 text-left">Product</th>
+                    <th class="px-3 py-2 text-right">Stock</th>
+                    <th class="px-3 py-2 text-right">Unit Price</th>
+                    <th class="px-3 py-2 text-right">Total Value</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                  <tr *ngFor="let p of topProductsByValue" class="hover:bg-gray-50 transition">
+                    <td class="px-3 py-2">
+                      <div class="font-medium text-gray-800">{{ p.name }}</div>
+                      <div class="text-gray-400">{{ p.category }}</div>
+                    </td>
+                    <td class="px-3 py-2 text-right text-gray-600">{{ p.stock }} units</td>
+                    <td class="px-3 py-2 text-right text-gray-600">৳{{ p.purchasePrice | number:'1.2-2' }}</td>
+                    <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳{{ (p.stock * p.purchasePrice) | number:'1.2-2' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+          <div class="px-3 py-2" style="background:#1a1c4e">
+            <h3 class="text-white font-semibold text-sm">Recent Transactions</h3>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
+            <table class="w-full text-xs">
+              <thead style="background:#1a1c4e;color:#e0e3f8">
                 <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Reorder Level</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Status</th>
-                 </tr>
+                  <th class="px-3 py-2 text-left">Date</th>
+                  <th class="px-3 py-2 text-left">Type</th>
+                  <th class="px-3 py-2 text-left">Party</th>
+                  <th class="px-3 py-2 text-right">Amount</th>
+                  <th class="px-3 py-2 text-left">Status</th>
+                </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200">
-                <tr *ngFor="let product of lowStockProducts" class="hover:bg-gray-50 transition">
-                  <td class="px-6 py-3">
-                    <div class="font-medium text-gray-800">{{ product.name }}</div>
-                    <div class="text-xs text-gray-400">{{ product.location || 'Main Store' }}</div>
-                  </td>
-                  <td class="px-6 py-3 text-sm text-gray-600">{{ product.category }}</td>
-                  <td class="px-6 py-3 text-right">
-                    <span class="font-bold text-red-600">{{ product.stock }} units</span>
-                  </td>
-                  <td class="px-6 py-3 text-right text-sm text-gray-600">{{ product.reorderLevel }} units</td>
-                  <td class="px-6 py-3 text-right">
-                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      Critical
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let t of recentTransactions" class="hover:bg-gray-50 transition">
+                  <td class="px-3 py-2 text-gray-600">{{ t.date }}</td>
+                  <td class="px-3 py-2">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium"
+                          [class.bg-green-100]="t.type==='sale'" [class.text-green-700]="t.type==='sale'"
+                          [class.bg-orange-100]="t.type==='purchase'" [class.text-orange-700]="t.type==='purchase'">
+                      {{ t.type === 'sale' ? 'Sale' : 'Purchase' }}
                     </span>
                   </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Top Products by Stock Value -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-              </svg>
-              Top Products by Inventory Value
-            </h3>
-            <p class="text-xs text-green-100 mt-1">Highest value items in stock</p>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Value</th>
-                 </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <tr *ngFor="let product of topProductsByValue" class="hover:bg-gray-50 transition">
-                  <td class="px-6 py-3">
-                    <div class="font-medium text-gray-800">{{ product.name }}</div>
-                    <div class="text-xs text-gray-400">{{ product.category }}</div>
+                  <td class="px-3 py-2 font-medium text-gray-800">{{ t.partyName }}</td>
+                  <td class="px-3 py-2 text-right font-semibold"
+                      [class.text-green-600]="t.type==='sale'"
+                      [class.text-orange-600]="t.type==='purchase'">
+                    ৳{{ t.amount | number:'1.2-2' }}
                   </td>
-                  <td class="px-6 py-3 text-right text-sm text-gray-600">{{ product.stock }} units</td>
-                  <td class="px-6 py-3 text-right text-sm text-gray-600">৳  {{ product.purchasePrice}}</td>
-                  <td class="px-6 py-3 text-right font-semibold text-gray-800">৳  {{ product.stock * product.purchasePrice }}</td>
+                  <td class="px-3 py-2">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Completed</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-      </div>
 
-      <!-- Recent Transactions -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div class="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-4">
-          <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-            Recent Transactions
-          </h3>
-          <p class="text-xs text-gray-300 mt-1">Last 10 transactions</p>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Party</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr *ngFor="let transaction of recentTransactions" class="hover:bg-gray-50 transition">
-                <td class="px-6 py-3 text-sm text-gray-600">{{ transaction.date }}</td>
-                <td class="px-6 py-3">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium" 
-                        [class.bg-green-100]="transaction.type === 'sale'" 
-                        [class.text-green-800]="transaction.type === 'sale'"
-                        [class.bg-orange-100]="transaction.type === 'purchase'"
-                        [class.text-orange-800]="transaction.type === 'purchase'">
-                    {{ transaction.type === 'sale' ? 'Sale' : 'Purchase' }}
-                  </span>
-                </td>
-                <td class="px-6 py-3 text-sm font-medium text-gray-800">{{ transaction.partyName }}</td>
-                <td class="px-6 py-3 text-right font-semibold" 
-                    [class.text-green-600]="transaction.type === 'sale'" 
-                    [class.text-orange-600]="transaction.type === 'purchase'">
-                  ৳{{ transaction.amount }}
-                </td>
-                <td class="px-6 py-3">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Completed
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   `,
