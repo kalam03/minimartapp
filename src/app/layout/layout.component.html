@@ -10,7 +10,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
-      <div class="font-bold text-sm" style="color: #ACB3E7">Mini Mart</div>
+      <div class="font-bold text-sm" style="color: #ACB3E7">Lucky Shop BD</div>
       <div class="w-5"></div>
     </div>
   </div>
@@ -34,9 +34,12 @@
       <div class="flex items-center justify-between px-3 py-2" style="background:#1a1c4e; border-bottom: 1px solid #3a3d7a; min-height: 40px">
         <div *ngIf="!isMobile() && !isSidebarMinimized()" class="flex items-center gap-2">
           <div class="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" style="background: #ACB3E7">
-            <span class="font-bold text-xs" style="color: #1a1c4e">M</span>
+            <svg class="w-4 h-4" fill="none" stroke="#1a1c4e" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
           </div>
-          <span class="font-semibold text-sm text-white">Mini Mart</span>
+          <span class="font-semibold text-sm text-white">Lucky Shop BD</span>
         </div>
         <div *ngIf="isSidebarMinimized() && !isMobile()" class="w-full flex justify-center">
           <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background: #ACB3E7">
@@ -45,9 +48,12 @@
         </div>
         <div *ngIf="isMobile()" class="flex items-center gap-2">
           <div class="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" style="background: #ACB3E7">
-            <span class="font-bold text-xs" style="color: #1a1c4e">M</span>
+            <svg class="w-4 h-4" fill="none" stroke="#1a1c4e" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
           </div>
-          <span class="font-semibold text-sm text-white">Mini Mart</span>
+          <span class="font-semibold text-sm text-white">Lucky Shop BD</span>
         </div>
 
         <button *ngIf="!isMobile()" (click)="toggleSidebar()"

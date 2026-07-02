@@ -639,7 +639,7 @@ export class PurchaseComponent implements OnInit {
 
     printWindow?.document.write(`
     <pre>
-MiniMart POS
+Lucky Shop BD
 Invoice: 1001
 Milk x2 = 160
 Total: 160 Tk 

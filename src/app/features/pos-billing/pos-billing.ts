@@ -1035,10 +1035,10 @@ buildReceiptFromCurrentSale(receipt: any): string {
         <div class="receipt">
           <!-- Shop Header -->
           <div class="text-center">
-            <div class="shop-name">🛒 MINIMART</div>
+            <div class="shop-name">🛒 LUCKY SHOP BD</div>
             <div class="shop-address">Mirpur-10, Kazipara, Dhaka-1216</div>
             <div class="shop-address">📞 01511-111111 | 01332-111111</div>
-            <div class="shop-address">✉ minimart@gmail.com</div>
+            <div class="shop-address">✉ luckyshopbd@gmail.com</div>
           </div>
           
           <div class="separator"></div>
@@ -1180,7 +1180,7 @@ private openPrintPreview(receiptHTML: string): void {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Receipt Preview - MiniMart POS</title>
+        <title>Receipt Preview - Lucky Shop BD</title>
         <style>${styles}</style>
       </head>
       <body>
