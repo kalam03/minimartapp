@@ -127,6 +127,11 @@ export class PermissionService {
     // Normalise: strip query params, leading slash, lowercase
     const norm = '/' + url.replace(/^\//, '').split('?')[0].split('#')[0].toLowerCase();
     if (norm === '/dashboard' || norm === '/no-access' || norm === '/') return true;
+    // Orders sub-routes are implicitly allowed when /orders is permitted
+    if (norm.startsWith('/orders')) {
+      const routes = this.getPermittedRoutes();
+      if (routes.some(r => r.toLowerCase() === '/orders')) return true;
+    }
 
     const routes = this.getPermittedRoutes();
     return routes.some(r => {

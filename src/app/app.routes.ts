@@ -91,6 +91,19 @@ export const routes: Routes = [
             (m) => m.CapitalManagementComponent
           ),
       },
+      // ── Orders Module ────────────────────────────────────────────────
+      {
+        path: 'orders',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/orders/order-list.component').then((m) => m.OrderListComponent),
+      },
+      {
+        path: 'orders/new',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/orders/order-entry.component').then((m) => m.OrderEntryComponent),
+      },
     ],
   },
   { path: '**', redirectTo: 'dashboard' },

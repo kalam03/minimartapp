@@ -1,12 +1,19 @@
 <div class="px-3 py-1">
   <div class="max-w-8xl mx-auto">
-    <!-- Page Title -->
-    <!-- <div class="rounded-xl overflow-hidden border mb-3" style="background:#1a1c4e">
-      <div class="px-3 py-2">
-        <h1 class="text-white font-semibold text-sm">Billing Dashboard</h1>
-      </div>
-    </div> -->
 
+    <!-- Order Mode Banner -->
+    <div *ngIf="activeOrderId"
+         class="rounded-xl mb-2 px-4 py-2 flex items-center justify-between text-sm font-semibold shadow"
+         style="background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Processing Order #{{ activeOrderId }} — Submit bill to complete this order
+      </div>
+      <div *ngIf="orderLoading" class="text-xs font-normal opacity-80">Loading items…</div>
+    </div>
 
     <!-- FIRST ROW: Product Selection + Cart Items -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">

@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
@@ -8,6 +9,7 @@ import { AlertService } from '../../shared/alert.service';
 import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
 import { SaleService, StockConflictError } from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
+import { OrderService } from '../../services/order.service';
 
 
 export interface CartItem {
@@ -31,6 +33,7 @@ export interface Invoice {
   selector: 'app-pos-billing',
   standalone: true,
   imports: [CommonModule, FormsModule, FinancialInputComponent],
+  // Note: ActivatedRoute + Router are injected but not imported here (they're provided by the router module)
   templateUrl: './pos-billing.html',
   styleUrls: ['./pos-billing.css'],
 })
@@ -40,11 +43,17 @@ export class PosBillingComponent implements OnInit {
     private customerService: CustomerService,
     private alertService: AlertService,
     private saleService: SaleService,
-    private receiptService: ReceiptService
-
+    private receiptService: ReceiptService,
+    private orderService: OrderService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.receiptData = this.receiptService.getReceiptData();
   }
+
+  /** When opened from Order List, this holds the active order id */
+  activeOrderId: number | null = null;
+  orderLoading = false;
   Math = Math;
  @ViewChild('receiptContainer') receiptContainer!: ElementRef;
   
@@ -114,6 +123,87 @@ export class PosBillingComponent implements OnInit {
     this.loadProducts();
     this.loadCustomers();
     this.loadSampleInvoices();
+
+    // Check if opened from Order Management
+    this.route.queryParams.subscribe(params => {
+      const orderId = params['orderId'];
+      if (orderId) {
+        this.activeOrderId = +orderId;
+        this.loadOrderIntoCart(+orderId);
+      }
+    });
+  }
+
+  /** Load a saved order's items into the POS cart */
+  loadOrderIntoCart(orderId: number): void {
+    this.orderLoading = true;
+    // Mark order as Processing so it's visible on the list
+    this.orderService.updateOrderStatus(orderId, { status: 'Processing' }).subscribe();
+
+    this.orderService.getOrderById(orderId).subscribe({
+      next: res => {
+        const order = res?.data;
+        if (!order) { this.orderLoading = false; return; }
+
+        // Wait until products are loaded, then build cart
+        const tryLoad = () => {
+          if (this.products.length === 0) { setTimeout(tryLoad, 200); return; }
+
+          this.cartItems = [];
+          order.items.forEach(item => {
+            const product = this.products.find(p => p.productId === item.productId);
+            if (product) {
+              this.cartItems.push({
+                productId: item.productId,
+                product:   product,
+                quantity:  item.quantity,
+                unitPrice: item.unitPrice,
+                subtotal:  item.total
+              });
+            } else {
+              // Product not found in list — create a minimal placeholder
+              const placeholder: Product = {
+                productId:          item.productId,
+                productName:        item.productName,
+                unitType:           item.unitType,
+                salePrice:          item.unitPrice,
+                purchasePrice:      item.unitPrice,
+                stockQty:           999,
+                barcode:            '',
+                categoryId:         0,
+                categoryName:       '',
+                isActive:           true,
+                tenantId:           0,
+                tenantName:         '',
+                totalStockValue:    0,
+                profitMarginPercent:0,
+                stockStatus:        'In Stock',
+                retrievedDate:      new Date()
+              };
+              this.cartItems.push({
+                productId: item.productId,
+                product:   placeholder,
+                quantity:  item.quantity,
+                unitPrice: item.unitPrice,
+                subtotal:  item.total
+              });
+            }
+          });
+
+          // Pre-fill discount & transport from order
+          this.discountAmount = order.discount || 0;
+          this.transportCost  = order.transport || 0;
+
+          this.orderLoading = false;
+          this.alertService.info(
+            `Order #${orderId} loaded — ${order.items.length} item(s)\nCustomer: ${order.customerName || 'Walk-in'}`,
+            'Order Loaded'
+          );
+        };
+        tryLoad();
+      },
+      error: () => { this.orderLoading = false; }
+    });
   }
 
   loadCustomers(): void {
@@ -713,7 +803,25 @@ export class PosBillingComponent implements OnInit {
     console.log('Submitting receipt:', receipt);
       this.saleService.createSale(receipt).subscribe({
         next: async (response: any) => {
-          await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${response.data?.invoiceNo ?? response.invoiceNo}`);
+          const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
+
+          // If this session was opened from an Order, mark it Completed
+          if (this.activeOrderId) {
+            const saleId = response.data?.saleId ?? response.saleId ?? null;
+            this.orderService.updateOrderStatus(this.activeOrderId, {
+              status: 'Completed',
+              completedSaleId: saleId ?? undefined
+            }).subscribe();
+            this.activeOrderId = null;
+            await this.alertService.success(
+              `Bill Submitted & Order Completed!\nInvoice: ${invoiceNo}`,
+              'Order Done'
+            );
+            this.router.navigate(['/orders']);
+            return;
+          }
+
+          await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${invoiceNo}`);
         },
         error: (error) => {
           // Stock sold out by another counter between cart add and finalization
