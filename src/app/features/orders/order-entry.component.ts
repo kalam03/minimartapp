@@ -6,13 +6,14 @@ import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
 import { OrderService, CreateOrderRequest } from '../../services/order.service';
+import { CustomerService, Customer } from '../../services/customer.service';
 
 interface OrderCartItem {
-  productId:   number;
-  product:     Product;
-  quantity:    number;
-  unitPrice:   number;
-  subtotal:    number;
+  productId:  number;
+  product:    Product;
+  quantity:   number;
+  unitPrice:  number;
+  subtotal:   number;
 }
 
 @Component({
@@ -67,20 +68,21 @@ interface OrderCartItem {
         <div class="p-3">
 
           <!-- Product Search -->
-          <div class="relative mb-3">
+          <div class="product-search-wrap relative mb-3">
             <input #productSearchInput type="text"
               [ngModel]="searchTerm" (ngModelChange)="onSearch($event)"
               (keydown)="onKeydown($event)"
               placeholder="Search product by name or barcode…"
-              class="w-full pl-8 pr-3 py-2 text-sm border rounded-lg outline-none focus:border-indigo-400"
-              style="border-color:#d1d5f0"/>
+              class="w-full pl-8 pr-3 py-2 text-sm border rounded-lg outline-none"
+              style="border-color:#d1d5f0"
+              onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
             <svg class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-400"
               fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
 
-            <!-- Dropdown -->
+            <!-- Product Dropdown -->
             <div *ngIf="showDropdown && filteredProducts.length > 0"
               class="absolute z-20 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-52 overflow-y-auto"
               style="border-color:#d1d5f0">
@@ -91,13 +93,13 @@ interface OrderCartItem {
                   ? 'background:#1a1c4e;color:#fff'
                   : 'color:#374151'"
                 onmouseover="this.style.background='#f0f2fb'"
-                onmouseout="if(this.dataset.i !== document.activeElement?.dataset?.idx) this.style.background=''">
+                onmouseout="">
                 <div>
                   <div class="font-semibold">{{ p.productName }}</div>
-                  <div class="text-gray-400">{{ p.categoryName }} · {{ p.unitType || 'PCS' }}</div>
+                  <div class="opacity-60">{{ p.categoryName }} · {{ p.unitType || 'PCS' }}</div>
                 </div>
                 <div class="text-right">
-                  <div class="font-semibold">৳{{ p.salePrice | number:'1.2-2' }}</div>
+                  <div class="font-semibold">&#2547;{{ p.salePrice | number:'1.2-2' }}</div>
                   <div [style]="p.stockQty <= 0 ? 'color:#ef4444' : 'color:#10b981'">
                     Stock: {{ p.stockQty }}
                   </div>
@@ -150,15 +152,13 @@ interface OrderCartItem {
             </div>
           </div>
 
-          <!-- No selection placeholder -->
-          <div *ngIf="!selectedProduct"
-               class="text-center text-gray-400 py-6 text-xs">
+          <div *ngIf="!selectedProduct" class="text-center text-gray-400 py-6 text-xs">
             Search and select a product to add it to the order
           </div>
         </div>
       </div>
 
-      <!-- RIGHT: Cart + Customer Info + Save -->
+      <!-- RIGHT: Cart + Customer + Save -->
       <div class="flex flex-col gap-3">
 
         <!-- Cart -->
@@ -179,9 +179,7 @@ interface OrderCartItem {
             </button>
           </div>
 
-          <!-- Empty cart -->
-          <div *ngIf="cartItems.length === 0"
-               class="p-8 text-center text-gray-400 text-xs">
+          <div *ngIf="cartItems.length === 0" class="p-8 text-center text-gray-400 text-xs">
             <svg class="w-8 h-8 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17"/>
@@ -189,7 +187,6 @@ interface OrderCartItem {
             No items yet. Search and add products.
           </div>
 
-          <!-- Cart items -->
           <div *ngIf="cartItems.length > 0" class="overflow-x-auto">
             <table class="w-full text-xs">
               <thead>
@@ -203,8 +200,7 @@ interface OrderCartItem {
               </thead>
               <tbody>
                 <tr *ngFor="let item of cartItems; let i = index"
-                    [class]="i%2===0 ? 'bg-white' : 'bg-gray-50'"
-                    class="border-b">
+                    [class]="i%2===0 ? 'bg-white' : 'bg-gray-50'" class="border-b">
                   <td class="px-3 py-1.5">
                     <div class="font-medium text-gray-800">{{ item.product.productName }}</div>
                     <div class="text-gray-400">{{ item.product.unitType || 'PCS' }}</div>
@@ -217,16 +213,14 @@ interface OrderCartItem {
                       class="w-16 text-center px-1 py-0.5 border rounded text-xs outline-none"
                       style="border-color:#d1d5f0"/>
                   </td>
-                  <td class="px-2 py-1.5 text-right text-gray-700">৳{{ item.unitPrice | number:'1.2-2' }}</td>
+                  <td class="px-2 py-1.5 text-right text-gray-700">&#2547;{{ item.unitPrice | number:'1.2-2' }}</td>
                   <td class="px-2 py-1.5 text-right font-semibold" style="color:#1a1c4e">
-                    ৳{{ item.subtotal | number:'1.2-2' }}
+                    &#2547;{{ item.subtotal | number:'1.2-2' }}
                   </td>
                   <td class="px-2 py-1.5 text-center">
-                    <button (click)="removeItem(i)"
-                      class="text-red-400 hover:text-red-600 transition">
+                    <button (click)="removeItem(i)" class="text-red-400 hover:text-red-600 transition">
                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                       </svg>
                     </button>
                   </td>
@@ -235,17 +229,15 @@ interface OrderCartItem {
             </table>
           </div>
 
-          <!-- Totals -->
           <div *ngIf="cartItems.length > 0"
                class="px-3 py-2 space-y-1 text-xs" style="border-top:1px solid #f0f2fb">
             <div class="flex justify-between text-gray-500">
-              <span>Sub Total</span>
-              <span>৳{{ subTotal | number:'1.2-2' }}</span>
+              <span>Sub Total</span><span>&#2547;{{ subTotal | number:'1.2-2' }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-500">Discount</span>
               <div class="flex items-center gap-1">
-                <span class="text-gray-400">৳</span>
+                <span class="text-gray-400">&#2547;</span>
                 <input type="number" [(ngModel)]="discount" min="0"
                   class="w-20 text-right px-1 py-0.5 border rounded text-xs outline-none"
                   style="border-color:#d1d5f0"/>
@@ -254,7 +246,7 @@ interface OrderCartItem {
             <div class="flex justify-between items-center">
               <span class="text-gray-500">Transport</span>
               <div class="flex items-center gap-1">
-                <span class="text-gray-400">৳</span>
+                <span class="text-gray-400">&#2547;</span>
                 <input type="number" [(ngModel)]="transport" min="0"
                   class="w-20 text-right px-1 py-0.5 border rounded text-xs outline-none"
                   style="border-color:#d1d5f0"/>
@@ -263,12 +255,12 @@ interface OrderCartItem {
             <div class="flex justify-between font-bold text-sm pt-1"
                  style="border-top:1px solid #e0e3f8;color:#1a1c4e">
               <span>Grand Total</span>
-              <span>৳{{ grandTotal | number:'1.2-2' }}</span>
+              <span>&#2547;{{ grandTotal | number:'1.2-2' }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Customer + Notes -->
+        <!-- Customer Info -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
           <div class="px-3 py-2" style="background:#252862">
             <h3 class="text-white font-semibold text-xs flex items-center gap-2">
@@ -276,27 +268,108 @@ interface OrderCartItem {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
-              Customer Info (optional)
+              Customer Info
+              <span class="ml-auto text-red-300 text-xs font-normal">* Phone required</span>
             </h3>
           </div>
-          <div class="p-3 grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Customer Name</label>
-              <input type="text" [(ngModel)]="customerName" placeholder="Walk-in customer"
-                class="w-full px-2 py-1.5 text-xs border rounded outline-none"
-                style="border-color:#d1d5f0"
-                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+          <div class="p-3 space-y-2">
+
+            <!-- Customer Name (searchable dropdown) -->
+            <div class="customer-search-wrap relative">
+              <label class="block text-xs font-medium mb-1" style="color:#374151">
+                Customer Name
+                <span *ngIf="selectedCustomer" class="ml-1 text-green-600 text-xs">
+                  (&#10003; matched)
+                </span>
+              </label>
+              <div class="relative">
+                <svg class="absolute left-2.5 top-2 w-3.5 h-3.5 text-gray-400 pointer-events-none"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <input type="text"
+                  [(ngModel)]="customerNameTerm"
+                  (ngModelChange)="onCustomerSearch($event)"
+                  (focus)="onCustomerFocus()"
+                  (keydown)="onCustomerKeydown($event)"
+                  placeholder="Search by name or walk-in…"
+                  class="w-full pl-8 pr-8 py-1.5 text-xs border rounded-lg outline-none transition"
+                  [style]="'border-color:' + (phoneError ? '#ef4444' : '#d1d5f0')"
+                  onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                <!-- Clear button -->
+                <button *ngIf="customerNameTerm" (click)="clearCustomer()"
+                  class="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Customer dropdown -->
+              <div *ngIf="showCustomerDropdown && filteredCustomers.length > 0"
+                class="absolute z-30 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-44 overflow-y-auto"
+                style="border-color:#d1d5f0">
+                <div *ngFor="let c of filteredCustomers; let i = index"
+                  (mousedown)="selectCustomer(c)"
+                  class="px-3 py-2 cursor-pointer text-xs transition"
+                  [style]="i === customerIdx
+                    ? 'background:#1a1c4e;color:#fff'
+                    : 'color:#374151'"
+                  onmouseover="this.style.background='#f0f2fb'"
+                  onmouseout="">
+                  <div class="font-semibold">{{ c.customerName }}</div>
+                  <div class="opacity-60 flex gap-2">
+                    <span *ngIf="c.phone">
+                      <svg class="w-3 h-3 inline mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                      </svg>{{ c.phone }}</span>
+                    <span *ngIf="c.address">{{ c.address | slice:0:25 }}</span>
+                  </div>
+                </div>
+              </div>
+              <!-- No match hint -->
+              <div *ngIf="showCustomerDropdown && filteredCustomers.length === 0 && customerNameTerm.length >= 2"
+                class="absolute z-30 w-full mt-1 bg-white border rounded-lg shadow-xl px-3 py-2 text-xs text-gray-400"
+                style="border-color:#d1d5f0">
+                No customer found — fill phone manually below
+              </div>
             </div>
-            <div>
-              <label class="block text-xs text-gray-500 mb-1">Phone</label>
-              <input type="text" [(ngModel)]="customerPhone" placeholder="01XXXXXXXXX"
-                class="w-full px-2 py-1.5 text-xs border rounded outline-none"
-                style="border-color:#d1d5f0"
-                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+
+            <!-- Phone + Address row -->
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-medium mb-1" style="color:#374151">
+                  Phone <span class="text-red-500">*</span>
+                  <span class="ml-1 text-gray-400 font-normal">(max 11 digits)</span>
+                </label>
+                <input type="text"
+                  [(ngModel)]="customerPhone"
+                  (ngModelChange)="onPhoneChange($event)"
+                  (blur)="validatePhone()"
+                  placeholder="01XXXXXXXXX"
+                  maxlength="11"
+                  class="w-full px-2 py-1.5 text-xs border rounded outline-none transition"
+                  [style]="'border-color:' + (phoneError ? '#ef4444' : '#d1d5f0')"
+                  onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                <p *ngIf="phoneError" class="text-red-500 text-xs mt-0.5">{{ phoneError }}</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1" style="color:#374151">Address</label>
+                <input type="text"
+                  [(ngModel)]="customerAddress"
+                  placeholder="Optional"
+                  class="w-full px-2 py-1.5 text-xs border rounded outline-none"
+                  style="border-color:#d1d5f0"
+                  onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+              </div>
             </div>
-            <div class="col-span-2">
-              <label class="block text-xs text-gray-500 mb-1">Notes / Special Instructions</label>
-              <textarea [(ngModel)]="notes" rows="2" placeholder="Any special instructions…"
+
+            <!-- Notes -->
+            <div>
+              <label class="block text-xs font-medium mb-1" style="color:#374151">Notes</label>
+              <textarea [(ngModel)]="notes" rows="2" placeholder="Special instructions…"
                 class="w-full px-2 py-1.5 text-xs border rounded outline-none resize-none"
                 style="border-color:#d1d5f0"
                 onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'">
@@ -325,7 +398,6 @@ interface OrderCartItem {
 
       </div><!-- /right col -->
     </div><!-- /grid -->
-
   </div>
 </div>
   `
@@ -335,39 +407,45 @@ export class OrderEntryComponent implements OnInit {
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('quantityInput')       quantityInput!: ElementRef;
 
-  // Products
-  products:        Product[] = [];
+  // ── Products ───────────────────────────────────────────────────
+  products:         Product[] = [];
   filteredProducts: Product[] = [];
-  searchTerm       = '';
-  selectedProduct: Product | null = null;
-  selectedIdx      = -1;
-  showDropdown     = false;
+  searchTerm        = '';
+  selectedProduct:  Product | null = null;
+  selectedIdx       = -1;
+  showDropdown      = false;
 
-  // Cart
+  // ── Cart ───────────────────────────────────────────────────────
   cartItems: OrderCartItem[] = [];
-  qty       = 1;
-  unitPrice = 0;
+  qty        = 1;
+  unitPrice  = 0;
+  discount   = 0;
+  transport  = 0;
 
-  // Totals
-  discount  = 0;
-  transport = 0;
+  // ── Customer ───────────────────────────────────────────────────
+  customers:         Customer[] = [];
+  filteredCustomers: Customer[] = [];
+  customerNameTerm   = '';
+  customerPhone      = '';
+  customerAddress    = '';
+  selectedCustomer:  Customer | null = null;
+  customerIdx        = -1;
+  showCustomerDropdown = false;
+  phoneError         = '';
 
-  // Customer
-  customerName  = '';
-  customerPhone = '';
-  notes         = '';
-
-  // State
-  saving = false;
-  today  = new Date();
+  // ── Misc ───────────────────────────────────────────────────────
+  notes   = '';
+  saving  = false;
+  today   = new Date();
 
   filters: ProductFilter = { tenantId: null, isActive: true, categoryId: null };
 
   constructor(
-    private productSvc: ProductService,
-    private orderSvc:   OrderService,
-    private alertSvc:   AlertService,
-    private router:     Router
+    private productSvc:  ProductService,
+    private orderSvc:    OrderService,
+    private customerSvc: CustomerService,
+    private alertSvc:    AlertService,
+    private router:      Router
   ) {}
 
   ngOnInit(): void {
@@ -376,39 +454,31 @@ export class OrderEntryComponent implements OnInit {
         this.products = Array.isArray(res) ? res : (res?.data ?? res?.items ?? []);
       }
     });
+    this.customerSvc.getAllCustomers().subscribe({
+      next: (res: any) => {
+        this.customers = Array.isArray(res) ? res : (res?.data ?? []);
+      }
+    });
   }
 
   // ── Product search ─────────────────────────────────────────────
   onSearch(term: string): void {
     this.searchTerm  = term;
     this.selectedIdx = -1;
-    if (!term.trim()) {
-      this.filteredProducts = [];
-      this.showDropdown = false;
-      return;
-    }
+    if (!term.trim()) { this.filteredProducts = []; this.showDropdown = false; return; }
     const q = term.toLowerCase();
     this.filteredProducts = this.products
-      .filter(p => p.productName.toLowerCase().includes(q) ||
-                   (p.barcode?.toLowerCase().includes(q) ?? false))
+      .filter(p => p.productName.toLowerCase().includes(q) || (p.barcode?.toLowerCase().includes(q) ?? false))
       .slice(0, 12);
     this.showDropdown = this.filteredProducts.length > 0;
   }
 
   onKeydown(e: KeyboardEvent): void {
     if (!this.showDropdown) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.selectedIdx = Math.min(this.selectedIdx + 1, this.filteredProducts.length - 1);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.selectedIdx = Math.max(this.selectedIdx - 1, -1);
-    } else if (e.key === 'Enter' && this.selectedIdx >= 0) {
-      e.preventDefault();
-      this.selectProduct(this.filteredProducts[this.selectedIdx]);
-    } else if (e.key === 'Escape') {
-      this.showDropdown = false;
-    }
+    if (e.key === 'ArrowDown')  { e.preventDefault(); this.selectedIdx = Math.min(this.selectedIdx + 1, this.filteredProducts.length - 1); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); this.selectedIdx = Math.max(this.selectedIdx - 1, -1); }
+    else if (e.key === 'Enter' && this.selectedIdx >= 0) { e.preventDefault(); this.selectProduct(this.filteredProducts[this.selectedIdx]); }
+    else if (e.key === 'Escape')    { this.showDropdown = false; }
   }
 
   selectProduct(p: Product): void {
@@ -428,14 +498,77 @@ export class OrderEntryComponent implements OnInit {
     return ['KG','G','L','ML'].includes((p?.unitType || '').toUpperCase());
   }
 
+  // ── Customer search ────────────────────────────────────────────
+  onCustomerSearch(term: string): void {
+    this.customerNameTerm = term;
+    this.selectedCustomer = null;  // reset match when typing
+    this.customerIdx      = -1;
+    if (!term.trim()) { this.filteredCustomers = []; this.showCustomerDropdown = false; return; }
+    const q = term.toLowerCase();
+    this.filteredCustomers = this.customers
+      .filter(c => c.customerName?.toLowerCase().includes(q) || c.phone?.includes(term))
+      .slice(0, 10);
+    this.showCustomerDropdown = true;
+  }
+
+  onCustomerFocus(): void {
+    if (this.customerNameTerm.trim().length > 0) {
+      this.showCustomerDropdown = this.filteredCustomers.length > 0;
+    }
+  }
+
+  onCustomerKeydown(e: KeyboardEvent): void {
+    if (!this.showCustomerDropdown) return;
+    if (e.key === 'ArrowDown')  { e.preventDefault(); this.customerIdx = Math.min(this.customerIdx + 1, this.filteredCustomers.length - 1); }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); this.customerIdx = Math.max(this.customerIdx - 1, -1); }
+    else if (e.key === 'Enter' && this.customerIdx >= 0) { e.preventDefault(); this.selectCustomer(this.filteredCustomers[this.customerIdx]); }
+    else if (e.key === 'Escape')    { this.showCustomerDropdown = false; }
+  }
+
+  selectCustomer(c: Customer): void {
+    this.selectedCustomer    = c;
+    this.customerNameTerm    = c.customerName;
+    this.customerPhone       = c.phone       || '';
+    this.customerAddress     = c.address     || '';
+    this.showCustomerDropdown = false;
+    this.customerIdx         = -1;
+    this.phoneError          = '';   // auto-filled → clear error
+  }
+
+  clearCustomer(): void {
+    this.selectedCustomer    = null;
+    this.customerNameTerm    = '';
+    this.customerPhone       = '';
+    this.customerAddress     = '';
+    this.filteredCustomers   = [];
+    this.showCustomerDropdown = false;
+    this.phoneError          = '';
+  }
+
+  // ── Phone validation ───────────────────────────────────────────
+  onPhoneChange(val: string): void {
+    // Strip non-digits, cap at 11
+    this.customerPhone = val.replace(/\D/g, '').slice(0, 11);
+    if (this.phoneError) this.validatePhone();
+  }
+
+  validatePhone(): boolean {
+    if (!this.customerPhone.trim()) {
+      this.phoneError = 'Phone number is required.';
+      return false;
+    }
+    if (this.customerPhone.length > 11) {
+      this.phoneError = 'Maximum 11 digits.';
+      return false;
+    }
+    this.phoneError = '';
+    return true;
+  }
+
   // ── Cart ───────────────────────────────────────────────────────
   addToCart(): void {
     if (!this.selectedProduct) return;
-    if (this.qty <= 0) {
-      this.alertSvc.warning('Quantity must be greater than 0', 'Invalid Qty');
-      return;
-    }
-
+    if (this.qty <= 0) { this.alertSvc.warning('Quantity must be greater than 0', 'Invalid Qty'); return; }
     const existing = this.cartItems.find(i => i.productId === this.selectedProduct!.productId);
     if (existing) {
       existing.quantity += this.qty;
@@ -449,7 +582,6 @@ export class OrderEntryComponent implements OnInit {
         subtotal:  +(this.qty * this.unitPrice).toFixed(2)
       });
     }
-
     this.selectedProduct = null;
     this.searchTerm      = '';
     this.filteredProducts = [];
@@ -462,22 +594,11 @@ export class OrderEntryComponent implements OnInit {
     item.subtotal = +(item.quantity * item.unitPrice).toFixed(2);
   }
 
-  removeItem(idx: number): void {
-    this.cartItems.splice(idx, 1);
-  }
+  removeItem(idx: number): void { this.cartItems.splice(idx, 1); }
+  clearCart():              void { this.cartItems = []; }
 
-  clearCart(): void {
-    this.cartItems = [];
-  }
-
-  // ── Totals ─────────────────────────────────────────────────────
-  get subTotal(): number {
-    return +this.cartItems.reduce((s, i) => s + i.subtotal, 0).toFixed(2);
-  }
-
-  get grandTotal(): number {
-    return +(this.subTotal - (this.discount || 0) + (this.transport || 0)).toFixed(2);
-  }
+  get subTotal():   number { return +this.cartItems.reduce((s, i) => s + i.subtotal, 0).toFixed(2); }
+  get grandTotal(): number { return +(this.subTotal - (this.discount || 0) + (this.transport || 0)).toFixed(2); }
 
   // ── Save ───────────────────────────────────────────────────────
   async saveOrder(): Promise<void> {
@@ -485,10 +606,14 @@ export class OrderEntryComponent implements OnInit {
       await this.alertSvc.warning('Add at least one product to the order.', 'Empty Cart');
       return;
     }
+    if (!this.validatePhone()) {
+      await this.alertSvc.warning('Phone number is required (max 11 digits).', 'Validation Error');
+      return;
+    }
 
     const req: CreateOrderRequest = {
-      customerName:  this.customerName || undefined,
-      customerPhone: this.customerPhone || undefined,
+      customerName:  this.customerNameTerm || undefined,
+      customerPhone: this.customerPhone,
       notes:         this.notes || undefined,
       discount:      this.discount  || 0,
       transport:     this.transport || 0,
@@ -507,30 +632,24 @@ export class OrderEntryComponent implements OnInit {
       next: async res => {
         this.saving = false;
         await this.alertSvc.success(
-          `Order #${res.data.orderId} saved successfully!\nTotal: ৳${this.grandTotal.toFixed(2)}`,
+          `Order #${res.data.orderId} saved!\nTotal: &#2547;${this.grandTotal.toFixed(2)}`,
           'Order Created'
         );
         this.router.navigate(['/orders']);
       },
       error: async err => {
         this.saving = false;
-        await this.alertSvc.error(
-          err?.error?.message || 'Failed to save order.',
-          'Error'
-        );
+        await this.alertSvc.error(err?.error?.message || 'Failed to save order.', 'Error');
       }
     });
   }
 
-  goBack(): void {
-    this.router.navigate(['/orders']);
-  }
+  goBack(): void { this.router.navigate(['/orders']); }
 
   @HostListener('document:click', ['$event'])
   onDocClick(e: MouseEvent): void {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.product-search-wrap')) {
-      this.showDropdown = false;
-    }
+    const t = e.target as HTMLElement;
+    if (!t.closest('.product-search-wrap'))  this.showDropdown = false;
+    if (!t.closest('.customer-search-wrap')) this.showCustomerDropdown = false;
   }
 }

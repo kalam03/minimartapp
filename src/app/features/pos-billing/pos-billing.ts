@@ -194,6 +194,25 @@ export class PosBillingComponent implements OnInit {
           this.discountAmount = order.discount || 0;
           this.transportCost  = order.transport || 0;
 
+          // Pre-fill customer name and phone from order
+          if (order.customerName) {
+            this.searchCustomerTerm = order.customerName;
+            // Try to match against loaded customers list
+            const match = this.customers.find(
+              c => c.customerName?.toLowerCase() === order.customerName?.toLowerCase()
+                || (order.customerPhone && c.phone === order.customerPhone)
+            );
+            if (match) {
+              this.selectedCustomerId = match.customerId;
+              this.customerPhone      = match.phone || order.customerPhone || '';
+            } else {
+              this.selectedCustomerId = null;
+              this.customerPhone      = order.customerPhone || '';
+            }
+          } else if (order.customerPhone) {
+            this.customerPhone = order.customerPhone;
+          }
+
           this.orderLoading = false;
           this.alertService.info(
             `Order #${orderId} loaded — ${order.items.length} item(s)\nCustomer: ${order.customerName || 'Walk-in'}`,
