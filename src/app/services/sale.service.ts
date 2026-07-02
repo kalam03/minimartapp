@@ -20,6 +20,16 @@ export interface SalesSummaryDto {
   totalDue: number;
 }
 
+export interface StockConflictError {
+  success:     boolean;
+  errorCode:   'STOCK_INSUFFICIENT';
+  productId:   number;
+  productName: string;
+  available:   number;
+  required:    number;
+  message:     string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SaleService {
 
@@ -27,8 +37,13 @@ export class SaleService {
 
   constructor(private http: HttpClient) {}
 
-  createSale(payload: any) {
+  createSale(payload: any): Observable<any> {
     return this.http.post(this.baseUrl + '/sales', payload);
+  }
+
+  /** Type-guard: returns true if the HTTP error is a stock conflict (409) */
+  static isStockConflict(err: any): err is { error: StockConflictError } {
+    return err?.status === 409 && err?.error?.errorCode === 'STOCK_INSUFFICIENT';
   }
 
   getSalesSummary(fromDate: string, toDate: string): Observable<{ success: boolean; data: SalesSummaryDto }> {

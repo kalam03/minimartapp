@@ -6,7 +6,7 @@ import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
 import { AlertService } from '../../shared/alert.service';
 import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
-import { SaleService } from '../../services/sale.service';
+import { SaleService, StockConflictError } from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
 
 
@@ -74,6 +74,8 @@ export class PosBillingComponent implements OnInit {
 
   // Cart Items
   cartItems: CartItem[] = [];
+  /** Product IDs that failed with a stock conflict on the last finalization attempt */
+  conflictProductIds = new Set<number>();
 
   // Selected IDs
   selectedProductId: number | null = null;
@@ -406,7 +408,16 @@ export class PosBillingComponent implements OnInit {
     this.selectedProductIndex = -1;
   }
 
+  /** Highlights the conflicting cart item in red and auto-clears after 8 s */
+  markConflictItem(productId: number): void {
+    this.conflictProductIds.add(productId);
+    setTimeout(() => {
+      this.conflictProductIds.delete(productId);
+    }, 8000);
+  }
+
   resetForm(): void {
+    this.conflictProductIds.clear();
     this.cartItems = [];
     this.selectedCustomerId = null;
     this.searchCustomerTerm = '';
@@ -691,11 +702,25 @@ export class PosBillingComponent implements OnInit {
     console.log('Submitting receipt:', receipt);
       this.saleService.createSale(receipt).subscribe({
         next: async (response: any) => {
-           await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${response.invoiceNo}`);
+          await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${response.data?.invoiceNo ?? response.invoiceNo}`);
         },
         error: (error) => {
-          console.error('Error recording sale:', error);
-          this.alertService.error('Error submitting bill', error.message || 'An error occurred while submitting the bill. Please try again.');
+          // Stock sold out by another counter between cart add and finalization
+          if (SaleService.isStockConflict(error)) {
+            const c: StockConflictError = error.error;
+            this.alertService.error(
+              `Stock Conflict — Sale Cannot Complete`,
+              `"${c.productName}" is out of stock.\n` +
+              `Available: ${c.available} unit(s) · Requested: ${c.required} unit(s).\n` +
+              `Another counter completed a sale for this item just now.\n` +
+              `Please remove or reduce the item and try again.`
+            );
+            // Highlight the conflicting item in the cart so the cashier can act
+            this.markConflictItem(c.productId);
+          } else {
+            console.error('Error recording sale:', error);
+            this.alertService.error('Error submitting bill', error.error?.message || error.message || 'An error occurred while submitting the bill.');
+          }
         }
       });
 
