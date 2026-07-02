@@ -1,5 +1,6 @@
 import { Component, signal, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -23,7 +24,7 @@ const FALLBACK_NAV: NavItem[] = [
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet],
+  imports: [CommonModule, FormsModule, RouterModule, RouterOutlet],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
@@ -37,6 +38,15 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   // Dynamic nav — updated by PermissionService
   navItems: NavItem[] = [];
+
+  // Sidebar search
+  navSearch = '';
+
+  get filteredNavItems(): NavItem[] {
+    const q = this.navSearch.trim().toLowerCase();
+    if (!q) return this.navItems;
+    return this.navItems.filter(i => i.label.toLowerCase().includes(q));
+  }
 
   // Quick actions (static)
   quickActions = [

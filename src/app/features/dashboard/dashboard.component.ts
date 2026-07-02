@@ -56,36 +56,93 @@ interface DailyStats {
     <div class="px-3 py-2">
       <div class="max-w-8xl mx-auto">
 
-        <!-- Date Filter -->
-        <div class="bg-white rounded-xl shadow-md border mb-3 p-4">
-          <div class="flex flex-wrap gap-4 items-end">
-            <div>
-              <label class="block text-sm font-semibold mb-1" style="color:#1a1c4e">Start Date</label>
+        <!-- Date Filter Bar -->
+        <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:#e0e3f8">
+          <div class="px-3 py-2 flex flex-wrap items-center gap-2">
+
+            <!-- Calendar icon label -->
+            <div class="flex items-center gap-1.5 mr-1" style="color:#1a1c4e">
+              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span class="text-xs font-semibold whitespace-nowrap">Date Range</span>
+            </div>
+
+            <!-- From date -->
+            <div class="flex items-center gap-1">
+              <span class="text-xs text-gray-400 whitespace-nowrap">From</span>
               <input type="date" [(ngModel)]="startDate" (change)="filterByDate()"
-                class="px-4 py-2.5 text-base border border-gray-400 rounded-lg outline-none w-[220px]">
+                class="text-xs border rounded-md px-2 py-1 outline-none transition-all"
+                style="border-color:#d1d5f0; color:#1a1c4e; min-width:120px"
+                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
             </div>
-            <div>
-              <label class="block text-sm font-semibold mb-1" style="color:#1a1c4e">End Date</label>
+
+            <!-- To date -->
+            <div class="flex items-center gap-1">
+              <span class="text-xs text-gray-400 whitespace-nowrap">To</span>
               <input type="date" [(ngModel)]="endDate" (change)="filterByDate()"
-                class="px-4 py-2.5 text-base border border-gray-400 rounded-lg outline-none w-[220px]">
+                class="text-xs border rounded-md px-2 py-1 outline-none transition-all"
+                style="border-color:#d1d5f0; color:#1a1c4e; min-width:120px"
+                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
             </div>
-            <div>
-              <label class="block text-sm font-semibold mb-1" style="color:#1a1c4e">Quick Filter</label>
-              <select (change)="quickFilter($event)"
-                class="px-4 py-2.5 text-base border border-gray-400 rounded-lg outline-none w-[220px]">
-                <option value="">Custom Range</option>
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-                <option value="quarter">This Quarter</option>
-              </select>
+
+            <!-- Divider -->
+            <div class="w-px h-5 mx-1 hidden sm:block" style="background:#e0e3f8"></div>
+
+            <!-- Quick filter pill buttons -->
+            <div class="flex flex-wrap gap-1">
+              <button (click)="applyQuick('today')"
+                class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
+                [style]="activeQuick==='today'
+                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
+                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'"
+                onmouseover="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='#e0e3f8'"
+                onmouseout="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='#f0f2fb'">
+                Today
+              </button>
+              <button (click)="applyQuick('yesterday')"
+                class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
+                [style]="activeQuick==='yesterday'
+                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
+                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                Yesterday
+              </button>
+              <button (click)="applyQuick('week')"
+                class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
+                [style]="activeQuick==='week'
+                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
+                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                This Week
+              </button>
+              <button (click)="applyQuick('month')"
+                class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
+                [style]="activeQuick==='month'
+                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
+                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                This Month
+              </button>
+              <button (click)="applyQuick('quarter')"
+                class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
+                [style]="activeQuick==='quarter'
+                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
+                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                Quarter
+              </button>
             </div>
+
+            <!-- Reset -->
             <button (click)="resetDateFilter()"
-              class="px-4 py-2 text-sm rounded-lg font-semibold transition" style="background:#ACB3E7;color:#1a1c4e"
-              onmouseover="this.style.background='#c8ccee'" onmouseout="this.style.background='#ACB3E7'">
+              class="ml-auto flex items-center gap-1 px-2 py-1 text-xs rounded-md font-medium transition-all"
+              style="color:#6b7280; border:1px solid #e5e7eb"
+              onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
               Reset
             </button>
+
           </div>
         </div>
 
@@ -856,6 +913,7 @@ export class DashboardComponent implements OnInit {
   todayDate: string = new Date().toISOString().split('T')[0];
   startDate: string = this.todayDate;
   endDate: string = this.todayDate;
+  activeQuick: string = 'today';
 
   // Computed Properties for enhanced metrics
   get todayStats() {
@@ -1039,53 +1097,67 @@ export class DashboardComponent implements OnInit {
   }
 
   filterByDate() {
+    this.activeQuick = '';   // manual date edit clears active pill
     this.loadPurchaseSummary();
     this.loadSalesSummary();
   }
 
   resetDateFilter() {
-    this.startDate = this.todayDate;
-    this.endDate = this.todayDate;
+    this.startDate  = this.todayDate;
+    this.endDate    = this.todayDate;
+    this.activeQuick = 'today';
     this.loadPurchaseSummary();
     this.loadSalesSummary();
   }
 
-  quickFilter(event: Event) {
-    const value = (event.target as HTMLSelectElement).value;
-    const today = new Date();
+  /** Called by the pill buttons — replaces the old select-based quickFilter */
+  applyQuick(value: string) {
+    const today    = new Date();
     const todayStr = today.toISOString().split('T')[0];
-    
-    switch(value) {
+
+    switch (value) {
       case 'today':
         this.startDate = todayStr;
-        this.endDate = todayStr;
+        this.endDate   = todayStr;
         break;
-      case 'yesterday':
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-        this.startDate = yesterdayStr;
-        this.endDate = yesterdayStr;
+      case 'yesterday': {
+        const d = new Date(today);
+        d.setDate(today.getDate() - 1);
+        const s = d.toISOString().split('T')[0];
+        this.startDate = s;
+        this.endDate   = s;
         break;
-      case 'week':
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        this.startDate = weekStart.toISOString().split('T')[0];
-        this.endDate = todayStr;
+      }
+      case 'week': {
+        const d = new Date(today);
+        d.setDate(today.getDate() - today.getDay());
+        this.startDate = d.toISOString().split('T')[0];
+        this.endDate   = todayStr;
         break;
-      case 'month':
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        this.startDate = monthStart.toISOString().split('T')[0];
-        this.endDate = todayStr;
+      }
+      case 'month': {
+        const d = new Date(today.getFullYear(), today.getMonth(), 1);
+        this.startDate = d.toISOString().split('T')[0];
+        this.endDate   = todayStr;
         break;
-      case 'quarter':
-        const quarterStart = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
-        this.startDate = quarterStart.toISOString().split('T')[0];
-        this.endDate = todayStr;
+      }
+      case 'quarter': {
+        const d = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+        this.startDate = d.toISOString().split('T')[0];
+        this.endDate   = todayStr;
         break;
-      default:
-        return;
+      }
+      default: return;
     }
-    this.filterByDate();
+
+    this.activeQuick = value;
+    this.loadPurchaseSummary();
+    this.loadSalesSummary();
+  }
+
+  /** @deprecated kept for backward compat — use applyQuick() */
+  quickFilter(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.applyQuick(value);
   }
 }
