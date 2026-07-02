@@ -203,7 +203,22 @@ interface OrderCartItem {
                     [class]="i%2===0 ? 'bg-white' : 'bg-gray-50'" class="border-b">
                   <td class="px-3 py-1.5">
                     <div class="font-medium text-gray-800">{{ item.product.productName }}</div>
-                    <div class="text-gray-400">{{ item.product.unitType || 'PCS' }}</div>
+                    <div class="text-gray-400 flex items-center gap-1.5">
+                      <span>{{ item.product.unitType || 'PCS' }}</span>
+                      <span class="text-gray-300">|</span>
+                      <span [style]="item.product.stockQty <= 0 ? 'color:#ef4444' : 'color:#6b7280'">
+                        Stock: {{ item.product.stockQty }}
+                      </span>
+                    </div>
+                    <!-- Exceed-stock warning -->
+                    <div *ngIf="item.quantity > item.product.stockQty"
+                         class="flex items-center gap-1 mt-0.5 text-xs font-semibold text-red-600">
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                      </svg>
+                      Exceeds stock ({{ item.product.stockQty }} available)
+                    </div>
                   </td>
                   <td class="px-2 py-1.5 text-center">
                     <input type="number" [(ngModel)]="item.quantity"
@@ -211,7 +226,9 @@ interface OrderCartItem {
                       [step]="isWeightProduct(item.product) ? 0.001 : 1"
                       (change)="recalcItem(item)"
                       class="w-16 text-center px-1 py-0.5 border rounded text-xs outline-none"
-                      style="border-color:#d1d5f0"/>
+                      [style]="item.quantity > item.product.stockQty
+                        ? 'border-color:#ef4444;color:#dc2626'
+                        : 'border-color:#d1d5f0'"/>
                   </td>
                   <td class="px-2 py-1.5 text-right text-gray-700">&#2547;{{ item.unitPrice | number:'1.2-2' }}</td>
                   <td class="px-2 py-1.5 text-right font-semibold" style="color:#1a1c4e">
@@ -568,8 +585,35 @@ export class OrderEntryComponent implements OnInit {
   // ── Cart ───────────────────────────────────────────────────────
   addToCart(): void {
     if (!this.selectedProduct) return;
-    if (this.qty <= 0) { this.alertSvc.warning('Quantity must be greater than 0', 'Invalid Qty'); return; }
+    if (this.qty <= 0) {
+      this.alertSvc.warning('Quantity must be greater than 0.', 'Invalid Qty');
+      return;
+    }
+
+    const stock = this.selectedProduct.stockQty;
+
+    // Out of stock check
+    if (stock <= 0) {
+      this.alertSvc.warning(
+        `"${this.selectedProduct.productName}" is out of stock.`,
+        'Out of Stock'
+      );
+      return;
+    }
+
     const existing = this.cartItems.find(i => i.productId === this.selectedProduct!.productId);
+    const totalQty = existing ? existing.quantity + this.qty : this.qty;
+
+    // Exceed stock check
+    if (totalQty > stock) {
+      this.alertSvc.warning(
+        `Only ${stock} unit(s) of "${this.selectedProduct.productName}" in stock.\n` +
+        `Already in cart: ${existing?.quantity ?? 0}. You tried to add: ${this.qty}.`,
+        'Insufficient Stock'
+      );
+      return;
+    }
+
     if (existing) {
       existing.quantity += this.qty;
       existing.subtotal  = +(existing.quantity * existing.unitPrice).toFixed(2);
@@ -582,15 +626,23 @@ export class OrderEntryComponent implements OnInit {
         subtotal:  +(this.qty * this.unitPrice).toFixed(2)
       });
     }
-    this.selectedProduct = null;
-    this.searchTerm      = '';
+    this.selectedProduct  = null;
+    this.searchTerm       = '';
     this.filteredProducts = [];
     this.qty = 1;
     setTimeout(() => this.productSearchInput?.nativeElement?.focus(), 50);
   }
 
   recalcItem(item: OrderCartItem): void {
-    item.quantity = Math.max(this.isWeightProduct(item.product) ? 0.001 : 1, item.quantity);
+    const minQty = this.isWeightProduct(item.product) ? 0.001 : 1;
+    item.quantity = Math.max(minQty, item.quantity);
+    // Warn if exceeds stock but don't block (allow saving as order/reservation)
+    if (item.quantity > item.product.stockQty && item.product.stockQty > 0) {
+      this.alertSvc.warning(
+        `Qty ${item.quantity} exceeds available stock (${item.product.stockQty}) for "${item.product.productName}".`,
+        'Stock Warning'
+      );
+    }
     item.subtotal = +(item.quantity * item.unitPrice).toFixed(2);
   }
 
@@ -608,6 +660,19 @@ export class OrderEntryComponent implements OnInit {
     }
     if (!this.validatePhone()) {
       await this.alertSvc.warning('Phone number is required (max 11 digits).', 'Validation Error');
+      return;
+    }
+
+    // Final stock check across entire cart
+    const stockErrors = this.cartItems
+      .filter(i => i.quantity > i.product.stockQty)
+      .map(i => `• ${i.product.productName}: need ${i.quantity}, available ${i.product.stockQty}`);
+
+    if (stockErrors.length > 0) {
+      await this.alertSvc.warning(
+        'The following items exceed available stock:\n' + stockErrors.join('\n'),
+        'Insufficient Stock'
+      );
       return;
     }
 
