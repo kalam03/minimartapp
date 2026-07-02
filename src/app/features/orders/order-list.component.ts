@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderService, OrderListDto } from '../../services/order.service';
 
+// Extend with local UI state flag
+type OrderRow = OrderListDto & { _cancelling?: boolean };
+
 @Component({
   selector: 'app-order-list',
   standalone: true,
@@ -199,14 +202,33 @@ import { OrderService, OrderListDto } from '../../services/order.service';
 
               <!-- Action -->
               <td class="px-3 py-2 text-center">
-                <button *ngIf="o.status === 'New' || o.status === 'Processing'"
-                  (click)="openInCounter(o)"
-                  class="px-3 py-1 rounded-lg text-xs font-semibold text-white transition"
-                  style="background:#1a1c4e"
-                  onmouseover="this.style.background='#252862'"
-                  onmouseout="this.style.background='#1a1c4e'">
-                  Open in Counter
-                </button>
+                <div *ngIf="o.status === 'New' || o.status === 'Processing'"
+                     class="flex items-center justify-center gap-1.5">
+                  <button
+                    (click)="openInCounter(o)"
+                    class="px-2.5 py-1 rounded-lg text-xs font-semibold text-white transition"
+                    style="background:#1a1c4e"
+                    onmouseover="this.style.background='#252862'"
+                    onmouseout="this.style.background='#1a1c4e'">
+                    Open
+                  </button>
+                  <button
+                    (click)="cancelOrder(o)"
+                    [disabled]="o._cancelling"
+                    class="px-2.5 py-1 rounded-lg text-xs font-semibold text-white transition flex items-center gap-1 disabled:opacity-50"
+                    style="background:#ef4444"
+                    onmouseover="if(!this.disabled) this.style.background='#dc2626'"
+                    onmouseout="if(!this.disabled) this.style.background='#ef4444'">
+                    <svg *ngIf="!o._cancelling" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    <svg *ngIf="o._cancelling" class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                    </svg>
+                    Cancel
+                  </button>
+                </div>
                 <span *ngIf="o.status === 'Completed'"
                   class="inline-flex items-center gap-1 text-green-600 font-semibold">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,7 +237,12 @@ import { OrderService, OrderListDto } from '../../services/order.service';
                   Done
                 </span>
                 <span *ngIf="o.status === 'Cancelled'"
-                  class="text-gray-400">Cancelled</span>
+                  class="inline-flex items-center gap-1 text-red-400 text-xs">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                  Cancelled
+                </span>
               </td>
             </tr>
           </tbody>
@@ -234,8 +261,8 @@ import { OrderService, OrderListDto } from '../../services/order.service';
 })
 export class OrderListComponent implements OnInit {
 
-  allOrders:      OrderListDto[] = [];
-  filteredOrders: OrderListDto[] = [];
+  allOrders:      OrderRow[] = [];
+  filteredOrders: OrderRow[] = [];
   loading = false;
   loaded  = false;   // true only after first successful search
 
@@ -316,8 +343,34 @@ export class OrderListComponent implements OnInit {
     this.router.navigate(['/orders/new']);
   }
 
-  openInCounter(order: OrderListDto): void {
+  openInCounter(order: OrderRow): void {
     this.router.navigate(['/pos'], { queryParams: { orderId: order.orderId } });
+  }
+
+  cancelOrder(order: OrderRow): void {
+    if (!confirm(`Cancel Order #${order.orderId}? This cannot be undone.`)) return;
+    order._cancelling = true;
+    this.orderSvc.updateOrderStatus(order.orderId, { status: 'Cancelled' }).subscribe({
+      next: () => {
+        this.zone.run(() => {
+          order._cancelling = false;
+          order.status = 'Cancelled';
+          // If current filter is 'New' or 'Processing', remove this row from view
+          if (this.filterStatus === 'New' || this.filterStatus === 'Processing') {
+            this.allOrders      = this.allOrders.filter(o => o.orderId !== order.orderId);
+            this.filteredOrders = this.filteredOrders.filter(o => o.orderId !== order.orderId);
+          }
+          this.cdr.detectChanges();
+        });
+      },
+      error: () => {
+        this.zone.run(() => {
+          order._cancelling = false;
+          alert(`Failed to cancel Order #${order.orderId}. Please try again.`);
+          this.cdr.detectChanges();
+        });
+      }
+    });
   }
 
   statusStyle(status: string): string {
