@@ -67,8 +67,10 @@ export class SupplierComponent implements OnInit {
         }
         break;
       case 'phone':
-        if (value && !/^[0-9\-\+\s]{7,20}$/.test(value)) {
-          this.validationErrors.phone = 'Invalid phone format';
+        if (!value) {
+          this.validationErrors.phone = 'Phone number is required';
+        } else if (!/^[0-9]{11}$/.test(value)) {
+          this.validationErrors.phone = 'Phone number must be exactly 11 digits';
         }
         break;
       case 'email':
@@ -91,8 +93,8 @@ export class SupplierComponent implements OnInit {
         }
         break;
       case 'contactPersonPhone':
-        if (value && !/^[0-9\-\+\s]{7,20}$/.test(value)) {
-          this.validationErrors.contactPersonPhone = 'Invalid phone format';
+        if (value && !/^[0-9]{11}$/.test(value)) {
+          this.validationErrors.contactPersonPhone = 'Phone number must be exactly 11 digits';
         }
         break;
       case 'openingBalance':
@@ -291,6 +293,12 @@ export class SupplierComponent implements OnInit {
   getSortIcon(column: string): string {
     if (this.sortBy !== column) return '↕';
     return this.sortOrder === 'asc' ? '↑' : '↓';
+  }
+
+  onPhoneInput(event: Event, field: 'phone' | 'contactPersonPhone'): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 11);
+    (this.supplierForm as any)[field] = input.value;
   }
 
   isFieldInvalid(fieldName: string): boolean {

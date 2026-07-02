@@ -61,11 +61,10 @@ export class CustomerComponent implements OnInit {
         }
         break;
       case 'phone':
-          if (!value) {
+        if (!value) {
           this.validationErrors.phone = 'Phone number is required';
-        }
-       else if (value && !/^[0-9\-\+\s]{7,20}$/.test(value)) {
-          this.validationErrors.phone = 'Invalid phone format';
+        } else if (!/^[0-9]{11}$/.test(value)) {
+          this.validationErrors.phone = 'Phone number must be exactly 11 digits';
         }
         break;
       case 'address':
@@ -278,6 +277,12 @@ export class CustomerComponent implements OnInit {
   getSortIcon(column: string): string {
     if (this.sortBy !== column) return '↕';
     return this.sortOrder === 'asc' ? '↑' : '↓';
+  }
+
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 11);
+    this.customerForm.phone = input.value;
   }
 
   isFieldInvalid(fieldName: string): boolean {
