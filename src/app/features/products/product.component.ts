@@ -100,42 +100,32 @@ export class ProductComponent implements OnInit {
         }
         break;
       case 'purchasePrice':
-        if (value && isNaN(Number(value))) {
-          this.validationErrors.purchasePrice = 'Purchase price must be a number';
-        } else if (value && Number(value) < 0) {
-          this.validationErrors.purchasePrice = 'Purchase price cannot be negative';
+        if (!value || value === '' || value === '0') {
+          this.validationErrors.purchasePrice = 'Purchase price is required and must be greater than 0';
+        } else if (isNaN(Number(value))) {
+          this.validationErrors.purchasePrice = 'Purchase price must be a valid number';
+        } else if (Number(value) <= 0) {
+          this.validationErrors.purchasePrice = 'Purchase price must be greater than 0';
         }
         break;
       case 'salePrice':
-        if (value && isNaN(Number(value))) {
-          this.validationErrors.salePrice = 'Sale price must be a number';
-        } else if (value && Number(value) < 0) {
-          this.validationErrors.salePrice = 'Sale price cannot be negative';
-        } else if (value && this.productForm.purchasePrice && Number(value) < Number(this.productForm.purchasePrice)) {
-          this.validationErrors.salePrice = 'Sale price should be greater than or equal to purchase price';
-        }
-        break;
-      case 'stockQty':
-        if (value && isNaN(Number(value))) {
-          this.validationErrors.stockQty = 'Stock quantity must be a number';
-        } else if (value && Number(value) < 0) {
-          this.validationErrors.stockQty = 'Stock quantity cannot be negative';
-        }
-        break;
-      case 'barcode':
-        if (value && value.length > 50) {
-          this.validationErrors.barcode = 'Barcode must not exceed 50 characters';
+        if (!value || value === '' || value === '0') {
+          this.validationErrors.salePrice = 'Selling price is required and must be greater than 0';
+        } else if (isNaN(Number(value))) {
+          this.validationErrors.salePrice = 'Selling price must be a valid number';
+        } else if (Number(value) <= 0) {
+          this.validationErrors.salePrice = 'Selling price must be greater than 0';
+        } else if (Number(value) < Number(this.productForm.purchasePrice)) {
+          this.validationErrors.salePrice = 'Selling price cannot be less than purchase price (৳' + Number(this.productForm.purchasePrice).toFixed(2) + ')';
         }
         break;
     }
   }
 
   validateForm(): boolean {
-    Object.keys(this.productForm).forEach(field => {
-      if (field !== 'isActive') {
-        this.validateField(field);
-      }
-    });
+    // Only validate visible fields; barcode and stockQty are hidden (auto/purchase-managed)
+    const fieldsToValidate = ['productName', 'categoryId', 'purchasePrice', 'salePrice'];
+    fieldsToValidate.forEach(field => this.validateField(field));
     return Object.values(this.validationErrors).every(error => !error);
   }
 
