@@ -27,7 +27,7 @@ import { OrderService, OrderListDto } from '../../services/order.service';
           <p class="text-xs mt-0.5" style="color:#ACB3E7">Manage and process customer orders</p>
         </div>
         <button (click)="newOrder()"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white transition"
+          class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition"
           style="background:#ACB3E7;color:#1a1c4e"
           onmouseover="this.style.background='#c8ccee'" onmouseout="this.style.background='#ACB3E7'">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,22 +53,35 @@ import { OrderService, OrderListDto } from '../../services/order.service';
                     [style]="'background:' + s.color"></span>
             </span>
             {{ s.label }}
-            <span class="ml-1 font-bold">({{ countByStatus(s.value) }})</span>
+            <span *ngIf="loaded" class="ml-1 font-bold">({{ countByStatus(s.value) }})</span>
           </button>
         </div>
 
-        <!-- Date range -->
-        <div class="flex items-center gap-1.5 ml-auto">
+        <!-- Date range + Search -->
+        <div class="flex items-center gap-1.5 ml-auto flex-wrap">
           <span class="text-xs text-gray-400">From</span>
-          <input type="date" [(ngModel)]="fromDate" (change)="load()"
+          <input type="date" [(ngModel)]="fromDate"
             class="text-xs border rounded-md px-2 py-1 outline-none"
             style="border-color:#d1d5f0;min-width:115px"
             onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
           <span class="text-xs text-gray-400">To</span>
-          <input type="date" [(ngModel)]="toDate" (change)="load()"
+          <input type="date" [(ngModel)]="toDate"
             class="text-xs border rounded-md px-2 py-1 outline-none"
             style="border-color:#d1d5f0;min-width:115px"
             onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+
+          <!-- Search button -->
+          <button (click)="load()"
+            class="flex items-center gap-1.5 px-3 py-1 text-xs rounded-md font-semibold text-white transition"
+            style="background:#1a1c4e"
+            onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+            </svg>
+            Search
+          </button>
+
           <button (click)="resetFilters()"
             class="px-2 py-1 text-xs rounded-md border flex items-center gap-1"
             style="color:#6b7280;border-color:#e5e7eb"
@@ -89,8 +102,19 @@ import { OrderService, OrderListDto } from '../../services/order.service';
       <span class="ml-3 text-sm text-gray-500">Loading orders…</span>
     </div>
 
-    <!-- Empty -->
-    <div *ngIf="!loading && filteredOrders.length === 0"
+    <!-- Idle (not yet searched) -->
+    <div *ngIf="!loading && !loaded"
+         class="bg-white rounded-xl border shadow-sm p-12 text-center text-gray-400">
+      <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+      </svg>
+      <p class="text-sm font-medium text-gray-500">Select date range and click Search</p>
+      <p class="text-xs text-gray-400 mt-1">Orders will appear here after searching.</p>
+    </div>
+
+    <!-- Empty (searched but no results) -->
+    <div *ngIf="!loading && loaded && filteredOrders.length === 0"
          class="bg-white rounded-xl border shadow-sm p-12 text-center text-gray-400">
       <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -105,7 +129,7 @@ import { OrderService, OrderListDto } from '../../services/order.service';
     </div>
 
     <!-- Orders Table -->
-    <div *ngIf="!loading && filteredOrders.length > 0"
+    <div *ngIf="!loading && loaded && filteredOrders.length > 0"
          class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
@@ -133,10 +157,14 @@ import { OrderService, OrderListDto } from '../../services/order.service';
 
               <!-- Customer -->
               <td class="px-3 py-2">
-                <div class="font-medium text-gray-800">
-                  {{ o.customerName || 'Walk-in' }}
+                <div class="font-medium text-gray-800">{{ o.customerName || 'Walk-in' }}</div>
+                <div class="text-gray-400 flex items-center gap-1" *ngIf="o.customerPhone">
+                  <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                  </svg>
+                  {{ o.customerPhone }}
                 </div>
-                <div class="text-gray-400" *ngIf="o.customerPhone">📞 {{ o.customerPhone }}</div>
                 <div class="text-gray-400 italic" *ngIf="o.notes" [title]="o.notes">
                   {{ o.notes | slice:0:30 }}{{ (o.notes?.length ?? 0) > 30 ? '…' : '' }}
                 </div>
@@ -158,8 +186,8 @@ import { OrderService, OrderListDto } from '../../services/order.service';
 
               <!-- Amount -->
               <td class="px-3 py-2 text-right">
-                <div class="font-bold" style="color:#1a1c4e">৳{{ o.grossAmount | number:'1.2-2' }}</div>
-                <div class="text-gray-400" *ngIf="o.discount > 0">-৳{{ o.discount | number:'1.2-2' }}</div>
+                <div class="font-bold" style="color:#1a1c4e">&#2547;{{ o.grossAmount | number:'1.2-2' }}</div>
+                <div class="text-gray-400" *ngIf="o.discount > 0">-&#2547;{{ o.discount | number:'1.2-2' }}</div>
               </td>
 
               <!-- Status badge -->
@@ -181,7 +209,12 @@ import { OrderService, OrderListDto } from '../../services/order.service';
                   Open in Counter
                 </button>
                 <span *ngIf="o.status === 'Completed'"
-                  class="text-green-600 font-semibold">✓ Done</span>
+                  class="inline-flex items-center gap-1 text-green-600 font-semibold">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  Done
+                </span>
                 <span *ngIf="o.status === 'Cancelled'"
                   class="text-gray-400">Cancelled</span>
               </td>
@@ -202,9 +235,10 @@ import { OrderService, OrderListDto } from '../../services/order.service';
 })
 export class OrderListComponent implements OnInit {
 
-  allOrders:     OrderListDto[] = [];
+  allOrders:      OrderListDto[] = [];
   filteredOrders: OrderListDto[] = [];
   loading = false;
+  loaded  = false;   // true only after first successful search
 
   filterStatus = '';
   fromDate     = '';
@@ -224,10 +258,10 @@ export class OrderListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Pre-fill dates only — do NOT auto-load
     const today = new Date().toISOString().split('T')[0];
     this.fromDate = today;
     this.toDate   = today;
-    this.load();
   }
 
   load(): void {
@@ -237,8 +271,12 @@ export class OrderListComponent implements OnInit {
         this.allOrders = res?.data ?? [];
         this.applyStatusFilter();
         this.loading = false;
+        this.loaded  = true;
       },
-      error: () => { this.loading = false; }
+      error: () => {
+        this.loading = false;
+        this.loaded  = true;
+      }
     });
   }
 
@@ -264,7 +302,9 @@ export class OrderListComponent implements OnInit {
     this.fromDate     = today;
     this.toDate       = today;
     this.filterStatus = '';
-    this.load();
+    this.allOrders      = [];
+    this.filteredOrders = [];
+    this.loaded = false;
   }
 
   newOrder(): void {

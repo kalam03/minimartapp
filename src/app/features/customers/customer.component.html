@@ -186,17 +186,22 @@
                 <div class="flex gap-1 justify-center">
                   <button
                     (click)="editCustomer(customer)"
-                    class="text-white px-2 py-1 rounded text-xs transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'"
+                    class="text-white px-2 py-1 rounded text-xs transition flex items-center" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'"
                     title="Edit"
                   >
-                    ✎
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H7v-3.414a2 2 0 01.586-1.414z"/>
+                    </svg>
                   </button>
                   <button
                     (click)="deleteCustomer(customer.customerId, customer.customerName)"
-                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition"
+                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition flex items-center"
                     title="Delete"
                   >
-                    ✕
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                   </button>
                 </div>
               </td>

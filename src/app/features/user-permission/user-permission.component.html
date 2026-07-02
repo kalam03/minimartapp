@@ -67,12 +67,18 @@
           </div>
           <div class="flex gap-2">
             <button (click)="grantAllModule(mod)"
-              class="px-2 py-0.5 text-xs rounded font-semibold bg-green-500 hover:bg-green-600 text-white transition">
-              ✓ Grant All
+              class="flex items-center gap-1 px-2 py-0.5 text-xs rounded font-semibold bg-green-500 hover:bg-green-600 text-white transition">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+              Grant All
             </button>
             <button (click)="revokeAllModule(mod)"
-              class="px-2 py-0.5 text-xs rounded font-semibold bg-red-500 hover:bg-red-600 text-white transition">
-              ✕ Revoke All
+              class="flex items-center gap-1 px-2 py-0.5 text-xs rounded font-semibold bg-red-500 hover:bg-red-600 text-white transition">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+              Revoke All
             </button>
           </div>
         </div>

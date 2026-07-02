@@ -57,7 +57,9 @@
     <div *ngIf="showEditForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
       <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
         <h2 class="text-white font-semibold text-sm">Edit User — {{ selectedUser?.userName }}</h2>
-        <button (click)="showEditForm=false" class="text-white opacity-70 hover:opacity-100 text-base leading-none" title="Close">✕</button>
+        <button (click)="showEditForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -99,7 +101,9 @@
         <h2 class="text-white font-semibold text-sm">
           {{ isAdminReset ? 'Reset Password' : 'Change Password' }} — {{ selectedUser?.userName }}
         </h2>
-        <button (click)="showPasswordForm=false" class="text-white opacity-70 hover:opacity-100 text-base leading-none" title="Close">✕</button>
+        <button (click)="showPasswordForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,7 +139,9 @@
       <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
         <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
           <h2 class="text-white font-semibold text-sm">Assign Roles — {{ selectedUser?.userName }}</h2>
-          <button (click)="showRoleModal=false" class="text-white opacity-70 hover:opacity-100 text-base leading-none" title="Close">✕</button>
+          <button (click)="showRoleModal=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
         </div>
         <div class="p-4">
           <div class="mb-3">

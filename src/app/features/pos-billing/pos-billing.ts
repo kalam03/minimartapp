@@ -936,7 +936,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
     return `${col1}${col2}${col3}${col4}`;
   };
 
-  // 🔹 Items
+  // Items
   receipt.items.forEach((item: any) => {
     const line = formatLine(
       item.product.productName,
@@ -1143,10 +1143,10 @@ buildReceiptFromCurrentSale(receipt: any): string {
         <div class="receipt">
           <!-- Shop Header -->
           <div class="text-center">
-            <div class="shop-name">🛒 LUCKY SHOP BD</div>
+            <div class="shop-name">LUCKY SHOP BD</div>
             <div class="shop-address">Mirpur-10, Kazipara, Dhaka-1216</div>
-            <div class="shop-address">📞 01511-111111 | 01332-111111</div>
-            <div class="shop-address">✉ luckyshopbd@gmail.com</div>
+            <div class="shop-address">Tel: 01511-111111 | 01332-111111</div>
+            <div class="shop-address">Email: luckyshopbd@gmail.com</div>
           </div>
           
           <div class="separator"></div>
@@ -1162,7 +1162,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
           </div>
           <div class="invoice-info">
             <span>${escapeHtml(customerName)}</span>
-            <span>📱 ${escapeHtml(customerPhone)}</span>
+            <span>Tel: ${escapeHtml(customerPhone)}</span>
           </div>
           
           <div class="separator"></div>
@@ -1238,7 +1238,7 @@ Item               Price Qty    Amount
           ${dueAmount === 0 && paidAmount > 0 ? `
           <div class="due-line">
             <div class="total-line total-line-bold">
-              <span>✅ PAID IN FULL</span>
+              <span>PAID IN FULL</span>
               <span>${formatTk(paidAmount)}</span>
             </div>
           </div>
@@ -1248,21 +1248,21 @@ Item               Price Qty    Amount
           
           <!-- Footer -->
           <div class="thankyou">
-            <div>⭐ Thank you for shopping! ⭐</div>
+            <div>Thank you for shopping!</div>
             <div style="font-size: 8px; margin-top: 4px;">** This is a computer generated receipt **</div>
             <div style="font-size: 8px;">** No signature required **</div>
           </div>
           
           <div class="receipt-footer">
-            <div>📞 For support: 01511-111111</div>
-            <div>🏠 Visit us again!</div>
-            <div style="margin-top: 4px;">✨ Have a great day! ✨</div>
+            <div>Tel: 01511-111111</div>
+            <div>Visit us again!</div>
+            <div style="margin-top: 4px;">Have a great day!</div>
           </div>
           
           <!-- Print Button (only visible on screen) -->
           <div class="no-print" style="text-align: center; margin-top: 20px;">
             <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 4px;">
-              🖨️ Print Receipt
+              Print Receipt
             </button>
           </div>
         </div>
@@ -1295,14 +1295,14 @@ private openPrintPreview(receiptHTML: string): void {
         <div class="print-container">
           <div class="toolbar">
             <div class="toolbar-title">
-              🧾 Receipt Preview
+              Receipt Preview
             </div>
             <div class="toolbar-buttons">
               <button class="btn-print" onclick="window.print()">
-                🖨️ Print Receipt
+                Print Receipt
               </button>
               <button class="btn-close" onclick="window.close()">
-                ✖️ Close
+                Close
               </button>
             </div>
           </div>
