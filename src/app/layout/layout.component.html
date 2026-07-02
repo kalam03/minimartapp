@@ -88,12 +88,12 @@
           <li *ngFor="let item of navItems; let i = index">
             <a
               [routerLink]="item.path"
+              routerLinkActive="nav-active"
+              [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
               (click)="setActiveItem(i)"
               [class]="'flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-all ' +
                 (isSidebarMinimized() && !isMobile() ? 'justify-center' : '')"
-              [style]="item.active
-                ? 'background: #ACB3E7; color: #1a1c4e; font-weight: 600'
-                : 'color: #e0e3f8'"
+              style="color: #e0e3f8"
               [title]="isSidebarMinimized() && !isMobile() ? item.label : ''"
             >
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

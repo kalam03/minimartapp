@@ -1,7 +1,24 @@
-import { Component, signal, HostListener } from '@angular/core';
+import { Component, signal, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { PermissionService, NavItem } from '../services/permission.service';
+
+// Fallback nav items shown for admin or when permission data hasn't loaded yet.
+// The DB-driven menu will replace these once loadMyMenus() resolves.
+const FALLBACK_NAV: NavItem[] = [
+  { path: '/dashboard',           icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',                                                                                                                                       label: 'Dashboard'   },
+  { path: '/suppliers',           icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', label: 'Suppliers'   },
+  { path: '/products',            icon: 'M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4',                                                                                                                                                                                                                                                                                       label: 'Products'    },
+  { path: '/Purchases',           icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',                                                                                                                                                                           label: 'Purchases'   },
+  { path: '/pos',                 icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',                                                                                                                                                                                                                                                                                        label: 'Counter'     },
+  { path: '/customers',           icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',                                                                                                                                                                                                                    label: 'Customers'   },
+  { path: '/security/users',      icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',                                                                                                                                                                                                                            label: 'Users'       },
+  { path: '/security/roles',      icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',                                                                                                                                    label: 'Roles'       },
+  { path: '/security/permissions',icon: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z',                                                                                                                                                                                                       label: 'Permissions' },
+  { path: '/capital',             icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',                                                                                                                                                    label: 'Capital'     },
+];
 
 @Component({
   selector: 'app-layout',
@@ -10,14 +27,26 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
-export class LayoutComponent {
-  // Sidebar state
-  isSidebarOpen     = signal(true);
-  isSidebarMinimized = signal(false);
-  isMobileMenuOpen  = signal(false);
-  isMobile          = signal(false);
+export class LayoutComponent implements OnInit, OnDestroy {
 
-  // User data from session
+  // Sidebar state
+  isSidebarOpen      = signal(true);
+  isSidebarMinimized = signal(false);
+  isMobileMenuOpen   = signal(false);
+  isMobile           = signal(false);
+
+  // Dynamic nav — updated by PermissionService
+  navItems: NavItem[] = [];
+
+  // Quick actions (static)
+  quickActions = [
+    { icon: 'M12 4v16m8-8H4',                                                                                                           label: 'New Order'   },
+    { icon: 'M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4',                                                                             label: 'Add Product' },
+    { icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',         label: 'New Customer'},
+  ];
+
+  private navSub?: Subscription;
+
   get user() {
     const u = this.authService.getUser();
     const name = u?.userName ?? 'User';
@@ -28,29 +57,33 @@ export class LayoutComponent {
     };
   }
 
-  // Navigation items
-  navItems = [
-    { path: '/dashboard',        icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', label: 'Dashboard',   active: true  },
-    { path: '/suppliers',        icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', label: 'Suppliers',   active: false },
-    { path: '/products',         icon: 'M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4',                                                                                                                                      label: 'Products',   active: false },
-    { path: '/Purchases',        icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',                          label: 'Purchases',  active: false },
-    { path: '/pos',              icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',                                                                                                                                       label: 'Counter',    active: false },
-    { path: '/customers',        icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',                                                                   label: 'Customers',  active: false },
-    { path: '/security/users',   icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',                                                                          label: 'Users',      active: false },
-    { path: '/security/roles',       icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', label: 'Roles',       active: false },
-    { path: '/security/permissions', icon: 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z',                                                                  label: 'Permissions', active: false },
-    { path: '/capital',              icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',              label: 'Capital',     active: false },
-  ];
-
-  // Quick actions
-  quickActions = [
-    { icon: 'M12 4v16m8-8H4',                                                                                                                                        label: 'New Order'   },
-    { icon: 'M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4',                                                                                                         label: 'Add Product' },
-    { icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', label: 'New Customer' }
-  ];
-
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private permSvc: PermissionService
+  ) {
     this.checkScreenSize();
+  }
+
+  ngOnInit(): void {
+    this.navSub = this.permSvc.navItems$.subscribe(items => {
+      if (items && items.length > 0) {
+        // DB-driven menu — always show Dashboard first if not included
+        const hasDashboard = items.some(i => i.path === '/dashboard' || i.path === 'dashboard');
+        this.navItems = hasDashboard
+          ? items
+          : [FALLBACK_NAV[0], ...items];
+      } else if (this.authService.isAdmin()) {
+        // Admin or no permissions set yet — use fallback full menu
+        this.navItems = FALLBACK_NAV;
+      } else {
+        // Waiting for API response — show only dashboard
+        this.navItems = [FALLBACK_NAV[0]];
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.navSub?.unsubscribe();
   }
 
   @HostListener('window:resize')
@@ -92,8 +125,7 @@ export class LayoutComponent {
     if (this.isMobile()) this.isSidebarOpen.set(false);
   }
 
-  setActiveItem(index: number): void {
-    this.navItems.forEach((item, i) => { item.active = i === index; });
+  setActiveItem(_index: number): void {
     if (this.isMobile()) this.closeMobileMenu();
   }
 

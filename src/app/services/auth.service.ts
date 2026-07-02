@@ -2,9 +2,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, switchMap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { PermissionService } from './permission.service';
+import { of } from 'rxjs';
 
 export interface LoginRequest {
   userName: string;
@@ -13,8 +15,8 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  accessToken:  string;
-  tokenType:    string;
+  accessToken: string;
+  tokenType:   string;
   user: {
     userId:    number;
     tenantId:  number;
@@ -24,21 +26,20 @@ export interface LoginResponse {
   };
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl  = `${environment.baseUrl}/auth`;
-  private tokenKey   = 'access_token';
-  private userKey    = 'user_info';
-  private tenantKey  = 'tenant_id';
+  private apiUrl    = `${environment.baseUrl}/auth`;
+  private tokenKey  = 'access_token';
+  private userKey   = 'user_info';
+  private tenantKey = 'tenant_id';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public  isAuthenticated$       = this.isAuthenticatedSubject.asObservable();
 
   constructor(
-    private http:   HttpClient,
-    private router: Router
+    private http:        HttpClient,
+    private router:      Router,
+    private permSvc:     PermissionService
   ) {}
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
@@ -46,12 +47,22 @@ export class AuthService {
       tap(response => {
         this.setSession(response);
         this.isAuthenticatedSubject.next(true);
-        this.router.navigate(['/dashboard']);
+      }),
+      switchMap(response => {
+        // Load the user's permitted menus BEFORE navigating,
+        // so the sidebar and route guard have data on first render.
+        return this.permSvc.loadMyMenus().pipe(
+          catchError(() => of(null)),                 // don't block login if API fails
+          tap(() => this.router.navigate(['/dashboard'])),
+          // Restore original LoginResponse for subscribers (login component)
+          switchMap(() => of(response))
+        );
       })
     );
   }
 
   logout(): void {
+    this.permSvc.clearMenus();
     this.clearSession();
     this.isAuthenticatedSubject.next(false);
     this.router.navigate(['/login']);
@@ -84,6 +95,11 @@ export class AuthService {
     return this.getUser()?.tenantId ?? 1;
   }
 
-  hasToken(): boolean   { return !!this.getToken(); }
-  isAuthenticated(): boolean { return this.hasToken(); }
+  isAdmin(): boolean {
+    const role = this.getUser()?.role?.toLowerCase() ?? '';
+    return role === 'admin' || role === 'superadmin';
+  }
+
+  hasToken():       boolean { return !!this.getToken(); }
+  isAuthenticated():boolean { return this.hasToken(); }
 }

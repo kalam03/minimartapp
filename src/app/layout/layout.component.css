@@ -96,3 +96,10 @@ router-outlet {
 main {
   scrollbar-width: thin;
 }
+
+/* Active nav link — set by routerLinkActive */
+a.nav-active {
+  background: #ACB3E7 !important;
+  color: #1a1c4e !important;
+  font-weight: 600;
+}
