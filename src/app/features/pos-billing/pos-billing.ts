@@ -350,7 +350,14 @@ export class PosBillingComponent implements OnInit {
   onCustomerSearch(term: string): void {
     this.searchCustomerTerm = term;
     this.showCustomerDropdown = term.length > 0;
-    this.selectedCustomerIndex = -1; // Reset selection when searching
+    this.selectedCustomerIndex = -1;
+
+    // If search cleared, deselect customer and recalculate (removes previousDue)
+    if (!term) {
+      this.selectedCustomerId = null;
+      this.customerPhone = '';
+      this.calculateTotals();
+    }
 
     if (term.length > 0 && this.filteredCustomers.length > 0) {
       const exactMatch = this.filteredCustomers.find(
@@ -619,6 +626,11 @@ export class PosBillingComponent implements OnInit {
     return this.customers.find((c) => c.customerId === this.selectedCustomerId);
   }
 
+  /** Previous balance: positive = customer owes (due), negative = customer has credit */
+  get previousDue(): number {
+    return this.selectedCustomer?.currentBalance || 0;
+  }
+
   // Helper method for product quantity
   onProductQuantityChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
@@ -727,9 +739,11 @@ export class PosBillingComponent implements OnInit {
     // Calculate discount amount based on percentage
     this.discountAmount = (this.subtotal * this.discountPercent) / 100;
 
-    // Calculate gross amount (subtotal - discount + transport)
-    // Transport cost is properly added here
-    this.grossAmount = this.subtotal - this.discountAmount + this.transportCost;
+    // Sale net = items - discount + transport (before adding previous customer balance)
+    const saleNet = this.subtotal - this.discountAmount + this.transportCost;
+
+    // Gross = saleNet + previousDue (positive due adds, negative credit deducts)
+    this.grossAmount = saleNet + this.previousDue;
 
     // Ensure gross amount is not negative
     if (this.grossAmount < 0) {
@@ -738,14 +752,6 @@ export class PosBillingComponent implements OnInit {
 
     // Calculate return and due
     this.calculateReturnAndDue();
-
-    // Debug log to verify calculations
-    console.log('Totals calculated:', {
-      subtotal: this.subtotal,
-      discount: this.discountAmount,
-      transport: this.transportCost,
-      gross: this.grossAmount,
-    });
   }
 
   calculateReturnAndDue(): void {
@@ -799,16 +805,25 @@ export class PosBillingComponent implements OnInit {
       };
 
 
+      const saleNet = this.subtotal - this.discountAmount + this.transportCost;
+
+      // Capture before resetForm() clears them
+      const snapCustomerId  = this.selectedCustomerId;
+      const snapDueAmount   = this.dueAmount;
+      const snapPreviousDue = this.previousDue;
+
       const receipt = {
         invoiceNo: newInvoice.invoiceNo,
         saleDate: new Date(),
         customerId: this.selectedCustomer?.customerId,
+        customerName: this.selectedCustomer?.customerName || this.searchCustomerTerm || '',
         customerPhone: this.customerPhone,
         totalAmount: this.subtotal,
         discount: this.discountAmount,
         discountPercent: this.discountPercent,
         transportCost: this.transportCost,
         transport: this.transportType,
+        previousDue: this.previousDue,
         netAmount: this.grossAmount,
         paymentType: this.selectedPaymentMethod,
         paidAmount: this.paymentCash,
@@ -832,6 +847,18 @@ export class PosBillingComponent implements OnInit {
         next: async (response: any) => {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
 
+          // Update customer balance using snapshot values (resetForm may have cleared this.*)
+          if (snapCustomerId) {
+            const delta = snapDueAmount - snapPreviousDue;
+            if (delta !== 0) {
+              this.customerService.updateCustomerBalance(snapCustomerId, {
+                tenantId: 1,
+                amount: Math.abs(delta),
+                operationType: delta > 0 ? 'ADD' : 'SUBTRACT'
+              }).subscribe();
+            }
+          }
+
           // If this session was opened from an Order, mark it Completed
           if (this.activeOrderId) {
             const saleId = response.data?.saleId ?? response.saleId ?? null;
@@ -849,6 +876,7 @@ export class PosBillingComponent implements OnInit {
           }
 
           await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${invoiceNo}`);
+          this.resetForm();
         },
         error: (error) => {
           // Stock sold out by another counter between cart add and finalization
@@ -871,9 +899,6 @@ export class PosBillingComponent implements OnInit {
       });
 
     }
-
-    //this.invoices.unshift(newInvoice);
-    this.resetForm();
   }
   // Add this method to handle Tab key on quantity input
   onQuantityKeydown(event: KeyboardEvent): void {
@@ -981,7 +1006,8 @@ buildReceiptFromCurrentSale(receipt: any): string {
   const discountPercent = receipt.discountPercent || 0;
   const transportCost = receipt.transportCost || 0;
   const transport = receipt.transport || 'N/A';
-  const netAmount = receipt.netAmount || (subtotal - discount + transportCost);
+  const prevDue = receipt.previousDue || 0;
+  const netAmount = receipt.netAmount || (subtotal - discount + transportCost + prevDue);
   const paidAmount = receipt.paidAmount || 0;
   const returnAmount = receipt.returnAmount || 0;
   const dueAmount = receipt.dueAmount || (netAmount - paidAmount);
@@ -1223,6 +1249,18 @@ Item               Price Qty    Amount
               <span>${formatTk(transportCost)}</span>
             </div>
             ` : ''}
+            ${prevDue > 0 ? `
+            <div class="total-line" style="color:#e74c3c; font-weight:bold">
+              <span>Previous Due:</span>
+              <span>+${formatTk(prevDue)}</span>
+            </div>
+            ` : ''}
+            ${prevDue < 0 ? `
+            <div class="total-line" style="color:#27ae60; font-weight:bold">
+              <span>Advance Credit:</span>
+              <span>-${formatTk(Math.abs(prevDue))}</span>
+            </div>
+            ` : ''}
           </div>
           
           <div class="separator"></div>
@@ -1395,18 +1433,16 @@ private getReceiptStyles(): string {
     
     .toolbar-buttons {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
     
-    .toolbar button {
+    .btn-print, .btn-close {
       padding: 8px 16px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      font-family: monospace;
-      font-size: 14px;
-      font-weight: bold;
-      transition: all 0.2s;
+      font-size: 13px;
+      font-weight: 600;
     }
     
     .btn-print {
@@ -1415,7 +1451,7 @@ private getReceiptStyles(): string {
     }
     
     .btn-print:hover {
-      background: #229954;
+      background: #219a52;
     }
     
     .btn-close {
@@ -1429,229 +1465,14 @@ private getReceiptStyles(): string {
     
     .receipt-wrapper {
       padding: 20px;
-      background: white;
-      display: flex;
-      justify-content: center;
-    }
-    
-    .thermal-receipt {
-      max-width: 350px;
-      width: 100%;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #000;
-    }
-    
-    .text-center {
-      text-align: center;
-    }
-    
-    .bold {
-      font-weight: bold;
-    }
-    
-    hr {
-      border: none;
-      border-top: 1px dashed #000;
-      margin: 8px 0;
-    }
-    
-    .dashed {
-      border-top: 1px dashed #aaa;
-    }
-    
-    .shop-name {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    
-    .shop-address, .shop-contact {
-      font-size: 10px;
-      margin: 2px 0;
-    }
-    
-    .order-info, .payment-info {
-      margin: 10px 0;
-    }
-    
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 4px 0;
-    }
-    
-    .items-header {
-      margin: 5px 0;
-    }
-    
-    .item-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 4px 0;
-    }
-    
-    .header-row {
-      font-weight: bold;
-    }
-    
-    .item-name {
-      flex: 2;
-      word-break: break-word;
-    }
-    
-    .item-qty {
-      flex: 1;
-      text-align: center;
-    }
-    
-    .item-total {
-      flex: 1;
-      text-align: right;
-    }
-    
-    .totals {
-      margin: 10px 0;
-    }
-    
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 6px 0;
-    }
-    
-    .due {
-      font-weight: bold;
-      border-top: 1px double #000;
-      margin-top: 5px;
-      padding-top: 5px;
-    }
-    
-    .due-amount {
-      color: #e74c3c;
-    }
-    
-    .paid-full {
-      margin-top: 5px;
-    }
-    
-    .paid-status {
-      color: #27ae60;
-      font-weight: bold;
-    }
-    
-    .footer {
-      margin-top: 15px;
-      font-size: 10px;
-    }
-    
-    .small-text {
-      font-size: 9px;
-      margin-top: 5px;
     }
     
     @media print {
-      body {
-        background: white;
-        padding: 0;
-        margin: 0;
-      }
-      
-      .toolbar {
-        display: none;
-      }
-      
-      .print-container {
-        box-shadow: none;
-        border-radius: 0;
-      }
-      
-      .receipt-wrapper {
-        padding: 0;
-      }
-    }
-    
-    @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-      
-      .toolbar {
-        flex-direction: column;
-      }
-      
-      .toolbar-buttons {
-        width: 100%;
-      }
-      
-      .toolbar button {
-        flex: 1;
-      }
+      body { background: white; padding: 0; }
+      .print-container { box-shadow: none; border-radius: 0; }
+      .toolbar { display: none; }
+      .receipt-wrapper { padding: 0; }
     }
   `;
 }
-
-// Helper method to escape HTML
-private escapeHtml(str: string): string {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// Helper method to format Taka
-private formatTk(amount: number): string {
-  if (isNaN(amount)) return '0 TK';
-  return amount.toFixed(2).replace(/\.00$/, '') + ' TK';
-}
-  generateReceipt(): void {
-    this.receiptHTML = this.receiptService.buildThermalReceiptHTML(this.receiptData);
-  }
-
-  printReceipt(): void {
-    this.receiptService.printReceipt(this.receiptHTML);
-  }
-
-  updateItem(index: number, field: keyof ReceiptItem, value: any): void {
-    // Update item
-    //this.receiptData.itemsDetailed[index][field] = value;
-    
-    // Recalculate item total
-    const item = this.receiptData.itemsDetailed[index];
-    item.total = item.quantity * item.unitPrice;
-    
-    // Update receipt service and regenerate
-    this.receiptService.updateReceiptData({ itemsDetailed: this.receiptData.itemsDetailed });
-    this.receiptData = this.receiptService.getReceiptData();
-    this.generateReceipt();
-  }
-
-  addNewItem(): void {
-    this.receiptData.itemsDetailed.push({
-      name: 'New Item',
-      quantity: 1,
-      unitPrice: 0,
-      total: 0
-    });
-    this.receiptService.updateReceiptData({ itemsDetailed: this.receiptData.itemsDetailed });
-    this.receiptData = this.receiptService.getReceiptData();
-    this.generateReceipt();
-  }
-
-  removeItem(index: number): void {
-    this.receiptData.itemsDetailed.splice(index, 1);
-    this.receiptService.updateReceiptData({ itemsDetailed: this.receiptData.itemsDetailed });
-    this.receiptData = this.receiptService.getReceiptData();
-    this.generateReceipt();
-  }
-
-  updateReceiptField(field: keyof ReceiptData, value: any): void {
-    this.receiptService.updateReceiptData({ [field]: value });
-    this.receiptData = this.receiptService.getReceiptData();
-    this.generateReceipt();
-  }
 }

@@ -275,7 +275,17 @@
                 [class.bg-green-50]="selectedCustomerIndex === i"
               >
                 <div class="font-semibold text-sm">{{ customer.customerName }}</div>
-                <div class="text-xs text-gray-500">{{ customer.phone }}</div>
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-gray-500">{{ customer.phone }}</span>
+                  <span *ngIf="(customer.currentBalance || 0) > 0"
+                        class="text-xs font-semibold" style="color:#ef4444">
+                    Due: ৳{{ (customer.currentBalance || 0).toFixed(2) }}
+                  </span>
+                  <span *ngIf="(customer.currentBalance || 0) < 0"
+                        class="text-xs font-semibold" style="color:#10b981">
+                    Credit: ৳{{ (-(customer.currentBalance || 0)).toFixed(2) }}
+                  </span>
+                </div>
               </div>
               <div
                 *ngIf="filteredCustomers.length === 0"
@@ -319,6 +329,14 @@
               readonly
               class="w-full px-2 py-1 text-sm border rounded-lg bg-gray-50"
             ></textarea>
+          </div>
+
+          <!-- Previous Due / Credit Badge -->
+          <div *ngIf="selectedCustomerId && previousDue !== 0" class="mb-2 px-3 py-2 rounded-lg flex justify-between items-center text-xs font-semibold"
+               [style.background]="previousDue > 0 ? '#fee2e2' : '#d1fae5'"
+               [style.color]="previousDue > 0 ? '#b91c1c' : '#065f46'">
+            <span>{{ previousDue > 0 ? 'Previous Due' : 'Advance Credit' }}</span>
+            <span>{{ previousDue > 0 ? '+' : '-' }}৳{{ (Math.abs(previousDue)).toFixed(2) }}</span>
           </div>
 
           <!-- Transport & Payment - Compact -->
@@ -374,6 +392,14 @@
               <span>Discount:</span>
               <span>-৳{{ discountAmount.toFixed(2) }}</span>
             </div>
+            <div *ngIf="previousDue > 0" class="flex justify-between font-semibold" style="color:#ef4444">
+              <span>Previous Due:</span>
+              <span>+৳{{ previousDue.toFixed(2) }}</span>
+            </div>
+            <div *ngIf="previousDue < 0" class="flex justify-between font-semibold" style="color:#10b981">
+              <span>Advance Credit:</span>
+              <span>-৳{{ (Math.abs(previousDue)).toFixed(2) }}</span>
+            </div>
             <div class="flex justify-between pt-1 border-t font-bold">
               <span>Gross:</span>
               <span class="text-green-600">৳{{ grossAmount.toFixed(2) }}</span>
@@ -413,37 +439,42 @@
             </div>
           </div>
 
+
           <div class="mt-2">
             <label class="text-xs text-gray-500">Due</label>
             <input
               type="text"
               [value]="dueAmount.toFixed(2)"
               readonly
-              [class]="
-                'w-full px-2 py-1 text-sm border rounded-lg font-bold ' +
-                (dueAmount > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600')
-              "
+              [class]="'w-full px-2 py-1 text-sm border rounded-lg ' + (dueAmount > 0 ? 'bg-red-50 text-red-700 font-semibold' : 'bg-gray-50 text-gray-500')"
             />
           </div>
 
-          <!-- Action Buttons - Compact -->
-          <div class="flex gap-2 mt-3">
-            <button
-              (click)="resetForm()"
-              class="flex-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200"
-            >
-              Reset
-            </button>
-            <button
-              (click)="submitBill()"
-              class="flex-1 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'"
-            >
-              Submit
-            </button>
-          </div>
+          <!-- Submit Bill Button -->
+          <button
+            (click)="submitBill()"
+            [disabled]="cartItems.length === 0"
+            class="w-full mt-3 py-2 rounded-lg text-sm font-bold text-white transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style="background:#1a1c4e"
+            onmouseover="if(!this.disabled) this.style.background='#252862'"
+            onmouseout="if(!this.disabled) this.style.background='#1a1c4e'"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Submit Bill
+          </button>
+
+          <!-- Reset Button -->
+          <button
+            (click)="resetForm()"
+            class="w-full mt-2 py-1.5 rounded-lg text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
+          >
+            Reset
+          </button>
         </div>
       </div>
     </div>
-
   </div>
 </div>
