@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -53,7 +53,6 @@ import { OrderService, OrderListDto } from '../../services/order.service';
                     [style]="'background:' + s.color"></span>
             </span>
             {{ s.label }}
-            <span *ngIf="loaded" class="ml-1 font-bold">({{ countByStatus(s.value) }})</span>
           </button>
         </div>
 
@@ -254,47 +253,55 @@ export class OrderListComponent implements OnInit {
 
   constructor(
     private orderSvc: OrderService,
-    private router:   Router
+    private router:   Router,
+    private cdr:      ChangeDetectorRef,
+    private zone:     NgZone
   ) {}
 
   ngOnInit(): void {
-    // Pre-fill dates only — do NOT auto-load
     const today = new Date().toISOString().split('T')[0];
-    this.fromDate = today;
-    this.toDate   = today;
+    this.fromDate    = today;
+    this.toDate      = today;
+    this.filterStatus = 'New';   // default: show only New orders
+    this.load();
   }
 
   load(): void {
     this.loading = true;
-    this.orderSvc.getOrders(undefined, this.fromDate, this.toDate).subscribe({
+    this.cdr.detectChanges();
+    this.orderSvc.getOrders(this.filterStatus || undefined, this.fromDate, this.toDate).subscribe({
       next: res => {
-        this.allOrders = res?.data ?? [];
-        this.applyStatusFilter();
-        this.loading = false;
-        this.loaded  = true;
+        this.zone.run(() => {
+          this.allOrders = res?.data ?? [];
+          this.applyStatusFilter();
+          this.loading = false;
+          this.loaded  = true;
+          this.cdr.detectChanges();
+        });
       },
       error: () => {
-        this.loading = false;
-        this.loaded  = true;
+        this.zone.run(() => {
+          this.loading = false;
+          this.loaded  = true;
+          this.cdr.detectChanges();
+        });
       }
     });
   }
 
   setStatus(status: string): void {
     this.filterStatus = status;
-    this.applyStatusFilter();
+    this.load();   // re-fetch from server with new status filter
   }
 
   applyStatusFilter(): void {
-    this.filteredOrders = this.filterStatus
-      ? this.allOrders.filter(o => o.status === this.filterStatus)
-      : [...this.allOrders];
+    // allOrders already server-filtered; just copy to filteredOrders
+    this.filteredOrders = [...this.allOrders];
   }
 
-  countByStatus(status: string): number {
-    return status
-      ? this.allOrders.filter(o => o.status === status).length
-      : this.allOrders.length;
+  countByStatus(_status: string): number {
+    // counts not meaningful when server-filtered — hide from pills
+    return this.allOrders.length;
   }
 
   resetFilters(): void {
@@ -302,9 +309,7 @@ export class OrderListComponent implements OnInit {
     this.fromDate     = today;
     this.toDate       = today;
     this.filterStatus = '';
-    this.allOrders      = [];
-    this.filteredOrders = [];
-    this.loaded = false;
+    this.load();
   }
 
   newOrder(): void {
