@@ -190,9 +190,17 @@ export class PosBillingComponent implements OnInit {
             }
           });
 
-          // Pre-fill discount & transport from order
-          this.discountAmount = order.discount || 0;
-          this.transportCost  = order.transport || 0;
+          // Pre-fill transport from order
+          this.transportCost = order.transport || 0;
+
+          // Convert absolute discount → percentage so calculateTotals() works correctly
+          const orderSubtotal = order.items.reduce((s, i) => s + i.total, 0);
+          this.discountPercent = orderSubtotal > 0
+            ? +((( order.discount || 0) / orderSubtotal) * 100).toFixed(4)
+            : 0;
+
+          // Recalculate all totals from the loaded cart
+          this.calculateTotals();
 
           // Pre-fill customer name and phone from order
           if (order.customerName) {
