@@ -16,6 +16,16 @@ export class ProductComponent implements OnInit {
   editingId: number | null = null;
   Math = Math;
 
+  unitTypes = [
+    { code: 'PCS', label: 'Piece / Count',  isWeight: false },
+    { code: 'KG',  label: 'Kilogram (kg)',  isWeight: true  },
+    { code: 'G',   label: 'Gram (g)',       isWeight: true  },
+    { code: 'L',   label: 'Litre (L)',      isWeight: true  },
+    { code: 'ML',  label: 'Millilitre (mL)',isWeight: true  },
+    { code: 'DOZ', label: 'Dozen',          isWeight: false },
+    { code: 'BOX', label: 'Box',            isWeight: false },
+  ];
+
   productForm = {
     productName: '',
     categoryId: 1,
@@ -23,6 +33,7 @@ export class ProductComponent implements OnInit {
     salePrice: 0.00,
     stockQty: 0.00,
     barcode: '',
+    unitType: 'PCS',
     isActive: true
   };
 
@@ -174,6 +185,7 @@ export class ProductComponent implements OnInit {
       salePrice: product.salePrice || 0,
       stockQty: product.stockQty || 0,
       barcode: product.barcode || '',
+      unitType: product.unitType || 'PCS',
       isActive: product.isActive
     };
     this.clearValidationErrors();
@@ -313,6 +325,7 @@ export class ProductComponent implements OnInit {
       salePrice: 0.00,
       stockQty: 0.00,
       barcode: '',
+      unitType: 'PCS',
       isActive: true
     };
     this.clearValidationErrors();

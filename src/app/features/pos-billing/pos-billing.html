@@ -91,10 +91,17 @@
               />
             </div>
             <div>
-              <label class="text-xs text-gray-500">Qty</label>
+              <label class="text-xs text-gray-500 flex items-center gap-1">
+                Qty
+                <span *ngIf="selectedProduct" class="px-1.5 py-0.5 rounded text-xs font-semibold"
+                  [ngStyle]="{'background': isWeightProduct ? '#e0e3f8' : '#f3f4f6',
+                              'color':      isWeightProduct ? '#1a1c4e'  : '#6b7280'}">
+                  {{ qtyUnit }}
+                </span>
+              </label>
               <div class="flex items-center gap-1">
                 <button
-                  (click)="productQuantity = Math.max(1, productQuantity - 1)"
+                  (click)="onProductQuantityChange(isWeightProduct ? +(productQuantity - 0.1).toFixed(3) : productQuantity - 1)"
                   class="w-6 h-6 rounded bg-gray-100 text-sm font-bold"
                 >
                   -
@@ -104,10 +111,11 @@
                   [ngModel]="productQuantity"
                   (ngModelChange)="onProductQuantityChange($event)"
                   (keydown)="onQuantityKeydown($event)"
+                  [step]="qtyStep"
                   class="w-full text-center px-1 py-1 text-sm border rounded-lg"
                 />
                 <button
-                  (click)="productQuantity = productQuantity + 1"
+                  (click)="onProductQuantityChange(isWeightProduct ? +(productQuantity + 0.1).toFixed(3) : productQuantity + 1)"
                   class="w-6 h-6 rounded bg-gray-100 text-sm font-bold"
                 >
                   +
@@ -179,7 +187,10 @@
                     ⚠ Out of stock
                   </span>
                 </td>
-                <td class="px-2 py-1.5 text-center">{{ item.quantity }}</td>
+                <td class="px-2 py-1.5 text-center">
+                  {{ item.quantity }}
+                  <span class="text-xs text-gray-400 ml-0.5">{{ item.product.unitType || 'PCS' }}</span>
+                </td>
                 <td class="px-2 py-1.5 text-right">৳{{ item.unitPrice.toFixed(2) }}</td>
                 <td class="px-2 py-1.5 text-right font-semibold" style="color:#1a1c4e">৳{{ item.subtotal.toFixed(2) }}</td>
                 <td class="px-2 py-1.5 text-center">

@@ -10,6 +10,7 @@ export interface Product {
   salePrice: number;
   stockQty: number;
   barcode: string;
+  unitType: string;       // 'PCS' | 'KG' | 'G' | 'L' | 'ML' | 'DOZ' | 'BOX'
   isActive: boolean;
   totalStockValue: number;
   profitMarginPercent: number;

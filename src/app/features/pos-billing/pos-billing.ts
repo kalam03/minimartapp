@@ -504,9 +504,20 @@ export class PosBillingComponent implements OnInit {
 
   // Helper method for product quantity
   onProductQuantityChange(value: string | number): void {
-    const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
-    this.productQuantity = isNaN(numValue) ? 1 : Math.max(1, numValue);
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    const min = this.isWeightProduct ? 0.001 : 1;
+    this.productQuantity = isNaN(numValue) ? min : Math.max(min, numValue);
   }
+
+  /** True when selected product is sold by weight/volume (KG, G, L, ML) */
+  get isWeightProduct(): boolean {
+    const wt = ['KG', 'G', 'L', 'ML'];
+    return !!this.selectedProduct && wt.includes((this.selectedProduct.unitType || '').toUpperCase());
+  }
+
+  /** Input step and display unit for the quantity field */
+  get qtyStep(): string { return this.isWeightProduct ? '0.001' : '1'; }
+  get qtyUnit(): string { return this.selectedProduct?.unitType || 'PCS'; }
 
   // Helper method for discount percent
   onDiscountPercentChange(value: string | number): void {
