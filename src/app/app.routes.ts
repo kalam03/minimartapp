@@ -60,6 +60,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'security/permissions',
+        loadComponent: () =>
+          import('./features/user-permission/user-permission.component').then(
+            (m) => m.UserPermissionComponent
+          ),
+      },
+      {
         path: 'capital',
         loadComponent: () =>
           import('./features/capital/capital-management.component').then(

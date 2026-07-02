@@ -1,0 +1,285 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style="background:#1a1c4e">
+        <div>
+          <h1 class="text-white font-bold text-sm flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+            User Function Permissions
+          </h1>
+          <p class="text-xs mt-0.5" style="color:#ACB3E7">
+            Assign page-level access flags to each user
+          </p>
+        </div>
+
+        <!-- User selector -->
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-semibold whitespace-nowrap" style="color:#ACB3E7">Select User</label>
+          <select
+            [(ngModel)]="selectedUserId"
+            (ngModelChange)="onUserChange()"
+            class="px-3 py-1.5 text-sm border border-indigo-400 rounded-lg outline-none min-w-[200px]"
+            style="background:#252862;color:#fff"
+          >
+            <option [ngValue]="null">-- Choose a user --</option>
+            <option *ngFor="let u of users" [value]="u.userId">
+              {{ u.userName }} ({{ u.role || 'User' }})
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div *ngIf="loading" class="flex items-center justify-center py-16">
+      <div class="animate-spin rounded-full h-10 w-10 border-4 border-indigo-200 border-t-indigo-600"></div>
+      <span class="ml-3 text-sm text-gray-500">Loading permissions…</span>
+    </div>
+
+    <!-- Placeholder when no user selected -->
+    <div *ngIf="!loading && !selectedUserId" class="bg-white rounded-xl border shadow-sm p-10 text-center text-gray-400">
+      <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+      </svg>
+      <p class="text-sm">Select a user above to manage their function permissions.</p>
+    </div>
+
+    <!-- Permission matrix -->
+    <ng-container *ngIf="!loading && selectedUserId && modules.length > 0">
+
+      <!-- Module groups -->
+      <div *ngFor="let mod of modules; let mi = index" class="bg-white rounded-xl shadow-md border mb-3 overflow-hidden">
+
+        <!-- Module header bar -->
+        <div class="px-4 py-2 flex items-center justify-between" style="background:#252862">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded" style="background:#ACB3E7;color:#1a1c4e">
+              {{ mod.moduleId }}
+            </span>
+            <span class="text-white font-semibold text-sm">{{ mod.moduleName }}</span>
+            <span class="text-xs ml-2" style="color:#ACB3E7">{{ mod.rows.length }} function(s)</span>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="grantAllModule(mod)"
+              class="px-2 py-0.5 text-xs rounded font-semibold bg-green-500 hover:bg-green-600 text-white transition">
+              ✓ Grant All
+            </button>
+            <button (click)="revokeAllModule(mod)"
+              class="px-2 py-0.5 text-xs rounded font-semibold bg-red-500 hover:bg-red-600 text-white transition">
+              ✕ Revoke All
+            </button>
+          </div>
+        </div>
+
+        <!-- Permission table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <!-- Column headers -->
+            <thead>
+              <tr style="background:#e0e3f8;color:#1a1c4e">
+                <th class="px-3 py-2 text-left font-semibold w-56">Function</th>
+                <th class="px-3 py-2 text-left font-semibold w-20 text-gray-500">Route</th>
+                <!-- Column toggle headers -->
+                <th class="px-2 py-2 text-center w-16 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allView')" title="Toggle View for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allView" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span class="font-semibold text-indigo-700">View</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-14 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allAdd')" title="Toggle Add for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allAdd" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Add</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-14 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allEdit')" title="Toggle Edit for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allEdit" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Edit</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-16 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allDel')" title="Toggle Delete for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allDel" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Delete</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-14 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allAuth')" title="Toggle Auth for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allAuth" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Auth</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-16 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allProcess')" title="Toggle Process for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allProcess" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Process</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-20 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allRptView')" title="Toggle Report View for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allRptView" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Rpt View</span>
+                  </div>
+                </th>
+                <th class="px-2 py-2 text-center w-20 cursor-pointer hover:bg-indigo-100"
+                    (click)="toggleModuleColumn(mod, 'allRptPrint')" title="Toggle Report Print for all">
+                  <div class="flex flex-col items-center gap-0.5">
+                    <input type="checkbox" [checked]="mod.allRptPrint" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
+                    <span>Rpt Print</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <!-- Function rows -->
+            <tbody>
+              <tr *ngFor="let row of mod.rows; let ri = index"
+                  [class]="ri % 2 === 0 ? 'bg-white hover:bg-indigo-50' : 'bg-gray-50 hover:bg-indigo-50'"
+                  class="border-b transition-colors">
+
+                <!-- Function name + quick route -->
+                <td class="px-3 py-2">
+                  <div class="font-semibold text-gray-800 leading-tight">{{ row.functionName }}</div>
+                  <div class="text-gray-400 text-xs mt-0.5">
+                    <span class="font-mono px-1 py-0.5 rounded" style="background:#f0f0f0">{{ row.functionId }}</span>
+                    <span *ngIf="row.isFinancial" class="ml-1 px-1 rounded text-orange-600 bg-orange-50">₿ Financial</span>
+                  </div>
+                </td>
+
+                <!-- Route -->
+                <td class="px-2 py-2 text-gray-400 font-mono text-xs truncate max-w-[80px]" [title]="row.appRoute">
+                  {{ row.appRoute }}
+                </td>
+
+                <!-- View checkbox -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowMaintView"
+                      (change)="toggle(row, 'allowMaintView')"
+                      class="w-4 h-4 accent-indigo-700 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Add -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowMaintAdd"
+                      (change)="toggle(row, 'allowMaintAdd')"
+                      class="w-4 h-4 accent-green-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Edit -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowMaintEdit"
+                      (change)="toggle(row, 'allowMaintEdit')"
+                      class="w-4 h-4 accent-blue-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Delete -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowMaintDel"
+                      (change)="toggle(row, 'allowMaintDel')"
+                      class="w-4 h-4 accent-red-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Auth -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowMaintAuth"
+                      (change)="toggle(row, 'allowMaintAuth')"
+                      class="w-4 h-4 accent-purple-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Process -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowProcess"
+                      (change)="toggle(row, 'allowProcess')"
+                      class="w-4 h-4 accent-yellow-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Rpt View -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowReportView"
+                      (change)="toggle(row, 'allowReportView')"
+                      class="w-4 h-4 accent-teal-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+                <!-- Rpt Print -->
+                <td class="px-2 py-2 text-center">
+                  <label class="cursor-pointer inline-flex items-center justify-center w-full h-full">
+                    <input type="checkbox"
+                      [checked]="row.allowReportPrint"
+                      (change)="toggle(row, 'allowReportPrint')"
+                      class="w-4 h-4 accent-teal-600 cursor-pointer"/>
+                  </label>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div><!-- /module group -->
+
+      <!-- Sticky Save bar -->
+      <div class="sticky bottom-0 z-10 mt-2 bg-white border-t shadow-lg rounded-xl px-4 py-3 flex items-center justify-between">
+        <div class="text-xs text-gray-500">
+          <span class="font-semibold" style="color:#1a1c4e">{{ selectedUser?.userName }}</span>
+          — {{ allRows.length }} functions across {{ modules.length }} modules
+          <span *ngIf="hasChanges" class="ml-2 px-2 py-0.5 rounded-full text-orange-700 bg-orange-100 font-semibold">
+            Unsaved changes
+          </span>
+        </div>
+        <button
+          (click)="save()"
+          [disabled]="saving || !hasChanges"
+          class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+          style="background:#1a1c4e"
+          onmouseover="this.style.background='#252862'"
+          onmouseout="this.style.background='#1a1c4e'"
+        >
+          <svg *ngIf="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <svg *ngIf="saving" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+          </svg>
+          {{ saving ? 'Saving…' : 'Save Permissions' }}
+        </button>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>
