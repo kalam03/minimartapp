@@ -771,12 +771,12 @@ export class PosBillingComponent implements OnInit {
     //   return;
     // }
 
-    if (this.dueAmount > 0) {
-      await this.alertService.warning(
-        `Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`,
-      );
-      return;
-    }
+    // if (this.dueAmount > 0) {
+    //   await this.alertService.warning(
+    //     `Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`,
+    //   );
+    //   return;
+    // }
 
     // if (this.paymentCash < this.grossAmount) {
     //   await this.alertService.warning(
