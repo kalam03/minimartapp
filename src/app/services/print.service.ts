@@ -9,7 +9,7 @@ export class PrintService {
     const result = encoder
       .initialize()
       .align('center')
-      .text('Lucky Shop BD')
+      .text('Lucky Shop')
       .newline()
       .text('Invoice: ' + invoiceNo)
       .newline()

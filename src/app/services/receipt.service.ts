@@ -36,7 +36,7 @@ export class ReceiptService {
   
   // Static data as per your requirements
   private staticReceiptData: ReceiptData = {
-    shopName: "Lucky Shop BD",
+    shopName: "Lucky Shop",
     shopAddressLine1: "Dhaka, mirpur-10, kazipara-123",
     email: "luckyshopbd@gmail.com",
     mobile1: "0151111111",
@@ -140,7 +140,7 @@ export class ReceiptService {
       </div>
       <hr />
       <div class="footer-message">===== Take Care yourself =====</div>
-      <div class="center small-detail" style="margin-top: 8px;">Thank you | Lucky Shop BD</div>
+      <div class="center small-detail" style="margin-top: 8px;">Thank you | Lucky Shop</div>
     `;
   }
 
@@ -157,7 +157,7 @@ export class ReceiptService {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Lucky Shop BD — Receipt</title>
+          <title>Lucky Shop — Receipt</title>
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body {
