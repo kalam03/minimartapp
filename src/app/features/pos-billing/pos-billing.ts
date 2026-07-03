@@ -868,6 +868,9 @@ export class PosBillingComponent implements OnInit {
 
           await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${invoiceNo}`);
           this.resetForm();
+          // Reload products (updated stock) and customers (updated balance)
+          this.loadProducts();
+          this.loadCustomers();
         },
         error: (error) => {
           // Stock sold out by another counter between cart add and finalization
