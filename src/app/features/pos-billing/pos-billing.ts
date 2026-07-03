@@ -824,6 +824,7 @@ export class PosBillingComponent implements OnInit {
         transportCost: this.transportCost,
         transport: this.transportType,
         previousDue: this.previousDue,
+        previousBalance: snapPreviousDue,
         netAmount: this.grossAmount,
         paymentType: this.selectedPaymentMethod,
         paidAmount: this.paymentCash,
@@ -847,17 +848,7 @@ export class PosBillingComponent implements OnInit {
         next: async (response: any) => {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
 
-          // Update customer balance using snapshot values (resetForm may have cleared this.*)
-          if (snapCustomerId) {
-            const delta = snapDueAmount - snapPreviousDue;
-            if (delta !== 0) {
-              this.customerService.updateCustomerBalance(snapCustomerId, {
-                tenantId: 1,
-                amount: Math.abs(delta),
-                operationType: delta > 0 ? 'ADD' : 'SUBTRACT'
-              }).subscribe();
-            }
-          }
+          // Balance update handled by sp_AddSale (@PreviousBalance param) — no separate call needed
 
           // If this session was opened from an Order, mark it Completed
           if (this.activeOrderId) {
