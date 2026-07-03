@@ -37,10 +37,10 @@ export class ReceiptService {
   // Static data as per your requirements
   private staticReceiptData: ReceiptData = {
     shopName: "Lucky Shop",
-    shopAddressLine1: "Dhaka, mirpur-10, kazipara-123",
+    shopAddressLine1: "আড়াইহাজার বাজার, ব্যাটারী গলির দক্ষিণ পাশে, বাঁশ পট্টি নতুন রাস্তার মোড়",
     email: "luckyshopbd@gmail.com",
-    mobile1: "0151111111",
-    mobile2: "0133211111",
+    mobile1: "01716881160",
+    mobile2: "",
     customerMobile: "01611111111",
     generatedBy: "admin1",
     itemsDetailed: [
@@ -112,7 +112,7 @@ export class ReceiptService {
         <div style="font-size: 16px; font-weight: 800; letter-spacing: 1px;">INVOICE RECEIPT</div>
         <div class="shop-name">${this.escapeHtml(receiptData.shopName)}</div>
         <div style="font-size: 11px;">${this.escapeHtml(receiptData.shopAddressLine1)}</div>
-        <div style="font-size: 10px;">Email: ${this.escapeHtml(receiptData.email)} | Tel: ${this.escapeHtml(receiptData.mobile1)}, ${this.escapeHtml(receiptData.mobile2)}</div>
+        <div style="font-size: 10px;">Tel: ${this.escapeHtml(receiptData.mobile1)}</div>
       </div>
       <hr />
       <div class="summary-line">

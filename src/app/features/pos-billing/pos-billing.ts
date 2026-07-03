@@ -1191,9 +1191,9 @@ buildReceiptFromCurrentSale(receipt: any): string {
           <!-- Shop Header -->
           <div class="text-center">
             <div class="shop-name">LUCKY SHOP</div>
-            <div class="shop-address">Mirpur-10, Kazipara, Dhaka-1216</div>
-            <div class="shop-address">Tel: 01511-111111 | 01332-111111</div>
-            <div class="shop-address">Email: luckyshopbd@gmail.com</div>
+            <div class="shop-address">আড়াইহাজার বাজার, ব্যাটারী গলির দক্ষিণ পাশে, বাঁশ পট্টি নতুন রাস্তার মোড়</div>
+            <div class="shop-address">Tel: 01716881160</div>
+            
           </div>
           
           <div class="separator"></div>
@@ -1313,7 +1313,7 @@ Item               Price Qty    Amount
           </div>
           
           <div class="receipt-footer">
-            <div>Tel: 01511-111111</div>
+            <div>Tel: 01716881160</div>
             <div>Visit us again!</div>
             <div style="margin-top: 4px;">Have a great day!</div>
           </div>
