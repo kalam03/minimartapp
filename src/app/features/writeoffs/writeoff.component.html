@@ -1,0 +1,162 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Write-Off Form Section -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Destroy Product / Stock Write-Off
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Product -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Product *</label>
+            <select
+              [(ngModel)]="form.productId"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('productId') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
+            >
+              <option [value]="0">Select Product</option>
+              <option *ngFor="let p of products" [value]="p.productId">
+                {{ p.productName }} ({{ p.stockQty }} {{ p.unitType }} in stock)
+              </option>
+            </select>
+            <p *ngIf="isFieldInvalid('productId')" class="text-red-600 text-xs mt-1">{{ validationErrors['productId'] }}</p>
+          </div>
+
+          <!-- Quantity -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Quantity to Destroy *</label>
+            <input
+              type="number"
+              [(ngModel)]="form.quantity"
+              min="0"
+              step="0.01"
+              placeholder="Enter quantity"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('quantity') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
+            />
+            <p *ngIf="isFieldInvalid('quantity')" class="text-red-600 text-xs mt-1">{{ validationErrors['quantity'] }}</p>
+          </div>
+
+          <!-- Reason -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Reason *</label>
+            <select
+              [(ngModel)]="form.reason"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('reason') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
+            >
+              <option value="">Select Reason</option>
+              <option *ngFor="let r of reasons" [value]="r">{{ r }}</option>
+            </select>
+            <p *ngIf="isFieldInvalid('reason')" class="text-red-600 text-xs mt-1">{{ validationErrors['reason'] }}</p>
+          </div>
+
+          <!-- Date -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Write-Off Date</label>
+            <input
+              type="date"
+              [(ngModel)]="form.writeOffDate"
+              class="w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none border-gray-400"
+            />
+          </div>
+        </div>
+
+        <!-- Estimated Value -->
+        <div *ngIf="selectedProduct && form.quantity" class="mt-3 px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+          Estimated loss value (at cost): <strong>৳ {{ estimatedValue.toFixed(2) }}</strong>
+          — {{ form.quantity }} {{ selectedProduct.unitType }} × ৳{{ (selectedProduct.purchasePrice || 0).toFixed(2) }}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <button
+            (click)="saveWriteOff()"
+            [disabled]="isSaving"
+            class="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            {{ isSaving ? 'Saving...' : 'Destroy Stock' }}
+          </button>
+          <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Write-Off Report Section -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm">Write-Off Report</h2>
+        <span class="text-xs" style="color:#ACB3E7">{{ reportList.length }} record(s)</span>
+      </div>
+
+      <!-- Filters -->
+      <div class="px-3 py-2 border-b flex flex-wrap gap-2 items-end">
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">From</label>
+          <input type="date" [(ngModel)]="reportFromDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">To</label>
+          <input type="date" [(ngModel)]="reportToDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">Product</label>
+          <select [(ngModel)]="reportProductId" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+            <option [value]="0">All Products</option>
+            <option *ngFor="let p of products" [value]="p.productId">{{ p.productName }}</option>
+          </select>
+        </div>
+        <button (click)="applyReportFilters()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:#1a1c4e">Apply</button>
+        <button (click)="resetReportFilters()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+
+        <div class="ml-auto text-xs text-right">
+          <div class="text-gray-500">Total Qty Destroyed: <strong class="text-gray-800">{{ grandTotalQty.toFixed(2) }}</strong></div>
+          <div class="text-gray-500">Total Loss Value: <strong class="text-red-600">৳ {{ grandTotalValue.toFixed(2) }}</strong></div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <tr>
+              <th class="px-3 py-2 text-left">Date</th>
+              <th class="px-3 py-2 text-left">Product</th>
+              <th class="px-3 py-2 text-right">Quantity</th>
+              <th class="px-3 py-2 text-right">Unit Cost</th>
+              <th class="px-3 py-2 text-right">Total Value</th>
+              <th class="px-3 py-2 text-left">Reason</th>
+              <th class="px-3 py-2 text-left">Logged By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let w of reportList" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 text-gray-600">{{ w.writeOffDate | date:'dd MMM yyyy' }}</td>
+              <td class="px-3 py-2 font-medium text-gray-900">{{ w.productName }}</td>
+              <td class="px-3 py-2 text-right">{{ w.quantity }} {{ w.unitType }}</td>
+              <td class="px-3 py-2 text-right">৳ {{ w.unitCost.toFixed(2) }}</td>
+              <td class="px-3 py-2 text-right font-semibold text-red-600">৳ {{ w.totalValue.toFixed(2) }}</td>
+              <td class="px-3 py-2 text-gray-600">{{ w.reason }}</td>
+              <td class="px-3 py-2 text-gray-500">{{ w.createdBy || '-' }}</td>
+            </tr>
+            <tr *ngIf="!isLoadingReport && reportList.length === 0">
+              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">No write-offs found</td>
+            </tr>
+            <tr *ngIf="isLoadingReport">
+              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

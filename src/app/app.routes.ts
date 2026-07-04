@@ -91,6 +91,14 @@ export const routes: Routes = [
             (m) => m.CapitalManagementComponent
           ),
       },
+      {
+        path: 'writeoffs',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/writeoffs/writeoff.component').then(
+            (m) => m.WriteOffComponent
+          ),
+      },
       // ── Orders Module ────────────────────────────────────────────────
       {
         path: 'orders',
