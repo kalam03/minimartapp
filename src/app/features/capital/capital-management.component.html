@@ -163,18 +163,14 @@
             <p *ngIf="isFieldInvalid('vendorId')" class="text-red-600 text-xs mt-1">{{ validationErrors['vendorId'] }}</p>
           </div>
 
-          <!-- Employee dropdown (SALARY only) -->
-          <div *ngIf="needsEmployee">
-            <label class="block text-xs font-semibold mb-0.5 text-red-700">Employee *</label>
-            <select [(ngModel)]="selectedEmployeeId"
-              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('employeeId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-              <option [value]="0">-- Select Employee --</option>
-              <option *ngFor="let e of employees" [value]="e.employeeId">
-                {{ e.employeeName }}{{ e.designation ? ' — ' + e.designation : '' }}
-              </option>
-            </select>
-            <p *ngIf="isFieldInvalid('employeeId')" class="text-red-600 text-xs mt-1">{{ validationErrors['employeeId'] }}</p>
-            <p *ngIf="selectedEmployee" class="text-gray-400 text-xs mt-1">Paid to date: ৳{{ selectedEmployee.currentBalance | number:'1.2-2' }}</p>
+          <!-- Salary is no longer entered here — it flows only through the
+               Payroll Management page (Process Payroll), which posts to this
+               same GL ledger automatically. -->
+          <div *ngIf="+form.txnTypeId === 14" class="md:col-span-2 lg:col-span-4">
+            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              Salary payments are processed from the <strong>Payroll</strong> page, not here. Go to Payroll →
+              Process Payroll to run an employee's salary; it will post to this ledger automatically.
+            </p>
           </div>
 
           <!-- Investor dropdown (INVESTMENT only) -->

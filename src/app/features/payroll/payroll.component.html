@@ -1,0 +1,628 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Tab Nav -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2 flex flex-wrap gap-1" style="background:#1a1c4e">
+        <button *ngFor="let t of tabs" (click)="setTab(t.id)"
+          [class]="'px-3 py-1.5 rounded-lg text-xs font-semibold transition ' + (activeTab === t.id ? 'bg-white' : 'text-white hover:bg-white/10')"
+          [style]="activeTab === t.id ? 'color:#1a1c4e' : ''">
+          {{ t.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ EMPLOYEES TAB ═══════════════════ -->
+    <ng-container *ngIf="activeTab === 'employees'">
+
+      <!-- Quick add Department / Designation -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+          <div class="px-3 py-2" style="background:#1a1c4e">
+            <h2 class="text-white font-semibold text-sm">Departments</h2>
+          </div>
+          <div class="p-3 flex gap-2">
+            <input type="text" [(ngModel)]="newDepartmentName" placeholder="e.g. Sales, Accounts"
+              class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            <button (click)="addDepartment()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:#1a1c4e">Add</button>
+          </div>
+          <div class="px-3 pb-3 flex flex-wrap gap-1">
+            <span *ngFor="let d of departments" class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{{ d.departmentName }}</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+          <div class="px-3 py-2" style="background:#1a1c4e">
+            <h2 class="text-white font-semibold text-sm">Designations</h2>
+          </div>
+          <div class="p-3 flex gap-2">
+            <input type="text" [(ngModel)]="newDesignationName" placeholder="e.g. Manager, Cashier"
+              class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            <button (click)="addDesignation()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:#1a1c4e">Add</button>
+          </div>
+          <div class="px-3 pb-3 flex flex-wrap gap-1">
+            <span *ngFor="let d of designations" class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{{ d.designationName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add/Edit Employee Form -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">{{ editingEmployeeId ? 'Edit Employee' : 'Add Employee' }}</h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">First Name *</label>
+              <input type="text" [(ngModel)]="empForm.firstName"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('firstName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="isEmpFieldInvalid('firstName')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['firstName'] }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Last Name</label>
+              <input type="text" [(ngModel)]="empForm.lastName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Gender</label>
+              <select [(ngModel)]="empForm.gender" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="">-- Select --</option>
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Mobile</label>
+              <input type="text" [(ngModel)]="empForm.mobile" placeholder="01XXXXXXXXX" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Email</label>
+              <input type="email" [(ngModel)]="empForm.email" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Department</label>
+              <select [(ngModel)]="empForm.departmentId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let d of departments" [ngValue]="d.departmentId">{{ d.departmentName }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Designation</label>
+              <select [(ngModel)]="empForm.designationId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let d of designations" [ngValue]="d.designationId">{{ d.designationName }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Joining Date</label>
+              <input type="date" [(ngModel)]="empForm.joiningDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Salary Type</label>
+              <select [(ngModel)]="empForm.salaryType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="Monthly">Monthly</option>
+                <option value="Daily">Daily</option>
+                <option value="Hourly">Hourly</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Basic Salary (৳)</label>
+              <input type="number" [(ngModel)]="empForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">NID No.</label>
+              <input type="text" [(ngModel)]="empForm.nidNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bank Name</label>
+              <input type="text" [(ngModel)]="empForm.bankName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bank Account No.</label>
+              <input type="text" [(ngModel)]="empForm.bankAccountNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Present Address</label>
+              <input type="text" [(ngModel)]="empForm.presentAddress" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button (click)="saveEmployee()" [disabled]="isSaving"
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              {{ isSaving ? 'Saving...' : (editingEmployeeId ? 'Update Employee' : 'Add Employee') }}
+            </button>
+            <button (click)="resetEmpForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee List -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Employees</h2>
+          <span class="text-xs" style="color:#ACB3E7">{{ filteredEmployees.length }} of {{ employees.length }}</span>
+        </div>
+        <div class="px-3 py-2 border-b">
+          <input type="text" [(ngModel)]="empSearch" placeholder="Search by name, code, mobile, designation…"
+            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+              <tr>
+                <th class="px-3 py-2 text-left">Code</th>
+                <th class="px-3 py-2 text-left">Name</th>
+                <th class="px-3 py-2 text-left">Department</th>
+                <th class="px-3 py-2 text-left">Designation</th>
+                <th class="px-3 py-2 text-left">Mobile</th>
+                <th class="px-3 py-2 text-right">Basic Salary</th>
+                <th class="px-3 py-2 text-center">Status</th>
+                <th class="px-3 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let e of filteredEmployees" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                <td class="px-3 py-2 text-gray-500">{{ e.employeeCode }}</td>
+                <td class="px-3 py-2 font-medium text-gray-900">{{ e.fullName }}</td>
+                <td class="px-3 py-2 text-gray-600">{{ e.departmentName || '-' }}</td>
+                <td class="px-3 py-2 text-gray-600">{{ e.designationName || '-' }}</td>
+                <td class="px-3 py-2 text-gray-600">{{ e.mobile || '-' }}</td>
+                <td class="px-3 py-2 text-right">{{ e.basicSalary ? '৳ ' + (e.basicSalary | number:'1.2-2') : '-' }}</td>
+                <td class="px-3 py-2 text-center">
+                  <span [class]="e.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                    {{ e.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-center whitespace-nowrap">
+                  <button (click)="editEmployee(e)" class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
+                  <button (click)="toggleEmployeeActive(e)" class="text-xs hover:underline" [class]="e.isActive ? 'text-red-600' : 'text-green-600'">
+                    {{ e.isActive ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredEmployees.length === 0">
+                <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">No employees found</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════ SALARY STRUCTURE TAB ═══════════════════ -->
+    <ng-container *ngIf="activeTab === 'salary'">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Salary Structure</h2>
+        </div>
+        <div class="p-3">
+          <div class="mb-3">
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+            <select [(ngModel)]="salaryEmployeeId" (ngModelChange)="onSalaryEmployeeChange()"
+              class="w-full md:w-1/2 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <option [ngValue]="null">-- Select Employee --</option>
+              <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }} ({{ e.employeeCode }})</option>
+            </select>
+          </div>
+
+          <div *ngIf="salaryEmployeeId" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Basic Salary (৳) *</label>
+              <input type="number" [(ngModel)]="salaryForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">House Rent (৳)</label>
+              <input type="number" [(ngModel)]="salaryForm.houseRent" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Medical (৳)</label>
+              <input type="number" [(ngModel)]="salaryForm.medical" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transport (৳)</label>
+              <input type="number" [(ngModel)]="salaryForm.transport" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Food (৳)</label>
+              <input type="number" [(ngModel)]="salaryForm.food" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Other Allowance (৳)</label>
+              <input type="number" [(ngModel)]="salaryForm.otherAllowance" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Effective From *</label>
+              <input type="date" [(ngModel)]="salaryForm.effectiveFrom" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div class="flex items-end">
+              <p class="text-sm font-semibold" style="color:#1a1c4e">Gross Salary: ৳ {{ salaryFormGross | number:'1.2-2' }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="salaryEmployeeId" class="flex gap-2 mt-3">
+            <button (click)="saveSalaryStructure()" [disabled]="isSaving"
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              {{ isSaving ? 'Saving...' : 'Save Salary Structure' }}
+            </button>
+          </div>
+
+          <div *ngIf="currentStructure" class="mt-4 p-3 rounded-lg bg-gray-50 border text-xs text-gray-600">
+            Current active structure effective from <strong>{{ currentStructure.effectiveFrom | date:'mediumDate' }}</strong> —
+            Gross: <strong>৳ {{ currentStructure.grossSalary | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════ ATTENDANCE TAB ═══════════════════ -->
+    <ng-container *ngIf="activeTab === 'attendance'">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Mark Attendance</h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <select [(ngModel)]="attEmployeeId" (ngModelChange)="onAttEmployeeChange()" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date *</label>
+              <input type="date" [(ngModel)]="attForm.attendanceDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Status *</label>
+              <select [(ngModel)]="attForm.status" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="Leave">Leave</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">In Time</label>
+              <input type="time" [(ngModel)]="attForm.inTime" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Out Time</label>
+              <input type="time" [(ngModel)]="attForm.outTime" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button (click)="markAttendance()" [disabled]="isSaving"
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              {{ isSaving ? 'Saving...' : 'Save Attendance' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2 flex items-center justify-between flex-wrap gap-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Attendance History</h2>
+          <div class="flex items-center gap-2">
+            <input type="date" [(ngModel)]="attFromDate" (ngModelChange)="loadAttendance()" class="px-2 py-1 text-xs rounded-lg outline-none" />
+            <span class="text-white text-xs">to</span>
+            <input type="date" [(ngModel)]="attToDate" (ngModelChange)="loadAttendance()" class="px-2 py-1 text-xs rounded-lg outline-none" />
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+              <tr>
+                <th class="px-3 py-2 text-left">Date</th>
+                <th class="px-3 py-2 text-left">In Time</th>
+                <th class="px-3 py-2 text-left">Out Time</th>
+                <th class="px-3 py-2 text-right">Working Hours</th>
+                <th class="px-3 py-2 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of attendanceList" class="border-b hover:bg-gray-50 text-xs md:text-sm">
+                <td class="px-3 py-2">{{ a.attendanceDate | date:'mediumDate' }}</td>
+                <td class="px-3 py-2">{{ a.inTime ? (a.inTime | date:'shortTime') : '-' }}</td>
+                <td class="px-3 py-2">{{ a.outTime ? (a.outTime | date:'shortTime') : '-' }}</td>
+                <td class="px-3 py-2 text-right">{{ a.workingHour ?? '-' }}</td>
+                <td class="px-3 py-2 text-center">
+                  <span [class]="'px-2 py-1 text-xs rounded-full ' + statusBadgeClass(a.status)">{{ a.status }}</span>
+                </td>
+              </tr>
+              <tr *ngIf="!attEmployeeId">
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">Select an employee to view attendance</td>
+              </tr>
+              <tr *ngIf="attEmployeeId && attendanceList.length === 0">
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No records found in this range</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════ PROCESS PAYROLL TAB ═══════════════════ -->
+    <ng-container *ngIf="activeTab === 'payroll'">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Process Salary Payment</h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <select [(ngModel)]="payForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }} ({{ e.employeeCode }})</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Month *</label>
+              <select [(ngModel)]="payForm.salaryMonth" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option *ngFor="let m of months" [ngValue]="m.id">{{ m.name }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Year *</label>
+              <select [(ngModel)]="payForm.salaryYear" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Date</label>
+              <input type="date" [(ngModel)]="payForm.paymentDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Overtime (৳)</label>
+              <input type="number" [(ngModel)]="payForm.overtimeAmount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bonus (৳)</label>
+              <input type="number" [(ngModel)]="payForm.bonusAmount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Deduction (৳)</label>
+              <input type="number" [(ngModel)]="payForm.deduction" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Method</label>
+              <select [(ngModel)]="payForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank</option>
+                <option value="Mobile Banking">Mobile Banking</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Reference No.</label>
+              <input type="text" [(ngModel)]="payForm.referenceNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div class="lg:col-span-3">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Remarks</label>
+              <input type="text" [(ngModel)]="payForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button (click)="processSalaryPayment()" [disabled]="isSaving"
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              {{ isSaving ? 'Processing...' : 'Process Salary Payment' }}
+            </button>
+          </div>
+
+          <div *ngIf="lastResult" class="mt-4 p-3 rounded-lg bg-green-50 border border-green-200 text-xs text-green-800">
+            <strong>{{ lastResult.txnNo }}</strong> processed — Gross: ৳{{ lastResult.grossSalary | number:'1.2-2' }},
+            Net: ৳{{ lastResult.netSalary | number:'1.2-2' }}
+            (Working: {{ lastResult.workingDays }}, Present: {{ lastResult.presentDays }},
+            Leave: {{ lastResult.leaveDays }}, Absent: {{ lastResult.absentDays }})
+          </div>
+        </div>
+      </div>
+
+      <!-- Salary Payment History -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Salary Payment History</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+              <tr>
+                <th class="px-3 py-2 text-left">Employee</th>
+                <th class="px-3 py-2 text-left">Month/Year</th>
+                <th class="px-3 py-2 text-right">Gross</th>
+                <th class="px-3 py-2 text-right">Net</th>
+                <th class="px-3 py-2 text-left">Payment Date</th>
+                <th class="px-3 py-2 text-left">Method</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of salaryPayments" class="border-b hover:bg-gray-50 text-xs md:text-sm">
+                <td class="px-3 py-2 font-medium text-gray-900">{{ s.fullName }} ({{ s.employeeCode }})</td>
+                <td class="px-3 py-2">{{ monthName(s.salaryMonth) }} {{ s.salaryYear }}</td>
+                <td class="px-3 py-2 text-right">৳ {{ s.grossSalary | number:'1.2-2' }}</td>
+                <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳ {{ s.netSalary | number:'1.2-2' }}</td>
+                <td class="px-3 py-2">{{ s.paymentDate ? (s.paymentDate | date:'mediumDate') : '-' }}</td>
+                <td class="px-3 py-2">{{ s.paymentMethod || '-' }}</td>
+              </tr>
+              <tr *ngIf="salaryPayments.length === 0">
+                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">No salary payments yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════ BONUS TAB ═══════════════════ -->
+    <ng-container *ngIf="activeTab === 'bonus'">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Add Bonus</h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <select [(ngModel)]="bonusForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date *</label>
+              <input type="date" [(ngModel)]="bonusForm.bonusDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bonus Type</label>
+              <select [(ngModel)]="bonusForm.bonusType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="Festival Bonus">Festival Bonus</option>
+                <option value="Performance Bonus">Performance Bonus</option>
+                <option value="Incentive">Incentive</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Amount (৳) *</label>
+              <input type="number" [(ngModel)]="bonusForm.amount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Method</label>
+              <select [(ngModel)]="bonusForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank</option>
+                <option value="Mobile Banking">Mobile Banking</option>
+              </select>
+            </div>
+            <div class="lg:col-span-3">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Remarks</label>
+              <input type="text" [(ngModel)]="bonusForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button (click)="addBonus()" [disabled]="isSaving"
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              {{ isSaving ? 'Saving...' : 'Add Bonus' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Bonus History</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+              <tr>
+                <th class="px-3 py-2 text-left">Employee</th>
+                <th class="px-3 py-2 text-left">Date</th>
+                <th class="px-3 py-2 text-left">Type</th>
+                <th class="px-3 py-2 text-right">Amount</th>
+                <th class="px-3 py-2 text-left">Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of bonusList" class="border-b hover:bg-gray-50 text-xs md:text-sm">
+                <td class="px-3 py-2 font-medium text-gray-900">{{ b.fullName }}</td>
+                <td class="px-3 py-2">{{ b.bonusDate | date:'mediumDate' }}</td>
+                <td class="px-3 py-2">{{ b.bonusType || '-' }}</td>
+                <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳ {{ b.amount | number:'1.2-2' }}</td>
+                <td class="px-3 py-2 text-gray-600">{{ b.remarks || '-' }}</td>
+              </tr>
+              <tr *ngIf="bonusList.length === 0">
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No bonuses recorded yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══════════════════ ADVANCE TAB ═══════════════════ -->
+    <ng-container *ngIf="activeTab === 'advance'">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Add Advance</h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <select [(ngModel)]="advanceForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option [ngValue]="null">-- Select --</option>
+                <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date *</label>
+              <input type="date" [(ngModel)]="advanceForm.advanceDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Amount (৳) *</label>
+              <input type="number" [(ngModel)]="advanceForm.amount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Method</label>
+              <select [(ngModel)]="advanceForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank</option>
+                <option value="Mobile Banking">Mobile Banking</option>
+              </select>
+            </div>
+            <div class="lg:col-span-4">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Remarks</label>
+              <input type="text" [(ngModel)]="advanceForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button (click)="addAdvance()" [disabled]="isSaving"
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              {{ isSaving ? 'Saving...' : 'Add Advance' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2" style="background:#1a1c4e">
+          <h2 class="text-white font-semibold text-sm">Advance History</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+              <tr>
+                <th class="px-3 py-2 text-left">Employee</th>
+                <th class="px-3 py-2 text-left">Date</th>
+                <th class="px-3 py-2 text-right">Amount</th>
+                <th class="px-3 py-2 text-right">Remaining</th>
+                <th class="px-3 py-2 text-left">Repay</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of advanceList" class="border-b hover:bg-gray-50 text-xs md:text-sm">
+                <td class="px-3 py-2 font-medium text-gray-900">{{ a.fullName }}</td>
+                <td class="px-3 py-2">{{ a.advanceDate | date:'mediumDate' }}</td>
+                <td class="px-3 py-2 text-right">৳ {{ a.amount | number:'1.2-2' }}</td>
+                <td class="px-3 py-2 text-right font-semibold" [class]="a.remainingAmount > 0 ? 'text-orange-600' : 'text-green-600'">
+                  ৳ {{ a.remainingAmount | number:'1.2-2' }}
+                </td>
+                <td class="px-3 py-2">
+                  <div class="flex items-center gap-1" *ngIf="a.remainingAmount > 0">
+                    <input type="number" min="0" [step]="0.01" [(ngModel)]="repayAmounts[a.advanceId]"
+                      class="w-20 px-1.5 py-1 text-xs border border-gray-300 rounded-lg outline-none" placeholder="Amount" />
+                    <button (click)="repayAdvance(a.advanceId)" class="text-xs text-white px-2 py-1 rounded-lg" style="background:#1a1c4e">Repay</button>
+                  </div>
+                  <span *ngIf="a.remainingAmount <= 0" class="text-xs text-green-600">Fully repaid</span>
+                </td>
+              </tr>
+              <tr *ngIf="advanceList.length === 0">
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No advances recorded yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { CapitalService, DailyCashRegisterRow, CapitalCategoryTotal } from '../../services/capital.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
-import { EmployeeService, Employee } from '../../services/employee.service';
 import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
 
@@ -60,14 +59,15 @@ export class CapitalManagementComponent implements OnInit {
   isDrCrFixed    = false;
   validationErrors: Record<string, string> = {};
 
-  // ── Party (customer / supplier / employee / investor) ──────────────────
+  // ── Party (customer / supplier / investor) ──────────────────────────
+  // NOTE: Employee/Salary is no longer selected here — Salary, Bonus and
+  // Advance now flow only through the Payroll Management page, which posts
+  // to this same GL ledger automatically (see PayrollController).
   customers:        Customer[] = [];
   suppliers:        any[]      = [];
-  employees:        Employee[] = [];
   investors:        Investor[] = [];
   selectedCustomerId  = 0;
   selectedSupplierId  = 0;
-  selectedEmployeeId  = 0;
   selectedInvestorId  = 0;
 
   /** REFUND (id=12) can go to a Customer or come from a Supplier — user picks which */
@@ -79,14 +79,13 @@ export class CapitalManagementComponent implements OnInit {
   get selectedSupplier(): any | null {
     return this.suppliers.find(s => s.supplierId === +this.selectedSupplierId) ?? null;
   }
-  get selectedEmployee(): Employee | null {
-    return this.employees.find(e => e.employeeId === +this.selectedEmployeeId) ?? null;
-  }
   get selectedInvestor(): Investor | null {
     return this.investors.find(i => i.investorId === +this.selectedInvestorId) ?? null;
   }
 
   get isRefundType(): boolean { return +this.form.txnTypeId === 12; }
+  /** SALARY (14) can no longer be entered here — informational only */
+  get isSalaryType(): boolean { return +this.form.txnTypeId === 14; }
 
   /** RECEIPT (4) always needs a customer; REFUND (12) needs one only if refunding a customer */
   get needsCustomer(): boolean {
@@ -96,8 +95,6 @@ export class CapitalManagementComponent implements OnInit {
   get needsSupplier(): boolean {
     return +this.form.txnTypeId === 3 || (this.isRefundType && this.refundPartyType === 'supplier');
   }
-  /** SALARY (14) needs an employee */
-  get needsEmployee(): boolean { return +this.form.txnTypeId === 14; }
   /** INVESTMENT (15) needs an investor */
   get needsInvestor(): boolean { return +this.form.txnTypeId === 15; }
   /** EXPENSE (6) must always carry a real description */
@@ -158,11 +155,9 @@ export class CapitalManagementComponent implements OnInit {
         }
         return `Refund of BDT ${amt}, ${dir} account ${gl}${suffix}`;
       }
-      case 'SALARY': {
-        const name = this.selectedEmployee?.employeeName ?? '';
-        const label = name ? `to employee ${name}` : 'to employee';
-        return `Salary payment of BDT ${amt} ${label}, debited from account ${gl}${suffix}`;
-      }
+      case 'SALARY':
+        // Salary is no longer submitted from this form — see Payroll page.
+        return `Salary payment of BDT ${amt}, debited from account ${gl}${suffix}`;
       case 'INVESTMENT': {
         const name = this.selectedInvestor?.investorName ?? '';
         const label = name ? `from investor ${name}` : 'from investor';
@@ -217,7 +212,6 @@ export class CapitalManagementComponent implements OnInit {
     private capitalService:  CapitalService,
     private customerService: CustomerService,
     private supplierService: SupplierService,
-    private employeeService: EmployeeService,
     private investorService: InvestorService,
     private alertService:    AlertService,
     private cdr:             ChangeDetectorRef
@@ -226,17 +220,9 @@ export class CapitalManagementComponent implements OnInit {
   ngOnInit(): void {
     this.loadCustomers();
     this.loadSuppliers();
-    this.loadEmployees();
     this.loadInvestors();
     this.loadTransactions();
     this.loadPeriodReports();
-  }
-
-  loadEmployees(): void {
-    this.employeeService.getAllEmployees(true).subscribe({
-      next: (res) => { this.employees = res.data || []; this.cdr.detectChanges(); },
-      error: () => {}
-    });
   }
 
   loadInvestors(): void {
@@ -348,7 +334,6 @@ export class CapitalManagementComponent implements OnInit {
     // Clear party selection when type changes
     this.selectedCustomerId = 0;
     this.selectedSupplierId = 0;
-    this.selectedEmployeeId = 0;
     this.selectedInvestorId = 0;
     this.refundPartyType    = '';
   }
@@ -357,6 +342,8 @@ export class CapitalManagementComponent implements OnInit {
     this.validationErrors = {};
     if (!+this.form.txnTypeId)
       this.validationErrors['txnTypeId'] = 'Transaction type is required';
+    if (this.isSalaryType)
+      this.validationErrors['txnTypeId'] = 'Salary is processed from the Payroll page, not here';
     if (!this.form.glAccount.trim())
       this.validationErrors['glAccount'] = 'GL Account is required';
     if (!this.form.drCr)
@@ -370,8 +357,6 @@ export class CapitalManagementComponent implements OnInit {
       this.validationErrors['customerId'] = 'Customer is required';
     if (this.needsSupplier && !+this.selectedSupplierId)
       this.validationErrors['vendorId'] = 'Supplier is required';
-    if (this.needsEmployee && !+this.selectedEmployeeId)
-      this.validationErrors['employeeId'] = 'Employee is required for Salary Payment';
     if (this.needsInvestor && !+this.selectedInvestorId)
       this.validationErrors['investorId'] = 'Investor is required for Investment Received';
     if (this.needsDescription && !this.userNarration.trim())
@@ -406,7 +391,6 @@ export class CapitalManagementComponent implements OnInit {
       narration:   this.autoNarration   || undefined,
       customerId:  this.needsCustomer && +this.selectedCustomerId ? +this.selectedCustomerId : undefined,
       vendorId:    this.needsSupplier && +this.selectedSupplierId ? +this.selectedSupplierId : undefined,
-      employeeId:  this.needsEmployee && +this.selectedEmployeeId ? +this.selectedEmployeeId : undefined,
       investorId:  this.needsInvestor && +this.selectedInvestorId ? +this.selectedInvestorId : undefined,
     };
 
@@ -419,8 +403,6 @@ export class CapitalManagementComponent implements OnInit {
       partyLine = `<br><span class="text-gray-500 text-xs">Customer:</span> <strong>${this.selectedCustomer.customerName} — ${this.selectedCustomer.phone}</strong>`;
     if (this.needsSupplier && this.selectedSupplier)
       partyLine = `<br><span class="text-gray-500 text-xs">Supplier:</span> <strong>${this.selectedSupplier.supplierName} — ${this.selectedSupplier.phone}</strong>`;
-    if (this.needsEmployee && this.selectedEmployee)
-      partyLine = `<br><span class="text-gray-500 text-xs">Employee:</span> <strong>${this.selectedEmployee.employeeName}${this.selectedEmployee.designation ? ' — ' + this.selectedEmployee.designation : ''}</strong>`;
     if (this.needsInvestor && this.selectedInvestor)
       partyLine = `<br><span class="text-gray-500 text-xs">Investor:</span> <strong>${this.selectedInvestor.investorName}</strong>`;
 
@@ -448,7 +430,6 @@ export class CapitalManagementComponent implements OnInit {
           this.resetForm();
           this.loadTransactions();
           this.loadPeriodReports();
-          this.loadEmployees();
           this.loadInvestors();
           this.loadCustomers();
           this.loadSuppliers();
@@ -480,7 +461,6 @@ export class CapitalManagementComponent implements OnInit {
     this.userNarration      = '';
     this.selectedCustomerId = 0;
     this.selectedSupplierId = 0;
-    this.selectedEmployeeId = 0;
     this.selectedInvestorId = 0;
     this.refundPartyType    = '';
     this.isDrCrFixed        = false;

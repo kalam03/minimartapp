@@ -103,8 +103,8 @@ export const routes: Routes = [
         path: 'employees',
         canActivate: [PermissionGuard],
         loadComponent: () =>
-          import('./features/employees/employee.component').then(
-            (m) => m.EmployeeComponent
+          import('./features/payroll/payroll.component').then(
+            (m) => m.PayrollComponent
           ),
       },
       {
