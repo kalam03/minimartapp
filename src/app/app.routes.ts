@@ -99,6 +99,22 @@ export const routes: Routes = [
             (m) => m.WriteOffComponent
           ),
       },
+      {
+        path: 'employees',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/employees/employee.component').then(
+            (m) => m.EmployeeComponent
+          ),
+      },
+      {
+        path: 'investors',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/investors/investor.component').then(
+            (m) => m.InvestorComponent
+          ),
+      },
       // ── Orders Module ────────────────────────────────────────────────
       {
         path: 'orders',

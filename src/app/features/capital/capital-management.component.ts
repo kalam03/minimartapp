@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { CapitalService, DailyCashRegisterRow, CapitalCategoryTotal } from '../../services/capital.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
+import { EmployeeService, Employee } from '../../services/employee.service';
+import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
@@ -58,11 +60,18 @@ export class CapitalManagementComponent implements OnInit {
   isDrCrFixed    = false;
   validationErrors: Record<string, string> = {};
 
-  // ── Party (customer / supplier) ───────────────────────────────────────
+  // ── Party (customer / supplier / employee / investor) ──────────────────
   customers:        Customer[] = [];
   suppliers:        any[]      = [];
+  employees:        Employee[] = [];
+  investors:        Investor[] = [];
   selectedCustomerId  = 0;
   selectedSupplierId  = 0;
+  selectedEmployeeId  = 0;
+  selectedInvestorId  = 0;
+
+  /** REFUND (id=12) can go to a Customer or come from a Supplier — user picks which */
+  refundPartyType: '' | 'customer' | 'supplier' = '';
 
   get selectedCustomer(): Customer | null {
     return this.customers.find(c => c.customerId === +this.selectedCustomerId) ?? null;
@@ -70,10 +79,29 @@ export class CapitalManagementComponent implements OnInit {
   get selectedSupplier(): any | null {
     return this.suppliers.find(s => s.supplierId === +this.selectedSupplierId) ?? null;
   }
+  get selectedEmployee(): Employee | null {
+    return this.employees.find(e => e.employeeId === +this.selectedEmployeeId) ?? null;
+  }
+  get selectedInvestor(): Investor | null {
+    return this.investors.find(i => i.investorId === +this.selectedInvestorId) ?? null;
+  }
 
-  /** RECEIPT (id=4) needs a customer; PAYMENT (id=3) needs a supplier */
-  get needsCustomer(): boolean { return +this.form.txnTypeId === 4; }
-  get needsSupplier(): boolean { return +this.form.txnTypeId === 3; }
+  get isRefundType(): boolean { return +this.form.txnTypeId === 12; }
+
+  /** RECEIPT (4) always needs a customer; REFUND (12) needs one only if refunding a customer */
+  get needsCustomer(): boolean {
+    return +this.form.txnTypeId === 4 || (this.isRefundType && this.refundPartyType === 'customer');
+  }
+  /** PAYMENT (3) always needs a supplier; REFUND (12) needs one only if refunding from a supplier */
+  get needsSupplier(): boolean {
+    return +this.form.txnTypeId === 3 || (this.isRefundType && this.refundPartyType === 'supplier');
+  }
+  /** SALARY (14) needs an employee */
+  get needsEmployee(): boolean { return +this.form.txnTypeId === 14; }
+  /** INVESTMENT (15) needs an investor */
+  get needsInvestor(): boolean { return +this.form.txnTypeId === 15; }
+  /** EXPENSE (6) must always carry a real description */
+  get needsDescription(): boolean { return +this.form.txnTypeId === 6; }
 
   // ── Auto-generated narration ─────────────────────────────────────────
   get autoNarration(): string {
@@ -118,12 +146,28 @@ export class CapitalManagementComponent implements OnInit {
         return `Closing Entry of BDT ${amt}, debited from account ${gl}${suffix}`;
       case 'REFUND': {
         const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
+        if (this.refundPartyType === 'customer') {
+          const name = this.selectedCustomer?.customerName ?? '';
+          const label = name ? `to customer ${name}` : 'to customer';
+          return `Refund of BDT ${amt} ${label}, ${dir} account ${gl}${suffix}`;
+        }
+        if (this.refundPartyType === 'supplier') {
+          const name = this.selectedSupplier?.supplierName ?? '';
+          const label = name ? `from vendor ${name}` : 'from vendor';
+          return `Refund of BDT ${amt} ${label}, ${dir} account ${gl}${suffix}`;
+        }
         return `Refund of BDT ${amt}, ${dir} account ${gl}${suffix}`;
       }
-      case 'SALARY':
-        return `Salary payment of BDT ${amt}, debited from account ${gl}${suffix}`;
-      case 'INVESTMENT':
-        return `Investment received of BDT ${amt}, Credit to account ${gl}${suffix}`;
+      case 'SALARY': {
+        const name = this.selectedEmployee?.employeeName ?? '';
+        const label = name ? `to employee ${name}` : 'to employee';
+        return `Salary payment of BDT ${amt} ${label}, debited from account ${gl}${suffix}`;
+      }
+      case 'INVESTMENT': {
+        const name = this.selectedInvestor?.investorName ?? '';
+        const label = name ? `from investor ${name}` : 'from investor';
+        return `Investment received of BDT ${amt} ${label}, Credit to account ${gl}${suffix}`;
+      }
       case 'ADJUSTMENT': {
         const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
         return `Adjustment of BDT ${amt}, ${dir} account ${gl}${suffix}`;
@@ -173,6 +217,8 @@ export class CapitalManagementComponent implements OnInit {
     private capitalService:  CapitalService,
     private customerService: CustomerService,
     private supplierService: SupplierService,
+    private employeeService: EmployeeService,
+    private investorService: InvestorService,
     private alertService:    AlertService,
     private cdr:             ChangeDetectorRef
   ) {}
@@ -180,8 +226,24 @@ export class CapitalManagementComponent implements OnInit {
   ngOnInit(): void {
     this.loadCustomers();
     this.loadSuppliers();
+    this.loadEmployees();
+    this.loadInvestors();
     this.loadTransactions();
     this.loadPeriodReports();
+  }
+
+  loadEmployees(): void {
+    this.employeeService.getAllEmployees(true).subscribe({
+      next: (res) => { this.employees = res.data || []; this.cdr.detectChanges(); },
+      error: () => {}
+    });
+  }
+
+  loadInvestors(): void {
+    this.investorService.getAllInvestors(true).subscribe({
+      next: (res) => { this.investors = res.data || []; this.cdr.detectChanges(); },
+      error: () => {}
+    });
   }
 
   // ── Period Report: Category Breakdown + Daily Cash Register ─────────
@@ -286,6 +348,9 @@ export class CapitalManagementComponent implements OnInit {
     // Clear party selection when type changes
     this.selectedCustomerId = 0;
     this.selectedSupplierId = 0;
+    this.selectedEmployeeId = 0;
+    this.selectedInvestorId = 0;
+    this.refundPartyType    = '';
   }
 
   validateForm(): boolean {
@@ -298,10 +363,20 @@ export class CapitalManagementComponent implements OnInit {
       this.validationErrors['drCr'] = 'DR/CR is required';
     if (!this.form.amount || +this.form.amount <= 0)
       this.validationErrors['amount'] = 'Amount must be greater than 0';
+
+    if (this.isRefundType && !this.refundPartyType)
+      this.validationErrors['refundPartyType'] = 'Choose whether this refund is to a customer or from a supplier';
     if (this.needsCustomer && !+this.selectedCustomerId)
-      this.validationErrors['customerId'] = 'Customer is required for Receipt';
+      this.validationErrors['customerId'] = 'Customer is required';
     if (this.needsSupplier && !+this.selectedSupplierId)
-      this.validationErrors['vendorId'] = 'Supplier is required for Payment';
+      this.validationErrors['vendorId'] = 'Supplier is required';
+    if (this.needsEmployee && !+this.selectedEmployeeId)
+      this.validationErrors['employeeId'] = 'Employee is required for Salary Payment';
+    if (this.needsInvestor && !+this.selectedInvestorId)
+      this.validationErrors['investorId'] = 'Investor is required for Investment Received';
+    if (this.needsDescription && !this.userNarration.trim())
+      this.validationErrors['userNarration'] = 'A description is required for expense entries';
+
     return Object.keys(this.validationErrors).length === 0;
   }
 
@@ -331,6 +406,8 @@ export class CapitalManagementComponent implements OnInit {
       narration:   this.autoNarration   || undefined,
       customerId:  this.needsCustomer && +this.selectedCustomerId ? +this.selectedCustomerId : undefined,
       vendorId:    this.needsSupplier && +this.selectedSupplierId ? +this.selectedSupplierId : undefined,
+      employeeId:  this.needsEmployee && +this.selectedEmployeeId ? +this.selectedEmployeeId : undefined,
+      investorId:  this.needsInvestor && +this.selectedInvestorId ? +this.selectedInvestorId : undefined,
     };
 
     this._pendingPayload = payload;
@@ -342,6 +419,10 @@ export class CapitalManagementComponent implements OnInit {
       partyLine = `<br><span class="text-gray-500 text-xs">Customer:</span> <strong>${this.selectedCustomer.customerName} — ${this.selectedCustomer.phone}</strong>`;
     if (this.needsSupplier && this.selectedSupplier)
       partyLine = `<br><span class="text-gray-500 text-xs">Supplier:</span> <strong>${this.selectedSupplier.supplierName} — ${this.selectedSupplier.phone}</strong>`;
+    if (this.needsEmployee && this.selectedEmployee)
+      partyLine = `<br><span class="text-gray-500 text-xs">Employee:</span> <strong>${this.selectedEmployee.employeeName}${this.selectedEmployee.designation ? ' — ' + this.selectedEmployee.designation : ''}</strong>`;
+    if (this.needsInvestor && this.selectedInvestor)
+      partyLine = `<br><span class="text-gray-500 text-xs">Investor:</span> <strong>${this.selectedInvestor.investorName}</strong>`;
 
     this.confirmTitle   = 'Confirm Transaction';
     this.confirmMessage =
@@ -367,6 +448,10 @@ export class CapitalManagementComponent implements OnInit {
           this.resetForm();
           this.loadTransactions();
           this.loadPeriodReports();
+          this.loadEmployees();
+          this.loadInvestors();
+          this.loadCustomers();
+          this.loadSuppliers();
         }
         this._pendingPayload = null;
       },
@@ -395,6 +480,9 @@ export class CapitalManagementComponent implements OnInit {
     this.userNarration      = '';
     this.selectedCustomerId = 0;
     this.selectedSupplierId = 0;
+    this.selectedEmployeeId = 0;
+    this.selectedInvestorId = 0;
+    this.refundPartyType    = '';
     this.isDrCrFixed        = false;
     this.validationErrors   = {};
   }

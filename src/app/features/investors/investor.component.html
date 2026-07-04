@@ -1,0 +1,79 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Add Investor Form -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Investor
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Investor Name *</label>
+            <input type="text" [(ngModel)]="form.investorName" placeholder="Full name"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('investorName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('investorName')" class="text-red-600 text-xs mt-1">{{ validationErrors['investorName'] }}</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Phone</label>
+            <input type="text" [(ngModel)]="form.phone" placeholder="e.g. 01XXXXXXXXX"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button (click)="saveInvestor()" [disabled]="isSaving"
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+            {{ isSaving ? 'Saving...' : 'Add Investor' }}
+          </button>
+          <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Investor List -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+        <h2 class="text-white font-semibold text-sm">Investors</h2>
+        <span class="text-xs" style="color:#ACB3E7">{{ filteredInvestors.length }} of {{ investors.length }}</span>
+      </div>
+      <div class="px-3 py-2 border-b">
+        <input type="text" [(ngModel)]="searchText" placeholder="Search by name, phone…"
+          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <tr>
+              <th class="px-3 py-2 text-left">ID</th>
+              <th class="px-3 py-2 text-left">Name</th>
+              <th class="px-3 py-2 text-left">Phone</th>
+              <th class="px-3 py-2 text-right">Total Invested to Date</th>
+              <th class="px-3 py-2 text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i of filteredInvestors" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 text-gray-500">#{{ i.investorId }}</td>
+              <td class="px-3 py-2 font-medium text-gray-900">{{ i.investorName }}</td>
+              <td class="px-3 py-2 text-gray-600">{{ i.phone || '-' }}</td>
+              <td class="px-3 py-2 text-right font-semibold text-green-600">৳ {{ i.currentBalance | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-center">
+                <span [class]="i.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                  {{ i.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="filteredInvestors.length === 0">
+              <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No investors found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

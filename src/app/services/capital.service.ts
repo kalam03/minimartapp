@@ -17,7 +17,13 @@ export interface CapitalTransactionDto {
   amount: number;
   currencyCode?: string;
   customerId?: number;
+  customerName?: string;
   vendorId?: number;
+  supplierName?: string;
+  employeeId?: number;
+  employeeName?: string;
+  investorId?: number;
+  investorName?: string;
   narration?: string;
   authStatus?: string;
   createdBy: string;
