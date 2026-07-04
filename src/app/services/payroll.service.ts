@@ -194,6 +194,29 @@ export interface EmployeeAdvance {
 export interface RepayAdvanceRequest {
   advanceId: number;
   amount: number;
+  repaymentDate?: string;
+  paymentMethod?: string;
+  referenceNo?: string;
+}
+
+export interface RepayAdvanceResult {
+  repaymentId: number;
+  glTransactionId: number;
+  txnNo: string;
+  appliedAmount: number;
+  remainingAmount: number;
+}
+
+export interface AdvanceRepayment {
+  repaymentId: number;
+  advanceId: number;
+  employeeId: number;
+  fullName: string;
+  repaymentDate: string;
+  amount: number;
+  paymentMethod?: string;
+  referenceNo?: string;
+  glTransactionId?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -268,7 +291,12 @@ export class PayrollService {
     return this.http.get<any>(`${this.baseUrl}/advance${params}`);
   }
 
-  repayAdvance(payload: RepayAdvanceRequest): Observable<{ success: boolean; message: string }> {
+  repayAdvance(payload: RepayAdvanceRequest): Observable<{ success: boolean; message: string; data: RepayAdvanceResult }> {
     return this.http.post<any>(`${this.baseUrl}/advance/repay`, payload);
+  }
+
+  getAdvanceRepayments(advanceId?: number): Observable<{ success: boolean; data: AdvanceRepayment[] }> {
+    const params = advanceId ? `?advanceId=${advanceId}` : '';
+    return this.http.get<any>(`${this.baseUrl}/advance/repayments${params}`);
   }
 }

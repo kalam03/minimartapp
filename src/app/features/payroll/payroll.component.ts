@@ -152,6 +152,25 @@ export class PayrollComponent implements OnInit {
     this.empValidationErrors = {};
     if (!this.empForm.firstName.trim())
       this.empValidationErrors['firstName'] = 'First name is required';
+    if (!this.empForm.nidNo.trim())
+      this.empValidationErrors['nidNo'] = 'NID number is required';
+    if (!this.empForm.departmentId)
+      this.empValidationErrors['departmentId'] = 'Department is required';
+    if (!this.empForm.designationId)
+      this.empValidationErrors['designationId'] = 'Designation is required';
+    if (!this.empForm.gender)
+      this.empValidationErrors['gender'] = 'Gender is required';
+    if (!this.empForm.presentAddress.trim())
+      this.empValidationErrors['presentAddress'] = 'Present address is required';
+
+    const mobile = this.empForm.mobile.trim();
+    if (!mobile)
+      this.empValidationErrors['mobile'] = 'Phone number is required';
+    else if (!/^\d+$/.test(mobile))
+      this.empValidationErrors['mobile'] = 'Phone number must contain digits only';
+    else if (mobile.length > 11)
+      this.empValidationErrors['mobile'] = 'Phone number cannot exceed 11 characters';
+
     return Object.keys(this.empValidationErrors).length === 0;
   }
 
@@ -386,6 +405,27 @@ export class PayrollComponent implements OnInit {
 
   years: number[] = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - 3 + i);
 
+  // Due-advance warning: when an employee is selected for salary processing,
+  // check whether they still owe on any advance so the amount isn't paid out
+  // "blind" — the deduction still has to be entered manually, this just warns.
+  payDueAdvanceTotal = 0;
+  isCheckingDueAdvance = false;
+
+  onPayEmployeeChange(): void {
+    this.payDueAdvanceTotal = 0;
+    if (!this.payForm.employeeId) return;
+
+    this.isCheckingDueAdvance = true;
+    this.payrollService.getAdvances(this.payForm.employeeId).subscribe({
+      next: (res) => {
+        this.payDueAdvanceTotal = (res.data || []).reduce((sum, a) => sum + (a.remainingAmount || 0), 0);
+        this.isCheckingDueAdvance = false;
+        this.cdr.detectChanges();
+      },
+      error: () => { this.isCheckingDueAdvance = false; }
+    });
+  }
+
   processSalaryPayment(): void {
     if (!this.payForm.employeeId) {
       this.alertService.warning('Select an employee first');
@@ -428,6 +468,7 @@ export class PayrollComponent implements OnInit {
       paymentDate: new Date().toISOString().split('T')[0],
       paymentMethod: 'Cash', referenceNo: '', remarks: ''
     };
+    this.payDueAdvanceTotal = 0;
   }
 
   loadSalaryPayments(): void {
@@ -537,9 +578,11 @@ export class PayrollComponent implements OnInit {
       this.alertService.warning('Enter a valid repayment amount');
       return;
     }
-    this.payrollService.repayAdvance({ advanceId, amount: +amount }).subscribe({
+    this.payrollService.repayAdvance({ advanceId, amount: +amount, paymentMethod: 'Cash' }).subscribe({
       next: (res) => {
-        this.alertService.success(res.message || 'Repayment recorded');
+        const applied = res.data?.appliedAmount ?? amount;
+        const txnNo = res.data?.txnNo ? ` (GL ${res.data.txnNo})` : '';
+        this.alertService.success(`Repayment of ৳${applied.toFixed(2)} recorded and posted to the Cash Vault ledger${txnNo}.`);
         this.repayAmounts[advanceId] = 0;
         this.loadAdvances();
       },

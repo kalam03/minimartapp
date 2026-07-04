@@ -63,35 +63,43 @@
               <input type="text" [(ngModel)]="empForm.lastName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Gender</label>
-              <select [(ngModel)]="empForm.gender" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Gender *</label>
+              <select [(ngModel)]="empForm.gender"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('gender') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
                 <option value="">-- Select --</option>
                 <option value="M">Male</option>
                 <option value="F">Female</option>
                 <option value="O">Other</option>
               </select>
+              <p *ngIf="isEmpFieldInvalid('gender')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['gender'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Mobile</label>
-              <input type="text" [(ngModel)]="empForm.mobile" placeholder="01XXXXXXXXX" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Phone Number *</label>
+              <input type="text" [(ngModel)]="empForm.mobile" placeholder="01XXXXXXXXX" maxlength="11" inputmode="numeric"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('mobile') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="isEmpFieldInvalid('mobile')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['mobile'] }}</p>
             </div>
             <div>
               <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Email</label>
               <input type="email" [(ngModel)]="empForm.email" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Department</label>
-              <select [(ngModel)]="empForm.departmentId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Department *</label>
+              <select [(ngModel)]="empForm.departmentId"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('departmentId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let d of departments" [ngValue]="d.departmentId">{{ d.departmentName }}</option>
               </select>
+              <p *ngIf="isEmpFieldInvalid('departmentId')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['departmentId'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Designation</label>
-              <select [(ngModel)]="empForm.designationId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Designation *</label>
+              <select [(ngModel)]="empForm.designationId"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('designationId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let d of designations" [ngValue]="d.designationId">{{ d.designationName }}</option>
               </select>
+              <p *ngIf="isEmpFieldInvalid('designationId')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['designationId'] }}</p>
             </div>
             <div>
               <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Joining Date</label>
@@ -110,8 +118,10 @@
               <input type="number" [(ngModel)]="empForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">NID No.</label>
-              <input type="text" [(ngModel)]="empForm.nidNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">NID No. *</label>
+              <input type="text" [(ngModel)]="empForm.nidNo"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('nidNo') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="isEmpFieldInvalid('nidNo')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['nidNo'] }}</p>
             </div>
             <div>
               <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bank Name</label>
@@ -122,8 +132,10 @@
               <input type="text" [(ngModel)]="empForm.bankAccountNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="lg:col-span-2">
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Present Address</label>
-              <input type="text" [(ngModel)]="empForm.presentAddress" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Present Address *</label>
+              <input type="text" [(ngModel)]="empForm.presentAddress"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('presentAddress') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="isEmpFieldInvalid('presentAddress')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['presentAddress'] }}</p>
             </div>
           </div>
           <div class="flex gap-2 mt-3">
@@ -351,7 +363,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
-              <select [(ngModel)]="payForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <select [(ngModel)]="payForm.employeeId" (ngModelChange)="onPayEmployeeChange()" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }} ({{ e.employeeCode }})</option>
               </select>
@@ -401,6 +413,15 @@
               <input type="text" [(ngModel)]="payForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
+
+          <!-- Due-advance warning — shown as soon as an employee with an
+               outstanding advance is selected, before payment is processed -->
+          <div *ngIf="payForm.employeeId && payDueAdvanceTotal > 0" class="mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+            ⚠ This employee has an outstanding advance of <strong>৳{{ payDueAdvanceTotal | number:'1.2-2' }}</strong> still due.
+            Consider entering it (or part of it) in the <strong>Deduction</strong> field above, or collect/repay it separately from the Advance tab.
+          </div>
+          <div *ngIf="payForm.employeeId && isCheckingDueAdvance" class="mt-3 text-xs text-gray-400">Checking outstanding advances…</div>
+
           <div class="flex gap-2 mt-3">
             <button (click)="processSalaryPayment()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
