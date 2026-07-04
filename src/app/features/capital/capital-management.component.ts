@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CapitalService } from '../../services/capital.service';
+import { CapitalService, DailyCashRegisterRow, CapitalCategoryTotal } from '../../services/capital.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
 import { AlertService } from '../../shared/alert.service';
@@ -28,17 +28,27 @@ export class CapitalManagementComponent implements OnInit {
     { id: 9,  code: 'ADJUSTMENT', name: 'Adjustment Entry',      autoDrCr: ''  },
     { id: 10, code: 'OPENING',    name: 'Opening Balance',       autoDrCr: 'C' },
     { id: 11, code: 'CLOSING',    name: 'Closing Entry',         autoDrCr: 'D' },
-    { id: 12, code: 'REFUND',     name: 'Refund Transaction',    autoDrCr: 'C' },
+    // Refund direction depends on who is refunding whom — a refund TO a customer is
+    // money out (Debit), a refund FROM a supplier is money in (Credit) — so it's
+    // left user-selectable instead of a fixed direction.
+    { id: 12, code: 'REFUND',     name: 'Refund Transaction',    autoDrCr: ''  },
     { id: 13, code: 'REVERSAL',   name: 'Reversal Transaction',  autoDrCr: ''  },
+    { id: 14, code: 'SALARY',     name: 'Employee Salary Payment', autoDrCr: 'D' },
+    { id: 15, code: 'INVESTMENT', name: 'Investor Investment Received', autoDrCr: 'C' },
   ];
 
   readonly txnModes = ['Cash', 'Bank', 'Card', 'Cheque', 'Online Transfer', 'Other'];
 
   // ── Form ─────────────────────────────────────────────────────────────
+  // Single Cash Vault model: every entry (manual or auto-posted from
+  // Sales/Purchases) shares one named account instead of a per-tenant
+  // phone number, so the ledger reads like a real cash book.
+  readonly defaultGlAccount = 'CASH VAULT';
+
   form = {
     txnDate:     new Date().toISOString().split('T')[0],
     txnTypeId:   0,
-    glAccount:   '',
+    glAccount:   this.defaultGlAccount,
     drCr:        'C',
     amount:      null as number | null,
     referenceNo: '',
@@ -106,8 +116,14 @@ export class CapitalManagementComponent implements OnInit {
         return `Opening Balance of BDT ${amt}, Credit to account ${gl}${suffix}`;
       case 'CLOSING':
         return `Closing Entry of BDT ${amt}, debited from account ${gl}${suffix}`;
-      case 'REFUND':
-        return `Refund of BDT ${amt}, Credit to account ${gl}${suffix}`;
+      case 'REFUND': {
+        const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
+        return `Refund of BDT ${amt}, ${dir} account ${gl}${suffix}`;
+      }
+      case 'SALARY':
+        return `Salary payment of BDT ${amt}, debited from account ${gl}${suffix}`;
+      case 'INVESTMENT':
+        return `Investment received of BDT ${amt}, Credit to account ${gl}${suffix}`;
       case 'ADJUSTMENT': {
         const dir = this.form.drCr === 'C' ? 'Credit to' : 'Debit from';
         return `Adjustment of BDT ${amt}, ${dir} account ${gl}${suffix}`;
@@ -162,22 +178,79 @@ export class CapitalManagementComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadTenantInfo();
     this.loadCustomers();
     this.loadSuppliers();
     this.loadTransactions();
+    this.loadPeriodReports();
   }
 
-  // ── Init loaders ──────────────────────────────────────────────────────
-  loadTenantInfo(): void {
-    this.capitalService.getTenantInfo().subscribe({
+  // ── Period Report: Category Breakdown + Daily Cash Register ─────────
+  // One shared date range drives both — "how much per category" and
+  // "cash reconciled day by day" are two views of the same period.
+  dcrFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  dcrToDate   = new Date().toISOString().split('T')[0];
+
+  categoryTotals: CapitalCategoryTotal[] = [];
+  isCategoryLoading = false;
+
+  dcrList: DailyCashRegisterRow[] = [];
+  dcrOpeningBalance = 0;
+  dcrClosingBalance = 0;
+  isDcrLoading = false;
+
+  get periodTotalCredit(): number {
+    return this.categoryTotals.reduce((sum, c) => sum + c.totalCredit, 0);
+  }
+  get periodTotalDebit(): number {
+    return this.categoryTotals.reduce((sum, c) => sum + c.totalDebit, 0);
+  }
+
+  loadPeriodReports(): void {
+    this.loadCategoryTotals();
+    this.loadDailyCashRegister();
+  }
+
+  loadCategoryTotals(): void {
+    this.isCategoryLoading = true;
+    this.capitalService.getCategoryTotals(this.dcrFromDate, this.dcrToDate).subscribe({
       next: (res) => {
-        if (res.success && res.data?.phone) {
-          this.form.glAccount = res.data.phone;
-        }
+        if (res.success) this.categoryTotals = res.data;
+        this.isCategoryLoading = false;
+        this.cdr.detectChanges();
       },
-      error: () => {}   // non-critical; user can type manually
+      error: () => { this.isCategoryLoading = false; }
     });
+  }
+
+  loadDailyCashRegister(): void {
+    this.isDcrLoading = true;
+    this.capitalService.getDailyCashRegister(this.dcrFromDate, this.dcrToDate).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.dcrList = res.data;
+          this.dcrOpeningBalance = res.openingBalance;
+          this.dcrClosingBalance = res.closingBalance;
+        }
+        this.isDcrLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => { this.isDcrLoading = false; }
+    });
+  }
+
+  applyDcrFilter(): void {
+    this.loadPeriodReports();
+  }
+
+  resetDcrFilter(): void {
+    this.dcrFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+    this.dcrToDate   = new Date().toISOString().split('T')[0];
+    this.loadPeriodReports();
+  }
+
+  /** Whether a category card should read as money-in (green) or money-out (orange) */
+  isCategoryInflow(c: CapitalCategoryTotal): boolean {
+    return c.totalCredit >= c.totalDebit;
   }
 
   loadCustomers(): void {
@@ -293,6 +366,7 @@ export class CapitalManagementComponent implements OnInit {
           this.alertService.success(`Transaction ${res.data?.txnNo} saved successfully!`);
           this.resetForm();
           this.loadTransactions();
+          this.loadPeriodReports();
         }
         this._pendingPayload = null;
       },
@@ -312,7 +386,7 @@ export class CapitalManagementComponent implements OnInit {
     this.form = {
       txnDate:     new Date().toISOString().split('T')[0],
       txnTypeId:   0,
-      glAccount:   this.form.glAccount,   // keep GL account (tenant phone)
+      glAccount:   this.form.glAccount || this.defaultGlAccount,
       drCr:        'C',
       amount:      null,
       referenceNo: '',

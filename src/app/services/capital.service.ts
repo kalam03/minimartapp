@@ -73,4 +73,50 @@ export class CapitalService {
   createTransaction(req: CreateCapitalTransactionRequest): Observable<{ success: boolean; data: any }> {
     return this.http.post<any>(`${this.baseUrl}/capital`, req);
   }
+
+  getCategoryTotals(fromDate: string, toDate: string): Observable<{
+    success: boolean;
+    fromDate: string;
+    toDate: string;
+    data: CapitalCategoryTotal[];
+  }> {
+    const params = new URLSearchParams();
+    if (fromDate) params.set('fromDate', fromDate);
+    if (toDate) params.set('toDate', toDate);
+    const query = params.toString();
+    return this.http.get<any>(`${this.baseUrl}/capital/category-totals${query ? '?' + query : ''}`);
+  }
+
+  getDailyCashRegister(fromDate: string, toDate: string): Observable<{
+    success: boolean;
+    fromDate: string;
+    toDate: string;
+    openingBalance: number;
+    closingBalance: number;
+    data: DailyCashRegisterRow[];
+  }> {
+    const params = new URLSearchParams();
+    if (fromDate) params.set('fromDate', fromDate);
+    if (toDate) params.set('toDate', toDate);
+    const query = params.toString();
+    return this.http.get<any>(`${this.baseUrl}/capital/daily-cash-register${query ? '?' + query : ''}`);
+  }
+}
+
+export interface CapitalCategoryTotal {
+  txnTypeId: number;
+  txnCode: string;
+  txnName: string;
+  totalCredit: number;
+  totalDebit: number;
+  txnCount: number;
+}
+
+export interface DailyCashRegisterRow {
+  txnDate: string;
+  openingBalance: number;
+  totalCredit: number;
+  totalDebit: number;
+  netChange: number;
+  closingBalance: number;
 }
