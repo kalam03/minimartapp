@@ -128,6 +128,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/orders/order-entry.component').then((m) => m.OrderEntryComponent),
       },
+      // ── Reports Module ──────────────────────────────────────────────
+      {
+        path: 'reports/profit',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/reports/profit-report.component').then(
+            (m) => m.ProfitReportComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'dashboard' },
