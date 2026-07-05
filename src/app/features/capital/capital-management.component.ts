@@ -18,8 +18,8 @@ export class CapitalManagementComponent implements OnInit {
 
   // ── TXN Types (mirrors TXN_TYPE_MASTER insert) ─────────────────────
   readonly txnTypes = [
-    { id: 1,  code: 'SALE',       name: 'Sales Transaction',     autoDrCr: 'C' },
-    { id: 2,  code: 'PURCHASE',   name: 'Purchase Transaction',  autoDrCr: 'D' },
+    //{ id: 1,  code: 'SALE',       name: 'Sales Transaction',     autoDrCr: 'C' },
+    //{ id: 2,  code: 'PURCHASE',   name: 'Purchase Transaction',  autoDrCr: 'D' },
     { id: 3,  code: 'PAYMENT',    name: 'Payment',               autoDrCr: 'D' },
     { id: 4,  code: 'RECEIPT',    name: 'Receipt',               autoDrCr: 'C' },
     { id: 5,  code: 'TRANSFER',   name: 'Fund Transfer',         autoDrCr: ''  },
@@ -32,9 +32,9 @@ export class CapitalManagementComponent implements OnInit {
     // Refund direction depends on who is refunding whom — a refund TO a customer is
     // money out (Debit), a refund FROM a supplier is money in (Credit) — so it's
     // left user-selectable instead of a fixed direction.
-    { id: 12, code: 'REFUND',     name: 'Refund Transaction',    autoDrCr: ''  },
-    { id: 13, code: 'REVERSAL',   name: 'Reversal Transaction',  autoDrCr: ''  },
-    { id: 14, code: 'SALARY',     name: 'Employee Salary Payment', autoDrCr: 'D' },
+    //{ id: 12, code: 'REFUND',     name: 'Refund Transaction',    autoDrCr: ''  },
+    //{ id: 13, code: 'REVERSAL',   name: 'Reversal Transaction',  autoDrCr: ''  },
+    //{ id: 14, code: 'SALARY',     name: 'Employee Salary Payment', autoDrCr: 'D' },
     { id: 15, code: 'INVESTMENT', name: 'Investor Investment Received', autoDrCr: 'C' },
   ];
 
