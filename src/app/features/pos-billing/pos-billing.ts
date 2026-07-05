@@ -193,11 +193,8 @@ export class PosBillingComponent implements OnInit {
           // Pre-fill transport from order
           this.transportCost = order.transport || 0;
 
-          // Convert absolute discount → percentage so calculateTotals() works correctly
-          const orderSubtotal = order.items.reduce((s, i) => s + i.total, 0);
-          this.discountPercent = orderSubtotal > 0
-            ? +((( order.discount || 0) / orderSubtotal) * 100).toFixed(4)
-            : 0;
+          // Discount is stored/handled as an amount; percentage is derived in calculateTotals()
+          this.discountAmount = order.discount || 0;
 
           // Recalculate all totals from the loaded cart
           this.calculateTotals();
@@ -519,6 +516,7 @@ export class PosBillingComponent implements OnInit {
     this.customerPhone = customer.phone || '';
     this.showCustomerDropdown = false;
     this.selectedCustomerIndex = -1;
+    this.discountAmount = 0;
     this.discountPercent = 0;
     this.calculateTotals();
   }
@@ -546,6 +544,7 @@ export class PosBillingComponent implements OnInit {
     this.selectedCustomerId = null;
     this.searchCustomerTerm = '';
     this.customerPhone = '';
+    this.discountAmount = 0;
     this.discountPercent = 0;
     this.transportCost = 0;
     this.transportType = '';
@@ -648,10 +647,10 @@ export class PosBillingComponent implements OnInit {
   get qtyStep(): string { return this.isWeightProduct ? '0.001' : '1'; }
   get qtyUnit(): string { return this.selectedProduct?.unitType || 'PCS'; }
 
-  // Helper method for discount percent
-  onDiscountPercentChange(value: string | number): void {
+  // Helper method for discount entered as an AMOUNT (percentage is derived).
+  onDiscountAmountChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    this.discountPercent = isNaN(numValue) ? 0 : Math.max(0, Math.min(100, numValue));
+    this.discountAmount = isNaN(numValue) ? 0 : Math.max(0, numValue);
     this.calculateTotals();
   }
 
@@ -726,6 +725,7 @@ export class PosBillingComponent implements OnInit {
   clearCart(): void {
     if (confirm('Are you sure you want to clear the cart?')) {
       this.cartItems = [];
+      this.discountAmount = 0;
       this.discountPercent = 0;
       this.calculateTotals();
     }
@@ -736,8 +736,12 @@ export class PosBillingComponent implements OnInit {
     // Calculate subtotal
     this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-    // Calculate discount amount based on percentage
-    this.discountAmount = (this.subtotal * this.discountPercent) / 100;
+    // Discount is entered as an amount; clamp it and derive the percentage.
+    if (this.discountAmount < 0) this.discountAmount = 0;
+    if (this.discountAmount > this.subtotal) this.discountAmount = this.subtotal;
+    this.discountPercent = this.subtotal > 0
+      ? +((this.discountAmount / this.subtotal) * 100).toFixed(2)
+      : 0;
 
     // Sale net = items - discount + transport (before adding previous customer balance)
     const saleNet = this.subtotal - this.discountAmount + this.transportCost;

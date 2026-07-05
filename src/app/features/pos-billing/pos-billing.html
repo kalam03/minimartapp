@@ -311,13 +311,19 @@
             </div>
 
             <div>
-              <label class="text-xs text-gray-500">Discount %</label>
-              <app-financial-input
-                [(ngModel)]="discountPercent"
-                (ngModelChange)="onDiscountPercentChange($event)"
-                className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:outline-none"
-                placeholder="0.00"
-              ></app-financial-input>
+              <label class="text-xs text-gray-500">Discount ৳</label>
+              <div class="flex items-center gap-1">
+                <app-financial-input
+                  [(ngModel)]="discountAmount"
+                  (ngModelChange)="onDiscountAmountChange($event)"
+                  className="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:outline-none"
+                  placeholder="0.00"
+                ></app-financial-input>
+                <span
+                  class="text-xs font-semibold text-gray-600 whitespace-nowrap px-1.5 py-1 bg-gray-100 rounded-lg"
+                  title="Discount as % of total"
+                >{{ discountPercent.toFixed(2) }}%</span>
+              </div>
             </div>
           </div>
 
