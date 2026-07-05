@@ -37,12 +37,21 @@ export class FinancialInputComponent implements ControlValueAccessor {
   
   displayValue: string = '0.00';
   private value: number = 0;
+  /** True while the user has this field focused/actively typing. */
+  private focused = false;
   private onChange: any = () => {};
   private onTouched: any = () => {};
 
   writeValue(value: number): void {
     this.value = value || 0;
-    this.displayValue = this.value.toFixed(this.decimalPlaces);
+    // Skip reformatting while the user is actively typing. [(ngModel)] round-trips
+    // every keystroke back through here (onChange updates the parent's bound
+    // property, Angular sees it "changed" and calls writeValue back), so without
+    // this guard every digit typed got immediately overwritten by the formatted
+    // "X.00" string — which is why only the first digit ever seemed to register.
+    if (!this.focused) {
+      this.displayValue = this.value.toFixed(this.decimalPlaces);
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -83,13 +92,18 @@ export class FinancialInputComponent implements ControlValueAccessor {
 
   onInput(event: any): void {
     let rawValue = event.target.value;
-    
-    // Allow empty string
+
+    // Allow empty string — actually clear the field AND tell the parent the
+    // value is now 0 (previously this returned without calling onChange, so
+    // the bound model kept its old value; then onBlur reformatted the empty
+    // box back to that old value, making the field look impossible to clear).
     if (rawValue === '') {
       this.displayValue = '';
+      this.value = 0;
+      this.onChange(0);
       return;
     }
-    
+
     // Remove any non-numeric characters except decimal point and negative sign
     let cleanedValue = rawValue.replace(/[^0-9.-]/g, '');
     
@@ -140,6 +154,7 @@ export class FinancialInputComponent implements ControlValueAccessor {
   }
 
   onFocus(): void {
+    this.focused = true;
     if (this.value === 0) {
       this.displayValue = '';
     } else {
@@ -148,6 +163,7 @@ export class FinancialInputComponent implements ControlValueAccessor {
   }
 
   onBlur(): void {
+    this.focused = false;
     // Format with proper decimal places
     this.displayValue = this.value.toFixed(this.decimalPlaces);
     this.onTouched();
