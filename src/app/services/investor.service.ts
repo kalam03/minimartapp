@@ -8,6 +8,26 @@ export interface Investor {
   tenantId: number;
   investorName: string;
   phone?: string;
+
+  // KYC
+  nid?: string;
+  fatherName?: string;
+  motherName?: string;
+  presentAddress?: string;
+  permanentAddress?: string;
+  occupation?: string;
+  nationality?: string;
+  dateOfBirth?: string;
+
+  // Shareholding / investment
+  sharePercentage: number;
+  numberOfShares?: number;
+  shareValue?: number;
+  investmentAmount?: number;
+  joiningDate?: string;
+  leavingDate?: string;
+  isDirector: boolean;
+
   currentBalance: number; // running total invested to date
   isActive: boolean;
   createdAt: string;
@@ -16,6 +36,23 @@ export interface Investor {
 export interface CreateInvestorRequest {
   investorName: string;
   phone?: string;
+
+  nid?: string;
+  fatherName?: string;
+  motherName?: string;
+  presentAddress?: string;
+  permanentAddress?: string;
+  occupation?: string;
+  nationality?: string;
+  dateOfBirth?: string;
+
+  sharePercentage: number;
+  numberOfShares?: number;
+  shareValue?: number;
+  investmentAmount?: number;
+  joiningDate?: string;
+  leavingDate?: string;
+  isDirector?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

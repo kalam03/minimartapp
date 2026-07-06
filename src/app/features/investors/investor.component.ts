@@ -16,10 +16,31 @@ export class InvestorComponent implements OnInit {
   isSaving = false;
   searchText = '';
 
-  form = {
+  readonly emptyForm = {
     investorName: '',
-    phone: ''
+    phone: '',
+
+    // KYC
+    nid: '',
+    fatherName: '',
+    motherName: '',
+    presentAddress: '',
+    permanentAddress: '',
+    occupation: '',
+    nationality: '',
+    dateOfBirth: '',
+
+    // Shareholding / investment
+    sharePercentage: null as number | null,
+    numberOfShares: null as number | null,
+    shareValue: null as number | null,
+    investmentAmount: null as number | null,
+    joiningDate: new Date().toISOString().split('T')[0],
+    leavingDate: '',
+    isDirector: false,
   };
+
+  form = { ...this.emptyForm };
   validationErrors: Record<string, string> = {};
 
   get filteredInvestors(): Investor[] {
@@ -27,7 +48,8 @@ export class InvestorComponent implements OnInit {
     if (!q) return this.investors;
     return this.investors.filter(i =>
       i.investorName.toLowerCase().includes(q) ||
-      (i.phone || '').includes(q)
+      (i.phone || '').includes(q) ||
+      (i.nid || '').includes(q)
     );
   }
 
@@ -55,8 +77,20 @@ export class InvestorComponent implements OnInit {
 
   validateForm(): boolean {
     this.validationErrors = {};
+
     if (!this.form.investorName.trim())
       this.validationErrors['investorName'] = 'Investor name is required';
+
+    const share = this.form.sharePercentage;
+    if (share === null || share === undefined || +share <= 0 || +share > 100)
+      this.validationErrors['sharePercentage'] = 'Share percentage is required and must be between 0 and 100';
+
+    if (this.form.nid && !/^[0-9A-Za-z-]{5,30}$/.test(this.form.nid.trim()))
+      this.validationErrors['nid'] = 'Enter a valid NID number';
+
+    if (this.form.leavingDate && this.form.joiningDate && this.form.leavingDate < this.form.joiningDate)
+      this.validationErrors['leavingDate'] = 'Leaving date cannot be before joining date';
+
     return Object.keys(this.validationErrors).length === 0;
   }
 
@@ -70,7 +104,24 @@ export class InvestorComponent implements OnInit {
     this.isSaving = true;
     this.investorService.createInvestor({
       investorName: this.form.investorName.trim(),
-      phone: this.form.phone || undefined
+      phone: this.form.phone || undefined,
+
+      nid: this.form.nid?.trim() || undefined,
+      fatherName: this.form.fatherName?.trim() || undefined,
+      motherName: this.form.motherName?.trim() || undefined,
+      presentAddress: this.form.presentAddress?.trim() || undefined,
+      permanentAddress: this.form.permanentAddress?.trim() || undefined,
+      occupation: this.form.occupation?.trim() || undefined,
+      nationality: this.form.nationality?.trim() || undefined,
+      dateOfBirth: this.form.dateOfBirth || undefined,
+
+      sharePercentage: +this.form.sharePercentage!,
+      numberOfShares: this.form.numberOfShares ?? undefined,
+      shareValue: this.form.shareValue ?? undefined,
+      investmentAmount: this.form.investmentAmount ?? undefined,
+      joiningDate: this.form.joiningDate || undefined,
+      leavingDate: this.form.leavingDate || undefined,
+      isDirector: this.form.isDirector,
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
@@ -85,8 +136,13 @@ export class InvestorComponent implements OnInit {
     });
   }
 
+  /** Same present-address value copied into permanent address ("same as present") */
+  copyPresentToPermanent(): void {
+    this.form.permanentAddress = this.form.presentAddress;
+  }
+
   resetForm(): void {
-    this.form = { investorName: '', phone: '' };
+    this.form = { ...this.emptyForm, joiningDate: new Date().toISOString().split('T')[0] };
     this.validationErrors = {};
   }
 }
