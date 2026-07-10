@@ -581,7 +581,7 @@ interface DailyStats {
         </div>
 
         <!-- Recent Transactions (live from GL_TRANSACTION) -->
-        <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+        <div class="bg-white rounded-xl shadow-md border overflow-hidden" hidden>
           <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h3 class="text-white font-semibold text-sm">Recent Transactions</h3>
             <span class="text-xs" style="color:var(--theme-accent)">{{ recentTxnTotal }} total</span>
