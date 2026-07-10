@@ -1,0 +1,153 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- ── Filter Bar ──────────────────────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-sm border mb-3 no-print" style="border-color:var(--theme-text)">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h.01M4 12h.01M4 18h.01M8 6h12M8 12h12M8 18h12"/>
+          </svg>
+          Barcode Generator
+        </h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredProducts.length }} products · {{ selectedCount }} selected</span>
+      </div>
+
+      <div class="px-3 py-2 flex flex-wrap items-end gap-2">
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">From</label>
+          <input type="date" [(ngModel)]="fromDate"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">To</label>
+          <input type="date" [(ngModel)]="toDate"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">Category</label>
+          <select [(ngModel)]="categoryFilter" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-40">
+            <option value="">All Categories</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-[160px]">
+          <label class="block text-xs text-gray-500 mb-0.5">Search</label>
+          <input type="text" [(ngModel)]="searchText"
+            placeholder="Search by name or barcode…"
+            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        </div>
+        <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
+          Apply
+        </button>
+        <button (click)="resetFilter()" class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Error ───────────────────────────────────────────────────────── -->
+    <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs no-print">
+      {{ errorMsg }}
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-3 no-print">
+
+      <!-- ── Product Grid ────────────────────────────────────────────── -->
+      <div class="xl:col-span-2 bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="overflow-x-auto" style="max-height: 480px; overflow-y: auto;">
+          <table class="w-full text-sm">
+            <thead class="text-xs sticky top-0" style="background:var(--theme-primary);color:var(--theme-text)">
+              <tr>
+                <th class="px-3 py-2 text-center w-10">
+                  <input type="checkbox" [checked]="isAllVisibleSelected" (change)="toggleSelectAll($event)">
+                </th>
+                <th class="px-3 py-2 text-left">Product Name</th>
+                <th class="px-3 py-2 text-left">Category</th>
+                <th class="px-3 py-2 text-right">Sale Price</th>
+                <th class="px-3 py-2 text-center">Unit</th>
+                <th class="px-3 py-2 text-left">Barcode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of filteredProducts"
+                class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm cursor-pointer"
+                (click)="toggleSelect(product.productId)">
+                <td class="px-3 py-2 text-center" (click)="$event.stopPropagation()">
+                  <input type="checkbox" [checked]="isSelected(product.productId)" (change)="toggleSelect(product.productId)">
+                </td>
+                <td class="px-3 py-2 font-medium text-gray-900">{{ product.productName }}</td>
+                <td class="px-3 py-2 text-gray-600">{{ getCategoryName(product.categoryId) }}</td>
+                <td class="px-3 py-2 text-right font-semibold text-green-600">৳ {{ (product.salePrice || 0).toFixed(2) }}</td>
+                <td class="px-3 py-2 text-center">{{ product.unitType || 'PCS' }}</td>
+                <td class="px-3 py-2 text-gray-500">{{ product.barcode || '— will be generated —' }}</td>
+              </tr>
+              <tr *ngIf="!isLoading && filteredProducts.length === 0">
+                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">No products found</td>
+              </tr>
+              <tr *ngIf="isLoading">
+                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── Barcode Settings ─────────────────────────────────────────── -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border h-fit">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">Barcode Settings</h2>
+        </div>
+        <div class="p-3 flex flex-col gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Barcode Width (px per bar)</label>
+            <input type="number" min="1" [(ngModel)]="barcodeWidth"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Barcode Height (px)</label>
+            <input type="number" min="10" [(ngModel)]="barcodeHeight"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Copies per Product</label>
+            <input type="number" min="1" [(ngModel)]="copies"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="showName" [(ngModel)]="showProductName">
+            <label for="showName" class="text-xs text-gray-600">Show product name on label</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="showPrice" [(ngModel)]="showPrice">
+            <label for="showPrice" class="text-xs text-gray-600">Show price on label</label>
+          </div>
+
+          <button (click)="generate()"
+            class="text-white px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5"
+            style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
+            Generate Barcodes ({{ selectedCount }} selected)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Generated Labels Preview / Print Area ───────────────────────── -->
+    <div *ngIf="generatedLabels.length > 0" class="bg-white rounded-xl shadow-md overflow-hidden border mt-3 print-area">
+      <div class="px-3 py-2 flex items-center justify-between no-print" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">Preview — {{ generatedLabels.length }} label(s)</h2>
+        <div class="flex gap-2">
+          <button (click)="print()" class="px-3 py-1 bg-white text-xs font-semibold rounded-lg" style="color:var(--theme-primary)">Print</button>
+          <button (click)="clearGenerated()" class="px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100">Clear</button>
+        </div>
+      </div>
+      <div class="p-3 flex flex-wrap gap-3 label-grid">
+        <div *ngFor="let label of generatedLabels" class="border rounded-lg px-2 py-2 flex flex-col items-center label-card" style="border-color:#d1d5db">
+          <div *ngIf="showProductName" class="text-xs font-semibold text-gray-800 mb-1 text-center">{{ label.product.productName }}</div>
+          <canvas [id]="label.canvasId"></canvas>
+          <div *ngIf="showPrice" class="text-xs font-semibold text-gray-700 mt-1">৳ {{ (label.product.salePrice || 0).toFixed(2) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

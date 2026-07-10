@@ -70,6 +70,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/categories/category.component').then((m) => m.CategoryComponent),
       },
+      {
+        path: 'barcode-generator',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/barcode-generator/barcode-generator.component').then(
+            (m) => m.BarcodeGeneratorComponent
+          ),
+      },
       // ── Security Module ──────────────────────────────────────────────────
       {
         path: 'security/users',

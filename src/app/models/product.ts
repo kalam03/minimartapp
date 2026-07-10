@@ -16,10 +16,13 @@ export interface Product {
   profitMarginPercent: number;
   stockStatus: 'In Stock' | 'Low Stock' | 'Out of Stock';
   retrievedDate: Date;
+  createdAt?: string;
 }
 
 export interface ProductFilter {
   tenantId?: number | null;
   isActive?: boolean | null;
   categoryId?: number | null;
+  fromDate?: string | null;
+  toDate?: string | null;
 }

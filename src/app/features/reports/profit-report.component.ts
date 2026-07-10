@@ -17,8 +17,8 @@ import {
 })
 export class ProfitReportComponent implements OnInit {
 
-  // ── Date range filter — defaults to current month ────────────────────
-  fromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  // ── Date range filter — defaults to today ─────────────────────────────
+  fromDate = new Date().toISOString().split('T')[0];
   toDate   = new Date().toISOString().split('T')[0];
 
   // ── Report data ───────────────────────────────────────────────────────
@@ -35,7 +35,7 @@ export class ProfitReportComponent implements OnInit {
   errorMsg   = '';
 
   // ── Quick-filter pill state ───────────────────────────────────────────
-  activeQuick: string = 'month';
+  activeQuick: string = 'today';
 
   // Product-daily table is filterable by a specific day once you've
   // picked one from the daily summary above ("drill in" on a date).
@@ -91,7 +91,7 @@ export class ProfitReportComponent implements OnInit {
   }
 
   resetFilter(): void {
-    this.applyQuick('month');
+    this.applyQuick('today');
   }
 
   /** Called by the quick-filter pill buttons. */

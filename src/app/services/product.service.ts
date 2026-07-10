@@ -27,6 +27,12 @@ export class ProductService {
       if (filter.categoryId !== null && filter.categoryId !== undefined) {
         params = params.set('categoryId', filter.categoryId.toString());
       }
+      if (filter.fromDate) {
+        params = params.set('fromDate', filter.fromDate);
+      }
+      if (filter.toDate) {
+        params = params.set('toDate', filter.toDate);
+      }
     }
 
     return this.http.get<Product[]>(this.baseUrl + '/products/all', { params });

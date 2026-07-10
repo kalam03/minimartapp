@@ -1,0 +1,35 @@
+.label-card {
+  break-inside: avoid;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .label-grid {
+    gap: 6mm !important;
+  }
+
+  .label-card {
+    border-color: #999 !important;
+  }
+}
