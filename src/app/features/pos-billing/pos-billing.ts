@@ -253,7 +253,7 @@ export class PosBillingComponent implements OnInit {
         // API may return a paginated wrapper object instead of a plain array
         this.products = Array.isArray(data)
           ? data
-          : (data?.data ?? data?.items ?? data?.products ?? []);
+          : (data?.data ?? data?.items ?? data?.products ?? []).filter((p: Product) => p.stockQty > 0);
       },
       error: (err: any) => {
         console.error('Error loading products:', err);
