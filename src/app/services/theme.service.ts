@@ -15,6 +15,8 @@ export const APP_THEMES: AppTheme[] = [
   { id: 'crimson', name: 'Crimson', swatch: '#9B2F42' },
   { id: 'ocean',   name: 'Ocean',   swatch: '#1668A8' },
   { id: 'amber',   name: 'Amber',   swatch: '#B8862E' },
+  { id: 'skyblue', name: 'Sky Blue', swatch: '#0EA5E9' },
+  { id: 'white',   name: 'White',   swatch: '#FFFFFF' },
 ];
 
 @Injectable({ providedIn: 'root' })

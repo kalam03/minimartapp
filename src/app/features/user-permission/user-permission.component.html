@@ -24,7 +24,7 @@
             [(ngModel)]="selectedUserId"
             (ngModelChange)="onUserChange()"
             class="px-3 py-1.5 text-sm border border-indigo-400 rounded-lg outline-none min-w-[200px]"
-            style="background:var(--theme-primary-light);color:#fff"
+            style="background:var(--theme-primary-light);color:var(--theme-text)"
           >
             <option [ngValue]="null">-- Choose a user --</option>
             <option *ngFor="let u of users" [value]="u.userId">

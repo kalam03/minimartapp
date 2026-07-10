@@ -63,6 +63,42 @@
   --theme-text-dim:      #a89878;
 }
 
+[data-theme="skyblue"] {
+  --theme-primary:       #0c4a6e;
+  --theme-primary-light: #075985;
+  --theme-border:        #0369a1;
+  --theme-hover:         #0284c7;
+  --theme-accent:        #7dd3fc;
+  --theme-text:          #e0f2fe;
+  --theme-text-muted:    #bae6fd;
+  --theme-text-dim:      #38bdf8;
+}
+
+/* White — true light-mode look: near-white header/sidebar with dark text.
+   Note --theme-accent and --theme-text intentionally swap "light vs dark" roles
+   compared to the other (dark-surface) themes above, so anywhere those variables
+   are used as a pair (badge bg + icon/text on top of it, nav-active pill, etc.)
+   the contrast keeps working automatically without extra overrides. */
+[data-theme="white"] {
+  --theme-primary:       #99b1ce;
+  --theme-primary-light: #99b1ce;
+  --theme-border:        #99b1ce;
+  --theme-hover:         #99b1ce;
+  --theme-accent:        #1e293b;
+  --theme-text:          #1e293b;
+  --theme-text-muted:    #475569;
+  --theme-text-dim:      #64748b;
+}
+
+/* Some page/section headers and buttons use Tailwind's literal white text
+   (assuming a permanently dark header). Route that through the active theme's
+   text color instead, so it still reads correctly on light themes like "White".
+   For every other (dark-surface) theme, --theme-text is already an off-white
+   pastel, so this is a no-op visually there. */
+.text-white {
+  color: var(--theme-text) !important;
+}
+
 /* Add to your component's CSS file */
 .invoice-table-container {
   max-height: 400px;

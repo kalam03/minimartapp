@@ -95,7 +95,7 @@ interface DailyStats {
               <button (click)="applyQuick('today')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='today'
-                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'"
                 onmouseover="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='var(--theme-text)'"
                 onmouseout="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='#f0f2fb'">
@@ -104,28 +104,28 @@ interface DailyStats {
               <button (click)="applyQuick('yesterday')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='yesterday'
-                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 Yesterday
               </button>
               <button (click)="applyQuick('week')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='week'
-                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 This Week
               </button>
               <button (click)="applyQuick('month')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='month'
-                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 This Month
               </button>
               <button (click)="applyQuick('quarter')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='quarter'
-                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 Quarter
               </button>

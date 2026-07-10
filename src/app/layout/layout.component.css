@@ -31,16 +31,16 @@ aside::-webkit-scrollbar {
 }
 
 aside::-webkit-scrollbar-track {
-  background: #374151;
+  background: var(--theme-primary-light);
 }
 
 aside::-webkit-scrollbar-thumb {
-  background: #4B5563;
+  background: var(--theme-border);
   border-radius: 4px;
 }
 
 aside::-webkit-scrollbar-thumb:hover {
-  background: #6B7280;
+  background: var(--theme-hover);
 }
 
 /* Mobile menu animations */

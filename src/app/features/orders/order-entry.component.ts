@@ -90,7 +90,7 @@ interface OrderCartItem {
                 (click)="selectProduct(p)"
                 class="px-3 py-2 cursor-pointer flex items-center justify-between text-xs transition"
                 [style]="i === selectedIdx
-                  ? 'background:var(--theme-primary);color:#fff'
+                  ? 'background:var(--theme-primary);color:var(--theme-text)'
                   : 'color:#374151'"
                 onmouseover="this.style.background='#f0f2fb'"
                 onmouseout="">
@@ -331,7 +331,7 @@ interface OrderCartItem {
                   (mousedown)="selectCustomer(c)"
                   class="px-3 py-2 cursor-pointer text-xs transition"
                   [style]="i === customerIdx
-                    ? 'background:var(--theme-primary);color:#fff'
+                    ? 'background:var(--theme-primary);color:var(--theme-text)'
                     : 'color:#374151'"
                   onmouseover="this.style.background='#f0f2fb'"
                   onmouseout="">

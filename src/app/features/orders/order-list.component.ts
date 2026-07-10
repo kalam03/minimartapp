@@ -49,7 +49,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
             (click)="setStatus(s.value)"
             class="px-2.5 py-1 text-xs rounded-full font-medium border transition"
             [style]="filterStatus === s.value
-              ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+              ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
               : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
             <span *ngIf="s.value !== ''">
               <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
