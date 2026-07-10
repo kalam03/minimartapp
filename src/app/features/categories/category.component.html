@@ -1,0 +1,79 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Add / Edit Category Form -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          {{ editingId ? 'Edit Category' : 'Add Category' }}
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-1">
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Category Name *</label>
+            <input type="text" [(ngModel)]="form.categoryName" placeholder="e.g. Beverages"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('categoryName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('categoryName')" class="text-red-600 text-xs mt-1">{{ validationErrors['categoryName'] }}</p>
+          </div>
+          <div class="flex items-end gap-2 lg:col-span-2">
+            <button (click)="saveCategory()" [disabled]="isSaving"
+              class="flex-1 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+              {{ isSaving ? 'Saving...' : (editingId ? 'Update' : 'Add Category') }}
+            </button>
+            <button (click)="resetForm()" class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+              {{ editingId ? 'Cancel' : 'Reset' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category List -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">Categories</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredCategories.length }} of {{ categories.length }}</span>
+      </div>
+      <div class="px-3 py-2 border-b">
+        <input type="text" [(ngModel)]="searchText" placeholder="Search by name…"
+          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left whitespace-nowrap">ID</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">Category Name</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">Status</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of filteredCategories" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 text-gray-500">#{{ c.categoryId }}</td>
+              <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ c.categoryName }}</td>
+              <td class="px-3 py-2 text-center">
+                <span [class]="c.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                  {{ c.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-center whitespace-nowrap">
+                <button (click)="editCategory(c)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">Edit</button>
+                <button (click)="toggleActive(c)" [class]="c.isActive ? 'text-xs font-semibold text-red-600' : 'text-xs font-semibold text-green-600'">
+                  {{ c.isActive ? 'Deactivate' : 'Reactivate' }}
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredCategories.length === 0">
+              <td colspan="4" class="px-4 py-8 text-center text-gray-400 text-sm">No categories found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

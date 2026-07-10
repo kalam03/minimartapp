@@ -1,0 +1,7 @@
+.transition { transition: all 0.2s ease-in-out; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+input:focus, select:focus { outline: none; }
+td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) {
+  th, td { padding: 0.5rem 0.5rem !important; font-size: 0.75rem; }
+}

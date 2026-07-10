@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { AlertService } from '../../shared/alert.service';
 import { UnitTypeService } from '../../services/unit-type.service';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-product',
@@ -49,17 +50,9 @@ export class ProductComponent implements OnInit {
     barcode: ''
   };
 
-  categories = [
-    { id: 1, name: 'Electronics' },
-    { id: 2, name: 'Clothing' },
-    { id: 3, name: 'Food & Beverages' },
-    { id: 4, name: 'Home & Garden' },
-    { id: 5, name: 'Books & Media' },
-    { id: 6, name: 'Health & Beauty' },
-    { id: 7, name: 'Sports & Outdoors' },
-    { id: 8, name: 'Toys & Games' },
-    { id: 9, name: 'Other' }
-  ];
+  // Populated from the real Categories table on load. Manage the list from
+  // the Categories page — this used to be a hardcoded, disconnected list.
+  categories: { id: number; name: string }[] = [];
 
   pageSize = 10;
   currentPage = 1;
@@ -72,12 +65,29 @@ export class ProductComponent implements OnInit {
     private productService: ProductService,
     private alertService: AlertService,
     private unitTypeService: UnitTypeService,
+    private categoryService: CategoryService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.getAllProducts();
     this.loadUnitTypes();
+    this.loadCategories();
+  }
+
+  /** Pull the live category list from the Categories master table */
+  loadCategories(): void {
+    this.categoryService.getAllCategories(true).subscribe({
+      next: (res) => {
+        this.categories = (res.data || []).map(c => ({
+          id: c.categoryId,
+          name: c.categoryName
+        }));
+      },
+      error: (err: any) => {
+        this.alertService.error('Failed to load categories: ' + (err.error?.message || err.message));
+      }
+    });
   }
 
   /** Pull the live unit type list from the Unit Types master table (falls back to the built-in list on error) */
