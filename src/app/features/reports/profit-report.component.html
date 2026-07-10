@@ -25,9 +25,41 @@
         <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
           Apply
         </button>
-        <button (click)="resetFilter()" class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">
-          This Month
-        </button>
+
+        <!-- Divider -->
+        <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
+
+        <!-- Quick filter pill buttons -->
+        <div class="flex flex-wrap gap-1">
+          <button (click)="applyQuick('today')"
+            class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+            [style]="activeQuick==='today'
+              ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+              : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+            Today
+          </button>
+          <button (click)="applyQuick('month')"
+            class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+            [style]="activeQuick==='month'
+              ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+              : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+            This Month
+          </button>
+          <button (click)="applyQuick('quarter')"
+            class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+            [style]="activeQuick==='quarter'
+              ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+              : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+            Quarterly
+          </button>
+          <button (click)="applyQuick('year')"
+            class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+            [style]="activeQuick==='year'
+              ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+              : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+            Yearly
+          </button>
+        </div>
       </div>
     </div>
 

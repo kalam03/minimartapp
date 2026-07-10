@@ -34,6 +34,9 @@ export class ProfitReportComponent implements OnInit {
   isLoading  = false;
   errorMsg   = '';
 
+  // ── Quick-filter pill state ───────────────────────────────────────────
+  activeQuick: string = 'month';
+
   // Product-daily table is filterable by a specific day once you've
   // picked one from the daily summary above ("drill in" on a date).
   selectedDay: string | null = null;
@@ -82,14 +85,48 @@ export class ProfitReportComponent implements OnInit {
   }
 
   applyFilter(): void {
-    this.selectedDay = null;
+    this.activeQuick  = '';   // manual date edit clears active pill
+    this.selectedDay  = null;
     this.loadReport();
   }
 
   resetFilter(): void {
-    this.fromDate    = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-    this.toDate      = new Date().toISOString().split('T')[0];
-    this.selectedDay = null;
+    this.applyQuick('month');
+  }
+
+  /** Called by the quick-filter pill buttons. */
+  applyQuick(period: string): void {
+    const today    = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    switch (period) {
+      case 'today':
+        this.fromDate = todayStr;
+        this.toDate   = todayStr;
+        break;
+      case 'month': {
+        const d = new Date(today.getFullYear(), today.getMonth(), 1);
+        this.fromDate = d.toISOString().split('T')[0];
+        this.toDate   = todayStr;
+        break;
+      }
+      case 'quarter': {
+        const d = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+        this.fromDate = d.toISOString().split('T')[0];
+        this.toDate   = todayStr;
+        break;
+      }
+      case 'year': {
+        const d = new Date(today.getFullYear(), 0, 1);
+        this.fromDate = d.toISOString().split('T')[0];
+        this.toDate   = todayStr;
+        break;
+      }
+      default: return;
+    }
+
+    this.activeQuick  = period;
+    this.selectedDay  = null;
     this.loadReport();
   }
 
