@@ -4,9 +4,9 @@
     <!-- ── Summary Cards ───────────────────────────────────────────────── -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
 
-      <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+      <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
         <div class="px-3 py-2 border-b border-white border-opacity-10">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Net Capital</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Net Capital</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold"
@@ -14,13 +14,13 @@
             [class.text-red-400]="netCapital < 0">
             ৳{{ netCapital | number:'1.2-2' }}
           </p>
-          <p class="text-xs mt-1" style="color:#ACB3E7">Credit − Debit</p>
+          <p class="text-xs mt-1" style="color:var(--theme-accent)">Credit − Debit</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Credit (In)</p>
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Credit (In)</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-green-600">৳{{ txnTotalCredit | number:'1.2-2' }}</p>
@@ -29,8 +29,8 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Debit (Out)</p>
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Debit (Out)</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-orange-600">৳{{ txnTotalDebit | number:'1.2-2' }}</p>
@@ -39,11 +39,11 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Transactions</p>
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Transactions</p>
         </div>
         <div class="px-3 py-2">
-          <p class="text-xl font-bold" style="color:#1a1c4e">{{ txnTotal }}</p>
+          <p class="text-xl font-bold" style="color:var(--theme-primary)">{{ txnTotal }}</p>
           <p class="text-xs text-gray-400 mt-1">Matching current filter</p>
         </div>
       </div>
@@ -52,7 +52,7 @@
 
     <!-- ── Create Transaction Form ─────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
-      <div class="px-3 py-2" style="background:#1a1c4e">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -65,14 +65,14 @@
 
           <!-- TXN Date -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Date *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transaction Date *</label>
             <input type="date" [(ngModel)]="form.txnDate"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
 
           <!-- TXN Type -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Type *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transaction Type *</label>
             <select [(ngModel)]="form.txnTypeId" (ngModelChange)="onTxnTypeChange()"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('txnTypeId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
               <option [value]="0">-- Select Type --</option>
@@ -83,7 +83,7 @@
 
           <!-- GL Account -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Account *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Account *</label>
             <input type="text" [(ngModel)]="form.glAccount" placeholder="CASH VAULT"
               list="glAccountList"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('glAccount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
@@ -96,7 +96,7 @@
 
           <!-- Amount -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Amount (৳) *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Amount (৳) *</label>
             <input type="number" [(ngModel)]="form.amount" placeholder="0.00" step="0.01" min="0"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('amount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('amount')" class="text-red-600 text-xs mt-1">{{ validationErrors['amount'] }}</p>
@@ -104,7 +104,7 @@
 
           <!-- DR / CR -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">DR / CR *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">DR / CR *</label>
             <div *ngIf="isDrCrFixed" class="flex items-center gap-2 mt-1">
               <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
                 [class.bg-orange-100]="form.drCr==='D'" [class.text-orange-700]="form.drCr==='D'"
@@ -189,7 +189,7 @@
 
           <!-- TXN Mode -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transaction Mode</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transaction Mode</label>
             <select [(ngModel)]="form.txnMode"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
               <option *ngFor="let m of txnModes" [value]="m">{{ m }}</option>
@@ -198,14 +198,14 @@
 
           <!-- Reference No -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Reference No</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Reference No</label>
             <input type="text" [(ngModel)]="form.referenceNo" placeholder="Invoice / voucher ref"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
 
           <!-- User note (appended to auto-narration) -->
           <div class="lg:col-span-2">
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">
               {{ needsDescription ? 'Description *' : 'Additional Note' }}
               <span *ngIf="!needsDescription" class="font-normal text-gray-400">(optional)</span>
             </label>
@@ -219,7 +219,7 @@
 
         <!-- Auto-generated narration preview -->
         <div *ngIf="autoNarration" class="mt-3 px-3 py-2 rounded-lg border border-indigo-200 bg-indigo-50 text-xs text-indigo-900">
-          <p class="font-semibold mb-0.5" style="color:#1a1c4e">Narration (auto-generated)</p>
+          <p class="font-semibold mb-0.5" style="color:var(--theme-primary)">Narration (auto-generated)</p>
           <p class="italic">{{ autoNarration }}</p>
         </div>
 
@@ -257,7 +257,7 @@
           <button (click)="saveTransaction()"
             [disabled]="capitalDepleted || debitExceedsCapital"
             class="text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-            style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
@@ -273,9 +273,9 @@
 
     <!-- ── Capital Transactions Grid ──────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">Capital Transactions</h2>
-        <span class="text-xs" style="color:#ACB3E7">{{ txnTotal }} records</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ txnTotal }} records</span>
       </div>
 
       <!-- Summary bar (full-dataset totals) -->
@@ -327,7 +327,7 @@
       <!-- Table -->
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
-          <thead style="background:#1a1c4e;color:#e0e3f8">
+          <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left whitespace-nowrap">#</th>
               <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
@@ -353,10 +353,10 @@
             <tr *ngFor="let t of txnList; let i = index" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-500">{{ (txnPage-1)*txnPageSize + i + 1 }}</td>
               <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ t.txnDate | date:'dd MMM yy' }}</td>
-              <td class="px-3 py-2 font-mono font-medium whitespace-nowrap" style="color:#1a1c4e">{{ t.txnNo }}</td>
+              <td class="px-3 py-2 font-mono font-medium whitespace-nowrap" style="color:var(--theme-primary)">{{ t.txnNo }}</td>
               <td class="px-3 py-2">
                 <span class="px-2 py-0.5 rounded text-xs font-medium"
-                  style="background:#eef0fc;color:#1a1c4e">{{ t.txnCode }}</span>
+                  style="background:#eef0fc;color:var(--theme-primary)">{{ t.txnCode }}</span>
               </td>
               <td class="px-3 py-2 font-mono text-gray-700">{{ t.glAccount }}</td>
               <td class="px-3 py-2 text-gray-600 whitespace-nowrap">
@@ -413,14 +413,14 @@
 
     <!-- ── Cash Flow — Period Report (Category Breakdown + Daily Cash Register) ── -->
     <div class="bg-white rounded-xl shadow-sm border mt-4 overflow-hidden">
-      <div class="px-4 py-3 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-4 py-3 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
           Cash Flow — Period Report
         </h2>
-        <span class="text-xs" style="color:#ACB3E7">Cash Vault</span>
+        <span class="text-xs" style="color:var(--theme-accent)">Cash Vault</span>
       </div>
 
       <!-- Shared filter for both sections below -->
@@ -433,7 +433,7 @@
           <label class="block text-xs text-gray-500 mb-0.5">To</label>
           <input type="date" [(ngModel)]="dcrToDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
-        <button (click)="applyDcrFilter()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:#1a1c4e">Apply</button>
+        <button (click)="applyDcrFilter()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:var(--theme-primary)">Apply</button>
         <button (click)="resetDcrFilter()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">This Month</button>
 
         <div class="ml-auto flex gap-4 text-xs text-right">
@@ -486,7 +486,7 @@
       <!-- Table -->
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
-          <thead style="background:#1a1c4e;color:#e0e3f8">
+          <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
               <th class="px-3 py-2 text-right whitespace-nowrap">Opening</th>
@@ -511,7 +511,7 @@
               <td class="px-3 py-2 text-right font-medium" [class.text-green-600]="d.netChange >= 0" [class.text-red-600]="d.netChange < 0">
                 {{ d.netChange >= 0 ? '+' : '' }}৳ {{ d.netChange | number:'1.2-2' }}
               </td>
-              <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳ {{ d.closingBalance | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳ {{ d.closingBalance | number:'1.2-2' }}</td>
             </tr>
           </tbody>
         </table>
@@ -572,7 +572,7 @@
         class="px-4 py-1.5 text-xs font-semibold text-white rounded-lg transition"
         [class.bg-orange-500]="confirmType === 'warning'"
         [class.hover:bg-orange-600]="confirmType === 'warning'"
-        [style.background]="confirmType === 'normal' ? '#1a1c4e' : null">
+        [style.background]="confirmType === 'normal' ? 'var(--theme-primary)' : null">
         Yes, Save Transaction
       </button>
     </div>

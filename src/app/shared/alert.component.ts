@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 
       <!-- Modal -->
       <div class="relative w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl"
-           style="background:#fff; border:1.5px solid #e0e3f8; animation: alertFadeIn 0.18s ease">
+           style="background:#fff; border:1.5px solid var(--theme-text); animation: alertFadeIn 0.18s ease">
 
         <!-- Top accent bar -->
         <div class="h-1 w-full" [style.background]="getAccentColor()"></div>
@@ -44,7 +44,7 @@ import { CommonModule } from '@angular/common';
 
             <!-- Text -->
             <div class="flex-1 min-w-0 pt-0.5">
-              <h3 class="text-sm font-bold" style="color:#1a1c4e">{{ title }}</h3>
+              <h3 class="text-sm font-bold" style="color:var(--theme-primary)">{{ title }}</h3>
               <p class="mt-1 text-sm whitespace-pre-line" style="color:#4b5563">{{ message }}</p>
             </div>
 
@@ -56,8 +56,8 @@ import { CommonModule } from '@angular/common';
           <button *ngIf="showCancel"
             (click)="onCancel()"
             class="px-4 py-2 text-sm font-medium rounded-lg transition-all outline-none"
-            style="background:#f0f2fb; color:#1a1c4e; border:1.5px solid #e0e3f8"
-            onmouseover="this.style.background='#e0e3f8'"
+            style="background:#f0f2fb; color:var(--theme-primary); border:1.5px solid var(--theme-text)"
+            onmouseover="this.style.background='var(--theme-text)'"
             onmouseout="this.style.background='#f0f2fb'">
             {{ cancelText }}
           </button>
@@ -128,9 +128,9 @@ export class AlertComponent implements OnInit, OnDestroy {
       case 'success': return '#10b981';
       case 'error':   return '#ef4444';
       case 'warning': return '#f59e0b';
-      case 'info':    return '#1a1c4e';
-      case 'confirm': return '#252862';
-      default:        return '#1a1c4e';
+      case 'info':    return 'var(--theme-primary)';
+      case 'confirm': return 'var(--theme-primary-light)';
+      default:        return 'var(--theme-primary)';
     }
   }
 
@@ -139,9 +139,9 @@ export class AlertComponent implements OnInit, OnDestroy {
       case 'success': return '#059669';
       case 'error':   return '#dc2626';
       case 'warning': return '#d97706';
-      case 'info':    return '#252862';
-      case 'confirm': return '#1a1c4e';
-      default:        return '#252862';
+      case 'info':    return 'var(--theme-primary-light)';
+      case 'confirm': return 'var(--theme-primary)';
+      default:        return 'var(--theme-primary-light)';
     }
   }
 
@@ -150,9 +150,9 @@ export class AlertComponent implements OnInit, OnDestroy {
       case 'success': return '#d1fae5';
       case 'error':   return '#fee2e2';
       case 'warning': return '#fef3c7';
-      case 'info':    return '#e0e3f8';
-      case 'confirm': return '#e0e3f8';
-      default:        return '#e0e3f8';
+      case 'info':    return 'var(--theme-text)';
+      case 'confirm': return 'var(--theme-text)';
+      default:        return 'var(--theme-text)';
     }
   }
 
@@ -161,9 +161,9 @@ export class AlertComponent implements OnInit, OnDestroy {
       case 'success': return '#065f46';
       case 'error':   return '#b91c1c';
       case 'warning': return '#b45309';
-      case 'info':    return '#1a1c4e';
-      case 'confirm': return '#252862';
-      default:        return '#1a1c4e';
+      case 'info':    return 'var(--theme-primary)';
+      case 'confirm': return 'var(--theme-primary-light)';
+      default:        return 'var(--theme-primary)';
     }
   }
 

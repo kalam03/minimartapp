@@ -25,11 +25,11 @@ interface OrderCartItem {
   <div class="max-w-8xl mx-auto">
 
     <!-- Header -->
-    <div class="rounded-xl overflow-hidden border mb-3 shadow-md" style="background:#1a1c4e">
+    <div class="rounded-xl overflow-hidden border mb-3 shadow-md" style="background:var(--theme-primary)">
       <div class="px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <button (click)="goBack()"
-            class="p-1.5 rounded-lg transition" style="color:#ACB3E7"
+            class="p-1.5 rounded-lg transition" style="color:var(--theme-accent)"
             onmouseover="this.style.background='rgba(255,255,255,0.1)'"
             onmouseout="this.style.background='transparent'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,10 +44,10 @@ interface OrderCartItem {
               </svg>
               New Order
             </h1>
-            <p class="text-xs" style="color:#ACB3E7">Add products and save as a pending order</p>
+            <p class="text-xs" style="color:var(--theme-accent)">Add products and save as a pending order</p>
           </div>
         </div>
-        <div class="text-xs" style="color:#ACB3E7">{{ today | date:'dd MMM yyyy' }}</div>
+        <div class="text-xs" style="color:var(--theme-accent)">{{ today | date:'dd MMM yyyy' }}</div>
       </div>
     </div>
 
@@ -56,7 +56,7 @@ interface OrderCartItem {
 
       <!-- LEFT: Product Selection -->
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -75,7 +75,7 @@ interface OrderCartItem {
               placeholder="Search product by name or barcode…"
               class="w-full pl-8 pr-3 py-2 text-sm border rounded-lg outline-none"
               style="border-color:#d1d5f0"
-              onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+              onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
             <svg class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-400"
               fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -90,7 +90,7 @@ interface OrderCartItem {
                 (click)="selectProduct(p)"
                 class="px-3 py-2 cursor-pointer flex items-center justify-between text-xs transition"
                 [style]="i === selectedIdx
-                  ? 'background:#1a1c4e;color:#fff'
+                  ? 'background:var(--theme-primary);color:#fff'
                   : 'color:#374151'"
                 onmouseover="this.style.background='#f0f2fb'"
                 onmouseout="">
@@ -109,10 +109,10 @@ interface OrderCartItem {
           </div>
 
           <!-- Selected product controls -->
-          <div *ngIf="selectedProduct" class="rounded-lg p-3 mb-3" style="background:#f0f2fb;border:1px solid #e0e3f8">
+          <div *ngIf="selectedProduct" class="rounded-lg p-3 mb-3" style="background:#f0f2fb;border:1px solid var(--theme-text)">
             <div class="flex items-start justify-between mb-2">
               <div>
-                <p class="font-semibold text-sm" style="color:#1a1c4e">{{ selectedProduct.productName }}</p>
+                <p class="font-semibold text-sm" style="color:var(--theme-primary)">{{ selectedProduct.productName }}</p>
                 <p class="text-xs text-gray-500">{{ selectedProduct.categoryName }} · {{ selectedProduct.unitType || 'PCS' }}</p>
               </div>
               <span class="text-xs px-2 py-0.5 rounded-full font-semibold"
@@ -143,9 +143,9 @@ interface OrderCartItem {
               <div class="flex items-end">
                 <button (click)="addToCart()"
                   class="w-full py-1.5 rounded-lg text-xs font-semibold text-white transition"
-                  style="background:#1a1c4e"
-                  onmouseover="this.style.background='#252862'"
-                  onmouseout="this.style.background='#1a1c4e'">
+                  style="background:var(--theme-primary)"
+                  onmouseover="this.style.background='var(--theme-primary-light)'"
+                  onmouseout="this.style.background='var(--theme-primary)'">
                   + Add
                 </button>
               </div>
@@ -163,7 +163,7 @@ interface OrderCartItem {
 
         <!-- Cart -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden flex-1">
-          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h2 class="text-white font-semibold text-sm flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -173,8 +173,8 @@ interface OrderCartItem {
             </h2>
             <button *ngIf="cartItems.length > 0" (click)="clearCart()"
               class="text-xs px-2 py-0.5 rounded font-medium transition"
-              style="color:#ACB3E7"
-              onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#ACB3E7'">
+              style="color:var(--theme-accent)"
+              onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--theme-accent)'">
               Clear All
             </button>
           </div>
@@ -190,7 +190,7 @@ interface OrderCartItem {
           <div *ngIf="cartItems.length > 0" class="overflow-x-auto">
             <table class="w-full text-xs">
               <thead>
-                <tr style="background:#e0e3f8;color:#1a1c4e">
+                <tr style="background:var(--theme-text);color:var(--theme-primary)">
                   <th class="px-3 py-1.5 text-left">Product</th>
                   <th class="px-2 py-1.5 text-center w-20">Qty</th>
                   <th class="px-2 py-1.5 text-right w-24">Price</th>
@@ -231,7 +231,7 @@ interface OrderCartItem {
                         : 'border-color:#d1d5f0'"/>
                   </td>
                   <td class="px-2 py-1.5 text-right text-gray-700">&#2547;{{ item.unitPrice | number:'1.2-2' }}</td>
-                  <td class="px-2 py-1.5 text-right font-semibold" style="color:#1a1c4e">
+                  <td class="px-2 py-1.5 text-right font-semibold" style="color:var(--theme-primary)">
                     &#2547;{{ item.subtotal | number:'1.2-2' }}
                   </td>
                   <td class="px-2 py-1.5 text-center">
@@ -270,7 +270,7 @@ interface OrderCartItem {
               </div>
             </div>
             <div class="flex justify-between font-bold text-sm pt-1"
-                 style="border-top:1px solid #e0e3f8;color:#1a1c4e">
+                 style="border-top:1px solid var(--theme-text);color:var(--theme-primary)">
               <span>Grand Total</span>
               <span>&#2547;{{ grandTotal | number:'1.2-2' }}</span>
             </div>
@@ -279,7 +279,7 @@ interface OrderCartItem {
 
         <!-- Customer Info -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-          <div class="px-3 py-2" style="background:#252862">
+          <div class="px-3 py-2" style="background:var(--theme-primary-light)">
             <h3 class="text-white font-semibold text-xs flex items-center gap-2">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -313,7 +313,7 @@ interface OrderCartItem {
                   placeholder="Search by name or walk-in…"
                   class="w-full pl-8 pr-8 py-1.5 text-xs border rounded-lg outline-none transition"
                   [style]="'border-color:' + (phoneError ? '#ef4444' : '#d1d5f0')"
-                  onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                  onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
                 <!-- Clear button -->
                 <button *ngIf="customerNameTerm" (click)="clearCustomer()"
                   class="absolute right-2 top-1.5 text-gray-400 hover:text-gray-600">
@@ -331,7 +331,7 @@ interface OrderCartItem {
                   (mousedown)="selectCustomer(c)"
                   class="px-3 py-2 cursor-pointer text-xs transition"
                   [style]="i === customerIdx
-                    ? 'background:#1a1c4e;color:#fff'
+                    ? 'background:var(--theme-primary);color:#fff'
                     : 'color:#374151'"
                   onmouseover="this.style.background='#f0f2fb'"
                   onmouseout="">
@@ -369,7 +369,7 @@ interface OrderCartItem {
                   maxlength="11"
                   class="w-full px-2 py-1.5 text-xs border rounded outline-none transition"
                   [style]="'border-color:' + (phoneError ? '#ef4444' : '#d1d5f0')"
-                  onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                  onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
                 <p *ngIf="phoneError" class="text-red-500 text-xs mt-0.5">{{ phoneError }}</p>
               </div>
               <div>
@@ -379,7 +379,7 @@ interface OrderCartItem {
                   placeholder="Optional"
                   class="w-full px-2 py-1.5 text-xs border rounded outline-none"
                   style="border-color:#d1d5f0"
-                  onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                  onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
               </div>
             </div>
 
@@ -389,7 +389,7 @@ interface OrderCartItem {
               <textarea [(ngModel)]="notes" rows="2" placeholder="Special instructions…"
                 class="w-full px-2 py-1.5 text-xs border rounded outline-none resize-none"
                 style="border-color:#d1d5f0"
-                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'">
+                onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'">
               </textarea>
             </div>
           </div>
@@ -399,9 +399,9 @@ interface OrderCartItem {
         <button (click)="saveOrder()"
           [disabled]="saving || cartItems.length === 0"
           class="w-full py-3 rounded-xl text-sm font-bold text-white transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
-          style="background:#1a1c4e"
-          onmouseover="if(!this.disabled) this.style.background='#252862'"
-          onmouseout="if(!this.disabled) this.style.background='#1a1c4e'">
+          style="background:var(--theme-primary)"
+          onmouseover="if(!this.disabled) this.style.background='var(--theme-primary-light)'"
+          onmouseout="if(!this.disabled) this.style.background='var(--theme-primary)'">
           <svg *ngIf="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>

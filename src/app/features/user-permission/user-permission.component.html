@@ -3,7 +3,7 @@
 
     <!-- Header -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style="background:#1a1c4e">
+      <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style="background:var(--theme-primary)">
         <div>
           <h1 class="text-white font-bold text-sm flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -12,19 +12,19 @@
             </svg>
             User Function Permissions
           </h1>
-          <p class="text-xs mt-0.5" style="color:#ACB3E7">
+          <p class="text-xs mt-0.5" style="color:var(--theme-accent)">
             Assign page-level access flags to each user
           </p>
         </div>
 
         <!-- User selector -->
         <div class="flex items-center gap-2">
-          <label class="text-xs font-semibold whitespace-nowrap" style="color:#ACB3E7">Select User</label>
+          <label class="text-xs font-semibold whitespace-nowrap" style="color:var(--theme-accent)">Select User</label>
           <select
             [(ngModel)]="selectedUserId"
             (ngModelChange)="onUserChange()"
             class="px-3 py-1.5 text-sm border border-indigo-400 rounded-lg outline-none min-w-[200px]"
-            style="background:#252862;color:#fff"
+            style="background:var(--theme-primary-light);color:#fff"
           >
             <option [ngValue]="null">-- Choose a user --</option>
             <option *ngFor="let u of users" [value]="u.userId">
@@ -57,13 +57,13 @@
       <div *ngFor="let mod of modules; let mi = index" class="bg-white rounded-xl shadow-md border mb-3 overflow-hidden">
 
         <!-- Module header bar -->
-        <div class="px-4 py-2 flex items-center justify-between" style="background:#252862">
+        <div class="px-4 py-2 flex items-center justify-between" style="background:var(--theme-primary-light)">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold px-2 py-0.5 rounded" style="background:#ACB3E7;color:#1a1c4e">
+            <span class="text-xs font-bold px-2 py-0.5 rounded" style="background:var(--theme-accent);color:var(--theme-primary)">
               {{ mod.moduleId }}
             </span>
             <span class="text-white font-semibold text-sm">{{ mod.moduleName }}</span>
-            <span class="text-xs ml-2" style="color:#ACB3E7">{{ mod.rows.length }} function(s)</span>
+            <span class="text-xs ml-2" style="color:var(--theme-accent)">{{ mod.rows.length }} function(s)</span>
           </div>
           <div class="flex gap-2">
             <button (click)="grantAllModule(mod)"
@@ -88,7 +88,7 @@
           <table class="w-full text-xs">
             <!-- Column headers -->
             <thead>
-              <tr style="background:#e0e3f8;color:#1a1c4e">
+              <tr style="background:var(--theme-text);color:var(--theme-primary)">
                 <th class="px-3 py-2 text-left font-semibold w-56">Function</th>
                 <th class="px-3 py-2 text-left font-semibold w-20 text-gray-500">Route</th>
                 <!-- Column toggle headers -->
@@ -260,7 +260,7 @@
       <!-- Sticky Save bar -->
       <div class="sticky bottom-0 z-10 mt-2 bg-white border-t shadow-lg rounded-xl px-4 py-3 flex items-center justify-between">
         <div class="text-xs text-gray-500">
-          <span class="font-semibold" style="color:#1a1c4e">{{ selectedUser?.userName }}</span>
+          <span class="font-semibold" style="color:var(--theme-primary)">{{ selectedUser?.userName }}</span>
           — {{ allRows.length }} functions across {{ modules.length }} modules
           <span *ngIf="hasChanges" class="ml-2 px-2 py-0.5 rounded-full text-orange-700 bg-orange-100 font-semibold">
             Unsaved changes
@@ -270,9 +270,9 @@
           (click)="save()"
           [disabled]="saving || !hasChanges"
           class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
-          style="background:#1a1c4e"
-          onmouseover="this.style.background='#252862'"
-          onmouseout="this.style.background='#1a1c4e'"
+          style="background:var(--theme-primary)"
+          onmouseover="this.style.background='var(--theme-primary-light)'"
+          onmouseout="this.style.background='var(--theme-primary)'"
         >
           <svg *ngIf="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

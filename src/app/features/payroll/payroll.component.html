@@ -3,10 +3,10 @@
 
     <!-- Tab Nav -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-3 py-2 flex flex-wrap gap-1" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex flex-wrap gap-1" style="background:var(--theme-primary)">
         <button *ngFor="let t of tabs" (click)="setTab(t.id)"
           [class]="'px-3 py-1.5 rounded-lg text-xs font-semibold transition ' + (activeTab === t.id ? 'bg-white' : 'text-white hover:bg-white/10')"
-          [style]="activeTab === t.id ? 'color:#1a1c4e' : ''">
+          [style]="activeTab === t.id ? 'color:var(--theme-primary)' : ''">
           {{ t.label }}
         </button>
       </div>
@@ -18,26 +18,26 @@
       <!-- Quick add Department / Designation -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-          <div class="px-3 py-2" style="background:#1a1c4e">
+          <div class="px-3 py-2" style="background:var(--theme-primary)">
             <h2 class="text-white font-semibold text-sm">Departments</h2>
           </div>
           <div class="p-3 flex gap-2">
             <input type="text" [(ngModel)]="newDepartmentName" placeholder="e.g. Sales, Accounts"
               class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
-            <button (click)="addDepartment()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:#1a1c4e">Add</button>
+            <button (click)="addDepartment()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:var(--theme-primary)">Add</button>
           </div>
           <div class="px-3 pb-3 flex flex-wrap gap-1">
             <span *ngFor="let d of departments" class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{{ d.departmentName }}</span>
           </div>
         </div>
         <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-          <div class="px-3 py-2" style="background:#1a1c4e">
+          <div class="px-3 py-2" style="background:var(--theme-primary)">
             <h2 class="text-white font-semibold text-sm">Designations</h2>
           </div>
           <div class="p-3 flex gap-2">
             <input type="text" [(ngModel)]="newDesignationName" placeholder="e.g. Manager, Cashier"
               class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
-            <button (click)="addDesignation()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:#1a1c4e">Add</button>
+            <button (click)="addDesignation()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:var(--theme-primary)">Add</button>
           </div>
           <div class="px-3 pb-3 flex flex-wrap gap-1">
             <span *ngFor="let d of designations" class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{{ d.designationName }}</span>
@@ -47,23 +47,23 @@
 
       <!-- Add/Edit Employee Form -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">{{ editingEmployeeId ? 'Edit Employee' : 'Add Employee' }}</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">First Name *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">First Name *</label>
               <input type="text" [(ngModel)]="empForm.firstName"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('firstName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('firstName')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['firstName'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Last Name</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Last Name</label>
               <input type="text" [(ngModel)]="empForm.lastName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Gender *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Gender *</label>
               <select [(ngModel)]="empForm.gender"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('gender') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
                 <option value="">-- Select --</option>
@@ -74,17 +74,17 @@
               <p *ngIf="isEmpFieldInvalid('gender')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['gender'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Phone Number *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone Number *</label>
               <input type="text" [(ngModel)]="empForm.mobile" placeholder="01XXXXXXXXX" maxlength="11" inputmode="numeric"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('mobile') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('mobile')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['mobile'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Email</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Email</label>
               <input type="email" [(ngModel)]="empForm.email" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Department *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Department *</label>
               <select [(ngModel)]="empForm.departmentId"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('departmentId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
                 <option [ngValue]="null">-- Select --</option>
@@ -93,7 +93,7 @@
               <p *ngIf="isEmpFieldInvalid('departmentId')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['departmentId'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Designation *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Designation *</label>
               <select [(ngModel)]="empForm.designationId"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('designationId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
                 <option [ngValue]="null">-- Select --</option>
@@ -102,11 +102,11 @@
               <p *ngIf="isEmpFieldInvalid('designationId')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['designationId'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Joining Date</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Joining Date</label>
               <input type="date" [(ngModel)]="empForm.joiningDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Salary Type</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Salary Type</label>
               <select [(ngModel)]="empForm.salaryType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="Monthly">Monthly</option>
                 <option value="Daily">Daily</option>
@@ -114,25 +114,25 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Basic Salary (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Basic Salary (৳)</label>
               <input type="number" [(ngModel)]="empForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">NID No. *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">NID No. *</label>
               <input type="text" [(ngModel)]="empForm.nidNo"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('nidNo') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('nidNo')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['nidNo'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bank Name</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bank Name</label>
               <input type="text" [(ngModel)]="empForm.bankName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bank Account No.</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bank Account No.</label>
               <input type="text" [(ngModel)]="empForm.bankAccountNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="lg:col-span-2">
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Present Address *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Present Address *</label>
               <input type="text" [(ngModel)]="empForm.presentAddress"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('presentAddress') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('presentAddress')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['presentAddress'] }}</p>
@@ -140,7 +140,7 @@
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="saveEmployee()" [disabled]="isSaving"
-              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
               {{ isSaving ? 'Saving...' : (editingEmployeeId ? 'Update Employee' : 'Add Employee') }}
             </button>
             <button (click)="resetEmpForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
@@ -150,9 +150,9 @@
 
       <!-- Employee List -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+        <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Employees</h2>
-          <span class="text-xs" style="color:#ACB3E7">{{ filteredEmployees.length }} of {{ employees.length }}</span>
+          <span class="text-xs" style="color:var(--theme-accent)">{{ filteredEmployees.length }} of {{ employees.length }}</span>
         </div>
         <div class="px-3 py-2 border-b">
           <input type="text" [(ngModel)]="empSearch" placeholder="Search by name, code, mobile, designation…"
@@ -160,7 +160,7 @@
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
                 <th class="px-3 py-2 text-left">Code</th>
                 <th class="px-3 py-2 text-left">Name</th>
@@ -204,12 +204,12 @@
     <!-- ═══════════════════ SALARY STRUCTURE TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'salary'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Salary Structure</h2>
         </div>
         <div class="p-3">
           <div class="mb-3">
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
             <select [(ngModel)]="salaryEmployeeId" (ngModelChange)="onSalaryEmployeeChange()"
               class="w-full md:w-1/2 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
               <option [ngValue]="null">-- Select Employee --</option>
@@ -219,41 +219,41 @@
 
           <div *ngIf="salaryEmployeeId" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Basic Salary (৳) *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Basic Salary (৳) *</label>
               <input type="number" [(ngModel)]="salaryForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">House Rent (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">House Rent (৳)</label>
               <input type="number" [(ngModel)]="salaryForm.houseRent" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Medical (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Medical (৳)</label>
               <input type="number" [(ngModel)]="salaryForm.medical" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Transport (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transport (৳)</label>
               <input type="number" [(ngModel)]="salaryForm.transport" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Food (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Food (৳)</label>
               <input type="number" [(ngModel)]="salaryForm.food" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Other Allowance (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Other Allowance (৳)</label>
               <input type="number" [(ngModel)]="salaryForm.otherAllowance" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Effective From *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Effective From *</label>
               <input type="date" [(ngModel)]="salaryForm.effectiveFrom" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="flex items-end">
-              <p class="text-sm font-semibold" style="color:#1a1c4e">Gross Salary: ৳ {{ salaryFormGross | number:'1.2-2' }}</p>
+              <p class="text-sm font-semibold" style="color:var(--theme-primary)">Gross Salary: ৳ {{ salaryFormGross | number:'1.2-2' }}</p>
             </div>
           </div>
 
           <div *ngIf="salaryEmployeeId" class="flex gap-2 mt-3">
             <button (click)="saveSalaryStructure()" [disabled]="isSaving"
-              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
               {{ isSaving ? 'Saving...' : 'Save Salary Structure' }}
             </button>
           </div>
@@ -269,24 +269,24 @@
     <!-- ═══════════════════ ATTENDANCE TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'attendance'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Mark Attendance</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
               <select [(ngModel)]="attEmployeeId" (ngModelChange)="onAttEmployeeChange()" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date *</label>
               <input type="date" [(ngModel)]="attForm.attendanceDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Status *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Status *</label>
               <select [(ngModel)]="attForm.status" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="Present">Present</option>
                 <option value="Absent">Absent</option>
@@ -294,17 +294,17 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">In Time</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">In Time</label>
               <input type="time" [(ngModel)]="attForm.inTime" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Out Time</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Out Time</label>
               <input type="time" [(ngModel)]="attForm.outTime" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="markAttendance()" [disabled]="isSaving"
-              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
               {{ isSaving ? 'Saving...' : 'Save Attendance' }}
             </button>
           </div>
@@ -312,7 +312,7 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2 flex items-center justify-between flex-wrap gap-2" style="background:#1a1c4e">
+        <div class="px-3 py-2 flex items-center justify-between flex-wrap gap-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Attendance History</h2>
           <div class="flex items-center gap-2">
             <input type="date" [(ngModel)]="attFromDate" (ngModelChange)="loadAttendance()" class="px-2 py-1 text-xs rounded-lg outline-none" />
@@ -322,7 +322,7 @@
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
                 <th class="px-3 py-2 text-left">Date</th>
                 <th class="px-3 py-2 text-left">In Time</th>
@@ -356,48 +356,48 @@
     <!-- ═══════════════════ PROCESS PAYROLL TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'payroll'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Process Salary Payment</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
               <select [(ngModel)]="payForm.employeeId" (ngModelChange)="onPayEmployeeChange()" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }} ({{ e.employeeCode }})</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Month *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Month *</label>
               <select [(ngModel)]="payForm.salaryMonth" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option *ngFor="let m of months" [ngValue]="m.id">{{ m.name }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Year *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Year *</label>
               <select [(ngModel)]="payForm.salaryYear" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Date</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Date</label>
               <input type="date" [(ngModel)]="payForm.paymentDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Overtime (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Overtime (৳)</label>
               <input type="number" [(ngModel)]="payForm.overtimeAmount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bonus (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bonus (৳)</label>
               <input type="number" [(ngModel)]="payForm.bonusAmount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Deduction (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Deduction (৳)</label>
               <input type="number" [(ngModel)]="payForm.deduction" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Method</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Method</label>
               <select [(ngModel)]="payForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="Cash">Cash</option>
                 <option value="Bank">Bank</option>
@@ -405,11 +405,11 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Reference No.</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Reference No.</label>
               <input type="text" [(ngModel)]="payForm.referenceNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="lg:col-span-3">
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Remarks</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Remarks</label>
               <input type="text" [(ngModel)]="payForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
@@ -424,7 +424,7 @@
 
           <div class="flex gap-2 mt-3">
             <button (click)="processSalaryPayment()" [disabled]="isSaving"
-              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
               {{ isSaving ? 'Processing...' : 'Process Salary Payment' }}
             </button>
           </div>
@@ -440,12 +440,12 @@
 
       <!-- Salary Payment History -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Salary Payment History</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
                 <th class="px-3 py-2 text-left">Employee</th>
                 <th class="px-3 py-2 text-left">Month/Year</th>
@@ -460,7 +460,7 @@
                 <td class="px-3 py-2 font-medium text-gray-900">{{ s.fullName }} ({{ s.employeeCode }})</td>
                 <td class="px-3 py-2">{{ monthName(s.salaryMonth) }} {{ s.salaryYear }}</td>
                 <td class="px-3 py-2 text-right">৳ {{ s.grossSalary | number:'1.2-2' }}</td>
-                <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳ {{ s.netSalary | number:'1.2-2' }}</td>
+                <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳ {{ s.netSalary | number:'1.2-2' }}</td>
                 <td class="px-3 py-2">{{ s.paymentDate ? (s.paymentDate | date:'mediumDate') : '-' }}</td>
                 <td class="px-3 py-2">{{ s.paymentMethod || '-' }}</td>
               </tr>
@@ -476,24 +476,24 @@
     <!-- ═══════════════════ BONUS TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'bonus'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Add Bonus</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
               <select [(ngModel)]="bonusForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date *</label>
               <input type="date" [(ngModel)]="bonusForm.bonusDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Bonus Type</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bonus Type</label>
               <select [(ngModel)]="bonusForm.bonusType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="Festival Bonus">Festival Bonus</option>
                 <option value="Performance Bonus">Performance Bonus</option>
@@ -502,11 +502,11 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Amount (৳) *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Amount (৳) *</label>
               <input type="number" [(ngModel)]="bonusForm.amount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Method</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Method</label>
               <select [(ngModel)]="bonusForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="Cash">Cash</option>
                 <option value="Bank">Bank</option>
@@ -514,13 +514,13 @@
               </select>
             </div>
             <div class="lg:col-span-3">
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Remarks</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Remarks</label>
               <input type="text" [(ngModel)]="bonusForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="addBonus()" [disabled]="isSaving"
-              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
               {{ isSaving ? 'Saving...' : 'Add Bonus' }}
             </button>
           </div>
@@ -528,12 +528,12 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Bonus History</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
                 <th class="px-3 py-2 text-left">Employee</th>
                 <th class="px-3 py-2 text-left">Date</th>
@@ -547,7 +547,7 @@
                 <td class="px-3 py-2 font-medium text-gray-900">{{ b.fullName }}</td>
                 <td class="px-3 py-2">{{ b.bonusDate | date:'mediumDate' }}</td>
                 <td class="px-3 py-2">{{ b.bonusType || '-' }}</td>
-                <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳ {{ b.amount | number:'1.2-2' }}</td>
+                <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳ {{ b.amount | number:'1.2-2' }}</td>
                 <td class="px-3 py-2 text-gray-600">{{ b.remarks || '-' }}</td>
               </tr>
               <tr *ngIf="bonusList.length === 0">
@@ -562,28 +562,28 @@
     <!-- ═══════════════════ ADVANCE TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'advance'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Add Advance</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
               <select [(ngModel)]="advanceForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option [ngValue]="null">-- Select --</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date *</label>
               <input type="date" [(ngModel)]="advanceForm.advanceDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Amount (৳) *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Amount (৳) *</label>
               <input type="number" [(ngModel)]="advanceForm.amount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Payment Method</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Method</label>
               <select [(ngModel)]="advanceForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option value="Cash">Cash</option>
                 <option value="Bank">Bank</option>
@@ -591,13 +591,13 @@
               </select>
             </div>
             <div class="lg:col-span-4">
-              <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Remarks</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Remarks</label>
               <input type="text" [(ngModel)]="advanceForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="addAdvance()" [disabled]="isSaving"
-              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+              class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
               {{ isSaving ? 'Saving...' : 'Add Advance' }}
             </button>
           </div>
@@ -605,12 +605,12 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2" style="background:#1a1c4e">
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Advance History</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
                 <th class="px-3 py-2 text-left">Employee</th>
                 <th class="px-3 py-2 text-left">Date</th>
@@ -631,7 +631,7 @@
                   <div class="flex items-center gap-1" *ngIf="a.remainingAmount > 0">
                     <input type="number" min="0" [step]="0.01" [(ngModel)]="repayAmounts[a.advanceId]"
                       class="w-20 px-1.5 py-1 text-xs border border-gray-300 rounded-lg outline-none" placeholder="Amount" />
-                    <button (click)="repayAdvance(a.advanceId)" class="text-xs text-white px-2 py-1 rounded-lg" style="background:#1a1c4e">Repay</button>
+                    <button (click)="repayAdvance(a.advanceId)" class="text-xs text-white px-2 py-1 rounded-lg" style="background:var(--theme-primary)">Repay</button>
                   </div>
                   <span *ngIf="a.remainingAmount <= 0" class="text-xs text-green-600">Fully repaid</span>
                 </td>

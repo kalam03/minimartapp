@@ -1,7 +1,7 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
     <!-- Page Title -->
-    <!-- <div class="rounded-xl overflow-hidden border mb-3" style="background:#1a1c4e">
+    <!-- <div class="rounded-xl overflow-hidden border mb-3" style="background:var(--theme-primary)">
       <div class="px-3 py-2">
         <h1 class="text-white font-semibold text-sm">User Management</h1>
       </div>
@@ -9,7 +9,7 @@
 
     <!-- Create User Form -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-3 py-2" style="background:#1a1c4e">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -20,21 +20,21 @@
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Username *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Username *</label>
             <input type="text" [(ngModel)]="createForm.userName" (blur)="validateCreateField('userName')"
               placeholder="Enter username"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isCreateInvalid('userName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isCreateInvalid('userName')" class="text-red-600 text-xs mt-1">{{ createErrors.userName }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Password *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Password *</label>
             <input type="password" [(ngModel)]="createForm.password" (blur)="validateCreateField('password')"
               placeholder="Enter password"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isCreateInvalid('password') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isCreateInvalid('password')" class="text-red-600 text-xs mt-1">{{ createErrors.password }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Default Role</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Default Role</label>
             <select [(ngModel)]="createForm.role"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg transition outline-none">
               <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
@@ -43,7 +43,7 @@
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
           <button (click)="submitCreate()"
-            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             Save User
           </button>
@@ -55,7 +55,7 @@
 
     <!-- Edit User Form -->
     <div *ngIf="showEditForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
-      <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">Edit User — {{ selectedUser?.userName }}</h2>
         <button (click)="showEditForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -64,13 +64,13 @@
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Username *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Username *</label>
             <input type="text" [(ngModel)]="editForm.userName" (blur)="validateEditField('userName')"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isEditInvalid('userName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isEditInvalid('userName')" class="text-red-600 text-xs mt-1">{{ editErrors.userName }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Role</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Role</label>
             <select [(ngModel)]="editForm.role"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg transition outline-none">
               <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
@@ -85,7 +85,7 @@
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
           <button (click)="submitEdit()"
-            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             Update User
           </button>
@@ -97,7 +97,7 @@
 
     <!-- Change Password Form -->
     <div *ngIf="showPasswordForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
-      <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
           {{ isAdminReset ? 'Reset Password' : 'Change Password' }} — {{ selectedUser?.userName }}
         </h2>
@@ -108,14 +108,14 @@
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div *ngIf="!isAdminReset">
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Current Password *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Current Password *</label>
             <input type="password" [(ngModel)]="passwordForm.oldPassword" (blur)="validatePasswordField('oldPassword')"
               placeholder="Current password"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isPasswordInvalid('oldPassword') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isPasswordInvalid('oldPassword')" class="text-red-600 text-xs mt-1">{{ passwordErrors.oldPassword }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">New Password *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">New Password *</label>
             <input type="password" [(ngModel)]="passwordForm.newPassword" (blur)="validatePasswordField('newPassword')"
               placeholder="New password"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isPasswordInvalid('newPassword') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
@@ -124,7 +124,7 @@
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
           <button (click)="submitPasswordChange()"
-            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             Save Password
           </button>
@@ -137,7 +137,7 @@
     <!-- Role Assignment Modal -->
     <div *ngIf="showRoleModal" class="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
-        <div class="px-3 py-2 flex justify-between items-center" style="background:#1a1c4e">
+        <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">Assign Roles — {{ selectedUser?.userName }}</h2>
           <button (click)="showRoleModal=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -145,7 +145,7 @@
         </div>
         <div class="p-4">
           <div class="mb-3">
-            <p class="text-xs font-semibold mb-1" style="color:#1a1c4e">Assigned Roles</p>
+            <p class="text-xs font-semibold mb-1" style="color:var(--theme-primary)">Assigned Roles</p>
             <div *ngIf="userRoles.length === 0" class="text-xs text-gray-400 italic">No roles assigned yet.</div>
             <div *ngFor="let ur of userRoles"
               class="flex items-center justify-between bg-purple-50 rounded-lg px-3 py-2 mb-1">
@@ -158,7 +158,7 @@
             </div>
           </div>
           <div class="border-t pt-3">
-            <p class="text-xs font-semibold mb-1" style="color:#1a1c4e">Add Role</p>
+            <p class="text-xs font-semibold mb-1" style="color:var(--theme-primary)">Add Role</p>
             <div class="flex gap-2">
               <select [(ngModel)]="assignRoleId"
                 class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
@@ -166,7 +166,7 @@
                 <option *ngFor="let r of availableRoles" [value]="r.roleId">{{ r.roleName }}</option>
               </select>
               <button (click)="submitAssignRole()"
-                class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">Assign</button>
+                class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">Assign</button>
             </div>
           </div>
         </div>
@@ -177,13 +177,13 @@
     <div class="bg-white rounded-xl shadow-md border mb-3 p-3">
       <div class="flex flex-col md:flex-row gap-3 items-end">
         <div class="flex-1">
-          <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Search</label>
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Search</label>
           <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
             placeholder="Search by username…"
             class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Status</label>
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Status</label>
           <select [(ngModel)]="filterActive" (change)="onFilterChange()"
             class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
             <option [ngValue]="undefined">All</option>
@@ -192,7 +192,7 @@
           </select>
         </div>
         <button (click)="onSearch()"
-          class="text-white px-3 py-1.5 text-xs rounded-lg transition font-semibold" style="background:#1a1c4e" onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+          class="text-white px-3 py-1.5 text-xs rounded-lg transition font-semibold" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
           Search
         </button>
       </div>
@@ -202,14 +202,14 @@
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='#2e3270'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userId')">#  {{ getSortIcon('userId') }}</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='#2e3270'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userName')">Username {{ getSortIcon('userName') }}</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='#2e3270'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('role')">Role {{ getSortIcon('role') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userId')">#  {{ getSortIcon('userId') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userName')">Username {{ getSortIcon('userName') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('role')">Role {{ getSortIcon('role') }}</th>
               <th class="px-3 py-2 text-left">Assigned Roles</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='#2e3270'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('isActive')">Status {{ getSortIcon('isActive') }}</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='#2e3270'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('createdAt')">Created {{ getSortIcon('createdAt') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('isActive')">Status {{ getSortIcon('isActive') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('createdAt')">Created {{ getSortIcon('createdAt') }}</th>
               <th class="px-3 py-2 text-right">Actions</th>
             </tr>
           </thead>
@@ -244,7 +244,7 @@
               <td class="px-3 py-2">
                 <div class="flex items-center justify-end gap-1">
                   <button (click)="openEditForm(user)" title="Edit User"
-                    class="p-1.5 rounded-lg transition" style="color:#1a1c4e" onmouseover="this.style.background='#eef0fc'" onmouseout="this.style.background='transparent'">
+                    class="p-1.5 rounded-lg transition" style="color:var(--theme-primary)" onmouseover="this.style.background='#eef0fc'" onmouseout="this.style.background='transparent'">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-2.828 1.172H7v-2a4 4 0 011.172-2.828z"></path>
@@ -290,7 +290,7 @@
             <button *ngFor="let page of [].constructor(totalPages); let i = index"
               (click)="goToPage(i + 1)"
               [class]="'px-2 py-1 rounded transition text-xs ' + (currentPage === i + 1 ? 'text-white font-semibold' : 'border border-gray-200 text-gray-600 hover:bg-gray-50')"
-              [style.background]="currentPage === i + 1 ? '#1a1c4e' : ''">
+              [style.background]="currentPage === i + 1 ? 'var(--theme-primary)' : ''">
               {{ i + 1 }}
             </button>
           </div>

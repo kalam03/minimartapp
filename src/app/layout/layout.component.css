@@ -99,7 +99,7 @@ main {
 
 /* Active nav link — set by routerLinkActive */
 a.nav-active {
-  background: #ACB3E7 !important;
-  color: #1a1c4e !important;
+  background: var(--theme-accent) !important;
+  color: var(--theme-primary) !important;
   font-weight: 600;
 }

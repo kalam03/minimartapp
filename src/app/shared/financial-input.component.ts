@@ -34,7 +34,7 @@ export class FinancialInputComponent implements ControlValueAccessor {
   @Input() maxValue: number = Infinity;
   @Input() minValue: number = 0;
   @Input() decimalPlaces: number = 2;
-  
+
   displayValue: string = '0.00';
   private value: number = 0;
   /** True while the user has this field focused/actively typing. */
@@ -70,17 +70,17 @@ export class FinancialInputComponent implements ControlValueAccessor {
       'Home', 'End', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
       'Period', 'Decimal'
     ];
-    
+
     // Allow negative sign if enabled
     if (this.allowNegative && event.key === '-') {
       return;
     }
-    
+
     // Prevent non-numeric characters
     if (!allowedKeys.includes(event.key) && !event.key.match(/[0-9]/)) {
       event.preventDefault();
     }
-    
+
     // Prevent multiple decimal points
     if (event.key === '.' || event.key === 'Decimal') {
       const currentValue = (event.target as HTMLInputElement).value;
@@ -106,7 +106,7 @@ export class FinancialInputComponent implements ControlValueAccessor {
 
     // Remove any non-numeric characters except decimal point and negative sign
     let cleanedValue = rawValue.replace(/[^0-9.-]/g, '');
-    
+
     // Handle negative sign
     if (this.allowNegative) {
       const negativeCount = (cleanedValue.match(/-/g) || []).length;
@@ -119,26 +119,26 @@ export class FinancialInputComponent implements ControlValueAccessor {
     } else {
       cleanedValue = cleanedValue.replace(/-/g, '');
     }
-    
+
     // Handle decimal places
     const parts = cleanedValue.split('.');
     if (parts.length > 2) {
       cleanedValue = parts[0] + '.' + parts.slice(1).join('');
     }
-    
+
     // Limit decimal places
     if (parts.length === 2 && parts[1].length > this.decimalPlaces) {
       cleanedValue = parts[0] + '.' + parts[1].substring(0, this.decimalPlaces);
     }
-    
+
     this.displayValue = cleanedValue;
-    
+
     // Parse to number
     let numValue = parseFloat(cleanedValue);
     if (isNaN(numValue)) {
       numValue = 0;
     }
-    
+
     // Apply min/max constraints
     if (numValue < this.minValue) {
       numValue = this.minValue;
@@ -148,7 +148,7 @@ export class FinancialInputComponent implements ControlValueAccessor {
       numValue = this.maxValue;
       this.displayValue = numValue.toString();
     }
-    
+
     this.value = numValue;
     this.onChange(numValue);
   }

@@ -5,6 +5,7 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { PermissionService, NavItem } from '../services/permission.service';
+import { ThemeService, AppTheme } from '../services/theme.service';
 
 // Fallback nav items shown for admin or when permission data hasn't loaded yet.
 // The DB-driven menu will replace these once loadMyMenus() resolves.
@@ -62,6 +63,27 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   private navSub?: Subscription;
 
+  // Theme picker
+  isThemeMenuOpen = signal(false);
+  get themes(): AppTheme[] { return this.themeService.themes; }
+  get currentThemeId(): string { return this.themeService.currentTheme(); }
+  get currentTheme(): AppTheme {
+    return this.themeService.getTheme(this.currentThemeId) ?? this.themes[0];
+  }
+
+  toggleThemeMenu(): void {
+    this.isThemeMenuOpen.update(open => !open);
+  }
+
+  closeThemeMenu(): void {
+    this.isThemeMenuOpen.set(false);
+  }
+
+  selectTheme(id: string): void {
+    this.themeService.setTheme(id);
+    this.closeThemeMenu();
+  }
+
   get user() {
     const u = this.authService.getUser();
     const name = u?.userName ?? 'User';
@@ -74,9 +96,19 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private permSvc: PermissionService
+    private permSvc: PermissionService,
+    private themeService: ThemeService
   ) {
     this.checkScreenSize();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isThemeMenuOpen()) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.theme-picker')) {
+      this.closeThemeMenu();
+    }
   }
 
   ngOnInit(): void {

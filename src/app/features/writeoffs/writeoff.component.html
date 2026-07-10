@@ -3,7 +3,7 @@
 
     <!-- Write-Off Form Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-3 py-2" style="background:#1a1c4e">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -15,7 +15,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Product -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Product *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Product *</label>
             <select
               [(ngModel)]="form.productId"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('productId') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
@@ -30,7 +30,7 @@
 
           <!-- Quantity -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Quantity to Destroy *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Quantity to Destroy *</label>
             <input
               type="number"
               [(ngModel)]="form.quantity"
@@ -44,7 +44,7 @@
 
           <!-- Reason -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Reason *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Reason *</label>
             <select
               [(ngModel)]="form.reason"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('reason') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
@@ -57,7 +57,7 @@
 
           <!-- Date -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Write-Off Date</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Write-Off Date</label>
             <input
               type="date"
               [(ngModel)]="form.writeOffDate"
@@ -93,9 +93,9 @@
 
     <!-- Write-Off Report Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">Write-Off Report</h2>
-        <span class="text-xs" style="color:#ACB3E7">{{ reportList.length }} record(s)</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ reportList.length }} record(s)</span>
       </div>
 
       <!-- Filters -->
@@ -115,7 +115,7 @@
             <option *ngFor="let p of products" [value]="p.productId">{{ p.productName }}</option>
           </select>
         </div>
-        <button (click)="applyReportFilters()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:#1a1c4e">Apply</button>
+        <button (click)="applyReportFilters()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:var(--theme-primary)">Apply</button>
         <button (click)="resetReportFilters()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
 
         <div class="ml-auto text-xs text-right">
@@ -127,7 +127,7 @@
       <!-- Table -->
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left">Date</th>
               <th class="px-3 py-2 text-left">Product</th>

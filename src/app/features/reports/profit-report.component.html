@@ -2,9 +2,9 @@
   <div class="max-w-8xl mx-auto">
 
     <!-- ── Date Filter Bar ─────────────────────────────────────────────── -->
-    <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:#e0e3f8">
+    <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
       <div class="px-3 py-2 flex flex-wrap items-end gap-2">
-        <div class="flex items-center gap-1.5 mr-1" style="color:#1a1c4e">
+        <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
           <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -22,7 +22,7 @@
           <input type="date" [(ngModel)]="toDate"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
         </div>
-        <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:#1a1c4e">
+        <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
           Apply
         </button>
         <button (click)="resetFilter()" class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">
@@ -39,19 +39,19 @@
     <!-- ── Summary Cards ───────────────────────────────────────────────── -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
 
-      <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+      <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
         <div class="px-3 py-2 border-b border-white border-opacity-10">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Sales</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Sales</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-white">৳{{ totalSales | number:'1.2-2' }}</p>
-          <p class="text-xs mt-1" style="color:#ACB3E7">{{ fromDate | date:'dd MMM' }} – {{ toDate | date:'dd MMM yyyy' }}</p>
+          <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ fromDate | date:'dd MMM' }} – {{ toDate | date:'dd MMM yyyy' }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Cost</p>
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Cost</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-orange-600">৳{{ totalCost | number:'1.2-2' }}</p>
@@ -60,8 +60,8 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Total Profit</p>
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Profit</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold" [class.text-green-600]="totalProfit >= 0" [class.text-red-600]="totalProfit < 0">
@@ -72,11 +72,11 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-        <div class="px-3 py-2" style="background:#1a1c4e">
-          <p class="text-xs font-semibold" style="color:#ACB3E7">Best Seller</p>
+        <div class="px-3 py-2" style="background:var(--theme-primary)">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Best Seller</p>
         </div>
         <div class="px-3 py-2">
-          <p class="text-sm font-bold truncate" style="color:#1a1c4e" [title]="bestSeller?.productName">
+          <p class="text-sm font-bold truncate" style="color:var(--theme-primary)" [title]="bestSeller?.productName">
             {{ bestSeller?.productName || '-' }}
           </p>
           <p class="text-xs text-gray-400 mt-1" *ngIf="bestSeller">
@@ -89,14 +89,14 @@
 
     <!-- ── Top Selling / Most In-Demand Products ─────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
           </svg>
           Top Selling / Most In-Demand Products
         </h2>
-        <span class="text-xs" style="color:#ACB3E7">{{ topProducts.length }} products</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ topProducts.length }} products</span>
       </div>
       <p class="px-3 py-2 text-xs text-gray-500 border-b bg-gray-50">
         Ranked by total quantity sold. <strong>Days Sold</strong> shows how regularly a product moves —
@@ -105,7 +105,7 @@
 
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
-          <thead style="background:#1a1c4e;color:#e0e3f8">
+          <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left whitespace-nowrap">#</th>
               <th class="px-3 py-2 text-left whitespace-nowrap">Product</th>
@@ -126,7 +126,7 @@
             </tr>
             <tr *ngFor="let t of topProducts" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-500">{{ t.qtyRank }}</td>
-              <td class="px-3 py-2 font-medium" style="color:#1a1c4e">{{ t.productName }}</td>
+              <td class="px-3 py-2 font-medium" style="color:var(--theme-primary)">{{ t.productName }}</td>
               <td class="px-3 py-2 text-right font-semibold">{{ t.totalQty }}</td>
               <td class="px-3 py-2 text-right text-gray-600">{{ t.daysSold }}</td>
               <td class="px-3 py-2 text-right text-gray-600">{{ t.avgQtyPerDaySold | number:'1.1-1' }}</td>
@@ -147,14 +147,14 @@
 
     <!-- ── Daily Profit Summary ──────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">Daily Profit Summary</h2>
-        <span class="text-xs" style="color:#ACB3E7">Click a row to drill into that day's products</span>
+        <span class="text-xs" style="color:var(--theme-accent)">Click a row to drill into that day's products</span>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
-          <thead style="background:#1a1c4e;color:#e0e3f8">
+          <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
               <th class="px-3 py-2 text-right whitespace-nowrap">Qty Sold</th>
@@ -174,7 +174,7 @@
             <tr *ngFor="let d of dailySummary" (click)="selectDay(d.saleDate)"
               class="hover:bg-gray-50 transition cursor-pointer"
               [class.bg-indigo-50]="selectedDay === d.saleDate">
-              <td class="px-3 py-2 font-medium whitespace-nowrap" style="color:#1a1c4e">{{ d.saleDate | date:'dd MMM yyyy' }}</td>
+              <td class="px-3 py-2 font-medium whitespace-nowrap" style="color:var(--theme-primary)">{{ d.saleDate | date:'dd MMM yyyy' }}</td>
               <td class="px-3 py-2 text-right">{{ d.totalQty }}</td>
               <td class="px-3 py-2 text-right text-gray-700">৳{{ d.totalSales | number:'1.2-2' }}</td>
               <td class="px-3 py-2 text-right text-orange-600">৳{{ d.totalCost | number:'1.2-2' }}</td>
@@ -190,20 +190,20 @@
 
     <!-- ── Per-Product Breakdown (optionally filtered to selected day) ─── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
           Product Breakdown
-          <span *ngIf="selectedDay" class="font-normal" style="color:#ACB3E7">— {{ selectedDay | date:'dd MMM yyyy' }}</span>
+          <span *ngIf="selectedDay" class="font-normal" style="color:var(--theme-accent)">— {{ selectedDay | date:'dd MMM yyyy' }}</span>
         </h2>
         <button *ngIf="selectedDay" (click)="clearDaySelection()"
-          class="text-xs px-2 py-1 rounded-lg" style="background:#2e3270;color:#e0e3f8">
+          class="text-xs px-2 py-1 rounded-lg" style="background:var(--theme-hover);color:var(--theme-text)">
           Clear day filter
         </button>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
-          <thead style="background:#1a1c4e;color:#e0e3f8">
+          <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
               <th class="px-3 py-2 text-left whitespace-nowrap">Product</th>
@@ -223,7 +223,7 @@
             </tr>
             <tr *ngFor="let p of filteredProductDaily" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ p.saleDate | date:'dd MMM yy' }}</td>
-              <td class="px-3 py-2 font-medium" style="color:#1a1c4e">{{ p.productName }}</td>
+              <td class="px-3 py-2 font-medium" style="color:var(--theme-primary)">{{ p.productName }}</td>
               <td class="px-3 py-2 text-right">{{ p.qty }}</td>
               <td class="px-3 py-2 text-right text-gray-600">৳{{ p.sellPrice | number:'1.2-2' }}</td>
               <td class="px-3 py-2 text-right text-gray-600">৳{{ p.costPrice | number:'1.2-2' }}</td>

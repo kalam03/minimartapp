@@ -3,7 +3,7 @@
 
     <!-- Add Investor Form -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-3 py-2" style="background:#1a1c4e">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -14,63 +14,63 @@
       <div class="p-3">
 
         <!-- ── Basic Info ─────────────────────────────────────────── -->
-        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:#1a1c4e">Basic Info</p>
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">Basic Info</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Investor Name *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Investor Name *</label>
             <input type="text" [(ngModel)]="form.investorName" placeholder="Full name"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('investorName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('investorName')" class="text-red-600 text-xs mt-1">{{ validationErrors['investorName'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Phone</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone</label>
             <input type="text" [(ngModel)]="form.phone" placeholder="e.g. 01XXXXXXXXX"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">NID Number</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">NID Number</label>
             <input type="text" [(ngModel)]="form.nid" placeholder="National ID number"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('nid') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('nid')" class="text-red-600 text-xs mt-1">{{ validationErrors['nid'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Date of Birth</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date of Birth</label>
             <input type="date" [(ngModel)]="form.dateOfBirth"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Father's Name</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Father's Name</label>
             <input type="text" [(ngModel)]="form.fatherName" placeholder="Father's name"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Mother's Name</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Mother's Name</label>
             <input type="text" [(ngModel)]="form.motherName" placeholder="Mother's name"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Occupation</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Occupation</label>
             <input type="text" [(ngModel)]="form.occupation" placeholder="e.g. Businessman"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Nationality</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Nationality</label>
             <input type="text" [(ngModel)]="form.nationality" placeholder="e.g. Bangladeshi"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
         </div>
 
         <!-- ── Address ────────────────────────────────────────────── -->
-        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:#1a1c4e">Address</p>
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">Address</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Present Address</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Present Address</label>
             <textarea rows="2" [(ngModel)]="form.presentAddress" placeholder="Present address"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none"></textarea>
           </div>
           <div>
             <div class="flex items-center justify-between mb-0.5">
-              <label class="block text-xs font-semibold" style="color:#1a1c4e">Permanent Address</label>
+              <label class="block text-xs font-semibold" style="color:var(--theme-primary)">Permanent Address</label>
               <button type="button" (click)="copyPresentToPermanent()"
                 class="text-xs text-indigo-600 hover:underline">Same as present</button>
             </div>
@@ -80,37 +80,37 @@
         </div>
 
         <!-- ── Shareholding & Investment ──────────────────────────── -->
-        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:#1a1c4e">Shareholding &amp; Investment</p>
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">Shareholding &amp; Investment</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Share Percentage (%) *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Share Percentage (%) *</label>
             <input type="number" step="0.01" min="0" max="100" [(ngModel)]="form.sharePercentage" placeholder="0.00"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('sharePercentage') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('sharePercentage')" class="text-red-600 text-xs mt-1">{{ validationErrors['sharePercentage'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Number of Shares</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Number of Shares</label>
             <input type="number" min="0" [(ngModel)]="form.numberOfShares" placeholder="0"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Share Value (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Share Value (৳)</label>
             <input type="number" step="0.01" min="0" [(ngModel)]="form.shareValue" placeholder="0.00"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Investment Amount (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Investment Amount (৳)</label>
             <input type="number" step="0.01" min="0" [(ngModel)]="form.investmentAmount" placeholder="0.00"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             <p class="text-gray-400 text-xs mt-1">Recorded as this investor's opening balance.</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Joining Date</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Joining Date</label>
             <input type="date" [(ngModel)]="form.joiningDate"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Leaving Date</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Leaving Date</label>
             <input type="date" [(ngModel)]="form.leavingDate"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('leavingDate') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('leavingDate')" class="text-red-600 text-xs mt-1">{{ validationErrors['leavingDate'] }}</p>
@@ -119,13 +119,13 @@
           <div class="flex items-center gap-2 mt-1">
             <input type="checkbox" id="isDirector" [(ngModel)]="form.isDirector"
               class="w-4 h-4 rounded border-gray-400" />
-            <label for="isDirector" class="text-xs font-semibold" style="color:#1a1c4e">Is a Director / Board Member</label>
+            <label for="isDirector" class="text-xs font-semibold" style="color:var(--theme-primary)">Is a Director / Board Member</label>
           </div>
         </div>
 
         <div class="flex gap-2 mt-3">
           <button (click)="saveInvestor()" [disabled]="isSaving"
-            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
             {{ isSaving ? 'Saving...' : 'Add Investor' }}
           </button>
           <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
@@ -135,9 +135,9 @@
 
     <!-- Investor List -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">Investors</h2>
-        <span class="text-xs" style="color:#ACB3E7">{{ filteredInvestors.length }} of {{ investors.length }}</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredInvestors.length }} of {{ investors.length }}</span>
       </div>
       <div class="px-3 py-2 border-b">
         <input type="text" [(ngModel)]="searchText" placeholder="Search by name, phone, NID…"
@@ -145,7 +145,7 @@
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left whitespace-nowrap">ID</th>
               <th class="px-3 py-2 text-left whitespace-nowrap">Name</th>

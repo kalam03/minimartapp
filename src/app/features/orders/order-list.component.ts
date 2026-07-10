@@ -18,7 +18,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
     <!-- Header -->
     <div class="bg-white rounded-xl shadow-md border mb-3 overflow-hidden">
       <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-           style="background:#1a1c4e">
+           style="background:var(--theme-primary)">
         <div>
           <h1 class="text-white font-bold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,12 +27,12 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
             </svg>
             Order Management
           </h1>
-          <p class="text-xs mt-0.5" style="color:#ACB3E7">Manage and process customer orders</p>
+          <p class="text-xs mt-0.5" style="color:var(--theme-accent)">Manage and process customer orders</p>
         </div>
         <button (click)="newOrder()"
           class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition"
-          style="background:#ACB3E7;color:#1a1c4e"
-          onmouseover="this.style.background='#c8ccee'" onmouseout="this.style.background='#ACB3E7'">
+          style="background:var(--theme-accent);color:var(--theme-primary)"
+          onmouseover="this.style.background='var(--theme-text-muted)'" onmouseout="this.style.background='var(--theme-accent)'">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
@@ -49,8 +49,8 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
             (click)="setStatus(s.value)"
             class="px-2.5 py-1 text-xs rounded-full font-medium border transition"
             [style]="filterStatus === s.value
-              ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
-              : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+              ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+              : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
             <span *ngIf="s.value !== ''">
               <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
                     [style]="'background:' + s.color"></span>
@@ -65,18 +65,18 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
           <input type="date" [(ngModel)]="fromDate"
             class="text-xs border rounded-md px-2 py-1 outline-none"
             style="border-color:#d1d5f0;min-width:115px"
-            onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+            onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
           <span class="text-xs text-gray-400">To</span>
           <input type="date" [(ngModel)]="toDate"
             class="text-xs border rounded-md px-2 py-1 outline-none"
             style="border-color:#d1d5f0;min-width:115px"
-            onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+            onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
 
           <!-- Search button -->
           <button (click)="load()"
             class="flex items-center gap-1.5 px-3 py-1 text-xs rounded-md font-semibold text-white transition"
-            style="background:#1a1c4e"
-            onmouseover="this.style.background='#252862'" onmouseout="this.style.background='#1a1c4e'">
+            style="background:var(--theme-primary)"
+            onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
@@ -125,7 +125,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
       <p class="text-sm">No orders found for the selected filters.</p>
       <button (click)="newOrder()"
         class="mt-4 px-4 py-2 text-xs rounded-lg font-semibold text-white"
-        style="background:#1a1c4e">
+        style="background:var(--theme-primary)">
         + Create First Order
       </button>
     </div>
@@ -136,7 +136,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
           <thead>
-            <tr style="background:#e0e3f8;color:#1a1c4e">
+            <tr style="background:var(--theme-text);color:var(--theme-primary)">
               <th class="px-3 py-2 text-left font-semibold w-20">#Order</th>
               <th class="px-3 py-2 text-left font-semibold">Customer</th>
               <th class="px-3 py-2 text-center font-semibold w-24">Date</th>
@@ -153,7 +153,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
 
               <!-- Order # -->
               <td class="px-3 py-2">
-                <span class="font-mono font-semibold" style="color:#1a1c4e">#{{ o.orderId }}</span>
+                <span class="font-mono font-semibold" style="color:var(--theme-primary)">#{{ o.orderId }}</span>
                 <div class="text-gray-400 text-xs">{{ o.createdBy }}</div>
               </td>
 
@@ -181,14 +181,14 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               <!-- Items count -->
               <td class="px-3 py-2 text-center">
                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                      style="background:#e0e3f8;color:#1a1c4e">
+                      style="background:var(--theme-text);color:var(--theme-primary)">
                   {{ o.itemCount }}
                 </span>
               </td>
 
               <!-- Amount -->
               <td class="px-3 py-2 text-right">
-                <div class="font-bold" style="color:#1a1c4e">&#2547;{{ o.grossAmount | number:'1.2-2' }}</div>
+                <div class="font-bold" style="color:var(--theme-primary)">&#2547;{{ o.grossAmount | number:'1.2-2' }}</div>
                 <div class="text-gray-400" *ngIf="o.discount > 0">-&#2547;{{ o.discount | number:'1.2-2' }}</div>
               </td>
 
@@ -207,9 +207,9 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                   <button
                     (click)="openInCounter(o)"
                     class="px-2.5 py-1 rounded-lg text-xs font-semibold text-white transition"
-                    style="background:#1a1c4e"
-                    onmouseover="this.style.background='#252862'"
-                    onmouseout="this.style.background='#1a1c4e'">
+                    style="background:var(--theme-primary)"
+                    onmouseover="this.style.background='var(--theme-primary-light)'"
+                    onmouseout="this.style.background='var(--theme-primary)'">
                     Open
                   </button>
                   <button

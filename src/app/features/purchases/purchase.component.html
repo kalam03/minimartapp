@@ -4,7 +4,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
       <!-- LEFT: Product Selection -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-4 py-2" style="background:#1a1c4e">
+        <div class="px-4 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -40,7 +40,7 @@
                   class="product-dropdown-item p-2 hover:bg-gray-50 cursor-pointer border-b text-sm">
                   <div class="font-semibold">{{ product.productName }}</div>
                   <div class="flex justify-between text-xs">
-                    <span style="color:#1a1c4e" class="font-medium">৳{{ product.purchasePrice.toFixed(2) }}</span>
+                    <span style="color:var(--theme-primary)" class="font-medium">৳{{ product.purchasePrice.toFixed(2) }}</span>
                     <span class="text-gray-400">Stock: {{ product.stockQty }}</span>
                   </div>
                 </div>
@@ -54,12 +54,12 @@
           <!-- Product Details Row -->
           <div class="grid grid-cols-3 gap-2 mb-2">
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Cost Price</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Cost Price</label>
               <input type="text" [value]="(selectedProduct?.purchasePrice || 0).toFixed(2)" readonly
                 class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50" />
             </div>
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Qty</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Qty</label>
               <div class="flex items-center gap-1">
                 <button (click)="productQuantity = Math.max(1, productQuantity - 1)"
                   class="w-6 h-6 rounded text-sm font-bold border border-gray-300 hover:bg-gray-100">-</button>
@@ -73,11 +73,11 @@
               </div>
             </div>
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Total</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Total</label>
               <input type="text"
                 [value]="((selectedProduct?.purchasePrice || 0) * productQuantity).toFixed(2)" readonly
                 class="w-full px-2 py-1 text-sm border rounded-lg font-semibold"
-                style="background:#eef0fc;color:#1a1c4e" />
+                style="background:#eef0fc;color:var(--theme-primary)" />
             </div>
           </div>
 
@@ -85,9 +85,9 @@
           <div class="flex gap-2">
             <button (click)="addToCart()"
               class="flex-1 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition"
-              style="background:#1a1c4e"
-              onmouseover="this.style.background='#252862'"
-              onmouseout="this.style.background='#1a1c4e'">
+              style="background:var(--theme-primary)"
+              onmouseover="this.style.background='var(--theme-primary-light)'"
+              onmouseout="this.style.background='var(--theme-primary)'">
               + Add to Cart
             </button>
             <button (click)="resetProduct()"
@@ -100,7 +100,7 @@
 
       <!-- RIGHT: Cart Items -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-4 py-2 flex justify-between items-center" style="background:#1a1c4e">
+        <div class="px-4 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -126,7 +126,7 @@
                 </div>
               </div>
               <div class="text-right">
-                <div class="font-bold" style="color:#1a1c4e">৳{{ item.subtotal.toFixed(2) }}</div>
+                <div class="font-bold" style="color:var(--theme-primary)">৳{{ item.subtotal.toFixed(2) }}</div>
                 <button (click)="removeFromCart(item)" class="text-red-400 text-xs hover:text-red-600 transition">
                   Remove
                 </button>
@@ -141,7 +141,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- LEFT: Supplier Information -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-4 py-2" style="background:#1a1c4e">
+        <div class="px-4 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -186,12 +186,12 @@
           <!-- Supplier Details -->
           <div class="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Contact</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Contact</label>
               <input type="text" [value]="selectedSupplier?.phone || ''" readonly
                 class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50" />
             </div>
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Discount %</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Discount %</label>
               <app-financial-input
                 [(ngModel)]="discountPercent"
                 (ngModelChange)="onDiscountPercentChange($event)"
@@ -202,7 +202,7 @@
           </div>
 
           <div class="mb-2">
-            <label class="text-xs font-semibold" style="color:#1a1c4e">Address</label>
+            <label class="text-xs font-semibold" style="color:var(--theme-primary)">Address</label>
             <textarea rows="1" [value]="selectedSupplier?.address || ''" readonly
               class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50"></textarea>
           </div>
@@ -210,7 +210,7 @@
           <!-- Transport & Payment -->
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Transport</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Transport</label>
               <select [ngModel]="transportType" (ngModelChange)="onTransportTypeChange($event)"
                 class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg">
                 <option value="">Select</option>
@@ -220,7 +220,7 @@
               </select>
             </div>
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Payment Method</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Payment Method</label>
               <select [ngModel]="selectedPaymentMethod" (ngModelChange)="selectedPaymentMethod = $event"
                 class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg">
                 <option value="cash">Cash</option>
@@ -234,7 +234,7 @@
 
       <!-- RIGHT: Purchase Summary -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-4 py-2" style="background:#1a1c4e">
+        <div class="px-4 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -248,7 +248,7 @@
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
               <span class="text-gray-600">Subtotal:</span>
-              <span class="font-semibold" style="color:#1a1c4e">৳{{ subtotal.toFixed(2) }}</span>
+              <span class="font-semibold" style="color:var(--theme-primary)">৳{{ subtotal.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-600">Transport:</span>
@@ -264,7 +264,7 @@
               <span>-৳{{ discountAmount.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between pt-1 border-t font-bold">
-              <span style="color:#1a1c4e">Net Amount:</span>
+              <span style="color:var(--theme-primary)">Net Amount:</span>
               <span class="text-green-600">৳{{ grossAmount.toFixed(2) }}</span>
             </div>
           </div>
@@ -272,7 +272,7 @@
           <!-- Payment Section -->
           <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Amount Paid</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Amount Paid</label>
               <app-financial-input
                 [(ngModel)]="paymentAmount"
                 (ngModelChange)="onPaymentAmountChange($event)"
@@ -281,7 +281,7 @@
               </app-financial-input>
             </div>
             <div>
-              <label class="text-xs font-semibold" style="color:#1a1c4e">Due Amount</label>
+              <label class="text-xs font-semibold" style="color:var(--theme-primary)">Due Amount</label>
               <div class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg bg-gray-50 font-semibold"
                 [class.text-red-600]="dueAmount > 0"
                 [class.text-green-600]="dueAmount <= 0">
@@ -293,9 +293,9 @@
           <!-- Submit -->
           <button (click)="submitPurchase()"
             class="w-full mt-3 text-white px-3 py-2 rounded-lg text-sm font-semibold transition"
-            style="background:#1a1c4e"
-            onmouseover="this.style.background='#252862'"
-            onmouseout="this.style.background='#1a1c4e'">
+            style="background:var(--theme-primary)"
+            onmouseover="this.style.background='var(--theme-primary-light)'"
+            onmouseout="this.style.background='var(--theme-primary)'">
             Submit Purchase Order
           </button>
         </div>

@@ -3,7 +3,7 @@
 
     <!-- Add Employee Form -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-3 py-2" style="background:#1a1c4e">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -14,30 +14,30 @@
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Employee Name *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee Name *</label>
             <input type="text" [(ngModel)]="form.employeeName" placeholder="Full name"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('employeeName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('employeeName')" class="text-red-600 text-xs mt-1">{{ validationErrors['employeeName'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Phone</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone</label>
             <input type="text" [(ngModel)]="form.phone" placeholder="e.g. 01XXXXXXXXX"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Designation</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Designation</label>
             <input type="text" [(ngModel)]="form.designation" placeholder="e.g. Sales Staff, Manager"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:#1a1c4e">Monthly Salary (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Monthly Salary (৳)</label>
             <input type="number" [(ngModel)]="form.monthlySalary" min="0" step="0.01" placeholder="0.00"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
         </div>
         <div class="flex gap-2 mt-3">
           <button (click)="saveEmployee()" [disabled]="isSaving"
-            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:#1a1c4e">
+            class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
             {{ isSaving ? 'Saving...' : 'Add Employee' }}
           </button>
           <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
@@ -47,9 +47,9 @@
 
     <!-- Employee List -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-      <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">Employees</h2>
-        <span class="text-xs" style="color:#ACB3E7">{{ filteredEmployees.length }} of {{ employees.length }}</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredEmployees.length }} of {{ employees.length }}</span>
       </div>
       <div class="px-3 py-2 border-b">
         <input type="text" [(ngModel)]="searchText" placeholder="Search by name, designation, phone…"
@@ -57,7 +57,7 @@
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead class="text-xs" style="background:#1a1c4e;color:#e0e3f8">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left">ID</th>
               <th class="px-3 py-2 text-left">Name</th>

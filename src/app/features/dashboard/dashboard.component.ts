@@ -57,11 +57,11 @@ interface DailyStats {
       <div class="max-w-8xl mx-auto">
 
         <!-- Date Filter Bar -->
-        <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:#e0e3f8">
+        <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
           <div class="px-3 py-2 flex flex-wrap items-center gap-2">
 
             <!-- Calendar icon label -->
-            <div class="flex items-center gap-1.5 mr-1" style="color:#1a1c4e">
+            <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -74,8 +74,8 @@ interface DailyStats {
               <span class="text-xs text-gray-400 whitespace-nowrap">From</span>
               <input type="date" [(ngModel)]="startDate" (change)="filterByDate()"
                 class="text-xs border rounded-md px-2 py-1 outline-none transition-all"
-                style="border-color:#d1d5f0; color:#1a1c4e; min-width:120px"
-                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                style="border-color:#d1d5f0; color:var(--theme-primary); min-width:120px"
+                onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
             </div>
 
             <!-- To date -->
@@ -83,50 +83,50 @@ interface DailyStats {
               <span class="text-xs text-gray-400 whitespace-nowrap">To</span>
               <input type="date" [(ngModel)]="endDate" (change)="filterByDate()"
                 class="text-xs border rounded-md px-2 py-1 outline-none transition-all"
-                style="border-color:#d1d5f0; color:#1a1c4e; min-width:120px"
-                onfocus="this.style.borderColor='#1a1c4e'" onblur="this.style.borderColor='#d1d5f0'"/>
+                style="border-color:#d1d5f0; color:var(--theme-primary); min-width:120px"
+                onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
             </div>
 
             <!-- Divider -->
-            <div class="w-px h-5 mx-1 hidden sm:block" style="background:#e0e3f8"></div>
+            <div class="w-px h-5 mx-1 hidden sm:block" style="background:var(--theme-text)"></div>
 
             <!-- Quick filter pill buttons -->
             <div class="flex flex-wrap gap-1">
               <button (click)="applyQuick('today')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='today'
-                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
-                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'"
-                onmouseover="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='#e0e3f8'"
+                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'"
+                onmouseover="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='var(--theme-text)'"
                 onmouseout="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='#f0f2fb'">
                 Today
               </button>
               <button (click)="applyQuick('yesterday')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='yesterday'
-                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
-                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 Yesterday
               </button>
               <button (click)="applyQuick('week')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='week'
-                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
-                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 This Week
               </button>
               <button (click)="applyQuick('month')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='month'
-                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
-                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 This Month
               </button>
               <button (click)="applyQuick('quarter')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='quarter'
-                  ? 'background:#1a1c4e;color:#fff;border-color:#1a1c4e'
-                  : 'background:#f0f2fb;color:#1a1c4e;border-color:#e0e3f8'">
+                  ? 'background:var(--theme-primary);color:#fff;border-color:var(--theme-primary)'
+                  : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
                 Quarter
               </button>
             </div>
@@ -148,19 +148,19 @@ interface DailyStats {
 
         <!-- Sales Summary from API -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
-          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h3 class="text-white font-semibold text-sm">Sales Summary</h3>
-            <span *ngIf="salesSummaryLoading" class="text-xs" style="color:#ACB3E7">Loading…</span>
-            <span *ngIf="!salesSummaryLoading" class="text-xs" style="color:#ACB3E7">{{ startDate }} → {{ endDate }}</span>
+            <span *ngIf="salesSummaryLoading" class="text-xs" style="color:var(--theme-accent)">Loading…</span>
+            <span *ngIf="!salesSummaryLoading" class="text-xs" style="color:var(--theme-accent)">{{ startDate }} → {{ endDate }}</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-gray-100">
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Invoices</p>
-              <p class="text-base font-bold" style="color:#1a1c4e">{{ salesSummary.totalInvoices }}</p>
+              <p class="text-base font-bold" style="color:var(--theme-primary)">{{ salesSummary.totalInvoices }}</p>
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Total Sales</p>
-              <p class="text-base font-bold" style="color:#1a1c4e">৳{{ salesSummary.totalSales | number:'1.2-2' }}</p>
+              <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ salesSummary.totalSales | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Discount</p>
@@ -172,7 +172,7 @@ interface DailyStats {
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Net Amount</p>
-              <p class="text-base font-bold" style="color:#1a1c4e">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
+              <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Paid</p>
@@ -187,19 +187,19 @@ interface DailyStats {
 
         <!-- Purchase Summary from API -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
-          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h3 class="text-white font-semibold text-sm">Purchase Summary</h3>
-            <span *ngIf="purchaseSummaryLoading" class="text-xs" style="color:#ACB3E7">Loading…</span>
-            <span *ngIf="!purchaseSummaryLoading" class="text-xs" style="color:#ACB3E7">{{ startDate }} → {{ endDate }}</span>
+            <span *ngIf="purchaseSummaryLoading" class="text-xs" style="color:var(--theme-accent)">Loading…</span>
+            <span *ngIf="!purchaseSummaryLoading" class="text-xs" style="color:var(--theme-accent)">{{ startDate }} → {{ endDate }}</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-gray-100">
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Invoices</p>
-              <p class="text-base font-bold" style="color:#1a1c4e">{{ purchaseSummary.totalInvoices }}</p>
+              <p class="text-base font-bold" style="color:var(--theme-primary)">{{ purchaseSummary.totalInvoices }}</p>
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Total Purchase</p>
-              <p class="text-base font-bold" style="color:#1a1c4e">৳{{ purchaseSummary.totalPurchase | number:'1.2-2' }}</p>
+              <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ purchaseSummary.totalPurchase | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Discount</p>
@@ -211,7 +211,7 @@ interface DailyStats {
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Net Amount</p>
-              <p class="text-base font-bold" style="color:#1a1c4e">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
+              <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
               <p class="text-xs text-gray-400 mb-0.5">Paid</p>
@@ -227,37 +227,37 @@ interface DailyStats {
         <!-- KPI Cards Row 1 -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Sales</p>
-              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Sales</p>
+              <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
+              <p class="text-xl font-bold" style="color:var(--theme-primary)">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
               <p class="text-xs text-gray-400 mt-1">Net Amount</p>
               <p class="text-xs text-gray-400 mt-0.5">Invoices: {{ salesSummary.totalInvoices }}</p>
             </div>
           </div>
 
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Purchases</p>
-              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Purchases</p>
+              <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" style="color:#1a1c4e">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
+              <p class="text-xl font-bold" style="color:var(--theme-primary)">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
               <p class="text-xs text-gray-400 mt-1">Net Amount</p>
               <p class="text-xs text-gray-400 mt-0.5">Invoices: {{ purchaseSummary.totalInvoices }}</p>
             </div>
           </div>
 
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Net Profit</p>
-              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Net Profit</p>
+              <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
               </svg>
             </div>
@@ -272,14 +272,14 @@ interface DailyStats {
           </div>
 
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Transactions</p>
-              <svg class="w-4 h-4" fill="none" stroke="#ACB3E7" viewBox="0 0 24 24">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Transactions</p>
+              <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
             </div>
             <div class="px-3 py-2">
-              <p class="text-xl font-bold" style="color:#1a1c4e">{{ salesSummary.totalInvoices + purchaseSummary.totalInvoices }}</p>
+              <p class="text-xl font-bold" style="color:var(--theme-primary)">{{ salesSummary.totalInvoices + purchaseSummary.totalInvoices }}</p>
               <div class="flex gap-3 mt-1 text-xs">
                 <span class="text-green-600">Sales: {{ salesSummary.totalInvoices }}</span>
                 <span class="text-orange-500">Purchase: {{ purchaseSummary.totalInvoices }}</span>
@@ -290,59 +290,59 @@ interface DailyStats {
 
         <!-- KPI Cards Row 2 -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
-          <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+          <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Customers</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Customers</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">{{ totalCustomers }}</p>
-              <p class="text-xs mt-1" style="color:#ACB3E7">Active accounts</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">Active accounts</p>
               <p class="text-xs mt-1 text-white opacity-70">Due: ৳{{ totalCustomerDue | number:'1.2-2' }}</p>
             </div>
           </div>
 
-          <div class="rounded-xl border overflow-hidden" style="background:#252862">
+          <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary-light)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Total Suppliers</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Suppliers</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">{{ totalSuppliers }}</p>
-              <p class="text-xs mt-1" style="color:#ACB3E7">Active vendors</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">Active vendors</p>
               <p class="text-xs mt-1 text-white opacity-70">Debt: ৳{{ totalSupplierDebt | number:'1.2-2' }}</p>
             </div>
           </div>
 
-          <div class="rounded-xl border overflow-hidden" style="background:#3a3d7a">
+          <div class="rounded-xl border overflow-hidden" style="background:var(--theme-border)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Inventory Value</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Inventory Value</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">৳{{ inventoryValue | number:'1.0-0' }}</p>
-              <p class="text-xs mt-1" style="color:#ACB3E7">{{ totalProducts }} products</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ totalProducts }} products</p>
               <p class="text-xs mt-1 text-white opacity-70">Low stock: {{ lowStockProducts.length }}</p>
             </div>
           </div>
 
-          <div class="rounded-xl border overflow-hidden" style="background:#1a1c4e">
+          <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:#ACB3E7">Avg. Transaction</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Avg. Transaction</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">৳{{ avgTransactionValue | number:'1.2-2' }}</p>
-              <p class="text-xs mt-1" style="color:#ACB3E7">Per transaction</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">Per transaction</p>
             </div>
           </div>
         </div>
 
         <!-- Daily Performance -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
-          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h3 class="text-white font-semibold text-sm">Daily Performance (Last 7 Days)</h3>
             <div class="flex gap-3">
-              <span class="flex items-center gap-1 text-xs" style="color:#ACB3E7">
+              <span class="flex items-center gap-1 text-xs" style="color:var(--theme-accent)">
                 <span class="inline-block w-3 h-3 rounded" style="background:#4ade80"></span> Sales
               </span>
-              <span class="flex items-center gap-1 text-xs" style="color:#ACB3E7">
+              <span class="flex items-center gap-1 text-xs" style="color:var(--theme-accent)">
                 <span class="inline-block w-3 h-3 rounded" style="background:#fb923c"></span> Purchases
               </span>
             </div>
@@ -377,9 +377,9 @@ interface DailyStats {
 
           <!-- Customer Due -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
               <h3 class="text-white font-semibold text-sm">Customers by Due Amount</h3>
-              <span class="text-xs" style="color:#ACB3E7">{{ customerDueTotal }} total</span>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ customerDueTotal }} total</span>
             </div>
             <div class="px-3 py-2 border-b">
               <input type="text" [(ngModel)]="customerDueSearch" (input)="customerDuePage=1; loadCustomerDue()"
@@ -388,7 +388,7 @@ interface DailyStats {
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
-                <thead style="background:#1a1c4e;color:#e0e3f8">
+                <thead style="background:var(--theme-primary);color:var(--theme-text)">
                   <tr>
                     <th class="px-3 py-2 text-left">#</th>
                     <th class="px-3 py-2 text-left">Customer</th>
@@ -426,9 +426,9 @@ interface DailyStats {
 
           <!-- Supplier Due -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+            <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
               <h3 class="text-white font-semibold text-sm">Suppliers by Due Amount</h3>
-              <span class="text-xs" style="color:#ACB3E7">{{ supplierDueTotal }} total</span>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ supplierDueTotal }} total</span>
             </div>
             <div class="px-3 py-2 border-b">
               <input type="text" [(ngModel)]="supplierDueSearch" (input)="supplierDuePage=1; loadSupplierDue()"
@@ -437,7 +437,7 @@ interface DailyStats {
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
-                <thead style="background:#1a1c4e;color:#e0e3f8">
+                <thead style="background:var(--theme-primary);color:var(--theme-text)">
                   <tr>
                     <th class="px-3 py-2 text-left">#</th>
                     <th class="px-3 py-2 text-left">Supplier</th>
@@ -477,13 +477,13 @@ interface DailyStats {
         <!-- Low Stock Alert + Top Products (side by side, 6 col each) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h3 class="text-white font-semibold text-sm">Low Stock Alert</h3>
             <div class="flex items-center gap-2">
-              <span class="text-xs" style="color:#ACB3E7">Threshold ≤</span>
+              <span class="text-xs" style="color:var(--theme-accent)">Threshold ≤</span>
               <input type="number" [(ngModel)]="lowStockThreshold" (change)="lowStockPage=1; loadLowStock()"
                 class="w-14 px-1 py-0.5 text-xs border rounded text-center" min="1">
-              <span class="text-xs" style="color:#ACB3E7">{{ lowStockTotal }} items</span>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ lowStockTotal }} items</span>
             </div>
           </div>
           <div class="px-3 py-2 border-b">
@@ -493,7 +493,7 @@ interface DailyStats {
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-xs">
-              <thead style="background:#1a1c4e;color:#e0e3f8">
+              <thead style="background:var(--theme-primary);color:var(--theme-text)">
                 <tr>
                   <th class="px-3 py-2 text-left">#</th>
                   <th class="px-3 py-2 text-left">Product</th>
@@ -545,7 +545,7 @@ interface DailyStats {
 
           <!-- Top Products by Inventory Value -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-            <div class="px-3 py-2" style="background:#1a1c4e">
+            <div class="px-3 py-2" style="background:var(--theme-primary)">
               <h3 class="text-white font-semibold text-sm">Top Products by Inventory Value</h3>
             </div>
             <div class="px-3 py-2 border-b">
@@ -554,7 +554,7 @@ interface DailyStats {
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
-                <thead style="background:#1a1c4e;color:#e0e3f8">
+                <thead style="background:var(--theme-primary);color:var(--theme-text)">
                   <tr>
                     <th class="px-3 py-2 text-left">Product</th>
                     <th class="px-3 py-2 text-left">Category</th>
@@ -569,7 +569,7 @@ interface DailyStats {
                     <td class="px-3 py-2 text-gray-500">{{ p.category }}</td>
                     <td class="px-3 py-2 text-right text-gray-600">{{ p.stock }}</td>
                     <td class="px-3 py-2 text-right text-gray-600">৳{{ p.purchasePrice | number:'1.2-2' }}</td>
-                    <td class="px-3 py-2 text-right font-semibold" style="color:#1a1c4e">৳{{ (p.stock * p.purchasePrice) | number:'1.2-2' }}</td>
+                    <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳{{ (p.stock * p.purchasePrice) | number:'1.2-2' }}</td>
                   </tr>
                   <tr *ngIf="filteredTopProducts.length === 0">
                     <td colspan="5" class="px-3 py-4 text-center text-gray-400">No products match</td>
@@ -582,9 +582,9 @@ interface DailyStats {
 
         <!-- Recent Transactions (live from GL_TRANSACTION) -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
-          <div class="px-3 py-2 flex items-center justify-between" style="background:#1a1c4e">
+          <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
             <h3 class="text-white font-semibold text-sm">Recent Transactions</h3>
-            <span class="text-xs" style="color:#ACB3E7">{{ recentTxnTotal }} total</span>
+            <span class="text-xs" style="color:var(--theme-accent)">{{ recentTxnTotal }} total</span>
           </div>
           <!-- Summary bar -->
           <div class="grid grid-cols-3 divide-x border-b" style="background:#f5f6fd">
@@ -618,7 +618,7 @@ interface DailyStats {
           <!-- Table -->
           <div class="overflow-x-auto">
             <table class="w-full text-xs">
-              <thead style="background:#1a1c4e;color:#e0e3f8">
+              <thead style="background:var(--theme-primary);color:var(--theme-text)">
                 <tr>
                   <th class="px-3 py-2 text-left">#</th>
                   <th class="px-3 py-2 text-left">Date</th>
@@ -636,7 +636,7 @@ interface DailyStats {
                 <tr *ngFor="let t of recentTxnList; let i = index" class="hover:bg-gray-50 transition">
                   <td class="px-3 py-2 text-gray-500">{{ (recentTxnPage-1)*recentTxnPageSize + i + 1 }}</td>
                   <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ t.txnDate | date:'dd MMM yy' }}</td>
-                  <td class="px-3 py-2 font-medium" style="color:#1a1c4e">{{ t.txnNo }}</td>
+                  <td class="px-3 py-2 font-medium" style="color:var(--theme-primary)">{{ t.txnNo }}</td>
                   <td class="px-3 py-2 text-gray-500">{{ t.referenceNo || '-' }}</td>
                   <td class="px-3 py-2 font-mono text-gray-600">{{ t.glAccount }}</td>
                   <td class="px-3 py-2 text-gray-500">{{ t.txnMode || '-' }}</td>

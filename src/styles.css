@@ -2,6 +2,67 @@
 
 @import "tailwindcss";
 
+/* ============================================================
+   Theme system — CSS custom properties
+   Switch themes by setting data-theme="<id>" on <html> (see ThemeService).
+   Default theme (no attribute, or data-theme="indigo") = original look.
+   ============================================================ */
+:root,
+[data-theme="indigo"] {
+  --theme-primary:       #1a1c4e;
+  --theme-primary-light: #252862;
+  --theme-border:        #3a3d7a;
+  --theme-hover:         #2e3270;
+  --theme-accent:        #ACB3E7;
+  --theme-text:          #e0e3f8;
+  --theme-text-muted:    #c8ccee;
+  --theme-text-dim:      #7a80b8;
+}
+
+[data-theme="emerald"] {
+  --theme-primary:       #0f3d2e;
+  --theme-primary-light: #155a41;
+  --theme-border:        #1f6b4d;
+  --theme-hover:         #1c5c42;
+  --theme-accent:        #8FE3C0;
+  --theme-text:          #dff5ec;
+  --theme-text-muted:    #b8e6d2;
+  --theme-text-dim:      #6fae8f;
+}
+
+[data-theme="crimson"] {
+  --theme-primary:       #4a1420;
+  --theme-primary-light: #6b1f2e;
+  --theme-border:        #7a2a3a;
+  --theme-hover:         #5c1c28;
+  --theme-accent:        #F3B4C0;
+  --theme-text:          #fbe2e6;
+  --theme-text-muted:    #f0c4cc;
+  --theme-text-dim:      #b87d88;
+}
+
+[data-theme="ocean"] {
+  --theme-primary:       #0b2b4a;
+  --theme-primary-light: #123e66;
+  --theme-border:        #1c4d75;
+  --theme-hover:         #163a5c;
+  --theme-accent:        #A8D4F5;
+  --theme-text:          #dff0fc;
+  --theme-text-muted:    #b9def0;
+  --theme-text-dim:      #6f9ab8;
+}
+
+[data-theme="amber"] {
+  --theme-primary:       #2b2620;
+  --theme-primary-light: #3d362c;
+  --theme-border:        #4a4133;
+  --theme-hover:         #3a3327;
+  --theme-accent:        #F5C97B;
+  --theme-text:          #f5ecdd;
+  --theme-text-muted:    #e8d9b8;
+  --theme-text-dim:      #a89878;
+}
+
 /* Add to your component's CSS file */
 .invoice-table-container {
   max-height: 400px;
