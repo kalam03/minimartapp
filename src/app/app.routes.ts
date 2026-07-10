@@ -58,6 +58,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/products/product.component').then((m) => m.ProductComponent),
       },
+      {
+        path: 'unit-types',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/unit-types/unit-type.component').then((m) => m.UnitTypeComponent),
+      },
       // ── Security Module ──────────────────────────────────────────────────
       {
         path: 'security/users',

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { AlertService } from '../../shared/alert.service';
+import { UnitTypeService } from '../../services/unit-type.service';
 
 @Component({
   selector: 'app-product',
@@ -16,14 +17,16 @@ export class ProductComponent implements OnInit {
   editingId: number | null = null;
   Math = Math;
 
-  unitTypes = [
-    { code: 'PCS', label: 'Piece / Count',  isWeight: false },
-    { code: 'KG',  label: 'Kilogram (kg)',  isWeight: true  },
-    { code: 'G',   label: 'Gram (g)',       isWeight: true  },
-    { code: 'L',   label: 'Litre (L)',      isWeight: true  },
-    { code: 'ML',  label: 'Millilitre (mL)',isWeight: true  },
-    { code: 'DOZ', label: 'Dozen',          isWeight: false },
-    { code: 'BOX', label: 'Box',            isWeight: false },
+  // Fallback shown until the Unit Types API responds (or if it fails) so the
+  // dropdown is never empty. Manage the real list from the Unit Types page.
+  unitTypes: { code: string; label: string; isWeight: boolean }[] = [
+    // { code: 'PCS', label: 'Piece / Count',  isWeight: false },
+    // { code: 'KG',  label: 'Kilogram (kg)',  isWeight: true  },
+    // { code: 'G',   label: 'Gram (g)',       isWeight: true  },
+    // { code: 'L',   label: 'Litre (L)',      isWeight: true  },
+    // { code: 'ML',  label: 'Millilitre (mL)',isWeight: true  },
+    // { code: 'DOZ', label: 'Dozen',          isWeight: false },
+    // { code: 'BOX', label: 'Box',            isWeight: false },
   ];
 
   productForm = {
@@ -68,11 +71,31 @@ export class ProductComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private alertService: AlertService,
+    private unitTypeService: UnitTypeService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.getAllProducts();
+    this.loadUnitTypes();
+  }
+
+  /** Pull the live unit type list from the Unit Types master table (falls back to the built-in list on error) */
+  loadUnitTypes(): void {
+    this.unitTypeService.getAllUnitTypes(true).subscribe({
+      next: (res) => {
+        if (res.data && res.data.length > 0) {
+          this.unitTypes = res.data.map(u => ({
+            code: u.unitCode,
+            label: u.unitName,
+            isWeight: u.isWeight
+          }));
+        }
+      },
+      error: () => {
+        // Keep the built-in fallback list — don't block product entry if this call fails.
+      }
+    });
   }
 
   getCategoryName(categoryId: number): string {
