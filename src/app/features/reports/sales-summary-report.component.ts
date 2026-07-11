@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportsService, SalesSummaryDto } from '../../services/reports.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { downloadBlob } from '../../shared/pdf-export.util';
 
 @Component({
   selector: 'app-sales-summary-report',
@@ -27,8 +28,9 @@ export class SalesSummaryReportComponent implements OnInit {
     totalDue: 0
   };
 
-  isLoading = false;
-  errorMsg  = '';
+  isLoading   = false;
+  isExporting = false;
+  errorMsg    = '';
 
   constructor(
     private reportsService: ReportsService,
@@ -99,5 +101,21 @@ export class SalesSummaryReportComponent implements OnInit {
 
     this.activeQuick = period;
     this.loadReport();
+  }
+
+  exportPdf(): void {
+    this.isExporting = true;
+    this.reportsService.getSalesSummaryPdf(this.fromDate, this.toDate).subscribe({
+      next: (blob) => {
+        downloadBlob(blob, `Sales-Summary_${this.fromDate}_to_${this.toDate}.pdf`);
+        this.isExporting = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMsg  = err?.error?.message || 'Failed to generate PDF';
+        this.isExporting = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

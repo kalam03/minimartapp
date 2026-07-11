@@ -151,4 +151,34 @@ export class ReportsService {
       `${this.baseUrl}/reports/invoice-report${this.buildQuery({ fromDate, toDate, customerId })}`
     );
   }
+
+  // ── PDF exports — generated server-side (QuestPDF); these just fetch the
+  // finished file as a Blob for the browser to download. ────────────────
+  getSalesSummaryPdf(fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/sales-summary/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  getSalesDetailsPdf(fromDate: string, toDate: string, customerId?: number | null): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/sales-details/pdf${this.buildQuery({ fromDate, toDate, customerId })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  getInvoiceReportPdf(fromDate: string, toDate: string, customerId?: number | null): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/invoice-report/pdf${this.buildQuery({ fromDate, toDate, customerId })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  getProfitByDatePdf(fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/profit-by-date/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
 }

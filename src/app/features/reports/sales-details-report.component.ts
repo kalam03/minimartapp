@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ReportsService, SalesDetailDto } from '../../services/reports.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { downloadBlob } from '../../shared/pdf-export.util';
 
 @Component({
   selector: 'app-sales-details-report',
@@ -22,8 +23,9 @@ export class SalesDetailsReportComponent implements OnInit {
   customers: Customer[] = [];
   rows: SalesDetailDto[] = [];
 
-  isLoading = false;
-  errorMsg  = '';
+  isLoading   = false;
+  isExporting = false;
+  errorMsg    = '';
 
   constructor(
     private reportsService: ReportsService,
@@ -115,5 +117,22 @@ export class SalesDetailsReportComponent implements OnInit {
 
     this.activeQuick = period;
     this.loadReport();
+  }
+
+  exportPdf(): void {
+    const customerId = this.customerFilter === '' ? null : Number(this.customerFilter);
+    this.isExporting = true;
+    this.reportsService.getSalesDetailsPdf(this.fromDate, this.toDate, customerId).subscribe({
+      next: (blob) => {
+        downloadBlob(blob, `Sales-Details_${this.fromDate}_to_${this.toDate}.pdf`);
+        this.isExporting = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMsg  = err?.error?.message || 'Failed to generate PDF';
+        this.isExporting = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

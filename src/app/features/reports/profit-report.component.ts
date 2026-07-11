@@ -8,6 +8,7 @@ import {
   TopSellingProductDto
 } from '../../services/reports.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { downloadBlob } from '../../shared/pdf-export.util';
 
 @Component({
   selector: 'app-profit-report',
@@ -32,8 +33,9 @@ export class ProfitReportComponent implements OnInit {
   productDaily: ProductProfitDto[]     = [];
   topProducts:  TopSellingProductDto[] = [];
 
-  isLoading  = false;
-  errorMsg   = '';
+  isLoading   = false;
+  isExporting = false;
+  errorMsg    = '';
 
   // ── Quick-filter pill state ───────────────────────────────────────────
   activeQuick: string = 'today';
@@ -145,5 +147,21 @@ export class ProfitReportComponent implements OnInit {
       case 'Medium': return 'bg-amber-100 text-amber-700';
       default:       return 'bg-gray-100 text-gray-600';
     }
+  }
+
+  exportPdf(): void {
+    this.isExporting = true;
+    this.reportsService.getProfitByDatePdf(this.fromDate, this.toDate).subscribe({
+      next: (blob) => {
+        downloadBlob(blob, `Profit-Report_${this.fromDate}_to_${this.toDate}.pdf`);
+        this.isExporting = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMsg  = err?.error?.message || 'Failed to generate PDF';
+        this.isExporting = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
