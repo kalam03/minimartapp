@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrderService, OrderListDto } from '../../services/order.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 // Extend with local UI state flag
 type OrderRow = OrderListDto & { _cancelling?: boolean };
@@ -286,7 +287,7 @@ export class OrderListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateString();
     this.fromDate    = today;
     this.toDate      = today;
     this.filterStatus = 'New';   // default: show only New orders
@@ -332,7 +333,7 @@ export class OrderListComponent implements OnInit {
   }
 
   resetFilters(): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = toLocalDateString();
     this.fromDate     = today;
     this.toDate       = today;
     this.filterStatus = '';

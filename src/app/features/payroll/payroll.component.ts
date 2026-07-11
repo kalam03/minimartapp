@@ -8,6 +8,7 @@ import {
   SalaryPayment, EmployeeBonus, EmployeeAdvance, ProcessSalaryPaymentResult
 } from '../../services/payroll.service';
 import { AlertService } from '../../shared/alert.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 type Tab = 'employees' | 'salary' | 'attendance' | 'payroll' | 'bonus' | 'advance';
 
@@ -122,7 +123,7 @@ export class PayrollComponent implements OnInit {
   empSearch = '';
   empForm = {
     firstName: '', lastName: '', gender: '', mobile: '', email: '',
-    presentAddress: '', joiningDate: new Date().toISOString().split('T')[0],
+    presentAddress: '', joiningDate: toLocalDateString(),
     departmentId: null as number | null, designationId: null as number | null,
     salaryType: 'Monthly', basicSalary: null as number | null,
     nidNo: '', bankAccountNo: '', bankName: ''
@@ -218,7 +219,7 @@ export class PayrollComponent implements OnInit {
     this.empForm = {
       firstName: e.firstName, lastName: e.lastName || '', gender: e.gender || '',
       mobile: e.mobile || '', email: e.email || '', presentAddress: e.presentAddress || '',
-      joiningDate: e.joiningDate ? e.joiningDate.split('T')[0] : new Date().toISOString().split('T')[0],
+      joiningDate: e.joiningDate ? e.joiningDate.split('T')[0] : toLocalDateString(),
       departmentId: e.departmentId || null, designationId: e.designationId || null,
       salaryType: e.salaryType || 'Monthly', basicSalary: e.basicSalary || null,
       nidNo: e.nidNo || '', bankAccountNo: e.bankAccountNo || '', bankName: e.bankName || ''
@@ -237,7 +238,7 @@ export class PayrollComponent implements OnInit {
     this.editingEmployeeId = null;
     this.empForm = {
       firstName: '', lastName: '', gender: '', mobile: '', email: '',
-      presentAddress: '', joiningDate: new Date().toISOString().split('T')[0],
+      presentAddress: '', joiningDate: toLocalDateString(),
       departmentId: null, designationId: null,
       salaryType: 'Monthly', basicSalary: null,
       nidNo: '', bankAccountNo: '', bankName: ''
@@ -254,7 +255,7 @@ export class PayrollComponent implements OnInit {
   currentStructure: EmployeeSalary | null = null;
   salaryForm = {
     basicSalary: 0, houseRent: 0, medical: 0, transport: 0, food: 0, otherAllowance: 0,
-    effectiveFrom: new Date().toISOString().split('T')[0]
+    effectiveFrom: toLocalDateString()
   };
   isSalaryLoading = false;
 
@@ -280,7 +281,7 @@ export class PayrollComponent implements OnInit {
             basicSalary: this.currentStructure.basicSalary, houseRent: this.currentStructure.houseRent,
             medical: this.currentStructure.medical, transport: this.currentStructure.transport,
             food: this.currentStructure.food, otherAllowance: this.currentStructure.otherAllowance,
-            effectiveFrom: new Date().toISOString().split('T')[0]
+            effectiveFrom: toLocalDateString()
           };
         }
         this.isSalaryLoading = false;
@@ -326,13 +327,13 @@ export class PayrollComponent implements OnInit {
   // Attendance
   // ══════════════════════════════════════════════════════════════════
   attEmployeeId: number | null = null;
-  attFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-  attToDate = new Date().toISOString().split('T')[0];
+  attFromDate = toLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  attToDate = toLocalDateString();
   attendanceList: Attendance[] = [];
   isAttLoading = false;
 
   attForm = {
-    attendanceDate: new Date().toISOString().split('T')[0],
+    attendanceDate: toLocalDateString(),
     status: 'Present',
     inTime: '', outTime: ''
   };
@@ -396,7 +397,7 @@ export class PayrollComponent implements OnInit {
     salaryMonth: new Date().getMonth() + 1,
     salaryYear: new Date().getFullYear(),
     overtimeAmount: 0, bonusAmount: 0, deduction: 0,
-    paymentDate: new Date().toISOString().split('T')[0],
+    paymentDate: toLocalDateString(),
     paymentMethod: 'Cash', referenceNo: '', remarks: ''
   };
   lastResult: ProcessSalaryPaymentResult | null = null;
@@ -465,7 +466,7 @@ export class PayrollComponent implements OnInit {
       salaryMonth: new Date().getMonth() + 1,
       salaryYear: new Date().getFullYear(),
       overtimeAmount: 0, bonusAmount: 0, deduction: 0,
-      paymentDate: new Date().toISOString().split('T')[0],
+      paymentDate: toLocalDateString(),
       paymentMethod: 'Cash', referenceNo: '', remarks: ''
     };
     this.payDueAdvanceTotal = 0;
@@ -485,7 +486,7 @@ export class PayrollComponent implements OnInit {
   // Bonus
   // ══════════════════════════════════════════════════════════════════
   bonusForm = {
-    employeeId: null as number | null, bonusDate: new Date().toISOString().split('T')[0],
+    employeeId: null as number | null, bonusDate: toLocalDateString(),
     bonusType: 'Festival Bonus', amount: null as number | null,
     remarks: '', paymentMethod: 'Cash'
   };
@@ -517,7 +518,7 @@ export class PayrollComponent implements OnInit {
       next: (res) => {
         this.isSaving = false;
         this.alertService.success(res.message || 'Bonus recorded successfully!');
-        this.bonusForm = { employeeId: null, bonusDate: new Date().toISOString().split('T')[0], bonusType: 'Festival Bonus', amount: null, remarks: '', paymentMethod: 'Cash' };
+        this.bonusForm = { employeeId: null, bonusDate: toLocalDateString(), bonusType: 'Festival Bonus', amount: null, remarks: '', paymentMethod: 'Cash' };
         this.loadBonuses();
       },
       error: (err: any) => {
@@ -531,7 +532,7 @@ export class PayrollComponent implements OnInit {
   // Advance
   // ══════════════════════════════════════════════════════════════════
   advanceForm = {
-    employeeId: null as number | null, advanceDate: new Date().toISOString().split('T')[0],
+    employeeId: null as number | null, advanceDate: toLocalDateString(),
     amount: null as number | null, remarks: '', paymentMethod: 'Cash'
   };
   advanceList: EmployeeAdvance[] = [];
@@ -562,7 +563,7 @@ export class PayrollComponent implements OnInit {
       next: (res) => {
         this.isSaving = false;
         this.alertService.success(res.message || 'Advance recorded successfully!');
-        this.advanceForm = { employeeId: null, advanceDate: new Date().toISOString().split('T')[0], amount: null, remarks: '', paymentMethod: 'Cash' };
+        this.advanceForm = { employeeId: null, advanceDate: toLocalDateString(), amount: null, remarks: '', paymentMethod: 'Cash' };
         this.loadAdvances();
       },
       error: (err: any) => {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CustomerService } from '../../services/customer.service';
 import { PurchaseService, PurchaseSummaryDto } from '../../services/purchase.service';
 import { SaleService, SalesSummaryDto, DailyPerformanceDto } from '../../services/sale.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 interface Transaction {
   id: number;
@@ -910,7 +911,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   // Date filter properties
-  todayDate: string = new Date().toISOString().split('T')[0];
+  todayDate: string = toLocalDateString();
   startDate: string = this.todayDate;
   endDate: string = this.todayDate;
   activeQuick: string = 'today';
@@ -1067,7 +1068,7 @@ export class DashboardComponent implements OnInit {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = toLocalDateString(date);
       
       const sales = this.transactions
         .filter(t => t.type === 'sale' && t.date === dateStr)
@@ -1113,7 +1114,7 @@ export class DashboardComponent implements OnInit {
   /** Called by the pill buttons — replaces the old select-based quickFilter */
   applyQuick(value: string) {
     const today    = new Date();
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = toLocalDateString(today);
 
     switch (value) {
       case 'today':
@@ -1123,7 +1124,7 @@ export class DashboardComponent implements OnInit {
       case 'yesterday': {
         const d = new Date(today);
         d.setDate(today.getDate() - 1);
-        const s = d.toISOString().split('T')[0];
+        const s = toLocalDateString(d);
         this.startDate = s;
         this.endDate   = s;
         break;
@@ -1131,19 +1132,19 @@ export class DashboardComponent implements OnInit {
       case 'week': {
         const d = new Date(today);
         d.setDate(today.getDate() - today.getDay());
-        this.startDate = d.toISOString().split('T')[0];
+        this.startDate = toLocalDateString(d);
         this.endDate   = todayStr;
         break;
       }
       case 'month': {
         const d = new Date(today.getFullYear(), today.getMonth(), 1);
-        this.startDate = d.toISOString().split('T')[0];
+        this.startDate = toLocalDateString(d);
         this.endDate   = todayStr;
         break;
       }
       case 'quarter': {
         const d = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
-        this.startDate = d.toISOString().split('T')[0];
+        this.startDate = toLocalDateString(d);
         this.endDate   = todayStr;
         break;
       }

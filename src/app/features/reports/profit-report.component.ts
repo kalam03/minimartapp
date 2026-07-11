@@ -7,6 +7,7 @@ import {
   ProductProfitDto,
   TopSellingProductDto
 } from '../../services/reports.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 @Component({
   selector: 'app-profit-report',
@@ -18,8 +19,8 @@ import {
 export class ProfitReportComponent implements OnInit {
 
   // ── Date range filter — defaults to today ─────────────────────────────
-  fromDate = new Date().toISOString().split('T')[0];
-  toDate   = new Date().toISOString().split('T')[0];
+  fromDate = toLocalDateString();
+  toDate   = toLocalDateString();
 
   // ── Report data ───────────────────────────────────────────────────────
   totalSales   = 0;
@@ -97,7 +98,7 @@ export class ProfitReportComponent implements OnInit {
   /** Called by the quick-filter pill buttons. */
   applyQuick(period: string): void {
     const today    = new Date();
-    const todayStr = today.toISOString().split('T')[0];
+    const todayStr = toLocalDateString(today);
 
     switch (period) {
       case 'today':
@@ -106,19 +107,19 @@ export class ProfitReportComponent implements OnInit {
         break;
       case 'month': {
         const d = new Date(today.getFullYear(), today.getMonth(), 1);
-        this.fromDate = d.toISOString().split('T')[0];
+        this.fromDate = toLocalDateString(d);
         this.toDate   = todayStr;
         break;
       }
       case 'quarter': {
         const d = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
-        this.fromDate = d.toISOString().split('T')[0];
+        this.fromDate = toLocalDateString(d);
         this.toDate   = todayStr;
         break;
       }
       case 'year': {
         const d = new Date(today.getFullYear(), 0, 1);
-        this.fromDate = d.toISOString().split('T')[0];
+        this.fromDate = toLocalDateString(d);
         this.toDate   = todayStr;
         break;
       }

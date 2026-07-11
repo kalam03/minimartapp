@@ -6,6 +6,7 @@ import { CustomerService, Customer } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
 import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 @Component({
   selector: 'app-capital-management',
@@ -47,7 +48,7 @@ export class CapitalManagementComponent implements OnInit {
   readonly defaultGlAccount = 'CASH VAULT';
 
   form = {
-    txnDate:     new Date().toISOString().split('T')[0],
+    txnDate:     toLocalDateString(),
     txnTypeId:   0,
     glAccount:   this.defaultGlAccount,
     drCr:        'C',
@@ -235,8 +236,8 @@ export class CapitalManagementComponent implements OnInit {
   // ── Period Report: Category Breakdown + Daily Cash Register ─────────
   // One shared date range drives both — "how much per category" and
   // "cash reconciled day by day" are two views of the same period.
-  dcrFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-  dcrToDate   = new Date().toISOString().split('T')[0];
+  dcrFromDate = toLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  dcrToDate   = toLocalDateString();
 
   categoryTotals: CapitalCategoryTotal[] = [];
   isCategoryLoading = false;
@@ -291,8 +292,8 @@ export class CapitalManagementComponent implements OnInit {
   }
 
   resetDcrFilter(): void {
-    this.dcrFromDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-    this.dcrToDate   = new Date().toISOString().split('T')[0];
+    this.dcrFromDate = toLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+    this.dcrToDate   = toLocalDateString();
     this.loadPeriodReports();
   }
 
@@ -450,7 +451,7 @@ export class CapitalManagementComponent implements OnInit {
 
   resetForm(): void {
     this.form = {
-      txnDate:     new Date().toISOString().split('T')[0],
+      txnDate:     toLocalDateString(),
       txnTypeId:   0,
       glAccount:   this.form.glAccount || this.defaultGlAccount,
       drCr:        'C',

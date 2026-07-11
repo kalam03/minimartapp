@@ -5,6 +5,7 @@ import { WriteOffService, WriteOff } from '../../services/writeoff.service';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 @Component({
   selector: 'app-writeoff',
@@ -24,7 +25,7 @@ export class WriteOffComponent implements OnInit {
     productId: 0,
     quantity: null as number | null,
     reason: '',
-    writeOffDate: new Date().toISOString().split('T')[0]
+    writeOffDate: toLocalDateString()
   };
 
   validationErrors: Record<string, string> = {};
@@ -132,7 +133,7 @@ export class WriteOffComponent implements OnInit {
       productId: 0,
       quantity: null,
       reason: '',
-      writeOffDate: new Date().toISOString().split('T')[0]
+      writeOffDate: toLocalDateString()
     };
     this.validationErrors = {};
   }

@@ -5,6 +5,7 @@ import JsBarcode from 'jsbarcode';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
 import { AlertService } from '../../shared/alert.service';
+import { toLocalDateString } from '../../shared/date-utils';
 import { Product, ProductFilter } from '../../models/product';
 
 interface BarcodeLabel {
@@ -30,8 +31,8 @@ export class BarcodeGeneratorComponent implements OnInit {
   errorMsg = '';
 
   // ── Filters — default to today ────────────────────────────────────────
-  fromDate = new Date().toISOString().split('T')[0];
-  toDate   = new Date().toISOString().split('T')[0];
+  fromDate = toLocalDateString();
+  toDate   = toLocalDateString();
   categoryFilter: number | '' = '';
   searchText = '';
 
@@ -99,8 +100,8 @@ export class BarcodeGeneratorComponent implements OnInit {
   }
 
   resetFilter(): void {
-    this.fromDate = new Date().toISOString().split('T')[0];
-    this.toDate   = new Date().toISOString().split('T')[0];
+    this.fromDate = toLocalDateString();
+    this.toDate   = toLocalDateString();
     this.categoryFilter = '';
     this.searchText = '';
     this.loadProducts();

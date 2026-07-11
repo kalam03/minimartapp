@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
+import { toLocalDateString } from '../../shared/date-utils';
 
 @Component({
   selector: 'app-investor',
@@ -35,7 +36,7 @@ export class InvestorComponent implements OnInit {
     numberOfShares: null as number | null,
     shareValue: null as number | null,
     investmentAmount: null as number | null,
-    joiningDate: new Date().toISOString().split('T')[0],
+    joiningDate: toLocalDateString(),
     leavingDate: '',
     isDirector: false,
   };
@@ -142,7 +143,7 @@ export class InvestorComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.form = { ...this.emptyForm, joiningDate: new Date().toISOString().split('T')[0] };
+    this.form = { ...this.emptyForm, joiningDate: toLocalDateString() };
     this.validationErrors = {};
   }
 }
