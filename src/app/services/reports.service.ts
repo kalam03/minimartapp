@@ -50,19 +50,105 @@ export interface ProfitByDateResponse {
   topProducts: TopSellingProductDto[];
 }
 
+export interface SalesSummaryDto {
+  totalInvoices: number;
+  totalSales: number;
+  totalDiscount: number;
+  totalTransport: number;
+  totalNetAmount: number;
+  totalPaid: number;
+  totalDue: number;
+}
+
+export interface SalesSummaryResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: SalesSummaryDto;
+}
+
+export interface SalesDetailDto {
+  saleId: number;
+  invoiceNo: string;
+  saleDate: string;
+  customerId: number | null;
+  customerName: string;
+  productId: number | null;
+  productName: string;
+  unitType: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface SalesDetailsResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: SalesDetailDto[];
+}
+
+export interface InvoiceReportDto {
+  saleId: number;
+  invoiceNo: string;
+  saleDate: string;
+  customerId: number | null;
+  customerName: string;
+  totalAmount: number;
+  discount: number;
+  transportCost: number;
+  netAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  returnAmount: number;
+  paymentType: string;
+}
+
+export interface InvoiceReportResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: InvoiceReportDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
 
+  private buildQuery(params: Record<string, string | number | null | undefined>): string {
+    const search = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        search.set(key, value.toString());
+      }
+    });
+    const query = search.toString();
+    return query ? `?${query}` : '';
+  }
+
   getProfitByDate(fromDate: string, toDate: string): Observable<ProfitByDateResponse> {
-    const params = new URLSearchParams();
-    if (fromDate) params.set('fromDate', fromDate);
-    if (toDate)   params.set('toDate', toDate);
-    const query = params.toString();
     return this.http.get<ProfitByDateResponse>(
-      `${this.baseUrl}/reports/profit-by-date${query ? '?' + query : ''}`
+      `${this.baseUrl}/reports/profit-by-date${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getSalesSummary(fromDate: string, toDate: string): Observable<SalesSummaryResponse> {
+    return this.http.get<SalesSummaryResponse>(
+      `${this.baseUrl}/reports/sales-summary${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getSalesDetails(fromDate: string, toDate: string, customerId?: number | null): Observable<SalesDetailsResponse> {
+    return this.http.get<SalesDetailsResponse>(
+      `${this.baseUrl}/reports/sales-details${this.buildQuery({ fromDate, toDate, customerId })}`
+    );
+  }
+
+  getInvoiceReport(fromDate: string, toDate: string, customerId?: number | null): Observable<InvoiceReportResponse> {
+    return this.http.get<InvoiceReportResponse>(
+      `${this.baseUrl}/reports/invoice-report${this.buildQuery({ fromDate, toDate, customerId })}`
     );
   }
 }

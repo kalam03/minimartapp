@@ -1,0 +1,31 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- ── Reports Tab Bar ─────────────────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-sm border mb-3 overflow-hidden" style="border-color:var(--theme-text)">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14"/>
+          </svg>
+          Reports
+        </h2>
+      </div>
+      <div class="px-3 py-2 flex flex-wrap gap-1.5">
+        <button *ngFor="let tab of tabs" (click)="setTab(tab.id)"
+          class="px-3 py-1.5 text-xs rounded-lg font-semibold transition-all border"
+          [style]="activeTab===tab.id
+            ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+            : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+          {{ tab.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Active Report ───────────────────────────────────────────────── -->
+    <app-sales-summary-report *ngIf="activeTab==='sales-summary'"></app-sales-summary-report>
+    <app-sales-details-report *ngIf="activeTab==='sales-details'"></app-sales-details-report>
+    <app-invoice-report *ngIf="activeTab==='invoice-report'"></app-invoice-report>
+    <app-profit-report *ngIf="activeTab==='profit-report'"></app-profit-report>
+  </div>
+</div>

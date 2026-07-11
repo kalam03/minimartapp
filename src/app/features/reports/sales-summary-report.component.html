@@ -1,0 +1,122 @@
+<div class="px-1">
+  <!-- ── Date Filter Bar ─────────────────────────────────────────────── -->
+  <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
+    <div class="px-3 py-2 flex flex-wrap items-end gap-2">
+      <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
+        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span class="text-xs font-semibold whitespace-nowrap">Sales Summary</span>
+      </div>
+
+      <div>
+        <label class="block text-xs text-gray-500 mb-0.5">From</label>
+        <input type="date" [(ngModel)]="fromDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
+      </div>
+      <div>
+        <label class="block text-xs text-gray-500 mb-0.5">To</label>
+        <input type="date" [(ngModel)]="toDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
+      </div>
+      <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
+        Apply
+      </button>
+
+      <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
+
+      <div class="flex flex-wrap gap-1">
+        <button (click)="applyQuick('today')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+          [style]="activeQuick==='today' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+          Today
+        </button>
+        <button (click)="applyQuick('month')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+          [style]="activeQuick==='month' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+          This Month
+        </button>
+        <button (click)="applyQuick('quarter')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+          [style]="activeQuick==='quarter' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+          Quarterly
+        </button>
+        <button (click)="applyQuick('year')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+          [style]="activeQuick==='year' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+          Yearly
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Error ───────────────────────────────────────────────────────── -->
+  <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs">
+    {{ errorMsg }}
+  </div>
+
+  <!-- ── Summary Cards ───────────────────────────────────────────────── -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
+      <div class="px-3 py-2 border-b border-white border-opacity-10">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Invoices</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-xl font-bold text-white">{{ summary.totalInvoices }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Sales</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-xl font-bold" style="color:var(--theme-primary)">৳{{ summary.totalSales | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Net Amount</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-xl font-bold text-green-600">৳{{ summary.totalNetAmount | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Due</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-xl font-bold text-red-500">৳{{ summary.totalDue | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Discount</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-lg font-bold text-gray-700">৳{{ summary.totalDiscount | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Transport</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-lg font-bold text-gray-700">৳{{ summary.totalTransport | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Paid</p>
+      </div>
+      <div class="px-3 py-2">
+        <p class="text-lg font-bold text-gray-700">৳{{ summary.totalPaid | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="bg-white rounded-xl shadow-md border overflow-hidden flex items-center justify-center">
+      <p class="text-xs text-gray-400 py-4">Loading…</p>
+    </div>
+  </div>
+</div>

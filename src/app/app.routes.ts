@@ -149,6 +149,17 @@ export const routes: Routes = [
           import('./features/orders/order-entry.component').then((m) => m.OrderEntryComponent),
       },
       // ── Reports Module ──────────────────────────────────────────────
+      // Single "Reports" menu entry — Sales Summary / Sales Details /
+      // Invoice Report / Profit Report all live as tabs inside one hub page.
+      {
+        path: 'reports',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/reports/reports-hub.component').then(
+            (m) => m.ReportsHubComponent
+          ),
+      },
+      // Kept for backward compatibility with any bookmarked/old links.
       {
         path: 'reports/profit',
         canActivate: [PermissionGuard],
