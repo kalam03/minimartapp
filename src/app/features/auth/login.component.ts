@@ -43,7 +43,11 @@ export class LoginComponent {
         this.isLoading = false;
         this.cdr.detectChanges();  // flush the false state before alert renders
         const msg = err?.error?.message || 'Invalid username or password';
-        this.alertService.error(msg, 'Login Failed');
+        // 403 = correct credentials but the tenant is suspended (see
+        // TenantSuspendedException on the backend) — distinct from a
+        // plain 401 wrong-password case, so the title reflects that.
+        const title = err?.status === 403 ? 'Account Suspended' : 'Login Failed';
+        this.alertService.error(msg, title);
       }
     });
   }

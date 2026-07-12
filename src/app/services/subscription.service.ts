@@ -84,4 +84,14 @@ export class SubscriptionService {
   getPlans(): Observable<{ success: boolean; data: SubscriptionPlan[] }> {
     return this.http.get<any>(`${this.baseUrl}/subscription/plans`);
   }
+
+  // Self-service — renews/activates the CALLER's own tenant (tenantId comes
+  // from the JWT server-side, never from the request body).
+  renew(months = 1): Observable<{ success: boolean; message: string }> {
+    return this.http.post<any>(`${this.baseUrl}/subscription/renew`, { months });
+  }
+
+  changePlan(newPlanId: number, keepEndDate = true): Observable<{ success: boolean; message: string }> {
+    return this.http.post<any>(`${this.baseUrl}/subscription/change-plan`, { newPlanId, keepEndDate });
+  }
 }

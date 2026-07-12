@@ -6,6 +6,7 @@ import { tap, switchMap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { PermissionService } from './permission.service';
+import { SubscriptionService } from './subscription.service';
 import { of } from 'rxjs';
 
 export interface LoginRequest {
@@ -45,6 +46,7 @@ export class AuthService {
   private tokenKey  = 'access_token';
   private userKey   = 'user_info';
   private tenantKey = 'tenant_id';
+  private subStatusKey = 'subscription_status';
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
   public  isAuthenticated$       = this.isAuthenticatedSubject.asObservable();
@@ -52,7 +54,8 @@ export class AuthService {
   constructor(
     private http:        HttpClient,
     private router:      Router,
-    private permSvc:     PermissionService
+    private permSvc:     PermissionService,
+    private subSvc:      SubscriptionService
   ) {}
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
@@ -61,16 +64,7 @@ export class AuthService {
         this.setSession(response);
         this.isAuthenticatedSubject.next(true);
       }),
-      switchMap(response => {
-        // Load the user's permitted menus BEFORE navigating,
-        // so the sidebar and route guard have data on first render.
-        return this.permSvc.loadMyMenus().pipe(
-          catchError(() => of(null)),                 // don't block login if API fails
-          tap(() => this.router.navigate(['/dashboard'])),
-          // Restore original LoginResponse for subscribers (login component)
-          switchMap(() => of(response))
-        );
-      })
+      switchMap(response => this.finishLoginAndRedirect(response))
     );
   }
 
@@ -82,13 +76,30 @@ export class AuthService {
         this.setSession(response);
         this.isAuthenticatedSubject.next(true);
       }),
-      switchMap(response => {
-        return this.permSvc.loadMyMenus().pipe(
-          catchError(() => of(null)),
-          tap(() => this.router.navigate(['/dashboard'])),
-          switchMap(() => of(response))
-        );
-      })
+      switchMap(response => this.finishLoginAndRedirect(response))
+    );
+  }
+
+  // Shared by login() and registerTenant(): loads the sidebar/permission
+  // cache, then checks the tenant's subscription status. A tenant whose
+  // subscription has lapsed (computedStatus === 'Expired') is sent to the
+  // self-service renewal page instead of the dashboard — they can still log
+  // in (unlike a Suspended tenant, which is blocked server-side at /login),
+  // but can't use the app until they renew or pick a plan.
+  private finishLoginAndRedirect(response: LoginResponse): Observable<LoginResponse> {
+    return this.permSvc.loadMyMenus().pipe(
+      catchError(() => of(null)),                    // don't block login if API fails
+      switchMap(() => this.subSvc.getMySubscription().pipe(catchError(() => of(null)))),
+      tap((subRes: any) => {
+        const status: string | undefined = subRes?.data?.computedStatus;
+        if (status) {
+          sessionStorage.setItem(this.subStatusKey, status);
+        } else {
+          sessionStorage.removeItem(this.subStatusKey);
+        }
+        this.router.navigate([status === 'Expired' ? '/subscription/renew' : '/dashboard']);
+      }),
+      switchMap(() => of(response))    // restore original LoginResponse for subscribers
     );
   }
 
@@ -109,6 +120,13 @@ export class AuthService {
     sessionStorage.removeItem(this.tokenKey);
     sessionStorage.removeItem(this.userKey);
     sessionStorage.removeItem(this.tenantKey);
+    sessionStorage.removeItem(this.subStatusKey);
+  }
+
+  // Called by SubscriptionRenewComponent after a successful renew/change-plan
+  // so the SubscriptionGuard stops redirecting them back to the renew page.
+  markSubscriptionActive(): void {
+    sessionStorage.setItem(this.subStatusKey, 'Active');
   }
 
   getToken(): string | null {

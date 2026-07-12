@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { AuthGuard } from './services/auth.guard';
 import { PermissionGuard } from './services/permission.guard';
+import { SubscriptionGuard } from './services/subscription.guard';
 
 export const routes: Routes = [
   {
@@ -24,9 +25,21 @@ export const routes: Routes = [
       import('./features/no-access/no-access.component').then((m) => m.NoAccessComponent),
   },
   {
+    // Self-service renewal page for a tenant whose subscription has
+    // expired — logged in (AuthGuard) but deliberately NOT inside
+    // LayoutComponent/SubscriptionGuard, since that's exactly where
+    // SubscriptionGuard would otherwise bounce them right back here.
+    path: 'subscription/renew',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./features/subscription/subscription-renew.component').then(
+        (m) => m.SubscriptionRenewComponent
+      ),
+  },
+  {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, SubscriptionGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
