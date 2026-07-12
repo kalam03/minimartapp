@@ -11,7 +11,20 @@ import { of } from 'rxjs';
 export interface LoginRequest {
   userName: string;
   password: string;
-  tenantId: number;
+  // Optional — the backend resolves the tenant by matching the password
+  // hash against every account with this username (see UserService.ValidateLogin).
+  // Only needed if you want to force login against one specific tenant.
+  tenantId?: number;
+}
+
+export interface RegisterTenantRequest {
+  tenantName: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  adminUserName: string;
+  adminPassword: string;
 }
 
 export interface LoginResponse {
@@ -55,6 +68,24 @@ export class AuthService {
           catchError(() => of(null)),                 // don't block login if API fails
           tap(() => this.router.navigate(['/dashboard'])),
           // Restore original LoginResponse for subscribers (login component)
+          switchMap(() => of(response))
+        );
+      })
+    );
+  }
+
+  // Public self-service signup — creates the tenant + first admin user, then
+  // logs the caller straight in (same session setup + redirect as login()).
+  registerTenant(payload: RegisterTenantRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/register-tenant`, payload).pipe(
+      tap(response => {
+        this.setSession(response);
+        this.isAuthenticatedSubject.next(true);
+      }),
+      switchMap(response => {
+        return this.permSvc.loadMyMenus().pipe(
+          catchError(() => of(null)),
+          tap(() => this.router.navigate(['/dashboard'])),
           switchMap(() => of(response))
         );
       })

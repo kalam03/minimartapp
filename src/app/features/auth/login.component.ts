@@ -1,20 +1,20 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   userName  = '';
   password  = '';
-  tenantId  = 1;
   isLoading = false;
 
   constructor(
@@ -34,8 +34,7 @@ export class LoginComponent {
 
     this.authService.login({
       userName: this.userName,
-      password: this.password,
-      tenantId: this.tenantId
+      password: this.password
     }).subscribe({
       next: () => {
         // AuthService handles the redirect to dashboard

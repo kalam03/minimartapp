@@ -10,6 +10,14 @@ export const routes: Routes = [
       import('./features/auth/login.component').then((m) => m.LoginComponent),
   },
   {
+    // Public self-service tenant signup — no AuthGuard, reachable by anyone.
+    path: 'register',
+    loadComponent: () =>
+      import('./features/auth/register-tenant.component').then(
+        (m) => m.RegisterTenantComponent
+      ),
+  },
+  {
     // Standalone access-denied page — no PermissionGuard needed here
     path: 'no-access',
     loadComponent: () =>
