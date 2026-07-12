@@ -1,0 +1,154 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- ── Filter Bar ──────────────────────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">Super Admin — Tenant Management</h2>
+        <div class="flex items-center gap-3">
+          <span class="text-xs" style="color:var(--theme-accent)">{{ filteredTenants.length }} of {{ tenants.length }} tenants</span>
+          <button (click)="openRegisterModal()" class="bg-white text-xs font-semibold px-2 py-1 rounded-lg hover:bg-gray-100" style="color:var(--theme-primary)">
+            + Register New Tenant
+          </button>
+        </div>
+      </div>
+      <div class="px-3 py-2 border-b flex flex-wrap gap-2">
+        <input type="text" [(ngModel)]="searchText"
+          placeholder="Search by name, contact, email…"
+          class="flex-1 min-w-[180px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        <select [(ngModel)]="statusFilter" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+          <option value="">All Statuses</option>
+          <option value="Trial">Trial</option>
+          <option value="Active">Active</option>
+          <option value="Expired">Expired</option>
+          <option value="Suspended">Suspended</option>
+        </select>
+        <button (click)="searchText=''; statusFilter=''" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+        <button (click)="loadTenants()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Refresh</button>
+      </div>
+
+      <div *ngIf="errorMsg" class="px-3 py-2 text-red-700 bg-red-50 text-xs">{{ errorMsg }}</div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left">Tenant</th>
+              <th class="px-3 py-2 text-left">Contact</th>
+              <th class="px-3 py-2 text-left">Plan</th>
+              <th class="px-3 py-2 text-center">Status</th>
+              <th class="px-3 py-2 text-right">Days Left</th>
+              <th class="px-3 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of filteredTenants" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 font-medium text-gray-900">{{ t.tenantName }}</td>
+              <td class="px-3 py-2 text-gray-600">
+                {{ t.contactPerson || '—' }}
+                <div class="text-gray-400">{{ t.email || t.phone || '' }}</div>
+              </td>
+              <td class="px-3 py-2 text-gray-700">{{ t.planName || '—' }}</td>
+              <td class="px-3 py-2 text-center">
+                <span class="px-2 py-0.5 text-xs rounded-full font-semibold" [ngClass]="statusBadgeClass(t.computedStatus)">
+                  {{ t.computedStatus }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-right" [class.text-red-500]="(t.daysRemaining ?? 0) < 7">
+                {{ t.daysRemaining ?? '—' }}
+              </td>
+              <td class="px-3 py-2 text-center">
+                <div class="flex gap-1 justify-center flex-wrap">
+                  <button (click)="renewOneMonth(t)" class="text-white px-2 py-1 rounded text-xs transition" style="background:var(--theme-primary)">
+                    +1 Month
+                  </button>
+                  <button *ngIf="t.isActive" (click)="suspend(t)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition">
+                    Suspend
+                  </button>
+                  <button *ngIf="!t.isActive" (click)="reactivate(t)" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition">
+                    Reactivate
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && filteredTenants.length === 0">
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">No tenants found</td>
+            </tr>
+            <tr *ngIf="isLoading">
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">Loading…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Register New Tenant Modal ─────────────────────────────────────── -->
+  <div *ngIf="showRegisterModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-3">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h3 class="text-white font-semibold text-sm">Register New Tenant</h3>
+        <button (click)="closeRegisterModal()" class="text-white text-lg leading-none px-1">&times;</button>
+      </div>
+
+      <div class="p-4 max-h-[75vh] overflow-y-auto">
+        <div *ngIf="registerError" class="mb-3 px-3 py-2 text-red-700 bg-red-50 text-xs rounded">{{ registerError }}</div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="sm:col-span-2">
+            <label class="block text-gray-600 mb-1">Business / Tenant Name *</label>
+            <input type="text" [(ngModel)]="registerForm.tenantName" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none" placeholder="e.g. Lucky Shop">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Contact Person</label>
+            <input type="text" [(ngModel)]="registerForm.contactPerson" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Phone</label>
+            <input type="text" [(ngModel)]="registerForm.phone" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Email</label>
+            <input type="email" [(ngModel)]="registerForm.email" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Subdomain</label>
+            <input type="text" [(ngModel)]="registerForm.subdomain" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none" placeholder="e.g. luckyshop">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-gray-600 mb-1">Address</label>
+            <input type="text" [(ngModel)]="registerForm.address" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-gray-600 mb-1">Starting Plan</label>
+            <select [(ngModel)]="registerForm.planCode" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+              <option *ngIf="plans.length === 0" value="TRIAL">Trial</option>
+              <option *ngFor="let p of plans" [value]="p.planCode">{{ p.planName }}</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2 border-t pt-3 mt-1">
+            <div class="text-gray-500 font-medium mb-2">First Login (Tenant Admin)</div>
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Admin User Name *</label>
+            <input type="text" [(ngModel)]="registerForm.adminUserName" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-1">Admin Password *</label>
+            <input type="password" [(ngModel)]="registerForm.adminPassword" class="w-full px-2 py-1.5 border border-gray-300 rounded-lg outline-none">
+          </div>
+        </div>
+      </div>
+
+      <div class="px-4 py-3 border-t flex justify-end gap-2 bg-gray-50">
+        <button (click)="closeRegisterModal()" class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Cancel</button>
+        <button (click)="submitRegister()" [disabled]="isRegistering"
+          class="px-3 py-1.5 text-xs text-white rounded-lg disabled:opacity-60" style="background:var(--theme-primary)">
+          {{ isRegistering ? 'Registering…' : 'Register Tenant' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -168,6 +168,17 @@ export const routes: Routes = [
             (m) => m.ProfitReportComponent
           ),
       },
+      // ── Super Admin (platform operator, not a tenant role) ────────────
+      // Not linked from the sidebar — the backend rejects anyone without
+      // the SuperAdmin role regardless, reachable directly at this URL.
+      // See SaaS_Platform_Architecture.md Section 11.
+      {
+        path: 'superadmin/tenants',
+        loadComponent: () =>
+          import('./features/super-admin/tenant-management.component').then(
+            (m) => m.TenantManagementComponent
+          ),
+      },
     ],
   },
   { path: '**', redirectTo: 'dashboard' },
