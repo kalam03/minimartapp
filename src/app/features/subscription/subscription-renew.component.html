@@ -22,16 +22,16 @@
     <div *ngIf="errorMsg" class="mb-4 px-4 py-2 text-sm text-red-700 bg-red-50 rounded-lg text-center">{{ errorMsg }}</div>
 
     <!-- Quick renew -->
-    <div *ngIf="mySubscription" class="bg-white rounded-2xl shadow-xl p-5 mb-5 flex items-center justify-between"
+    <div *ngIf="canQuickRenew" class="bg-white rounded-2xl shadow-xl p-5 mb-5 flex items-center justify-between"
          style="border:1px solid var(--theme-text)">
       <div>
-        <p class="text-sm font-semibold" style="color:var(--theme-primary)">Continue with {{ mySubscription.planName }}</p>
+        <p class="text-sm font-semibold" style="color:var(--theme-primary)">Continue with {{ mySubscription!.planName }}</p>
         <p class="text-xs text-gray-500 mt-0.5">Extend your current plan by 1 month</p>
       </div>
-      <button (click)="renewCurrentPlan()" [disabled]="isSubmitting"
-        class="px-4 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-50"
+      <button (click)="renewCurrentPlan()"
+        class="px-4 py-2 rounded-lg text-sm font-semibold text-white"
         style="background:var(--theme-primary)">
-        {{ isSubmitting ? 'Processing…' : 'Renew Now' }}
+        Renew Now
       </button>
     </div>
 
@@ -49,10 +49,10 @@
           {{ p.price | currency:p.currency:'symbol-narrow':'1.0-0' }}
           <span class="text-xs font-normal text-gray-400">/ {{ p.billingCycle }}</span>
         </p>
-        <button (click)="choosePlan(p)" [disabled]="isSubmitting"
-          class="w-full py-2 rounded-lg text-xs font-semibold text-white disabled:opacity-50"
+        <button (click)="choosePlan(p)"
+          class="w-full py-2 rounded-lg text-xs font-semibold text-white"
           style="background:var(--theme-primary)">
-          {{ isSubmitting ? 'Processing…' : 'Choose This Plan' }}
+          Choose This Plan
         </button>
       </div>
     </div>

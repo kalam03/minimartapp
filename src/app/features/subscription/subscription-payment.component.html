@@ -1,0 +1,114 @@
+<div class="min-h-screen flex items-center justify-center p-6" style="background:#f0f2fb">
+  <div class="w-full max-w-md">
+
+    <div class="text-center mb-5">
+      <h1 class="text-xl font-extrabold" style="color:var(--theme-primary)">Complete Your Payment</h1>
+      <p class="text-sm text-gray-500 mt-1" *ngIf="targetPlan">
+        {{ targetPlan.planName }} — {{ targetPlan.price | currency:targetPlan.currency:'symbol-narrow':'1.0-0' }}
+        / {{ targetPlan.billingCycle }}
+      </p>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center text-sm text-gray-400 py-8">Loading…</div>
+
+    <div *ngIf="!isLoading" class="bg-white rounded-2xl shadow-xl overflow-hidden" style="border:1px solid var(--theme-text)">
+
+      <div *ngIf="errorMsg" class="px-5 pt-4 text-xs text-red-700 bg-red-50 rounded-lg mx-5 mt-4 py-2">{{ errorMsg }}</div>
+
+      <!-- ── Step 1: choose a payment method ── -->
+      <div *ngIf="!selectedMethod" class="p-5">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Select a payment method</p>
+        <div class="grid grid-cols-2 gap-3">
+          <button *ngFor="let m of methods" (click)="selectMethod(m)"
+            class="rounded-xl p-4 flex flex-col items-center justify-center gap-2 border hover:shadow-md transition"
+            style="border-color:#e5e7eb">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                 [style.background]="m.color">
+              {{ m.label.charAt(0) }}
+            </div>
+            <span class="text-xs font-semibold" style="color:var(--theme-primary)">{{ m.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Step 2a: mobile wallet form (bKash / Nagad / Rocket) ── -->
+      <div *ngIf="selectedMethod && selectedMethod.kind === 'wallet'">
+        <div class="px-5 py-3 flex items-center gap-2" [style.background]="selectedMethod.color">
+          <span class="text-white font-bold text-sm">{{ selectedMethod.label }}</span>
+        </div>
+        <div class="p-5">
+          <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">{{ selectedMethod.label }} Mobile Number</label>
+          <input type="tel" [(ngModel)]="mobileNumber" maxlength="11" placeholder="01XXXXXXXXX"
+            class="block w-full px-3 py-2.5 text-sm rounded-lg outline-none"
+            style="border:1.5px solid #d1d5f0; background:#fafbff"/>
+          <p class="text-xs text-gray-400 mt-2">
+            You'll get a payment confirmation prompt on this number to approve the charge.
+          </p>
+
+          <button (click)="payWithWallet()" [disabled]="isSubmitting"
+            class="w-full mt-4 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-50"
+            [style.background]="selectedMethod.color">
+            {{ isSubmitting ? 'Processing…' : ('Pay with ' + selectedMethod.label) }}
+          </button>
+          <button (click)="changeMethod()" [disabled]="isSubmitting"
+            class="w-full mt-2 py-2 text-xs text-gray-400 hover:text-gray-600">
+            Choose a different method
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Step 2b: card form ── -->
+      <div *ngIf="selectedMethod && selectedMethod.kind === 'card'">
+        <div class="px-5 py-3" [style.background]="selectedMethod.color">
+          <span class="text-white font-bold text-sm">Visa / Card</span>
+        </div>
+        <div class="p-5">
+          <div class="mb-3">
+            <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">Card Number</label>
+            <input type="text" [(ngModel)]="cardNumber" maxlength="19" placeholder="4111 1111 1111 1111"
+              class="block w-full px-3 py-2.5 text-sm rounded-lg outline-none"
+              style="border:1.5px solid #d1d5f0; background:#fafbff"/>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">Expiry (MM/YY)</label>
+              <input type="text" [(ngModel)]="cardExpiry" maxlength="5" placeholder="MM/YY"
+                class="block w-full px-3 py-2.5 text-sm rounded-lg outline-none"
+                style="border:1.5px solid #d1d5f0; background:#fafbff"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">CVV</label>
+              <input type="password" [(ngModel)]="cardCvv" maxlength="4" placeholder="123"
+                class="block w-full px-3 py-2.5 text-sm rounded-lg outline-none"
+                style="border:1.5px solid #d1d5f0; background:#fafbff"/>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">Name on Card</label>
+            <input type="text" [(ngModel)]="cardName" placeholder="As printed on the card"
+              class="block w-full px-3 py-2.5 text-sm rounded-lg outline-none"
+              style="border:1.5px solid #d1d5f0; background:#fafbff"/>
+          </div>
+
+          <button (click)="payWithCard()" [disabled]="isSubmitting"
+            class="w-full py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-50"
+            [style.background]="selectedMethod.color">
+            {{ isSubmitting ? 'Processing…' : 'Pay Now' }}
+          </button>
+          <button (click)="changeMethod()" [disabled]="isSubmitting"
+            class="w-full mt-2 py-2 text-xs text-gray-400 hover:text-gray-600">
+            Choose a different method
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center mt-5">
+      <button (click)="back()" class="text-xs text-gray-400 hover:text-gray-600 underline">
+        &larr; Back to plans
+      </button>
+    </div>
+
+  </div>
+</div>

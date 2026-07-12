@@ -59,6 +59,27 @@ export interface SubscriptionPayment {
   createdAt: string;
 }
 
+export type PaymentMethod = 'bKash' | 'Nagad' | 'Rocket' | 'Card';
+
+export interface CheckoutRequest {
+  // Omit to renew the CURRENT plan as-is; set to switch to a different plan.
+  planId?: number;
+  paymentMethod: PaymentMethod;
+  // Mobile banking (bKash/Nagad/Rocket) — the wallet number.
+  accountNumber?: string;
+  // Card — LAST 4 DIGITS ONLY. The full card number/CVV never leave the
+  // payment form component, let alone get sent to this API.
+  cardLast4?: string;
+}
+
+export interface CheckoutResult {
+  paymentId: number;
+  planName: string;
+  amount: number;
+  currency: string;
+  newEndDate: string;
+}
+
 /**
  * Tenant-facing subscription endpoints ("My Subscription" page, upgrade
  * page). For cross-tenant Super Admin operations, see super-admin.service.ts.
@@ -93,5 +114,11 @@ export class SubscriptionService {
 
   changePlan(newPlanId: number, keepEndDate = true): Observable<{ success: boolean; message: string }> {
     return this.http.post<any>(`${this.baseUrl}/subscription/change-plan`, { newPlanId, keepEndDate });
+  }
+
+  // Payment method page submits here — activates the plan and records the
+  // payment in one call (see SubscriptionService.Checkout on the backend).
+  checkout(payload: CheckoutRequest): Observable<{ success: boolean; message: string; data: CheckoutResult }> {
+    return this.http.post<any>(`${this.baseUrl}/subscription/checkout`, payload);
   }
 }

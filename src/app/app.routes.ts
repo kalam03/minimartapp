@@ -37,6 +37,16 @@ export const routes: Routes = [
       ),
   },
   {
+    // Payment method page (bKash/Nagad/Rocket/Card) — reached from the
+    // renew page's "Renew Now" / "Choose This Plan" buttons.
+    path: 'subscription/payment',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./features/subscription/subscription-payment.component').then(
+        (m) => m.SubscriptionPaymentComponent
+      ),
+  },
+  {
     path: '',
     component: LayoutComponent,
     canActivate: [AuthGuard, SubscriptionGuard],

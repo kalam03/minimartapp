@@ -3,16 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SubscriptionService, ActiveSubscription, SubscriptionPlan } from '../../services/subscription.service';
 import { AuthService } from '../../services/auth.service';
-import { AlertService } from '../../shared/alert.service';
 
 /**
  * Gate page a tenant lands on when their subscription has expired —
  * SubscriptionGuard redirects here instead of the dashboard (see
  * app.routes.ts / subscription.guard.ts). They can renew their current
- * plan or pick a different one; either action activates the tenant
- * immediately (no payment gateway wired up yet — same trust model as
- * trial signup) and sends them on to the dashboard. They can also just
- * log out from here if they'd rather come back later.
+ * plan or pick a different one; either choice hands off to the payment
+ * method page (bKash/Nagad/Rocket/Card — see subscription-payment.component)
+ * which actually activates the tenant. They can also just log out from
+ * here if they'd rather come back later.
  */
 @Component({
   selector: 'app-subscription-renew',
@@ -26,13 +25,11 @@ export class SubscriptionRenewComponent implements OnInit {
   plans: SubscriptionPlan[] = [];
 
   isLoading = true;
-  isSubmitting = false;
   errorMsg = '';
 
   constructor(
     private subscriptionService: SubscriptionService,
     private authService: AuthService,
-    private alertService: AlertService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -57,33 +54,19 @@ export class SubscriptionRenewComponent implements OnInit {
     });
   }
 
+  // A tenant with no real TenantSubscriptions row yet (legacy fallback —
+  // see Subscription_Legacy_Fallback_Migration.sql) has nothing to "renew";
+  // they need to pick a plan instead, which creates a fresh row.
+  get canQuickRenew(): boolean {
+    return !!this.mySubscription && this.mySubscription.subscriptionId > 0;
+  }
+
   renewCurrentPlan(): void {
-    this.isSubmitting = true;
-    this.subscriptionService.renew(1).subscribe({
-      next: () => this.onSuccess('Subscription renewed'),
-      error: (err) => this.onError(err)
-    });
+    this.router.navigate(['/subscription/payment']);
   }
 
   choosePlan(plan: SubscriptionPlan): void {
-    this.isSubmitting = true;
-    this.subscriptionService.changePlan(plan.planId, false).subscribe({
-      next: () => this.onSuccess(`Subscribed to ${plan.planName}`),
-      error: (err) => this.onError(err)
-    });
-  }
-
-  private onSuccess(message: string): void {
-    this.isSubmitting = false;
-    this.authService.markSubscriptionActive();
-    this.alertService.success(message);
-    this.router.navigate(['/dashboard']);
-  }
-
-  private onError(err: any): void {
-    this.isSubmitting = false;
-    this.errorMsg = err?.error?.message || 'Something went wrong. Please try again.';
-    this.cdr.detectChanges();
+    this.router.navigate(['/subscription/payment'], { queryParams: { planId: plan.planId } });
   }
 
   logout(): void {
