@@ -103,7 +103,7 @@
           <input
             type="text"
             [(ngModel)]="navSearch"
-            placeholder="Search menu…"
+            [placeholder]="'shared.search.menuPlaceholder' | transloco"
             class="w-full pl-6 pr-2 py-1 text-xs rounded-md outline-none border-0"
             style="background:rgba(255,255,255,0.08); color:var(--theme-text); caret-color:var(--theme-accent);"
             onfocus="this.style.background='rgba(255,255,255,0.14)'"
@@ -130,12 +130,12 @@
               [class]="'flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs transition-all ' +
                 (isSidebarMinimized() && !isMobile() ? 'justify-center' : '')"
               style="color: var(--theme-text)"
-              [title]="isSidebarMinimized() && !isMobile() ? item.label : ''"
+              [title]="isSidebarMinimized() && !isMobile() ? navLabel(item) : ''"
             >
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.icon"></path>
               </svg>
-              <span *ngIf="!isSidebarMinimized() || isMobile()">{{ item.label }}</span>
+              <span *ngIf="!isSidebarMinimized() || isMobile()">{{ navLabel(item) }}</span>
             </a>
           </li>
         </ul>
@@ -152,14 +152,14 @@
             <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="action.icon"></path>
             </svg>
-            <span>{{ action.label }}</span>
+            <span>{{ action.label | transloco }}</span>
           </button>
         </div>
         <div *ngIf="isSidebarMinimized() && !isMobile()" class="space-y-0.5">
           <button *ngFor="let action of quickActions"
             class="w-full flex justify-center px-2 py-1.5 rounded-lg transition-all"
             style="color: var(--theme-text-dim)"
-            [title]="action.label"
+            [title]="action.label | transloco"
             onmouseover="this.style.background='var(--theme-hover)'; this.style.color='var(--theme-accent)'"
             onmouseout="this.style.background='transparent'; this.style.color='var(--theme-text-dim)'">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,11 +181,45 @@
     <!-- Desktop Header -->
     <div *ngIf="!isMobile()" class="sticky top-0 z-20" style="background: var(--theme-primary); border-bottom: 1px solid var(--theme-border); min-height: 40px">
       <div class="px-4 flex justify-end items-center gap-1.5" style="min-height: 40px">
+        <!-- Language Picker -->
+        <div class="lang-picker relative">
+          <button
+            (click)="toggleLangMenu(); $event.stopPropagation()"
+            [title]="'shared.actions.changeLanguage' | transloco"
+            class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-colors"
+            style="color: var(--theme-text)"
+            onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'"
+          >
+            <span class="text-xs font-medium">{{ currentLanguageLabel }}</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+
+          <div *ngIf="isLangMenuOpen()"
+            class="absolute right-0 mt-1 w-36 rounded-lg shadow-xl overflow-hidden z-30"
+            style="background: var(--theme-primary-light); border: 1px solid var(--theme-border)">
+            <button *ngFor="let l of languages"
+              (click)="selectLanguage(l.code)"
+              class="w-full flex items-center gap-2 px-3 py-2 text-xs transition-colors"
+              [style.color]="l.code === currentLanguageCode ? 'var(--theme-accent)' : 'var(--theme-text)'"
+              [style.font-weight]="l.code === currentLanguageCode ? 600 : 400"
+              onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'">
+              <span class="flex-1 text-left">{{ l.nativeLabel }}</span>
+              <svg *ngIf="l.code === currentLanguageCode" class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="w-px h-4 mx-0.5" style="background: var(--theme-border)"></div>
+
         <!-- Theme Picker -->
         <div class="theme-picker relative">
           <button
             (click)="toggleThemeMenu(); $event.stopPropagation()"
-            title="Change theme"
+            [title]="'shared.actions.changeTheme' | transloco"
             class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg transition-colors"
             style="color: var(--theme-text)"
             onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'"
@@ -233,7 +267,7 @@
             <p class="text-xs" style="color: var(--theme-accent)">{{ user.email }}</p>
           </div>
         </div>
-        <button (click)="logout()" title="Logout"
+        <button (click)="logout()" [title]="'shared.actions.logout' | transloco"
           class="p-1.5 rounded-lg transition-colors" style="color: var(--theme-text-muted)"
           onmouseover="this.style.background='rgba(239,68,68,0.15)'; this.style.color='#f87171'"
           onmouseout="this.style.background='transparent'; this.style.color='var(--theme-text-muted)'">

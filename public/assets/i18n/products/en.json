@@ -1,0 +1,75 @@
+{
+  "title": {
+    "addNew": "Add New Product",
+    "edit": "Edit Product",
+    "list": "Product List"
+  },
+  "form": {
+    "productName": "Product Name *",
+    "productNamePlaceholder": "Enter product name",
+    "category": "Category *",
+    "selectCategory": "Select Category",
+    "purchasePrice": "Purchase Price (৳) *",
+    "purchasePricePlaceholder": "Enter purchase price",
+    "salePrice": "Sale Price (৳) *",
+    "salePricePlaceholder": "Enter selling price",
+    "unitType": "Unit Type *",
+    "unitTypeHint": "PCS = count by piece; KG/G/L/ML = sold by weight/volume"
+  },
+  "buttons": {
+    "save": "Save Product",
+    "update": "Update Product",
+    "reset": "Reset",
+    "cancelEdit": "Cancel Edit",
+    "edit": "Edit",
+    "delete": "Delete",
+    "clear": "Clear"
+  },
+  "table": {
+    "id": "ID",
+    "productName": "Product Name",
+    "category": "Category",
+    "purchasePrice": "Purchase Price",
+    "salePrice": "Sale Price",
+    "stockQty": "Stock Qty",
+    "unit": "Unit",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noProducts": "No products found",
+    "countSummary": "{{filtered}} of {{total}} products",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} products",
+    "filteredFrom": "(filtered from {{total}})",
+    "pageSize": "Page size:"
+  },
+  "search": {
+    "placeholder": "Search by name, barcode, category…",
+    "allCategories": "All Categories"
+  },
+  "validation": {
+    "nameRequired": "Product name is required",
+    "nameMinLength": "Product name must be at least 2 characters",
+    "nameMaxLength": "Product name must not exceed 100 characters",
+    "categoryRequired": "Please select a category",
+    "purchasePriceRequired": "Purchase price is required and must be greater than 0",
+    "purchasePriceInvalid": "Purchase price must be a valid number",
+    "purchasePricePositive": "Purchase price must be greater than 0",
+    "salePriceRequired": "Selling price is required and must be greater than 0",
+    "salePriceInvalid": "Selling price must be a valid number",
+    "salePricePositive": "Selling price must be greater than 0",
+    "salePriceLessThanPurchase": "Selling price cannot be less than purchase price (৳{{price}})"
+  },
+  "messages": {
+    "createSuccess": "Product created successfully!",
+    "createError": "Failed to create product: {{error}}",
+    "updateSuccess": "Product updated successfully!",
+    "updateError": "Failed to update product: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteSuccess": "Product deleted successfully!",
+    "deleteError": "Failed to delete product: {{error}}",
+    "loadError": "Failed to load products: {{error}}",
+    "loadCategoriesError": "Failed to load categories: {{error}}",
+    "unknownCategory": "Unknown"
+  }
+}

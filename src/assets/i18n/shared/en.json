@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "suppliers": "Suppliers",
+    "products": "Products",
+    "unitTypes": "Unit Types",
+    "categories": "Categories",
+    "barcodeGenerator": "Barcode Generator",
+    "purchases": "Purchases",
+    "counter": "Counter",
+    "orders": "Orders",
+    "customers": "Customers",
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "capital": "Capital",
+    "writeoffs": "Write-Offs",
+    "payroll": "Payroll",
+    "investors": "Investors",
+    "reports": "Reports"
+  },
+  "quickActions": {
+    "newOrder": "New Order",
+    "addProduct": "Add Product",
+    "newCustomer": "New Customer"
+  },
+  "search": {
+    "menuPlaceholder": "Search menu…"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "search": "Search",
+    "export": "Export",
+    "print": "Print",
+    "ok": "OK"
+  },
+  "actions": {
+    "logout": "Logout",
+    "changeTheme": "Change theme",
+    "changeLanguage": "Change language"
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "invalid": "{{field}} is invalid"
+  },
+  "messages": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "confirmTitle": "Confirm",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "operationFailed": "Operation failed. Please try again."
+  }
+}

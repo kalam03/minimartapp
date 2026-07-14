@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { PermissionService } from './permission.service';
 import { SubscriptionService } from './subscription.service';
+import { LanguageService } from './language.service';
 import { of } from 'rxjs';
 
 export interface LoginRequest {
@@ -37,6 +38,7 @@ export interface LoginResponse {
     userName:  string;
     role:      string;
     roleNames: string;
+    preferredLanguage?: string;
   };
 }
 
@@ -55,7 +57,8 @@ export class AuthService {
     private http:        HttpClient,
     private router:      Router,
     private permSvc:     PermissionService,
-    private subSvc:      SubscriptionService
+    private subSvc:      SubscriptionService,
+    private languageSvc: LanguageService
   ) {}
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
@@ -114,6 +117,11 @@ export class AuthService {
     sessionStorage.setItem(this.tokenKey,  authResult.accessToken);
     sessionStorage.setItem(this.userKey,   JSON.stringify(authResult.user));
     sessionStorage.setItem(this.tenantKey, authResult.user.tenantId.toString());
+
+    // Reconcile with whatever language this user last saved to their
+    // profile (possibly from a different browser/device) — localStorage/
+    // cookie only ever reflect THIS browser's last choice.
+    this.languageSvc.syncFromUserProfile(authResult.user.preferredLanguage);
   }
 
   private clearSession(): void {

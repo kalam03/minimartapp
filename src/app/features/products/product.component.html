@@ -19,19 +19,19 @@
               d="M12 4v16m8-8H4"
             ></path>
           </svg>
-          {{ editingId ? 'Edit Product' : 'Add New Product' }}
+          {{ (editingId ? 'products.title.edit' : 'products.title.addNew') | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Product Name -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Product Name *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'products.form.productName' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="productForm.productName"
               (blur)="validateField('productName')"
-              placeholder="Enter product name"
+              [placeholder]="'products.form.productNamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('productName') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('productName')" class="text-red-600 text-xs mt-1">
@@ -41,13 +41,13 @@
 
           <!-- Category -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Category *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'products.form.category' | transloco }}</label>
             <select
               [(ngModel)]="productForm.categoryId"
               (blur)="validateField('categoryId')"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('categoryId') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             >
-              <option [value]="0">Select Category</option>
+              <option [value]="0">{{ 'products.form.selectCategory' | transloco }}</option>
               <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
             </select>
             <p *ngIf="isFieldInvalid('categoryId')" class="text-red-600 text-xs mt-1">
@@ -57,12 +57,12 @@
 
           <!-- Purchase Price (mandatory) -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Purchase Price (৳) *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'products.form.purchasePrice' | transloco }}</label>
             <input
               type="number"
               [(ngModel)]="productForm.purchasePrice"
               (blur)="validateField('purchasePrice')"
-              placeholder="Enter purchase price"
+              [placeholder]="'products.form.purchasePricePlaceholder' | transloco"
               min="0"
               step="0.01"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('purchasePrice') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
@@ -75,12 +75,12 @@
 
           <!-- Sale Price (mandatory) -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Sale Price (৳) *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'products.form.salePrice' | transloco }}</label>
             <input
               type="number"
               [(ngModel)]="productForm.salePrice"
               (blur)="validateField('salePrice')"
-              placeholder="Enter selling price"
+              [placeholder]="'products.form.salePricePlaceholder' | transloco"
               min="0"
               step="0.01"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('salePrice') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
@@ -109,14 +109,14 @@
 
           <!-- Unit Type -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Unit Type *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'products.form.unitType' | transloco }}</label>
             <select
               [(ngModel)]="productForm.unitType"
               class="w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none border-gray-400"
             >
               <option *ngFor="let u of unitTypes" [value]="u.code">{{ u.label }}</option>
             </select>
-            <p class="text-gray-400 text-xs mt-1">PCS = count by piece; KG/G/L/ML = sold by weight/volume</p>
+            <p class="text-gray-400 text-xs mt-1">{{ 'products.form.unitTypeHint' | transloco }}</p>
           </div>
         </div>
 
@@ -134,20 +134,20 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            {{ editingId ? 'Update Product' : 'Save Product' }}
+            {{ (editingId ? 'products.buttons.update' : 'products.buttons.save') | transloco }}
           </button>
           <button
             (click)="resetForm()"
             class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition"
           >
-            Reset
+            {{ 'products.buttons.reset' | transloco }}
           </button>
           <button
             *ngIf="editingId"
             (click)="cancelEdit()"
             class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100 transition"
           >
-            Cancel Edit
+            {{ 'products.buttons.cancelEdit' | transloco }}
           </button>
         </div>
       </div>
@@ -156,20 +156,20 @@
     <!-- Products Table Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Product List</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredProducts.length }} of {{ products.length }} products</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'products.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'products.table.countSummary' | transloco: { filtered: filteredProducts.length, total: products.length } }}</span>
       </div>
       <div class="px-3 py-2 border-b flex flex-wrap gap-2">
         <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
-          placeholder="Search by name, barcode, category…"
+          [placeholder]="'products.search.placeholder' | transloco"
           class="flex-1 min-w-[180px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         <select [(ngModel)]="categoryFilter" (ngModelChange)="currentPage=1"
           class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-          <option value="">All Categories</option>
+          <option value="">{{ 'products.search.allCategories' | transloco }}</option>
           <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
         </select>
         <button (click)="searchText=''; categoryFilter=''; currentPage=1"
-          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'products.buttons.clear' | transloco }}</button>
       </div>
 
       <!-- Table -->
@@ -178,28 +178,28 @@
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('productId')">
-                ID {{ getSortIcon('productId') }}
+                {{ 'products.table.id' | transloco }} {{ getSortIcon('productId') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('productName')">
-                Product Name {{ getSortIcon('productName') }}
+                {{ 'products.table.productName' | transloco }} {{ getSortIcon('productName') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('categoryId')">
-                Category {{ getSortIcon('categoryId') }}
+                {{ 'products.table.category' | transloco }} {{ getSortIcon('categoryId') }}
               </th>
               <th class="px-3 py-2 text-right cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('purchasePrice')">
-                Purchase Price {{ getSortIcon('purchasePrice') }}
+                {{ 'products.table.purchasePrice' | transloco }} {{ getSortIcon('purchasePrice') }}
               </th>
               <th class="px-3 py-2 text-right cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('salePrice')">
-                Sale Price {{ getSortIcon('salePrice') }}
+                {{ 'products.table.salePrice' | transloco }} {{ getSortIcon('salePrice') }}
               </th>
               <th class="px-3 py-2 text-right cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('stockQty')">
-                Stock Qty {{ getSortIcon('stockQty') }}
+                {{ 'products.table.stockQty' | transloco }} {{ getSortIcon('stockQty') }}
               </th>
               <!-- Barcode column hidden — auto-generated by backend -->
               <!-- <th class="px-3 py-2 text-left">Barcode</th> -->
-              <th class="px-3 py-2 text-center">Unit</th>
-              <th class="px-3 py-2 text-center">Status</th>
-              <th class="px-3 py-2 text-center">Actions</th>
+              <th class="px-3 py-2 text-center">{{ 'products.table.unit' | transloco }}</th>
+              <th class="px-3 py-2 text-center">{{ 'products.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center">{{ 'products.table.actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -235,7 +235,7 @@
                       : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'
                   "
                 >
-                  {{ product.isActive ? 'Active' : 'Inactive' }}
+                  {{ (product.isActive ? 'products.table.active' : 'products.table.inactive') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-2 text-center">
@@ -243,14 +243,14 @@
                   <button
                     (click)="editProduct(product)"
                     class="text-white px-2 py-1 rounded text-xs transition" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'"
-                    title="Edit"
+                    [title]="'products.buttons.edit' | transloco"
                   >
                     ✎
                   </button>
                   <button
                     (click)="deleteProduct(product.productId, product.productName)"
                     class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition"
-                    title="Delete"
+                    [title]="'products.buttons.delete' | transloco"
                   >
                     ✕
                   </button>
@@ -259,7 +259,7 @@
             </tr>
             <tr *ngIf="paginatedProducts.length === 0">
               <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">
-                No products found
+                {{ 'products.table.noProducts' | transloco }}
               </td>
             </tr>
           </tbody>
@@ -269,7 +269,11 @@
       <!-- Pagination Controls -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
-          Showing {{ paginatedProducts.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, filteredProducts.length) }} of {{ filteredProducts.length }} products<span *ngIf="filteredProducts.length !== products.length" class="text-gray-400"> (filtered from {{ products.length }})</span>
+          {{ 'products.table.showingSummary' | transloco: {
+               from: (paginatedProducts.length > 0 ? (currentPage - 1) * pageSize + 1 : 0),
+               to: Math.min(currentPage * pageSize, filteredProducts.length),
+               total: filteredProducts.length
+             } }}<span *ngIf="filteredProducts.length !== products.length" class="text-gray-400"> {{ 'products.table.filteredFrom' | transloco: { total: products.length } }}</span>
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">
@@ -302,7 +306,7 @@
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">
-          <label class="text-gray-600">Page size:</label>
+          <label class="text-gray-600">{{ 'products.table.pageSize' | transloco }}</label>
           <select [(ngModel)]="pageSize" (change)="currentPage = 1" class="px-2 py-1 border border-gray-400 rounded">
             <option [value]="5">5</option>
             <option [value]="10">10</option>

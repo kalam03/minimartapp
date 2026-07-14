@@ -2,10 +2,13 @@
 import { ApplicationConfig, isDevMode, inject, provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideTransloco, provideTranslocoScope } from '@jsverse/transloco';
 import { routes } from './app.routes';
 import { authInterceptor } from './services/auth.interceptor.fn';
+import { languageInterceptor } from './services/language.interceptor.fn';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AppConfigService } from './services/app-config.service';
+import { TranslocoHttpLoader } from './services/transloco-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,8 +18,28 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(AppConfigService).load()),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, languageInterceptor])
     ),
+    // English/Bangla — see Multilingual_Localization_Architecture.md.
+    // Each feature declares its own scope via provideTranslocoScope('<name>')
+    // (see layout.component.ts for 'shared', dashboard/products/pos-billing
+    // components for their own) instead of one shared JSON growing forever.
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'bn'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: !isDevMode(),
+      },
+      loader: TranslocoHttpLoader,
+    }),
+    // 'shared' is used app-wide (layout/nav, buttons, validation, AlertService
+    // defaults) including from root-provided services, so — unlike feature
+    // scopes such as 'dashboard'/'products'/'pos-billing', which are declared
+    // per-component so they're only fetched when that route loads — it's
+    // registered globally here instead of on LayoutComponent.
+    provideTranslocoScope('shared'),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'

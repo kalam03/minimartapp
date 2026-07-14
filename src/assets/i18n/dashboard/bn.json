@@ -1,0 +1,136 @@
+{
+  "dateFilter": {
+    "label": "তারিখের পরিসর",
+    "from": "থেকে",
+    "to": "পর্যন্ত",
+    "today": "আজ",
+    "yesterday": "গতকাল",
+    "thisWeek": "এই সপ্তাহ",
+    "thisMonth": "এই মাস",
+    "quarter": "কোয়ার্টার",
+    "reset": "রিসেট"
+  },
+  "salesSummary": {
+    "title": "বিক্রয় সারাংশ",
+    "loading": "লোড হচ্ছে…",
+    "invoices": "ইনভয়েস",
+    "totalSales": "মোট বিক্রয়",
+    "discount": "ছাড়",
+    "transport": "পরিবহন",
+    "netAmount": "নেট পরিমাণ",
+    "paid": "পরিশোধিত",
+    "due": "বাকি"
+  },
+  "purchaseSummary": {
+    "title": "ক্রয় সারাংশ",
+    "loading": "লোড হচ্ছে…",
+    "invoices": "ইনভয়েস",
+    "totalPurchase": "মোট ক্রয়",
+    "discount": "ছাড়",
+    "transport": "পরিবহন",
+    "netAmount": "নেট পরিমাণ",
+    "paid": "পরিশোধিত",
+    "due": "বাকি"
+  },
+  "kpi": {
+    "totalSales": "মোট বিক্রয়",
+    "netAmount": "নেট পরিমাণ",
+    "invoicesCount": "ইনভয়েস: {{count}}",
+    "totalPurchases": "মোট ক্রয়",
+    "netProfit": "নেট মুনাফা",
+    "salesMinusPurchase": "বিক্রয় নেট − ক্রয় নেট",
+    "transactions": "লেনদেন",
+    "salesCount": "বিক্রয়: {{count}}",
+    "purchaseCount": "ক্রয়: {{count}}",
+    "totalCustomers": "মোট ক্রেতা",
+    "activeAccounts": "সক্রিয় অ্যাকাউন্ট",
+    "dueAmount": "বাকি: ৳{{amount}}",
+    "totalSuppliers": "মোট সরবরাহকারী",
+    "activeVendors": "সক্রিয় সরবরাহকারী",
+    "debtAmount": "দেনা: ৳{{amount}}",
+    "inventoryValue": "ইনভেন্টরি মূল্য",
+    "productsCount": "{{count}}টি পণ্য",
+    "lowStockCount": "কম স্টক: {{count}}",
+    "avgTransaction": "গড় লেনদেন",
+    "perTransaction": "প্রতি লেনদেনে"
+  },
+  "dailyPerformance": {
+    "title": "দৈনিক কার্যক্রম (গত ৭ দিন)",
+    "sales": "বিক্রয়",
+    "purchases": "ক্রয়",
+    "noData": "গত ৭ দিনের কোনো তথ্য নেই",
+    "salesTooltip": "বিক্রয়: ৳{{amount}}",
+    "purchasesTooltip": "ক্রয়: ৳{{amount}}"
+  },
+  "customerDue": {
+    "title": "বাকির পরিমাণ অনুযায়ী ক্রেতা",
+    "total": "মোট {{count}}",
+    "searchPlaceholder": "নাম বা ফোন দিয়ে খুঁজুন…",
+    "columns": { "no": "#", "customer": "ক্রেতা", "phone": "ফোন", "dueAmount": "বাকির পরিমাণ" },
+    "noRecords": "কোনো তথ্য পাওয়া যায়নি",
+    "pageInfo": "পৃষ্ঠা {{page}} এর {{total}}"
+  },
+  "supplierDue": {
+    "title": "বাকির পরিমাণ অনুযায়ী সরবরাহকারী",
+    "total": "মোট {{count}}",
+    "searchPlaceholder": "নাম বা ফোন দিয়ে খুঁজুন…",
+    "columns": { "no": "#", "supplier": "সরবরাহকারী", "phone": "ফোন", "dueAmount": "বাকির পরিমাণ" },
+    "noRecords": "কোনো তথ্য পাওয়া যায়নি",
+    "pageInfo": "পৃষ্ঠা {{page}} এর {{total}}"
+  },
+  "lowStock": {
+    "title": "কম স্টক সতর্কতা",
+    "thresholdLabel": "সীমা ≤",
+    "itemsCount": "{{count}}টি আইটেম",
+    "searchPlaceholder": "পণ্যের নাম বা বারকোড দিয়ে খুঁজুন…",
+    "columns": {
+      "no": "#",
+      "product": "পণ্য",
+      "category": "বিভাগ",
+      "barcode": "বারকোড",
+      "stockQty": "স্টক পরিমাণ",
+      "purchasePrice": "ক্রয় মূল্য",
+      "salePrice": "বিক্রয় মূল্য",
+      "status": "অবস্থা"
+    },
+    "outOfStock": "স্টক নেই",
+    "lowStock": "কম স্টক",
+    "noItems": "কম স্টকের কোনো পণ্য পাওয়া যায়নি",
+    "pageInfo": "পৃষ্ঠা {{page}} এর {{total}}"
+  },
+  "topProducts": {
+    "title": "ইনভেন্টরি মূল্য অনুযায়ী শীর্ষ পণ্য",
+    "searchPlaceholder": "পণ্যের নাম বা বিভাগ দিয়ে খুঁজুন…",
+    "columns": { "product": "পণ্য", "category": "বিভাগ", "stock": "স্টক", "unitPrice": "একক মূল্য", "totalValue": "মোট মূল্য" },
+    "noMatch": "কোনো পণ্য মেলেনি"
+  },
+  "recentTransactions": {
+    "title": "সাম্প্রতিক লেনদেন",
+    "total": "মোট {{count}}",
+    "totalDebit": "মোট ডেবিট",
+    "totalCredit": "মোট ক্রেডিট",
+    "revenue": "আয় (C − D)",
+    "searchPlaceholder": "TXN নং, রেফারেন্স, GL অ্যাকাউন্ট, বর্ণনা দিয়ে খুঁজুন…",
+    "filterAll": "সব (D/C)",
+    "filterDebit": "শুধু ডেবিট",
+    "filterCredit": "শুধু ক্রেডিট",
+    "columns": {
+      "no": "#",
+      "date": "তারিখ",
+      "txnNo": "TXN নং",
+      "reference": "রেফারেন্স",
+      "glAccount": "GL অ্যাকাউন্ট",
+      "mode": "মোড",
+      "drCr": "D/C",
+      "amount": "পরিমাণ",
+      "narration": "বর্ণনা",
+      "status": "অবস্থা"
+    },
+    "debit": "ডেবিট",
+    "credit": "ক্রেডিট",
+    "approved": "অনুমোদিত",
+    "pending": "অপেক্ষমাণ",
+    "noTransactions": "কোনো লেনদেন পাওয়া যায়নি",
+    "pageInfo": "পৃষ্ঠা {{page}} এর {{total}}"
+  }
+}

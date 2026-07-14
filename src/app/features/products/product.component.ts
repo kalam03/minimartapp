@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ProductService } from '../../services/product.service';
 import { AlertService } from '../../shared/alert.service';
 import { UnitTypeService } from '../../services/unit-type.service';
@@ -9,7 +10,10 @@ import { CategoryService } from '../../services/category.service';
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/products/{en,bn}.json only when this route is hit —
+  // see Multilingual_Localization_Architecture.md Section 5.1.
+  providers: [provideTranslocoScope('products')],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
 })
@@ -66,8 +70,14 @@ export class ProductComponent implements OnInit {
     private alertService: AlertService,
     private unitTypeService: UnitTypeService,
     private categoryService: CategoryService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'products' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`products.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.getAllProducts();
@@ -85,7 +95,7 @@ export class ProductComponent implements OnInit {
         }));
       },
       error: (err: any) => {
-        this.alertService.error('Failed to load categories: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadCategoriesError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -110,7 +120,7 @@ export class ProductComponent implements OnInit {
 
   getCategoryName(categoryId: number): string {
     const category = this.categories.find(c => c.id === categoryId);
-    return category ? category.name : 'Unknown';
+    return category ? category.name : this.t('messages.unknownCategory');
   }
 
   validateField(fieldName: string): void {
@@ -120,36 +130,38 @@ export class ProductComponent implements OnInit {
     switch (fieldName) {
       case 'productName':
         if (!value) {
-          this.validationErrors.productName = 'Product name is required';
+          this.validationErrors.productName = this.t('validation.nameRequired');
         } else if (value.length < 2) {
-          this.validationErrors.productName = 'Product name must be at least 2 characters';
+          this.validationErrors.productName = this.t('validation.nameMinLength');
         } else if (value.length > 100) {
-          this.validationErrors.productName = 'Product name must not exceed 100 characters';
+          this.validationErrors.productName = this.t('validation.nameMaxLength');
         }
         break;
       case 'categoryId':
         if (!value || value === '0') {
-          this.validationErrors.categoryId = 'Please select a category';
+          this.validationErrors.categoryId = this.t('validation.categoryRequired');
         }
         break;
       case 'purchasePrice':
         if (!value || value === '' || value === '0') {
-          this.validationErrors.purchasePrice = 'Purchase price is required and must be greater than 0';
+          this.validationErrors.purchasePrice = this.t('validation.purchasePriceRequired');
         } else if (isNaN(Number(value))) {
-          this.validationErrors.purchasePrice = 'Purchase price must be a valid number';
+          this.validationErrors.purchasePrice = this.t('validation.purchasePriceInvalid');
         } else if (Number(value) <= 0) {
-          this.validationErrors.purchasePrice = 'Purchase price must be greater than 0';
+          this.validationErrors.purchasePrice = this.t('validation.purchasePricePositive');
         }
         break;
       case 'salePrice':
         if (!value || value === '' || value === '0') {
-          this.validationErrors.salePrice = 'Selling price is required and must be greater than 0';
+          this.validationErrors.salePrice = this.t('validation.salePriceRequired');
         } else if (isNaN(Number(value))) {
-          this.validationErrors.salePrice = 'Selling price must be a valid number';
+          this.validationErrors.salePrice = this.t('validation.salePriceInvalid');
         } else if (Number(value) <= 0) {
-          this.validationErrors.salePrice = 'Selling price must be greater than 0';
+          this.validationErrors.salePrice = this.t('validation.salePricePositive');
         } else if (Number(value) < Number(this.productForm.purchasePrice)) {
-          this.validationErrors.salePrice = 'Selling price cannot be less than purchase price (৳' + Number(this.productForm.purchasePrice).toFixed(2) + ')';
+          this.validationErrors.salePrice = this.t('validation.salePriceLessThanPurchase', {
+            price: Number(this.productForm.purchasePrice).toFixed(2)
+          });
         }
         break;
     }
@@ -188,13 +200,13 @@ export class ProductComponent implements OnInit {
 
     this.productService.createProduct(payload).subscribe({
       next: (response: any) => {
-        this.alertService.success('Product created successfully!');
+        this.alertService.success(this.t('messages.createSuccess'));
         this.resetForm();
         this.getAllProducts();
       },
       error: (err: any) => {
         console.error('Error creating product:', err);
-        this.alertService.error('Failed to create product: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.createError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -225,14 +237,14 @@ export class ProductComponent implements OnInit {
 
     this.productService.updateProduct(this.editingId, payload).subscribe({
       next: (response: any) => {
-        this.alertService.success('Product updated successfully!');
+        this.alertService.success(this.t('messages.updateSuccess'));
         this.resetForm();
         this.editingId = null;
         this.getAllProducts();
       },
       error: (err: any) => {
         console.error('Error updating product:', err);
-        this.alertService.error('Failed to update product: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.updateError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -244,16 +256,16 @@ export class ProductComponent implements OnInit {
   }
 
   deleteProduct(id: number, name: string): void {
-    this.alertService.confirm(`Are you sure you want to delete "${name}"?`).then((confirmed: boolean) => {
+    this.alertService.confirm(this.t('messages.deleteConfirm', { name })).then((confirmed: boolean) => {
       if (confirmed) {
         this.productService.deleteProduct(id).subscribe({
           next: (response: any) => {
-            this.alertService.success('Product deleted successfully!');
+            this.alertService.success(this.t('messages.deleteSuccess'));
             this.getAllProducts();
           },
           error: (err: any) => {
             console.error('Error deleting product:', err);
-            this.alertService.error('Failed to delete product: ' + (err.error?.message || err.message));
+            this.alertService.error(this.t('messages.deleteError', { error: err.error?.message || err.message }));
           }
         });
       }
@@ -270,7 +282,7 @@ export class ProductComponent implements OnInit {
       error: (err: any) => {
         console.error('Error loading products:', err);
         this.products = [];
-        this.alertService.error('Failed to load products: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }));
       }
     });
   }

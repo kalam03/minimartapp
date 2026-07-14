@@ -1,6 +1,9 @@
 // alert.service.ts
-import { Injectable, ComponentRef, ApplicationRef, createComponent, EnvironmentInjector } from '@angular/core';
+import { Injectable, ComponentRef, ApplicationRef, createComponent, EnvironmentInjector, inject } from '@angular/core';
 import { AlertComponent } from './alert.component';
+// 'shared' is registered as a global scope in app.config.ts (provideTranslocoScope('shared')),
+// so it's already loaded here even though AlertService is providedIn: 'root'.
+import { TranslocoService } from '@jsverse/transloco';
 
 export interface AlertOptions {
   type: 'success' | 'error' | 'warning' | 'info' | 'confirm';
@@ -17,8 +20,18 @@ export interface AlertOptions {
 })
 export class AlertService {
   private alertComponentRef: ComponentRef<AlertComponent> | null = null;
+  private transloco = inject(TranslocoService);
 
   constructor(private appRef: ApplicationRef, private injector: EnvironmentInjector) {}
+
+  // Only used as a *default* when a caller doesn't pass an explicit
+  // title/button text — callers that pass their own English string (the
+  // majority of existing `alertService.success('Product added')` call
+  // sites across the feature modules) are unaffected and are exactly what
+  // still needs migrating to transloco keys module-by-module.
+  private t(key: string): string {
+    return this.transloco.translate(`shared.${key}`);
+  }
 
   private show(options: AlertOptions): Promise<boolean> {
     return new Promise((resolve) => {
@@ -34,8 +47,8 @@ export class AlertService {
       componentRef.instance.type = options.type;
       componentRef.instance.title = options.title;
       componentRef.instance.message = options.message;
-      componentRef.instance.confirmText = options.confirmText || 'OK';
-      componentRef.instance.cancelText = options.cancelText || 'Cancel';
+      componentRef.instance.confirmText = options.confirmText || this.t('buttons.ok');
+      componentRef.instance.cancelText = options.cancelText || this.t('buttons.cancel');
       componentRef.instance.duration = options.duration || 3000;
       componentRef.instance.showCancel = options.showCancel || false;
       
@@ -57,53 +70,53 @@ export class AlertService {
     });
   }
 
-  success(message: string, title: string = 'Success', duration: number = 3000): Promise<boolean> {
+  success(message: string, title?: string, duration: number = 3000): Promise<boolean> {
     return this.show({
       type: 'success',
-      title,
+      title: title ?? this.t('messages.success'),
       message,
       duration,
       showCancel: false
     });
   }
 
-  error(message: string, title: string = 'Error', duration: number = 3000): Promise<boolean> {
+  error(message: string, title?: string, duration: number = 3000): Promise<boolean> {
     return this.show({
       type: 'error',
-      title,
+      title: title ?? this.t('messages.error'),
       message,
       duration,
       showCancel: false
     });
   }
 
-  warning(message: string, title: string = 'Warning', duration: number = 3000): Promise<boolean> {
+  warning(message: string, title?: string, duration: number = 3000): Promise<boolean> {
     return this.show({
       type: 'warning',
-      title,
+      title: title ?? this.t('messages.warning'),
       message,
       duration,
       showCancel: false
     });
   }
 
-  info(message: string, title: string = 'Information', duration: number = 3000): Promise<boolean> {
+  info(message: string, title?: string, duration: number = 3000): Promise<boolean> {
     return this.show({
       type: 'info',
-      title,
+      title: title ?? this.t('messages.info'),
       message,
       duration,
       showCancel: false
     });
   }
 
-  confirm(message: string, title: string = 'Confirm', confirmText: string = 'Confirm', cancelText: string = 'Cancel'): Promise<boolean> {
+  confirm(message: string, title?: string, confirmText?: string, cancelText?: string): Promise<boolean> {
     return this.show({
       type: 'confirm',
-      title,
+      title: title ?? this.t('messages.confirmTitle'),
       message,
-      confirmText,
-      cancelText,
+      confirmText: confirmText ?? this.t('buttons.confirm'),
+      cancelText: cancelText ?? this.t('buttons.cancel'),
       showCancel: true
     });
   }

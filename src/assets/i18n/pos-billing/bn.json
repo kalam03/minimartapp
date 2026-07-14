@@ -1,0 +1,86 @@
+{
+  "banner": {
+    "processingOrder": "অর্ডার #{{id}} প্রক্রিয়াকরণ হচ্ছে — এই অর্ডার সম্পন্ন করতে বিল জমা দিন",
+    "loadingItems": "আইটেম লোড হচ্ছে…"
+  },
+  "product": {
+    "sectionTitle": "পণ্য নির্বাচন করুন",
+    "searchPlaceholder": "পণ্য খুঁজুন...",
+    "noProductsFound": "কোনো পণ্য পাওয়া যায়নি",
+    "price": "মূল্য",
+    "qty": "পরিমাণ",
+    "total": "মোট",
+    "addToCart": "+ কার্টে যুক্ত করুন",
+    "clear": "পরিষ্কার করুন",
+    "stock": "স্টক: {{qty}}"
+  },
+  "cart": {
+    "sectionTitle": "কার্ট আইটেম ({{count}})",
+    "clearAll": "সব পরিষ্কার করুন",
+    "outOfStock": "স্টক নেই",
+    "empty": "কার্ট খালি",
+    "table": {
+      "product": "পণ্য",
+      "qty": "পরিমাণ",
+      "price": "মূল্য",
+      "total": "মোট",
+      "del": "মুছুন"
+    }
+  },
+  "customer": {
+    "sectionTitle": "ক্রেতা",
+    "searchPlaceholder": "ক্রেতা খুঁজুন...",
+    "noCustomersFound": "কোনো ক্রেতা পাওয়া যায়নি",
+    "due": "বাকি: ৳{{amount}}",
+    "credit": "ক্রেডিট: ৳{{amount}}",
+    "mobile": "মোবাইল",
+    "mobilePlaceholder": "ফোন নম্বর লিখুন",
+    "discount": "ছাড় ৳",
+    "discountTitle": "মোটের শতাংশ হিসেবে ছাড়",
+    "address": "ঠিকানা",
+    "previousDue": "পূর্বের বাকি",
+    "advanceCredit": "অগ্রিম ক্রেডিট",
+    "transport": "পরিবহন",
+    "transportSelect": "নির্বাচন করুন",
+    "transportPickup": "পিকআপ",
+    "transportDelivery": "ডেলিভারি",
+    "transportCourier": "কুরিয়ার"
+  },
+  "messages": {
+    "orderLoadedTitle": "অর্ডার লোড হয়েছে",
+    "orderLoadedBody": "অর্ডার #{{id}} লোড হয়েছে — {{count}}টি আইটেম\nক্রেতা: {{customer}}",
+    "walkIn": "ওয়াক-ইন",
+    "noProductSelectedTitle": "কোনো পণ্য নির্বাচিত নয়",
+    "noProductSelectedBody": "কার্টে যুক্ত করতে একটি পণ্য নির্বাচন করুন।",
+    "stockAvailable": "স্টকে মাত্র {{qty}}টি আইটেম আছে",
+    "cartEmptyWarning": "কার্ট খালি। চালিয়ে যেতে আইটেম যুক্ত করুন।",
+    "confirmSubmitTitle": "বিল জমাদান নিশ্চিত করুন",
+    "confirmSubmitBody": "আপনি কি নিশ্চিত বিল জমা দিতে চান? মোট: ৳{{amount}}",
+    "orderCompleteTitle": "অর্ডার সম্পন্ন",
+    "orderCompleteBody": "বিল জমা হয়েছে এবং অর্ডার সম্পন্ন হয়েছে!\nইনভয়েস: {{invoiceNo}}",
+    "billSubmittedSuccess": "বিল সফলভাবে জমা হয়েছে!\nইনভয়েস: {{invoiceNo}}",
+    "stockConflictTitle": "স্টক দ্বন্দ্ব — বিক্রয় সম্পন্ন করা যায়নি",
+    "stockConflictBody": "\"{{productName}}\" স্টকে নেই।\nউপলব্ধ: {{available}} একক · প্রয়োজন: {{required}} একক।\nআরেকটি কাউন্টার এই আইটেমের জন্য একটি বিক্রয় সম্পন্ন করেছে।\nআইটেমটি মুছুন বা কমান এবং আবার চেষ্টা করুন।",
+    "submitBillErrorTitle": "বিল জমা দিতে সমস্যা হয়েছে",
+    "invoiceDetails": "ইনভয়েস বিবরণ:\nনম্বর: {{number}}\nক্রেতা: {{customer}}\nমোট: ৳{{total}}\nছাড়: ৳{{discount}}\nসর্বমোট: ৳{{gross}}\nতারিখ: {{date}}",
+    "allowPopups": "রসিদ প্রিভিউ দেখতে পপ-আপ অনুমতি দিন"
+  },
+  "bill": {
+    "sectionTitle": "বিল",
+    "total": "মোট:",
+    "transport": "পরিবহন:",
+    "discount": "ছাড়:",
+    "previousDue": "পূর্বের বাকি:",
+    "advanceCredit": "অগ্রিম ক্রেডিট:",
+    "gross": "সর্বমোট:",
+    "paymentMethod": "পেমেন্ট পদ্ধতি",
+    "cash": "নগদ",
+    "bkash": "বিকাশ",
+    "bank": "ব্যাংক",
+    "amountPaid": "পরিশোধিত পরিমাণ",
+    "return": "ফেরত",
+    "due": "বাকি",
+    "submitBill": "বিল জমা দিন",
+    "reset": "রিসেট"
+  }
+}

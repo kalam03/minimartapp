@@ -1,0 +1,136 @@
+{
+  "dateFilter": {
+    "label": "Date Range",
+    "from": "From",
+    "to": "To",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "quarter": "Quarter",
+    "reset": "Reset"
+  },
+  "salesSummary": {
+    "title": "Sales Summary",
+    "loading": "Loading…",
+    "invoices": "Invoices",
+    "totalSales": "Total Sales",
+    "discount": "Discount",
+    "transport": "Transport",
+    "netAmount": "Net Amount",
+    "paid": "Paid",
+    "due": "Due"
+  },
+  "purchaseSummary": {
+    "title": "Purchase Summary",
+    "loading": "Loading…",
+    "invoices": "Invoices",
+    "totalPurchase": "Total Purchase",
+    "discount": "Discount",
+    "transport": "Transport",
+    "netAmount": "Net Amount",
+    "paid": "Paid",
+    "due": "Due"
+  },
+  "kpi": {
+    "totalSales": "Total Sales",
+    "netAmount": "Net Amount",
+    "invoicesCount": "Invoices: {{count}}",
+    "totalPurchases": "Total Purchases",
+    "netProfit": "Net Profit",
+    "salesMinusPurchase": "Sales Net − Purchase Net",
+    "transactions": "Transactions",
+    "salesCount": "Sales: {{count}}",
+    "purchaseCount": "Purchase: {{count}}",
+    "totalCustomers": "Total Customers",
+    "activeAccounts": "Active accounts",
+    "dueAmount": "Due: ৳{{amount}}",
+    "totalSuppliers": "Total Suppliers",
+    "activeVendors": "Active vendors",
+    "debtAmount": "Debt: ৳{{amount}}",
+    "inventoryValue": "Inventory Value",
+    "productsCount": "{{count}} products",
+    "lowStockCount": "Low stock: {{count}}",
+    "avgTransaction": "Avg. Transaction",
+    "perTransaction": "Per transaction"
+  },
+  "dailyPerformance": {
+    "title": "Daily Performance (Last 7 Days)",
+    "sales": "Sales",
+    "purchases": "Purchases",
+    "noData": "No data for the last 7 days",
+    "salesTooltip": "Sales: ৳{{amount}}",
+    "purchasesTooltip": "Purchases: ৳{{amount}}"
+  },
+  "customerDue": {
+    "title": "Customers by Due Amount",
+    "total": "{{count}} total",
+    "searchPlaceholder": "Search by name or phone…",
+    "columns": { "no": "#", "customer": "Customer", "phone": "Phone", "dueAmount": "Due Amount" },
+    "noRecords": "No records found",
+    "pageInfo": "Page {{page}} of {{total}}"
+  },
+  "supplierDue": {
+    "title": "Suppliers by Due Amount",
+    "total": "{{count}} total",
+    "searchPlaceholder": "Search by name or phone…",
+    "columns": { "no": "#", "supplier": "Supplier", "phone": "Phone", "dueAmount": "Due Amount" },
+    "noRecords": "No records found",
+    "pageInfo": "Page {{page}} of {{total}}"
+  },
+  "lowStock": {
+    "title": "Low Stock Alert",
+    "thresholdLabel": "Threshold ≤",
+    "itemsCount": "{{count}} items",
+    "searchPlaceholder": "Search by product name or barcode…",
+    "columns": {
+      "no": "#",
+      "product": "Product",
+      "category": "Category",
+      "barcode": "Barcode",
+      "stockQty": "Stock Qty",
+      "purchasePrice": "Purchase Price",
+      "salePrice": "Sale Price",
+      "status": "Status"
+    },
+    "outOfStock": "Out of Stock",
+    "lowStock": "Low Stock",
+    "noItems": "No low stock items found",
+    "pageInfo": "Page {{page}} of {{total}}"
+  },
+  "topProducts": {
+    "title": "Top Products by Inventory Value",
+    "searchPlaceholder": "Search by product name or category…",
+    "columns": { "product": "Product", "category": "Category", "stock": "Stock", "unitPrice": "Unit Price", "totalValue": "Total Value" },
+    "noMatch": "No products match"
+  },
+  "recentTransactions": {
+    "title": "Recent Transactions",
+    "total": "{{count}} total",
+    "totalDebit": "Total Debit",
+    "totalCredit": "Total Credit",
+    "revenue": "Revenue (C − D)",
+    "searchPlaceholder": "Search by TXN no, reference, GL account, narration…",
+    "filterAll": "All (D/C)",
+    "filterDebit": "Debit only",
+    "filterCredit": "Credit only",
+    "columns": {
+      "no": "#",
+      "date": "Date",
+      "txnNo": "TXN No",
+      "reference": "Reference",
+      "glAccount": "GL Account",
+      "mode": "Mode",
+      "drCr": "D/C",
+      "amount": "Amount",
+      "narration": "Narration",
+      "status": "Status"
+    },
+    "debit": "Debit",
+    "credit": "Credit",
+    "approved": "Approved",
+    "pending": "Pending",
+    "noTransactions": "No transactions found",
+    "pageInfo": "Page {{page}} of {{total}}"
+  }
+}

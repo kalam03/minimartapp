@@ -3,9 +3,38 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../services/auth.service';
 import { PermissionService, NavItem } from '../services/permission.service';
 import { ThemeService, AppTheme } from '../services/theme.service';
+import { LanguageService, AppLanguage } from '../services/language.service';
+
+// Nav items are DB-driven (PermissionService.navItems$) so their `label`
+// comes from the menu/permission table, not a component string — it can't
+// be swapped for a transloco key the usual way. This maps each KNOWN path
+// to a shared.nav.* key so the built-in menu renders in Bangla; any custom
+// permission entry not listed here just falls back to whatever label the
+// API sent (documented as a follow-up in the rollout checklist).
+const NAV_LABEL_KEY_BY_PATH: Record<string, string> = {
+  '/dashboard':               'shared.nav.dashboard',
+  '/suppliers':                'shared.nav.suppliers',
+  '/products':                 'shared.nav.products',
+  '/unit-types':                'shared.nav.unitTypes',
+  '/categories':                'shared.nav.categories',
+  '/barcode-generator':         'shared.nav.barcodeGenerator',
+  '/Purchases':                 'shared.nav.purchases',
+  '/pos':                       'shared.nav.counter',
+  '/orders':                    'shared.nav.orders',
+  '/customers':                 'shared.nav.customers',
+  '/security/users':            'shared.nav.users',
+  '/security/roles':            'shared.nav.roles',
+  '/security/permissions':      'shared.nav.permissions',
+  '/capital':                   'shared.nav.capital',
+  '/writeoffs':                 'shared.nav.writeoffs',
+  '/employees':                 'shared.nav.payroll',
+  '/investors':                 'shared.nav.investors',
+  '/reports':                   'shared.nav.reports',
+};
 
 // Fallback nav items shown for admin or when permission data hasn't loaded yet.
 // The DB-driven menu will replace these once loadMyMenus() resolves.
@@ -33,7 +62,7 @@ const FALLBACK_NAV: NavItem[] = [
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, RouterOutlet],
+  imports: [CommonModule, FormsModule, RouterModule, RouterOutlet, TranslocoModule],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
@@ -54,14 +83,21 @@ export class LayoutComponent implements OnInit, OnDestroy {
   get filteredNavItems(): NavItem[] {
     const q = this.navSearch.trim().toLowerCase();
     if (!q) return this.navItems;
-    return this.navItems.filter(i => i.label.toLowerCase().includes(q));
+    return this.navItems.filter(i => this.navLabel(i).toLowerCase().includes(q));
   }
 
-  // Quick actions (static)
+  /** Resolves the localized label for a DB-driven nav item — see NAV_LABEL_KEY_BY_PATH. */
+  navLabel(item: NavItem): string {
+    const key = NAV_LABEL_KEY_BY_PATH[item.path];
+    return key ? this.transloco.translate(key) : item.label;
+  }
+
+  // Quick actions (static) — `label` holds a transloco key (assets/i18n/shared/{en,bn}.json),
+  // resolved in the template via `{{ action.label | transloco }}`.
   quickActions = [
-    { icon: 'M12 4v16m8-8H4',                                                                                                           label: 'New Order'   },
-    { icon: 'M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4',                                                                             label: 'Add Product' },
-    { icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',         label: 'New Customer'},
+    { icon: 'M12 4v16m8-8H4',                                                                                                           label: 'shared.quickActions.newOrder'   },
+    { icon: 'M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4',                                                                             label: 'shared.quickActions.addProduct' },
+    { icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',         label: 'shared.quickActions.newCustomer'},
   ];
 
   private navSub?: Subscription;
@@ -97,20 +133,45 @@ export class LayoutComponent implements OnInit, OnDestroy {
     };
   }
 
+  // Language picker
+  isLangMenuOpen = signal(false);
+  get languages(): AppLanguage[] { return this.languageService.languages; }
+  get currentLanguageCode(): string { return this.languageService.currentLanguage(); }
+  get currentLanguageLabel(): string {
+    return this.currentLanguageCode === 'bn' ? 'বাংলা' : 'EN';
+  }
+
+  toggleLangMenu(): void {
+    this.isLangMenuOpen.update(open => !open);
+  }
+
+  closeLangMenu(): void {
+    this.isLangMenuOpen.set(false);
+  }
+
+  selectLanguage(code: string): void {
+    this.languageService.setLanguage(code);
+    this.closeLangMenu();
+  }
+
   constructor(
     private authService: AuthService,
     private permSvc: PermissionService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private languageService: LanguageService,
+    private transloco: TranslocoService
   ) {
     this.checkScreenSize();
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.isThemeMenuOpen()) return;
     const target = event.target as HTMLElement;
-    if (!target.closest('.theme-picker')) {
+    if (this.isThemeMenuOpen() && !target.closest('.theme-picker')) {
       this.closeThemeMenu();
+    }
+    if (this.isLangMenuOpen() && !target.closest('.lang-picker')) {
+      this.closeLangMenu();
     }
   }
 

@@ -1,0 +1,86 @@
+{
+  "banner": {
+    "processingOrder": "Processing Order #{{id}} — Submit bill to complete this order",
+    "loadingItems": "Loading items…"
+  },
+  "product": {
+    "sectionTitle": "Select Product",
+    "searchPlaceholder": "Search product...",
+    "noProductsFound": "No products found",
+    "price": "Price",
+    "qty": "Qty",
+    "total": "Total",
+    "addToCart": "+ Add to Cart",
+    "clear": "Clear",
+    "stock": "Stock: {{qty}}"
+  },
+  "cart": {
+    "sectionTitle": "Cart Items ({{count}})",
+    "clearAll": "Clear All",
+    "outOfStock": "Out of stock",
+    "empty": "Cart is empty",
+    "table": {
+      "product": "Product",
+      "qty": "Qty",
+      "price": "Price",
+      "total": "Total",
+      "del": "Del"
+    }
+  },
+  "customer": {
+    "sectionTitle": "Customer",
+    "searchPlaceholder": "Search customer...",
+    "noCustomersFound": "No customers found",
+    "due": "Due: ৳{{amount}}",
+    "credit": "Credit: ৳{{amount}}",
+    "mobile": "Mobile",
+    "mobilePlaceholder": "Enter phone",
+    "discount": "Discount ৳",
+    "discountTitle": "Discount as % of total",
+    "address": "Address",
+    "previousDue": "Previous Due",
+    "advanceCredit": "Advance Credit",
+    "transport": "Transport",
+    "transportSelect": "Select",
+    "transportPickup": "Pickup",
+    "transportDelivery": "Delivery",
+    "transportCourier": "Courier"
+  },
+  "messages": {
+    "orderLoadedTitle": "Order Loaded",
+    "orderLoadedBody": "Order #{{id}} loaded — {{count}} item(s)\nCustomer: {{customer}}",
+    "walkIn": "Walk-in",
+    "noProductSelectedTitle": "No Product Selected",
+    "noProductSelectedBody": "Please select a product to add to the cart.",
+    "stockAvailable": "Only {{qty}} items available in stock",
+    "cartEmptyWarning": "Cart is empty. Please add items to continue.",
+    "confirmSubmitTitle": "Confirm Bill Submission",
+    "confirmSubmitBody": "Are you sure you want to submit the bill? Total: ৳{{amount}}",
+    "orderCompleteTitle": "Order Done",
+    "orderCompleteBody": "Bill Submitted & Order Completed!\nInvoice: {{invoiceNo}}",
+    "billSubmittedSuccess": "Bill Submitted Successfully!\nInvoice: {{invoiceNo}}",
+    "stockConflictTitle": "Stock Conflict — Sale Cannot Complete",
+    "stockConflictBody": "\"{{productName}}\" is out of stock.\nAvailable: {{available}} unit(s) · Requested: {{required}} unit(s).\nAnother counter completed a sale for this item just now.\nPlease remove or reduce the item and try again.",
+    "submitBillErrorTitle": "Error submitting bill",
+    "invoiceDetails": "Invoice Details:\nNumber: {{number}}\nCustomer: {{customer}}\nTotal: ৳{{total}}\nDiscount: ৳{{discount}}\nGross: ৳{{gross}}\nDate: {{date}}",
+    "allowPopups": "Please allow pop-ups to view receipt preview"
+  },
+  "bill": {
+    "sectionTitle": "Bill",
+    "total": "Total:",
+    "transport": "Transport:",
+    "discount": "Discount:",
+    "previousDue": "Previous Due:",
+    "advanceCredit": "Advance Credit:",
+    "gross": "Gross:",
+    "paymentMethod": "Payment Method",
+    "cash": "Cash",
+    "bkash": "Bkash",
+    "bank": "Bank",
+    "amountPaid": "Amount Paid",
+    "return": "Return",
+    "due": "Due",
+    "submitBill": "Submit Bill",
+    "reset": "Reset"
+  }
+}

@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 import { CustomerService } from '../../services/customer.service';
 import { PurchaseService, PurchaseSummaryDto } from '../../services/purchase.service';
 import { SaleService, SalesSummaryDto, DailyPerformanceDto } from '../../services/sale.service';
@@ -52,7 +53,10 @@ interface DailyStats {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/dashboard/{en,bn}.json only when this route is hit —
+  // see Multilingual_Localization_Architecture.md Section 5.1.
+  providers: [provideTranslocoScope('dashboard')],
   template: `
     <div class="px-3 py-2">
       <div class="max-w-8xl mx-auto">
@@ -67,12 +71,12 @@ interface DailyStats {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
-              <span class="text-xs font-semibold whitespace-nowrap">Date Range</span>
+              <span class="text-xs font-semibold whitespace-nowrap">{{ 'dashboard.dateFilter.label' | transloco }}</span>
             </div>
 
             <!-- From date -->
             <div class="flex items-center gap-1">
-              <span class="text-xs text-gray-400 whitespace-nowrap">From</span>
+              <span class="text-xs text-gray-400 whitespace-nowrap">{{ 'dashboard.dateFilter.from' | transloco }}</span>
               <input type="date" [(ngModel)]="startDate" (change)="filterByDate()"
                 class="text-xs border rounded-md px-2 py-1 outline-none transition-all"
                 style="border-color:#d1d5f0; color:var(--theme-primary); min-width:120px"
@@ -81,7 +85,7 @@ interface DailyStats {
 
             <!-- To date -->
             <div class="flex items-center gap-1">
-              <span class="text-xs text-gray-400 whitespace-nowrap">To</span>
+              <span class="text-xs text-gray-400 whitespace-nowrap">{{ 'dashboard.dateFilter.to' | transloco }}</span>
               <input type="date" [(ngModel)]="endDate" (change)="filterByDate()"
                 class="text-xs border rounded-md px-2 py-1 outline-none transition-all"
                 style="border-color:#d1d5f0; color:var(--theme-primary); min-width:120px"
@@ -100,35 +104,35 @@ interface DailyStats {
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'"
                 onmouseover="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='var(--theme-text)'"
                 onmouseout="if(this.dataset.q!==document.querySelector('[data-active]')?.dataset?.active) this.style.background='#f0f2fb'">
-                Today
+                {{ 'dashboard.dateFilter.today' | transloco }}
               </button>
               <button (click)="applyQuick('yesterday')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='yesterday'
                   ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-                Yesterday
+                {{ 'dashboard.dateFilter.yesterday' | transloco }}
               </button>
               <button (click)="applyQuick('week')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='week'
                   ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-                This Week
+                {{ 'dashboard.dateFilter.thisWeek' | transloco }}
               </button>
               <button (click)="applyQuick('month')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='month'
                   ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-                This Month
+                {{ 'dashboard.dateFilter.thisMonth' | transloco }}
               </button>
               <button (click)="applyQuick('quarter')"
                 class="px-2 py-0.5 text-xs rounded-full font-medium transition-all border"
                 [style]="activeQuick==='quarter'
                   ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
                   : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-                Quarter
+                {{ 'dashboard.dateFilter.quarter' | transloco }}
               </button>
             </div>
 
@@ -141,7 +145,7 @@ interface DailyStats {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
-              Reset
+              {{ 'dashboard.dateFilter.reset' | transloco }}
             </button>
 
           </div>
@@ -150,37 +154,37 @@ interface DailyStats {
         <!-- Sales Summary from API -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
           <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-            <h3 class="text-white font-semibold text-sm">Sales Summary</h3>
-            <span *ngIf="salesSummaryLoading" class="text-xs" style="color:var(--theme-accent)">Loading…</span>
+            <h3 class="text-white font-semibold text-sm">{{ 'dashboard.salesSummary.title' | transloco }}</h3>
+            <span *ngIf="salesSummaryLoading" class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.salesSummary.loading' | transloco }}</span>
             <span *ngIf="!salesSummaryLoading" class="text-xs" style="color:var(--theme-accent)">{{ startDate }} → {{ endDate }}</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-gray-100">
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Invoices</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.invoices' | transloco }}</p>
               <p class="text-base font-bold" style="color:var(--theme-primary)">{{ salesSummary.totalInvoices }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Total Sales</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.totalSales' | transloco }}</p>
               <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ salesSummary.totalSales | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Discount</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.discount' | transloco }}</p>
               <p class="text-base font-bold text-green-600">৳{{ salesSummary.totalDiscount | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Transport</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.transport' | transloco }}</p>
               <p class="text-base font-bold text-orange-500">৳{{ salesSummary.totalTransport | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Net Amount</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.netAmount' | transloco }}</p>
               <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Paid</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.paid' | transloco }}</p>
               <p class="text-base font-bold text-green-600">৳{{ salesSummary.totalPaid | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Due</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.salesSummary.due' | transloco }}</p>
               <p class="text-base font-bold text-red-600">৳{{ salesSummary.totalDue | number:'1.2-2' }}</p>
             </div>
           </div>
@@ -189,37 +193,37 @@ interface DailyStats {
         <!-- Purchase Summary from API -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
           <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-            <h3 class="text-white font-semibold text-sm">Purchase Summary</h3>
-            <span *ngIf="purchaseSummaryLoading" class="text-xs" style="color:var(--theme-accent)">Loading…</span>
+            <h3 class="text-white font-semibold text-sm">{{ 'dashboard.purchaseSummary.title' | transloco }}</h3>
+            <span *ngIf="purchaseSummaryLoading" class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.purchaseSummary.loading' | transloco }}</span>
             <span *ngIf="!purchaseSummaryLoading" class="text-xs" style="color:var(--theme-accent)">{{ startDate }} → {{ endDate }}</span>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 divide-x divide-y sm:divide-y-0 divide-gray-100">
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Invoices</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.invoices' | transloco }}</p>
               <p class="text-base font-bold" style="color:var(--theme-primary)">{{ purchaseSummary.totalInvoices }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Total Purchase</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.totalPurchase' | transloco }}</p>
               <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ purchaseSummary.totalPurchase | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Discount</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.discount' | transloco }}</p>
               <p class="text-base font-bold text-green-600">৳{{ purchaseSummary.totalDiscount | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Transport</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.transport' | transloco }}</p>
               <p class="text-base font-bold text-orange-500">৳{{ purchaseSummary.totalTransport | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Net Amount</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.netAmount' | transloco }}</p>
               <p class="text-base font-bold" style="color:var(--theme-primary)">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Paid</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.paid' | transloco }}</p>
               <p class="text-base font-bold text-green-600">৳{{ purchaseSummary.totalPaid | number:'1.2-2' }}</p>
             </div>
             <div class="px-3 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Due</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.purchaseSummary.due' | transloco }}</p>
               <p class="text-base font-bold text-red-600">৳{{ purchaseSummary.totalDue | number:'1.2-2' }}</p>
             </div>
           </div>
@@ -229,35 +233,35 @@ interface DailyStats {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Sales</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.totalSales' | transloco }}</p>
               <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold" style="color:var(--theme-primary)">৳{{ salesSummary.totalNetAmount | number:'1.2-2' }}</p>
-              <p class="text-xs text-gray-400 mt-1">Net Amount</p>
-              <p class="text-xs text-gray-400 mt-0.5">Invoices: {{ salesSummary.totalInvoices }}</p>
+              <p class="text-xs text-gray-400 mt-1">{{ 'dashboard.kpi.netAmount' | transloco }}</p>
+              <p class="text-xs text-gray-400 mt-0.5">{{ 'dashboard.kpi.invoicesCount' | transloco: { count: salesSummary.totalInvoices } }}</p>
             </div>
           </div>
 
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Purchases</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.totalPurchases' | transloco }}</p>
               <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold" style="color:var(--theme-primary)">৳{{ purchaseSummary.totalNetAmount | number:'1.2-2' }}</p>
-              <p class="text-xs text-gray-400 mt-1">Net Amount</p>
-              <p class="text-xs text-gray-400 mt-0.5">Invoices: {{ purchaseSummary.totalInvoices }}</p>
+              <p class="text-xs text-gray-400 mt-1">{{ 'dashboard.kpi.netAmount' | transloco }}</p>
+              <p class="text-xs text-gray-400 mt-0.5">{{ 'dashboard.kpi.invoicesCount' | transloco: { count: purchaseSummary.totalInvoices } }}</p>
             </div>
           </div>
 
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Net Profit</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.netProfit' | transloco }}</p>
               <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
               </svg>
@@ -268,13 +272,13 @@ interface DailyStats {
                 [class.text-red-600]="(salesSummary.totalNetAmount - purchaseSummary.totalNetAmount) < 0">
                 ৳{{ (salesSummary.totalNetAmount - purchaseSummary.totalNetAmount) | number:'1.2-2' }}
               </p>
-              <p class="text-xs text-gray-400 mt-1">Sales Net − Purchase Net</p>
+              <p class="text-xs text-gray-400 mt-1">{{ 'dashboard.kpi.salesMinusPurchase' | transloco }}</p>
             </div>
           </div>
 
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Transactions</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.transactions' | transloco }}</p>
               <svg class="w-4 h-4" fill="none" stroke="var(--theme-accent)" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
@@ -282,8 +286,8 @@ interface DailyStats {
             <div class="px-3 py-2">
               <p class="text-xl font-bold" style="color:var(--theme-primary)">{{ salesSummary.totalInvoices + purchaseSummary.totalInvoices }}</p>
               <div class="flex gap-3 mt-1 text-xs">
-                <span class="text-green-600">Sales: {{ salesSummary.totalInvoices }}</span>
-                <span class="text-orange-500">Purchase: {{ purchaseSummary.totalInvoices }}</span>
+                <span class="text-green-600">{{ 'dashboard.kpi.salesCount' | transloco: { count: salesSummary.totalInvoices } }}</span>
+                <span class="text-orange-500">{{ 'dashboard.kpi.purchaseCount' | transloco: { count: purchaseSummary.totalInvoices } }}</span>
               </div>
             </div>
           </div>
@@ -293,44 +297,44 @@ interface DailyStats {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Customers</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.totalCustomers' | transloco }}</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">{{ totalCustomers }}</p>
-              <p class="text-xs mt-1" style="color:var(--theme-accent)">Active accounts</p>
-              <p class="text-xs mt-1 text-white opacity-70">Due: ৳{{ totalCustomerDue | number:'1.2-2' }}</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'dashboard.kpi.activeAccounts' | transloco }}</p>
+              <p class="text-xs mt-1 text-white opacity-70">{{ 'dashboard.kpi.dueAmount' | transloco: { amount: (totalCustomerDue | number:'1.2-2') } }}</p>
             </div>
           </div>
 
           <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary-light)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Suppliers</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.totalSuppliers' | transloco }}</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">{{ totalSuppliers }}</p>
-              <p class="text-xs mt-1" style="color:var(--theme-accent)">Active vendors</p>
-              <p class="text-xs mt-1 text-white opacity-70">Debt: ৳{{ totalSupplierDebt | number:'1.2-2' }}</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'dashboard.kpi.activeVendors' | transloco }}</p>
+              <p class="text-xs mt-1 text-white opacity-70">{{ 'dashboard.kpi.debtAmount' | transloco: { amount: (totalSupplierDebt | number:'1.2-2') } }}</p>
             </div>
           </div>
 
           <div class="rounded-xl border overflow-hidden" style="background:var(--theme-border)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Inventory Value</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.inventoryValue' | transloco }}</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">৳{{ inventoryValue | number:'1.0-0' }}</p>
-              <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ totalProducts }} products</p>
-              <p class="text-xs mt-1 text-white opacity-70">Low stock: {{ lowStockProducts.length }}</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'dashboard.kpi.productsCount' | transloco: { count: totalProducts } }}</p>
+              <p class="text-xs mt-1 text-white opacity-70">{{ 'dashboard.kpi.lowStockCount' | transloco: { count: lowStockProducts.length } }}</p>
             </div>
           </div>
 
           <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
             <div class="px-3 py-2 border-b border-white border-opacity-10">
-              <p class="text-xs font-semibold" style="color:var(--theme-accent)">Avg. Transaction</p>
+              <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'dashboard.kpi.avgTransaction' | transloco }}</p>
             </div>
             <div class="px-3 py-2">
               <p class="text-xl font-bold text-white">৳{{ avgTransactionValue | number:'1.2-2' }}</p>
-              <p class="text-xs mt-1" style="color:var(--theme-accent)">Per transaction</p>
+              <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'dashboard.kpi.perTransaction' | transloco }}</p>
             </div>
           </div>
         </div>
@@ -338,19 +342,19 @@ interface DailyStats {
         <!-- Daily Performance -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
           <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-            <h3 class="text-white font-semibold text-sm">Daily Performance (Last 7 Days)</h3>
+            <h3 class="text-white font-semibold text-sm">{{ 'dashboard.dailyPerformance.title' | transloco }}</h3>
             <div class="flex gap-3">
               <span class="flex items-center gap-1 text-xs" style="color:var(--theme-accent)">
-                <span class="inline-block w-3 h-3 rounded" style="background:#4ade80"></span> Sales
+                <span class="inline-block w-3 h-3 rounded" style="background:#4ade80"></span> {{ 'dashboard.dailyPerformance.sales' | transloco }}
               </span>
               <span class="flex items-center gap-1 text-xs" style="color:var(--theme-accent)">
-                <span class="inline-block w-3 h-3 rounded" style="background:#fb923c"></span> Purchases
+                <span class="inline-block w-3 h-3 rounded" style="background:#fb923c"></span> {{ 'dashboard.dailyPerformance.purchases' | transloco }}
               </span>
             </div>
           </div>
           <div class="p-3 overflow-x-auto">
             <div *ngIf="apiDailyPerformance.length === 0" class="text-center py-6 text-gray-400 text-sm">
-              No data for the last 7 days
+              {{ 'dashboard.dailyPerformance.noData' | transloco }}
             </div>
             <div class="flex gap-6 min-w-max" *ngIf="apiDailyPerformance.length > 0">
               <div *ngFor="let day of apiDailyPerformance" class="flex flex-col items-center">
@@ -358,10 +362,10 @@ interface DailyStats {
                 <div class="flex gap-1 items-end h-24">
                   <div class="w-6 rounded-t transition-all" style="background:#4ade80;min-height:2px"
                        [style.height.px]="getBarHeight(day.totalSales, apiMaxDailyValue)"
-                       [title]="'Sales: ৳' + day.totalSales"></div>
+                       [title]="('dashboard.dailyPerformance.salesTooltip' | transloco: { amount: day.totalSales })"></div>
                   <div class="w-6 rounded-t transition-all" style="background:#fb923c;min-height:2px"
                        [style.height.px]="getBarHeight(day.totalPurchases, apiMaxDailyValue)"
-                       [title]="'Purchases: ৳' + day.totalPurchases"></div>
+                       [title]="('dashboard.dailyPerformance.purchasesTooltip' | transloco: { amount: day.totalPurchases })"></div>
                 </div>
                 <div class="text-xs font-semibold mt-1"
                      [class.text-green-600]="day.profit >= 0"
@@ -379,22 +383,22 @@ interface DailyStats {
           <!-- Customer Due -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-              <h3 class="text-white font-semibold text-sm">Customers by Due Amount</h3>
-              <span class="text-xs" style="color:var(--theme-accent)">{{ customerDueTotal }} total</span>
+              <h3 class="text-white font-semibold text-sm">{{ 'dashboard.customerDue.title' | transloco }}</h3>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.customerDue.total' | transloco: { count: customerDueTotal } }}</span>
             </div>
             <div class="px-3 py-2 border-b">
               <input type="text" [(ngModel)]="customerDueSearch" (input)="customerDuePage=1; loadCustomerDue()"
-                placeholder="Search by name or phone…"
+                [placeholder]="'dashboard.customerDue.searchPlaceholder' | transloco"
                 class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
                 <thead style="background:var(--theme-primary);color:var(--theme-text)">
                   <tr>
-                    <th class="px-3 py-2 text-left">#</th>
-                    <th class="px-3 py-2 text-left">Customer</th>
-                    <th class="px-3 py-2 text-left">Phone</th>
-                    <th class="px-3 py-2 text-right">Due Amount</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.customerDue.columns.no' | transloco }}</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.customerDue.columns.customer' | transloco }}</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.customerDue.columns.phone' | transloco }}</th>
+                    <th class="px-3 py-2 text-right">{{ 'dashboard.customerDue.columns.dueAmount' | transloco }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -405,13 +409,13 @@ interface DailyStats {
                     <td class="px-3 py-2 text-right font-bold text-red-600">৳{{ c.dueAmount | number:'1.2-2' }}</td>
                   </tr>
                   <tr *ngIf="customerDueList.length === 0">
-                    <td colspan="4" class="px-3 py-4 text-center text-gray-400">No records found</td>
+                    <td colspan="4" class="px-3 py-4 text-center text-gray-400">{{ 'dashboard.customerDue.noRecords' | transloco }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
-              <span class="text-gray-500">Page {{ customerDuePage }} of {{ customerDueTotalPages }}</span>
+              <span class="text-gray-500">{{ 'dashboard.customerDue.pageInfo' | transloco: { page: customerDuePage, total: customerDueTotalPages } }}</span>
               <div class="flex gap-1">
                 <button (click)="customerDuePage=customerDuePage-1; loadCustomerDue()" [disabled]="customerDuePage===1"
                   class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
@@ -428,22 +432,22 @@ interface DailyStats {
           <!-- Supplier Due -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-              <h3 class="text-white font-semibold text-sm">Suppliers by Due Amount</h3>
-              <span class="text-xs" style="color:var(--theme-accent)">{{ supplierDueTotal }} total</span>
+              <h3 class="text-white font-semibold text-sm">{{ 'dashboard.supplierDue.title' | transloco }}</h3>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.supplierDue.total' | transloco: { count: supplierDueTotal } }}</span>
             </div>
             <div class="px-3 py-2 border-b">
               <input type="text" [(ngModel)]="supplierDueSearch" (input)="supplierDuePage=1; loadSupplierDue()"
-                placeholder="Search by name or phone…"
+                [placeholder]="'dashboard.supplierDue.searchPlaceholder' | transloco"
                 class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
                 <thead style="background:var(--theme-primary);color:var(--theme-text)">
                   <tr>
-                    <th class="px-3 py-2 text-left">#</th>
-                    <th class="px-3 py-2 text-left">Supplier</th>
-                    <th class="px-3 py-2 text-left">Phone</th>
-                    <th class="px-3 py-2 text-right">Due Amount</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.supplierDue.columns.no' | transloco }}</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.supplierDue.columns.supplier' | transloco }}</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.supplierDue.columns.phone' | transloco }}</th>
+                    <th class="px-3 py-2 text-right">{{ 'dashboard.supplierDue.columns.dueAmount' | transloco }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -454,13 +458,13 @@ interface DailyStats {
                     <td class="px-3 py-2 text-right font-bold text-orange-600">৳{{ s.dueAmount | number:'1.2-2' }}</td>
                   </tr>
                   <tr *ngIf="supplierDueList.length === 0">
-                    <td colspan="4" class="px-3 py-4 text-center text-gray-400">No records found</td>
+                    <td colspan="4" class="px-3 py-4 text-center text-gray-400">{{ 'dashboard.supplierDue.noRecords' | transloco }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
-              <span class="text-gray-500">Page {{ supplierDuePage }} of {{ supplierDueTotalPages }}</span>
+              <span class="text-gray-500">{{ 'dashboard.supplierDue.pageInfo' | transloco: { page: supplierDuePage, total: supplierDueTotalPages } }}</span>
               <div class="flex gap-1">
                 <button (click)="supplierDuePage=supplierDuePage-1; loadSupplierDue()" [disabled]="supplierDuePage===1"
                   class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
@@ -479,31 +483,31 @@ interface DailyStats {
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
         <div class="bg-white rounded-xl shadow-md border overflow-hidden">
           <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-            <h3 class="text-white font-semibold text-sm">Low Stock Alert</h3>
+            <h3 class="text-white font-semibold text-sm">{{ 'dashboard.lowStock.title' | transloco }}</h3>
             <div class="flex items-center gap-2">
-              <span class="text-xs" style="color:var(--theme-accent)">Threshold ≤</span>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.lowStock.thresholdLabel' | transloco }}</span>
               <input type="number" [(ngModel)]="lowStockThreshold" (change)="lowStockPage=1; loadLowStock()"
                 class="w-14 px-1 py-0.5 text-xs border rounded text-center" min="1">
-              <span class="text-xs" style="color:var(--theme-accent)">{{ lowStockTotal }} items</span>
+              <span class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.lowStock.itemsCount' | transloco: { count: lowStockTotal } }}</span>
             </div>
           </div>
           <div class="px-3 py-2 border-b">
             <input type="text" [(ngModel)]="lowStockSearch" (input)="lowStockPage=1; loadLowStock()"
-              placeholder="Search by product name or barcode…"
+              [placeholder]="'dashboard.lowStock.searchPlaceholder' | transloco"
               class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-xs">
               <thead style="background:var(--theme-primary);color:var(--theme-text)">
                 <tr>
-                  <th class="px-3 py-2 text-left">#</th>
-                  <th class="px-3 py-2 text-left">Product</th>
-                  <th class="px-3 py-2 text-left">Category</th>
-                  <th class="px-3 py-2 text-left">Barcode</th>
-                  <th class="px-3 py-2 text-right">Stock Qty</th>
-                  <th class="px-3 py-2 text-right">Purchase Price</th>
-                  <th class="px-3 py-2 text-right">Sale Price</th>
-                  <th class="px-3 py-2 text-center">Status</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.lowStock.columns.no' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.lowStock.columns.product' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.lowStock.columns.category' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.lowStock.columns.barcode' | transloco }}</th>
+                  <th class="px-3 py-2 text-right">{{ 'dashboard.lowStock.columns.stockQty' | transloco }}</th>
+                  <th class="px-3 py-2 text-right">{{ 'dashboard.lowStock.columns.purchasePrice' | transloco }}</th>
+                  <th class="px-3 py-2 text-right">{{ 'dashboard.lowStock.columns.salePrice' | transloco }}</th>
+                  <th class="px-3 py-2 text-center">{{ 'dashboard.lowStock.columns.status' | transloco }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
@@ -519,18 +523,18 @@ interface DailyStats {
                     <span class="px-2 py-0.5 rounded-full font-medium"
                       [class.bg-red-100]="p.stockQty === 0" [class.text-red-700]="p.stockQty === 0"
                       [class.bg-orange-100]="p.stockQty > 0" [class.text-orange-700]="p.stockQty > 0">
-                      {{ p.stockQty === 0 ? 'Out of Stock' : 'Low Stock' }}
+                      {{ (p.stockQty === 0 ? 'dashboard.lowStock.outOfStock' : 'dashboard.lowStock.lowStock') | transloco }}
                     </span>
                   </td>
                 </tr>
                 <tr *ngIf="lowStockList.length === 0">
-                  <td colspan="8" class="px-3 py-4 text-center text-gray-400">No low stock items found</td>
+                  <td colspan="8" class="px-3 py-4 text-center text-gray-400">{{ 'dashboard.lowStock.noItems' | transloco }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
-            <span class="text-gray-500">Page {{ lowStockPage }} of {{ lowStockTotalPages }}</span>
+            <span class="text-gray-500">{{ 'dashboard.lowStock.pageInfo' | transloco: { page: lowStockPage, total: lowStockTotalPages } }}</span>
             <div class="flex gap-1">
               <button (click)="lowStockPage=lowStockPage-1; loadLowStock()" [disabled]="lowStockPage===1"
                 class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
@@ -547,21 +551,21 @@ interface DailyStats {
           <!-- Top Products by Inventory Value -->
           <div class="bg-white rounded-xl shadow-md border overflow-hidden">
             <div class="px-3 py-2" style="background:var(--theme-primary)">
-              <h3 class="text-white font-semibold text-sm">Top Products by Inventory Value</h3>
+              <h3 class="text-white font-semibold text-sm">{{ 'dashboard.topProducts.title' | transloco }}</h3>
             </div>
             <div class="px-3 py-2 border-b">
-              <input type="text" [(ngModel)]="topProductsSearch" placeholder="Search by product name or category…"
+              <input type="text" [(ngModel)]="topProductsSearch" [placeholder]="'dashboard.topProducts.searchPlaceholder' | transloco"
                 class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-xs">
                 <thead style="background:var(--theme-primary);color:var(--theme-text)">
                   <tr>
-                    <th class="px-3 py-2 text-left">Product</th>
-                    <th class="px-3 py-2 text-left">Category</th>
-                    <th class="px-3 py-2 text-right">Stock</th>
-                    <th class="px-3 py-2 text-right">Unit Price</th>
-                    <th class="px-3 py-2 text-right">Total Value</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.topProducts.columns.product' | transloco }}</th>
+                    <th class="px-3 py-2 text-left">{{ 'dashboard.topProducts.columns.category' | transloco }}</th>
+                    <th class="px-3 py-2 text-right">{{ 'dashboard.topProducts.columns.stock' | transloco }}</th>
+                    <th class="px-3 py-2 text-right">{{ 'dashboard.topProducts.columns.unitPrice' | transloco }}</th>
+                    <th class="px-3 py-2 text-right">{{ 'dashboard.topProducts.columns.totalValue' | transloco }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -573,7 +577,7 @@ interface DailyStats {
                     <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳{{ (p.stock * p.purchasePrice) | number:'1.2-2' }}</td>
                   </tr>
                   <tr *ngIf="filteredTopProducts.length === 0">
-                    <td colspan="5" class="px-3 py-4 text-center text-gray-400">No products match</td>
+                    <td colspan="5" class="px-3 py-4 text-center text-gray-400">{{ 'dashboard.topProducts.noMatch' | transloco }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -584,21 +588,21 @@ interface DailyStats {
         <!-- Recent Transactions (live from GL_TRANSACTION) -->
         <div class="bg-white rounded-xl shadow-md border overflow-hidden" hidden>
           <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-            <h3 class="text-white font-semibold text-sm">Recent Transactions</h3>
-            <span class="text-xs" style="color:var(--theme-accent)">{{ recentTxnTotal }} total</span>
+            <h3 class="text-white font-semibold text-sm">{{ 'dashboard.recentTransactions.title' | transloco }}</h3>
+            <span class="text-xs" style="color:var(--theme-accent)">{{ 'dashboard.recentTransactions.total' | transloco: { count: recentTxnTotal } }}</span>
           </div>
           <!-- Summary bar -->
           <div class="grid grid-cols-3 divide-x border-b" style="background:#f5f6fd">
             <div class="px-4 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Total Debit</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.recentTransactions.totalDebit' | transloco }}</p>
               <p class="text-sm font-bold text-orange-600">৳{{ recentTxnTotalDebit | number:'1.2-2' }}</p>
             </div>
             <div class="px-4 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Total Credit</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.recentTransactions.totalCredit' | transloco }}</p>
               <p class="text-sm font-bold text-green-600">৳{{ recentTxnTotalCredit | number:'1.2-2' }}</p>
             </div>
             <div class="px-4 py-2 text-center">
-              <p class="text-xs text-gray-400 mb-0.5">Revenue (C − D)</p>
+              <p class="text-xs text-gray-400 mb-0.5">{{ 'dashboard.recentTransactions.revenue' | transloco }}</p>
               <p class="text-sm font-bold"
                 [class.text-green-600]="recentRevenue >= 0"
                 [class.text-red-600]="recentRevenue < 0">৳{{ recentRevenue | number:'1.2-2' }}</p>
@@ -607,13 +611,13 @@ interface DailyStats {
           <!-- Search / Filter -->
           <div class="px-3 py-2 border-b flex gap-2">
             <input type="text" [(ngModel)]="recentTxnSearch" (input)="recentTxnPage=1; loadRecentTransactions()"
-              placeholder="Search by TXN no, reference, GL account, narration…"
+              [placeholder]="'dashboard.recentTransactions.searchPlaceholder' | transloco"
               class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
             <select [(ngModel)]="recentTxnTypeFilter" (change)="recentTxnPage=1; loadRecentTransactions()"
               class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-              <option value="">All (D/C)</option>
-              <option value="D">Debit only</option>
-              <option value="C">Credit only</option>
+              <option value="">{{ 'dashboard.recentTransactions.filterAll' | transloco }}</option>
+              <option value="D">{{ 'dashboard.recentTransactions.filterDebit' | transloco }}</option>
+              <option value="C">{{ 'dashboard.recentTransactions.filterCredit' | transloco }}</option>
             </select>
           </div>
           <!-- Table -->
@@ -621,16 +625,16 @@ interface DailyStats {
             <table class="w-full text-xs">
               <thead style="background:var(--theme-primary);color:var(--theme-text)">
                 <tr>
-                  <th class="px-3 py-2 text-left">#</th>
-                  <th class="px-3 py-2 text-left">Date</th>
-                  <th class="px-3 py-2 text-left">TXN No</th>
-                  <th class="px-3 py-2 text-left">Reference</th>
-                  <th class="px-3 py-2 text-left">GL Account</th>
-                  <th class="px-3 py-2 text-left">Mode</th>
-                  <th class="px-3 py-2 text-center">D/C</th>
-                  <th class="px-3 py-2 text-right">Amount</th>
-                  <th class="px-3 py-2 text-left">Narration</th>
-                  <th class="px-3 py-2 text-center">Status</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.no' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.date' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.txnNo' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.reference' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.glAccount' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.mode' | transloco }}</th>
+                  <th class="px-3 py-2 text-center">{{ 'dashboard.recentTransactions.columns.drCr' | transloco }}</th>
+                  <th class="px-3 py-2 text-right">{{ 'dashboard.recentTransactions.columns.amount' | transloco }}</th>
+                  <th class="px-3 py-2 text-left">{{ 'dashboard.recentTransactions.columns.narration' | transloco }}</th>
+                  <th class="px-3 py-2 text-center">{{ 'dashboard.recentTransactions.columns.status' | transloco }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100">
@@ -645,7 +649,7 @@ interface DailyStats {
                     <span class="px-2 py-0.5 rounded-full font-medium"
                       [class.bg-orange-100]="t.drCr==='D'" [class.text-orange-700]="t.drCr==='D'"
                       [class.bg-green-100]="t.drCr==='C'" [class.text-green-700]="t.drCr==='C'">
-                      {{ t.drCr === 'D' ? 'Debit' : 'Credit' }}
+                      {{ (t.drCr === 'D' ? 'dashboard.recentTransactions.debit' : 'dashboard.recentTransactions.credit') | transloco }}
                     </span>
                   </td>
                   <td class="px-3 py-2 text-right font-semibold"
@@ -658,19 +662,19 @@ interface DailyStats {
                     <span class="px-2 py-0.5 rounded-full font-medium"
                       [class.bg-green-100]="t.authStatus==='A'" [class.text-green-700]="t.authStatus==='A'"
                       [class.bg-yellow-100]="t.authStatus!=='A'" [class.text-yellow-700]="t.authStatus!=='A'">
-                      {{ t.authStatus === 'A' ? 'Approved' : 'Pending' }}
+                      {{ (t.authStatus === 'A' ? 'dashboard.recentTransactions.approved' : 'dashboard.recentTransactions.pending') | transloco }}
                     </span>
                   </td>
                 </tr>
                 <tr *ngIf="recentTxnList.length === 0">
-                  <td colspan="10" class="px-3 py-4 text-center text-gray-400">No transactions found</td>
+                  <td colspan="10" class="px-3 py-4 text-center text-gray-400">{{ 'dashboard.recentTransactions.noTransactions' | transloco }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <!-- Pagination -->
           <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
-            <span class="text-gray-500">Page {{ recentTxnPage }} of {{ recentTxnTotalPages }}</span>
+            <span class="text-gray-500">{{ 'dashboard.recentTransactions.pageInfo' | transloco: { page: recentTxnPage, total: recentTxnTotalPages } }}</span>
             <div class="flex gap-1">
               <button (click)="recentTxnPage=recentTxnPage-1; loadRecentTransactions()" [disabled]="recentTxnPage===1"
                 class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
@@ -1064,19 +1068,19 @@ export class DashboardComponent implements OnInit {
   get dailyPerformance(): DailyStats[] {
     const last7Days = [];
     const today = new Date();
-    
+
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
       const dateStr = toLocalDateString(date);
-      
+
       const sales = this.transactions
         .filter(t => t.type === 'sale' && t.date === dateStr)
         .reduce((sum, t) => sum + t.amount, 0);
       const purchases = this.transactions
         .filter(t => t.type === 'purchase' && t.date === dateStr)
         .reduce((sum, t) => sum + t.amount, 0);
-      
+
       last7Days.push({
         date: dateStr,
         sales: sales,

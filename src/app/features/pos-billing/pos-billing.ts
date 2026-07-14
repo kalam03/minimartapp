@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit, ElementRef, ViewChild } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
@@ -32,8 +33,11 @@ export interface Invoice {
 @Component({
   selector: 'app-pos-billing',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent],
+  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule],
   // Note: ActivatedRoute + Router are injected but not imported here (they're provided by the router module)
+  // Loads assets/i18n/pos-billing/{en,bn}.json only when this route is hit —
+  // see Multilingual_Localization_Architecture.md Section 5.1.
+  providers: [provideTranslocoScope('pos-billing')],
   templateUrl: './pos-billing.html',
   styleUrls: ['./pos-billing.css'],
 })
@@ -46,9 +50,15 @@ export class PosBillingComponent implements OnInit {
     private receiptService: ReceiptService,
     private orderService: OrderService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private transloco: TranslocoService
   ) {
     this.receiptData = this.receiptService.getReceiptData();
+  }
+
+  /** Shorthand for the 'pos-billing' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`pos-billing.${key}`, params);
   }
 
   /** When opened from Order List, this holds the active order id */
@@ -220,8 +230,12 @@ export class PosBillingComponent implements OnInit {
 
           this.orderLoading = false;
           this.alertService.info(
-            `Order #${orderId} loaded — ${order.items.length} item(s)\nCustomer: ${order.customerName || 'Walk-in'}`,
-            'Order Loaded'
+            this.t('messages.orderLoadedBody', {
+              id: orderId,
+              count: order.items.length,
+              customer: order.customerName || this.t('messages.walkIn')
+            }),
+            this.t('messages.orderLoadedTitle')
           );
         };
         tryLoad();
@@ -664,7 +678,7 @@ export class PosBillingComponent implements OnInit {
   // Add Product to Cart
   async addToCart() {
     if (!this.selectedProduct) {
-      this.alertService.info('Please select a product to add to the cart.', 'No Product Selected');
+      this.alertService.info(this.t('messages.noProductSelectedBody'), this.t('messages.noProductSelectedTitle'));
       setTimeout(() => {
         if (this.productSearchInput) {
           this.productSearchInput.nativeElement.focus();
@@ -676,7 +690,7 @@ export class PosBillingComponent implements OnInit {
     const product = this.selectedProduct;
 
     if (this.productQuantity > product.stockQty) {
-      await this.alertService.warning(`Only ${product.stockQty} items available in stock`);
+      await this.alertService.warning(this.t('messages.stockAvailable', { qty: product.stockQty }));
       return;
     }
 
@@ -687,7 +701,7 @@ export class PosBillingComponent implements OnInit {
     if (existingItem) {
       const newQuantity = existingItem.quantity + this.productQuantity;
       if (newQuantity > product.stockQty) {
-        await this.alertService.warning(`Only ${product.stockQty} items available in stock`);
+        await this.alertService.warning(this.t('messages.stockAvailable', { qty: product.stockQty }));
         return;
       }
       existingItem.quantity = newQuantity;
@@ -771,7 +785,7 @@ export class PosBillingComponent implements OnInit {
   // Submit Bill
   async submitBill() {
     if (this.cartItems.length === 0) {
-      await this.alertService.warning('Cart is empty. Please add items to continue.');
+      await this.alertService.warning(this.t('messages.cartEmptyWarning'));
       return;
     }
     console.log("customer ",this.selectedCustomer)
@@ -795,8 +809,8 @@ export class PosBillingComponent implements OnInit {
     //   return;
     // }
     const confirmed = await this.alertService.confirm(
-      `Are you sure you want to submit the bill? Total: $${this.grossAmount.toFixed(2)}`,
-      'Confirm Bill Submission',
+      this.t('messages.confirmSubmitBody', { amount: this.grossAmount.toFixed(2) }),
+      this.t('messages.confirmSubmitTitle'),
     );
     if (confirmed) {
       const newInvoice: Invoice = {
@@ -863,14 +877,14 @@ export class PosBillingComponent implements OnInit {
             }).subscribe();
             this.activeOrderId = null;
             await this.alertService.success(
-              `Bill Submitted & Order Completed!\nInvoice: ${invoiceNo}`,
-              'Order Done'
+              this.t('messages.orderCompleteBody', { invoiceNo }),
+              this.t('messages.orderCompleteTitle')
             );
             this.router.navigate(['/orders']);
             return;
           }
 
-          await this.alertService.success(`Bill Submitted Successfully!\nInvoice: ${invoiceNo}`);
+          await this.alertService.success(this.t('messages.billSubmittedSuccess', { invoiceNo }));
           this.resetForm();
           // Reload products (updated stock) and customers (updated balance)
           this.loadProducts();
@@ -881,17 +895,21 @@ export class PosBillingComponent implements OnInit {
           if (SaleService.isStockConflict(error)) {
             const c: StockConflictError = error.error;
             this.alertService.error(
-              `Stock Conflict — Sale Cannot Complete`,
-              `"${c.productName}" is out of stock.\n` +
-              `Available: ${c.available} unit(s) · Requested: ${c.required} unit(s).\n` +
-              `Another counter completed a sale for this item just now.\n` +
-              `Please remove or reduce the item and try again.`
+              this.t('messages.stockConflictTitle'),
+              this.t('messages.stockConflictBody', {
+                productName: c.productName,
+                available: c.available,
+                required: c.required
+              })
             );
             // Highlight the conflicting item in the cart so the cashier can act
             this.markConflictItem(c.productId);
           } else {
             console.error('Error recording sale:', error);
-            this.alertService.error('Error submitting bill', error.error?.message || error.message || 'An error occurred while submitting the bill.');
+            // NOTE: args here are (message, title) per AlertService.error's signature —
+            // that's already reversed from what you'd expect (pre-existing, not
+            // introduced by this change); only the literal title string is localized.
+            this.alertService.error(this.t('messages.submitBillErrorTitle'), error.error?.message || error.message || 'An error occurred while submitting the bill.');
           }
         }
       });
@@ -908,7 +926,14 @@ export class PosBillingComponent implements OnInit {
   // View invoice details
   async viewInvoice(invoice: Invoice): Promise<void> {
     await this.alertService.info(
-      `Invoice Details:\nNumber: ${invoice.invoiceNo}\nCustomer: ${invoice.customerName}\nTotal: $${invoice.totalAmount}\nDiscount: $${invoice.discountAmount}\nGross: $${invoice.grossAmount}\nDate: ${invoice.date}`,
+      this.t('messages.invoiceDetails', {
+        number: invoice.invoiceNo,
+        customer: invoice.customerName,
+        total: invoice.totalAmount,
+        discount: invoice.discountAmount,
+        gross: invoice.grossAmount,
+        date: invoice.date
+      }),
     );
   }
 
@@ -1339,7 +1364,7 @@ private openPrintPreview(receiptHTML: string): void {
   const printWindow = window.open('', '_blank', 'width=500,height=700,toolbar=yes,scrollbars=yes,resizable=yes');
 
   if (!printWindow) {
-    this.alertService.warning('Please allow pop-ups to view receipt preview');
+    this.alertService.warning(this.t('messages.allowPopups'));
     return;
   }
 

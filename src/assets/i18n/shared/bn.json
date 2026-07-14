@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "dashboard": "ড্যাশবোর্ড",
+    "suppliers": "সরবরাহকারী",
+    "products": "পণ্য",
+    "unitTypes": "একক প্রকার",
+    "categories": "বিভাগ",
+    "barcodeGenerator": "বারকোড জেনারেটর",
+    "purchases": "ক্রয়",
+    "counter": "কাউন্টার",
+    "orders": "অর্ডার",
+    "customers": "ক্রেতা",
+    "users": "ব্যবহারকারী",
+    "roles": "ভূমিকা",
+    "permissions": "অনুমতি",
+    "capital": "মূলধন",
+    "writeoffs": "রাইট-অফ",
+    "payroll": "বেতন",
+    "investors": "বিনিয়োগকারী",
+    "reports": "প্রতিবেদন"
+  },
+  "quickActions": {
+    "newOrder": "নতুন অর্ডার",
+    "addProduct": "পণ্য যুক্ত করুন",
+    "newCustomer": "নতুন ক্রেতা"
+  },
+  "search": {
+    "menuPlaceholder": "মেনু খুঁজুন…"
+  },
+  "buttons": {
+    "save": "সংরক্ষণ",
+    "cancel": "বাতিল",
+    "delete": "মুছুন",
+    "edit": "সম্পাদনা",
+    "add": "যুক্ত করুন",
+    "close": "বন্ধ করুন",
+    "confirm": "নিশ্চিত করুন",
+    "back": "পেছনে",
+    "search": "খুঁজুন",
+    "export": "এক্সপোর্ট",
+    "print": "প্রিন্ট",
+    "ok": "ঠিক আছে"
+  },
+  "actions": {
+    "logout": "লগ আউট",
+    "changeTheme": "থিম পরিবর্তন করুন",
+    "changeLanguage": "ভাষা পরিবর্তন করুন"
+  },
+  "validation": {
+    "required": "{{field}} আবশ্যক",
+    "invalid": "{{field}} সঠিক নয়"
+  },
+  "messages": {
+    "success": "সফল",
+    "error": "ত্রুটি",
+    "warning": "সতর্কতা",
+    "info": "তথ্য",
+    "confirmTitle": "নিশ্চিত করুন",
+    "confirmDelete": "আপনি কি নিশ্চিত এই আইটেমটি মুছে ফেলতে চান?",
+    "operationFailed": "কাজটি সম্পন্ন হয়নি। আবার চেষ্টা করুন।"
+  }
+}

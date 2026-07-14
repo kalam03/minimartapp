@@ -1,0 +1,75 @@
+{
+  "title": {
+    "addNew": "নতুন পণ্য যুক্ত করুন",
+    "edit": "পণ্য সম্পাদনা করুন",
+    "list": "পণ্যের তালিকা"
+  },
+  "form": {
+    "productName": "পণ্যের নাম *",
+    "productNamePlaceholder": "পণ্যের নাম লিখুন",
+    "category": "বিভাগ *",
+    "selectCategory": "বিভাগ নির্বাচন করুন",
+    "purchasePrice": "ক্রয় মূল্য (৳) *",
+    "purchasePricePlaceholder": "ক্রয় মূল্য লিখুন",
+    "salePrice": "বিক্রয় মূল্য (৳) *",
+    "salePricePlaceholder": "বিক্রয় মূল্য লিখুন",
+    "unitType": "একক প্রকার *",
+    "unitTypeHint": "PCS = সংখ্যা হিসেবে; KG/G/L/ML = ওজন/আয়তন হিসেবে বিক্রি"
+  },
+  "buttons": {
+    "save": "পণ্য সংরক্ষণ করুন",
+    "update": "পণ্য আপডেট করুন",
+    "reset": "রিসেট",
+    "cancelEdit": "সম্পাদনা বাতিল",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "clear": "পরিষ্কার করুন"
+  },
+  "table": {
+    "id": "আইডি",
+    "productName": "পণ্যের নাম",
+    "category": "বিভাগ",
+    "purchasePrice": "ক্রয় মূল্য",
+    "salePrice": "বিক্রয় মূল্য",
+    "stockQty": "স্টক পরিমাণ",
+    "unit": "একক",
+    "status": "অবস্থা",
+    "actions": "কার্যক্রম",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "noProducts": "কোনো পণ্য পাওয়া যায়নি",
+    "countSummary": "{{total}}টির মধ্যে {{filtered}}টি পণ্য",
+    "showingSummary": "{{total}}টি পণ্যের মধ্যে {{from}} - {{to}} দেখানো হচ্ছে",
+    "filteredFrom": "({{total}}টি থেকে ফিল্টার করা)",
+    "pageSize": "পৃষ্ঠার আকার:"
+  },
+  "search": {
+    "placeholder": "নাম, বারকোড, বিভাগ দিয়ে খুঁজুন…",
+    "allCategories": "সব বিভাগ"
+  },
+  "validation": {
+    "nameRequired": "পণ্যের নাম আবশ্যক",
+    "nameMinLength": "পণ্যের নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+    "nameMaxLength": "পণ্যের নাম ১০০ অক্ষরের বেশি হতে পারবে না",
+    "categoryRequired": "একটি বিভাগ নির্বাচন করুন",
+    "purchasePriceRequired": "ক্রয় মূল্য আবশ্যক এবং ০ এর বেশি হতে হবে",
+    "purchasePriceInvalid": "ক্রয় মূল্য একটি সঠিক সংখ্যা হতে হবে",
+    "purchasePricePositive": "ক্রয় মূল্য ০ এর বেশি হতে হবে",
+    "salePriceRequired": "বিক্রয় মূল্য আবশ্যক এবং ০ এর বেশি হতে হবে",
+    "salePriceInvalid": "বিক্রয় মূল্য একটি সঠিক সংখ্যা হতে হবে",
+    "salePricePositive": "বিক্রয় মূল্য ০ এর বেশি হতে হবে",
+    "salePriceLessThanPurchase": "বিক্রয় মূল্য ক্রয় মূল্যের (৳{{price}}) চেয়ে কম হতে পারবে না"
+  },
+  "messages": {
+    "createSuccess": "পণ্য সফলভাবে যুক্ত হয়েছে!",
+    "createError": "পণ্য যুক্ত করতে ব্যর্থ: {{error}}",
+    "updateSuccess": "পণ্য সফলভাবে আপডেট হয়েছে!",
+    "updateError": "পণ্য আপডেট করতে ব্যর্থ: {{error}}",
+    "deleteConfirm": "আপনি কি নিশ্চিত \"{{name}}\" মুছে ফেলতে চান?",
+    "deleteSuccess": "পণ্য সফলভাবে মুছে ফেলা হয়েছে!",
+    "deleteError": "পণ্য মুছতে ব্যর্থ: {{error}}",
+    "loadError": "পণ্য লোড করতে ব্যর্থ: {{error}}",
+    "loadCategoriesError": "বিভাগ লোড করতে ব্যর্থ: {{error}}",
+    "unknownCategory": "অজানা"
+  }
+}
