@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ReportsService, InvoiceReportDto } from '../../services/reports.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { toLocalDateString } from '../../shared/date-utils';
@@ -9,7 +10,11 @@ import { downloadBlob } from '../../shared/pdf-export.util';
 @Component({
   selector: 'app-invoice-report',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Provided directly on this component too (in addition to the parent
+  // ReportsHubComponent) so it loads correctly whether this component is
+  // used standalone or nested — same pattern as Dashboard/Products/POS-Billing.
+  providers: [provideTranslocoScope('reports')],
   templateUrl: './invoice-report.component.html',
   styleUrls: ['./invoice-report.component.css']
 })
@@ -30,8 +35,14 @@ export class InvoiceReportComponent implements OnInit {
   constructor(
     private reportsService: ReportsService,
     private customerService: CustomerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`reports.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -60,7 +71,7 @@ export class InvoiceReportComponent implements OnInit {
       },
       error: (err) => {
         this.rows      = [];
-        this.errorMsg  = err?.error?.message || 'Failed to load invoice report';
+        this.errorMsg  = err?.error?.message || this.t('invoiceReport.errors.load');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -133,7 +144,7 @@ export class InvoiceReportComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorMsg  = err?.error?.message || 'Failed to generate PDF';
+        this.errorMsg  = err?.error?.message || this.t('invoiceReport.errors.pdf');
         this.isExporting = false;
         this.cdr.detectChanges();
       }

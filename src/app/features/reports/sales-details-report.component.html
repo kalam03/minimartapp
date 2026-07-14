@@ -6,29 +6,29 @@
         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h3m-7 6H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v3"/>
         </svg>
-        <span class="text-xs font-semibold whitespace-nowrap">Sales Details</span>
+        <span class="text-xs font-semibold whitespace-nowrap">{{ 'reports.salesDetails.label' | transloco }}</span>
       </div>
 
       <div>
-        <label class="block text-xs text-gray-500 mb-0.5">From</label>
+        <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.from' | transloco }}</label>
         <input type="date" [(ngModel)]="fromDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
       </div>
       <div>
-        <label class="block text-xs text-gray-500 mb-0.5">To</label>
+        <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.to' | transloco }}</label>
         <input type="date" [(ngModel)]="toDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
       </div>
       <div>
-        <label class="block text-xs text-gray-500 mb-0.5">Customer</label>
+        <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.customer' | transloco }}</label>
         <select [(ngModel)]="customerFilter" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-40">
-          <option value="">All Customers</option>
+          <option value="">{{ 'reports.filter.allCustomers' | transloco }}</option>
           <option *ngFor="let c of customers" [value]="c.customerId">{{ c.customerName }}</option>
         </select>
       </div>
       <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
-        Apply
+        {{ 'reports.filter.apply' | transloco }}
       </button>
       <button (click)="resetFilter()" class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">
-        Reset
+        {{ 'reports.filter.reset' | transloco }}
       </button>
 
       <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
@@ -36,19 +36,19 @@
       <div class="flex flex-wrap gap-1">
         <button (click)="applyQuick('today')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='today' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          Today
+          {{ 'reports.filter.today' | transloco }}
         </button>
         <button (click)="applyQuick('month')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='month' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          This Month
+          {{ 'reports.filter.thisMonth' | transloco }}
         </button>
         <button (click)="applyQuick('quarter')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='quarter' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          Quarterly
+          {{ 'reports.filter.quarterly' | transloco }}
         </button>
         <button (click)="applyQuick('year')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='year' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          Yearly
+          {{ 'reports.filter.yearly' | transloco }}
         </button>
       </div>
 
@@ -58,7 +58,7 @@
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H8a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        {{ isExporting ? 'Generating…' : 'Export PDF' }}
+        {{ (isExporting ? 'reports.filter.generating' : 'reports.filter.exportPdf') | transloco }}
       </button>
     </div>
   </div>
@@ -71,21 +71,21 @@
   <!-- ── Table ───────────────────────────────────────────────────────── -->
   <div class="bg-white rounded-xl shadow-md overflow-hidden border">
     <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-      <h2 class="text-white font-semibold text-sm">Sales Details</h2>
-      <span class="text-xs" style="color:var(--theme-accent)">{{ rows.length }} line(s) · Qty {{ totalQty }} · ৳{{ totalAmount | number:'1.2-2' }}</span>
+      <h2 class="text-white font-semibold text-sm">{{ 'reports.salesDetails.tableTitle' | transloco }}</h2>
+      <span class="text-xs" style="color:var(--theme-accent)">{{ 'reports.salesDetails.summary' | transloco: { count: rows.length, qty: totalQty, amount: (totalAmount | number:'1.2-2') } }}</span>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
           <tr>
-            <th class="px-3 py-2 text-left">Invoice No</th>
-            <th class="px-3 py-2 text-left">Date</th>
-            <th class="px-3 py-2 text-left">Customer</th>
-            <th class="px-3 py-2 text-left">Product</th>
-            <th class="px-3 py-2 text-right">Qty</th>
-            <th class="px-3 py-2 text-center">Unit</th>
-            <th class="px-3 py-2 text-right">Unit Price</th>
-            <th class="px-3 py-2 text-right">Total</th>
+            <th class="px-3 py-2 text-left">{{ 'reports.salesDetails.columns.invoiceNo' | transloco }}</th>
+            <th class="px-3 py-2 text-left">{{ 'reports.salesDetails.columns.date' | transloco }}</th>
+            <th class="px-3 py-2 text-left">{{ 'reports.salesDetails.columns.customer' | transloco }}</th>
+            <th class="px-3 py-2 text-left">{{ 'reports.salesDetails.columns.product' | transloco }}</th>
+            <th class="px-3 py-2 text-right">{{ 'reports.salesDetails.columns.qty' | transloco }}</th>
+            <th class="px-3 py-2 text-center">{{ 'reports.salesDetails.columns.unit' | transloco }}</th>
+            <th class="px-3 py-2 text-right">{{ 'reports.salesDetails.columns.unitPrice' | transloco }}</th>
+            <th class="px-3 py-2 text-right">{{ 'reports.salesDetails.columns.total' | transloco }}</th>
           </tr>
         </thead>
         <tbody>
@@ -100,10 +100,10 @@
             <td class="px-3 py-2 text-right font-semibold text-green-600">৳ {{ row.total | number:'1.2-2' }}</td>
           </tr>
           <tr *ngIf="!isLoading && rows.length === 0">
-            <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">No sales found for this range</td>
+            <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.salesDetails.noData' | transloco }}</td>
           </tr>
           <tr *ngIf="isLoading">
-            <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">Loading…</td>
+            <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.salesDetails.loading' | transloco }}</td>
           </tr>
         </tbody>
       </table>

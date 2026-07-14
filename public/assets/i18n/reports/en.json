@@ -1,0 +1,149 @@
+{
+  "hub": {
+    "title": "Reports",
+    "tabs": {
+      "salesSummary": "Sales Summary",
+      "salesDetails": "Sales Details",
+      "invoiceReport": "Invoice Report",
+      "profitReport": "Profit Report"
+    }
+  },
+  "filter": {
+    "from": "From",
+    "to": "To",
+    "customer": "Customer",
+    "allCustomers": "All Customers",
+    "apply": "Apply",
+    "reset": "Reset",
+    "today": "Today",
+    "thisMonth": "This Month",
+    "quarterly": "Quarterly",
+    "yearly": "Yearly",
+    "exportPdf": "Export PDF",
+    "generating": "Generating…"
+  },
+  "salesSummary": {
+    "label": "Sales Summary",
+    "cards": {
+      "totalInvoices": "Total Invoices",
+      "totalSales": "Total Sales",
+      "netAmount": "Net Amount",
+      "totalDue": "Total Due",
+      "totalDiscount": "Total Discount",
+      "totalTransport": "Total Transport",
+      "totalPaid": "Total Paid"
+    },
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load sales summary",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "salesDetails": {
+    "label": "Sales Details",
+    "tableTitle": "Sales Details",
+    "summary": "{{count}} line(s) · Qty {{qty}} · ৳{{amount}}",
+    "columns": {
+      "invoiceNo": "Invoice No",
+      "date": "Date",
+      "customer": "Customer",
+      "product": "Product",
+      "qty": "Qty",
+      "unit": "Unit",
+      "unitPrice": "Unit Price",
+      "total": "Total"
+    },
+    "noData": "No sales found for this range",
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load sales details",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "invoiceReport": {
+    "label": "Invoice Report",
+    "tableTitle": "Invoices",
+    "summary": "{{count}} invoice(s) · Net ৳{{net}} · Paid ৳{{paid}} · Due ৳{{due}}",
+    "columns": {
+      "invoiceNo": "Invoice No",
+      "date": "Date",
+      "customer": "Customer",
+      "total": "Total",
+      "discount": "Discount",
+      "netAmount": "Net Amount",
+      "paid": "Paid",
+      "due": "Due",
+      "payment": "Payment"
+    },
+    "noData": "No invoices found for this range",
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load invoice report",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "profitReport": {
+    "label": "Profit by Date",
+    "cards": {
+      "totalSales": "Total Sales",
+      "dateRange": "{{from}} – {{to}}",
+      "totalCost": "Total Cost",
+      "costOfGoods": "Cost of goods sold",
+      "totalProfit": "Total Profit",
+      "margin": "Margin: {{pct}}%",
+      "bestSeller": "Best Seller",
+      "soldAcrossDays": "{{qty}} sold across {{days}} day(s)",
+      "noBestSeller": "-"
+    },
+    "topSelling": {
+      "title": "Top Selling / Most In-Demand Products",
+      "count": "{{count}} products",
+      "description": "Ranked by total quantity sold. Days Sold shows how regularly a product moves — a high count means steady demand, not just a one-off bulk sale.",
+      "columns": {
+        "no": "#",
+        "product": "Product",
+        "qtySold": "Qty Sold",
+        "daysSold": "Days Sold",
+        "avgQtyPerDay": "Avg Qty / Day",
+        "totalSales": "Total Sales (৳)",
+        "profit": "Profit (৳)",
+        "demand": "Demand"
+      },
+      "loading": "Loading…",
+      "noData": "No sales in this range"
+    },
+    "dailySummary": {
+      "title": "Daily Profit Summary",
+      "hint": "Click a row to drill into that day's products",
+      "columns": {
+        "date": "Date",
+        "qtySold": "Qty Sold",
+        "sales": "Sales (৳)",
+        "cost": "Cost (৳)",
+        "profit": "Profit (৳)",
+        "marginPct": "Margin %"
+      },
+      "loading": "Loading…",
+      "noData": "No sales in this range"
+    },
+    "breakdown": {
+      "title": "Product Breakdown",
+      "clearDayFilter": "Clear day filter",
+      "columns": {
+        "date": "Date",
+        "product": "Product",
+        "qty": "Qty",
+        "sellPrice": "Sell Price",
+        "costPrice": "Cost Price",
+        "sales": "Sales (৳)",
+        "profit": "Profit (৳)"
+      },
+      "loading": "Loading…",
+      "noData": "No products found"
+    },
+    "errors": {
+      "load": "Failed to load profit report",
+      "pdf": "Failed to generate PDF"
+    }
+  }
+}

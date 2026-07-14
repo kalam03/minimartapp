@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ReportsService, SalesSummaryDto } from '../../services/reports.service';
 import { toLocalDateString } from '../../shared/date-utils';
 import { downloadBlob } from '../../shared/pdf-export.util';
@@ -8,7 +9,11 @@ import { downloadBlob } from '../../shared/pdf-export.util';
 @Component({
   selector: 'app-sales-summary-report',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Provided directly on this component too (in addition to the parent
+  // ReportsHubComponent) so it loads correctly whether this component is
+  // used standalone or nested — same pattern as Dashboard/Products/POS-Billing.
+  providers: [provideTranslocoScope('reports')],
   templateUrl: './sales-summary-report.component.html',
   styleUrls: ['./sales-summary-report.component.css']
 })
@@ -34,8 +39,14 @@ export class SalesSummaryReportComponent implements OnInit {
 
   constructor(
     private reportsService: ReportsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`reports.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadReport();
@@ -53,7 +64,7 @@ export class SalesSummaryReportComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorMsg  = err?.error?.message || 'Failed to load sales summary';
+        this.errorMsg  = err?.error?.message || this.t('salesSummary.errors.load');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -112,7 +123,7 @@ export class SalesSummaryReportComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorMsg  = err?.error?.message || 'Failed to generate PDF';
+        this.errorMsg  = err?.error?.message || this.t('salesSummary.errors.pdf');
         this.isExporting = false;
         this.cdr.detectChanges();
       }

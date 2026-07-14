@@ -7,19 +7,19 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
-        <span class="text-xs font-semibold whitespace-nowrap">Sales Summary</span>
+        <span class="text-xs font-semibold whitespace-nowrap">{{ 'reports.salesSummary.label' | transloco }}</span>
       </div>
 
       <div>
-        <label class="block text-xs text-gray-500 mb-0.5">From</label>
+        <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.from' | transloco }}</label>
         <input type="date" [(ngModel)]="fromDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
       </div>
       <div>
-        <label class="block text-xs text-gray-500 mb-0.5">To</label>
+        <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.to' | transloco }}</label>
         <input type="date" [(ngModel)]="toDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
       </div>
       <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
-        Apply
+        {{ 'reports.filter.apply' | transloco }}
       </button>
 
       <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
@@ -27,19 +27,19 @@
       <div class="flex flex-wrap gap-1">
         <button (click)="applyQuick('today')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='today' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          Today
+          {{ 'reports.filter.today' | transloco }}
         </button>
         <button (click)="applyQuick('month')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='month' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          This Month
+          {{ 'reports.filter.thisMonth' | transloco }}
         </button>
         <button (click)="applyQuick('quarter')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='quarter' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          Quarterly
+          {{ 'reports.filter.quarterly' | transloco }}
         </button>
         <button (click)="applyQuick('year')" class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
           [style]="activeQuick==='year' ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)' : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          Yearly
+          {{ 'reports.filter.yearly' | transloco }}
         </button>
       </div>
 
@@ -49,7 +49,7 @@
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H8a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        {{ isExporting ? 'Generating…' : 'Export PDF' }}
+        {{ (isExporting ? 'reports.filter.generating' : 'reports.filter.exportPdf') | transloco }}
       </button>
     </div>
   </div>
@@ -63,7 +63,7 @@
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
     <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
       <div class="px-3 py-2 border-b border-white border-opacity-10">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Invoices</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.totalInvoices' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-xl font-bold text-white">{{ summary.totalInvoices }}</p>
@@ -72,7 +72,7 @@
 
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Sales</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.totalSales' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-xl font-bold" style="color:var(--theme-primary)">৳{{ summary.totalSales | number:'1.2-2' }}</p>
@@ -81,7 +81,7 @@
 
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Net Amount</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.netAmount' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-xl font-bold text-green-600">৳{{ summary.totalNetAmount | number:'1.2-2' }}</p>
@@ -90,7 +90,7 @@
 
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Due</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.totalDue' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-xl font-bold text-red-500">৳{{ summary.totalDue | number:'1.2-2' }}</p>
@@ -99,7 +99,7 @@
 
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Discount</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.totalDiscount' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-lg font-bold text-gray-700">৳{{ summary.totalDiscount | number:'1.2-2' }}</p>
@@ -108,7 +108,7 @@
 
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Transport</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.totalTransport' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-lg font-bold text-gray-700">৳{{ summary.totalTransport | number:'1.2-2' }}</p>
@@ -117,7 +117,7 @@
 
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
-        <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Paid</p>
+        <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.salesSummary.cards.totalPaid' | transloco }}</p>
       </div>
       <div class="px-3 py-2">
         <p class="text-lg font-bold text-gray-700">৳{{ summary.totalPaid | number:'1.2-2' }}</p>
@@ -125,7 +125,7 @@
     </div>
 
     <div *ngIf="isLoading" class="bg-white rounded-xl shadow-md border overflow-hidden flex items-center justify-center">
-      <p class="text-xs text-gray-400 py-4">Loading…</p>
+      <p class="text-xs text-gray-400 py-4">{{ 'reports.salesSummary.loading' | transloco }}</p>
     </div>
   </div>
 </div>

@@ -8,7 +8,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14"/>
           </svg>
-          Reports
+          {{ 'reports.hub.title' | transloco }}
         </h2>
       </div>
       <div class="px-3 py-2 flex flex-wrap gap-1.5">
@@ -17,7 +17,7 @@
           [style]="activeTab===tab.id
             ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
             : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-          {{ tab.label }}
+          {{ tab.labelKey | transloco }}
         </button>
       </div>
     </div>

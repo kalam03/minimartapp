@@ -9,21 +9,21 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-          <span class="text-xs font-semibold whitespace-nowrap">Profit by Date</span>
+          <span class="text-xs font-semibold whitespace-nowrap">{{ 'reports.profitReport.label' | transloco }}</span>
         </div>
 
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">From</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.from' | transloco }}</label>
           <input type="date" [(ngModel)]="fromDate"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">To</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.to' | transloco }}</label>
           <input type="date" [(ngModel)]="toDate"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
         </div>
         <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
-          Apply
+          {{ 'reports.filter.apply' | transloco }}
         </button>
 
         <!-- Divider -->
@@ -36,28 +36,28 @@
             [style]="activeQuick==='today'
               ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
               : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-            Today
+            {{ 'reports.filter.today' | transloco }}
           </button>
           <button (click)="applyQuick('month')"
             class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
             [style]="activeQuick==='month'
               ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
               : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-            This Month
+            {{ 'reports.filter.thisMonth' | transloco }}
           </button>
           <button (click)="applyQuick('quarter')"
             class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
             [style]="activeQuick==='quarter'
               ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
               : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-            Quarterly
+            {{ 'reports.filter.quarterly' | transloco }}
           </button>
           <button (click)="applyQuick('year')"
             class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
             [style]="activeQuick==='year'
               ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
               : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
-            Yearly
+            {{ 'reports.filter.yearly' | transloco }}
           </button>
         </div>
 
@@ -67,7 +67,7 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H8a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          {{ isExporting ? 'Generating…' : 'Export PDF' }}
+          {{ (isExporting ? 'reports.filter.generating' : 'reports.filter.exportPdf') | transloco }}
         </button>
       </div>
     </div>
@@ -82,46 +82,46 @@
 
       <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
         <div class="px-3 py-2 border-b border-white border-opacity-10">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Sales</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.profitReport.cards.totalSales' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-white">৳{{ totalSales | number:'1.2-2' }}</p>
-          <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ fromDate | date:'dd MMM' }} – {{ toDate | date:'dd MMM yyyy' }}</p>
+          <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'reports.profitReport.cards.dateRange' | transloco: { from: (fromDate | date:'dd MMM'), to: (toDate | date:'dd MMM yyyy') } }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Cost</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.profitReport.cards.totalCost' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-orange-600">৳{{ totalCost | number:'1.2-2' }}</p>
-          <p class="text-xs text-gray-400 mt-1">Cost of goods sold</p>
+          <p class="text-xs text-gray-400 mt-1">{{ 'reports.profitReport.cards.costOfGoods' | transloco }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Profit</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.profitReport.cards.totalProfit' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold" [class.text-green-600]="totalProfit >= 0" [class.text-red-600]="totalProfit < 0">
             ৳{{ totalProfit | number:'1.2-2' }}
           </p>
-          <p class="text-xs text-gray-400 mt-1">Margin: {{ overallMarginPct | number:'1.1-1' }}%</p>
+          <p class="text-xs text-gray-400 mt-1">{{ 'reports.profitReport.cards.margin' | transloco: { pct: (overallMarginPct | number:'1.1-1') } }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Best Seller</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'reports.profitReport.cards.bestSeller' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-sm font-bold truncate" style="color:var(--theme-primary)" [title]="bestSeller?.productName">
-            {{ bestSeller?.productName || '-' }}
+            {{ bestSeller?.productName || ('reports.profitReport.cards.noBestSeller' | transloco) }}
           </p>
           <p class="text-xs text-gray-400 mt-1" *ngIf="bestSeller">
-            {{ bestSeller.totalQty }} sold across {{ bestSeller.daysSold }} day(s)
+            {{ 'reports.profitReport.cards.soldAcrossDays' | transloco: { qty: bestSeller.totalQty, days: bestSeller.daysSold } }}
           </p>
         </div>
       </div>
@@ -135,35 +135,34 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
           </svg>
-          Top Selling / Most In-Demand Products
+          {{ 'reports.profitReport.topSelling.title' | transloco }}
         </h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ topProducts.length }} products</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'reports.profitReport.topSelling.count' | transloco: { count: topProducts.length } }}</span>
       </div>
       <p class="px-3 py-2 text-xs text-gray-500 border-b bg-gray-50">
-        Ranked by total quantity sold. <strong>Days Sold</strong> shows how regularly a product moves —
-        a high count means steady demand, not just a one-off bulk sale.
+        {{ 'reports.profitReport.topSelling.description' | transloco }}
       </p>
 
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
           <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">#</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Product</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Qty Sold</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Days Sold</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Avg Qty / Day</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Total Sales (৳)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Profit (৳)</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Demand</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.no' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.product' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.qtySold' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.daysSold' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.avgQtyPerDay' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.totalSales' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.profit' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'reports.profitReport.topSelling.columns.demand' | transloco }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr *ngIf="isLoading">
-              <td colspan="8" class="px-3 py-6 text-center text-gray-400">Loading…</td>
+              <td colspan="8" class="px-3 py-6 text-center text-gray-400">{{ 'reports.profitReport.topSelling.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isLoading && topProducts.length === 0">
-              <td colspan="8" class="px-3 py-6 text-center text-gray-400">No sales in this range</td>
+              <td colspan="8" class="px-3 py-6 text-center text-gray-400">{{ 'reports.profitReport.topSelling.noData' | transloco }}</td>
             </tr>
             <tr *ngFor="let t of topProducts" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-500">{{ t.qtyRank }}</td>
@@ -189,28 +188,28 @@
     <!-- ── Daily Profit Summary ──────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Daily Profit Summary</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">Click a row to drill into that day's products</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'reports.profitReport.dailySummary.title' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'reports.profitReport.dailySummary.hint' | transloco }}</span>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-xs">
           <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Qty Sold</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Sales (৳)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Cost (৳)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Profit (৳)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Margin %</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'reports.profitReport.dailySummary.columns.date' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.dailySummary.columns.qtySold' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.dailySummary.columns.sales' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.dailySummary.columns.cost' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.dailySummary.columns.profit' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.dailySummary.columns.marginPct' | transloco }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr *ngIf="isLoading">
-              <td colspan="6" class="px-3 py-6 text-center text-gray-400">Loading…</td>
+              <td colspan="6" class="px-3 py-6 text-center text-gray-400">{{ 'reports.profitReport.dailySummary.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isLoading && dailySummary.length === 0">
-              <td colspan="6" class="px-3 py-6 text-center text-gray-400">No sales in this range</td>
+              <td colspan="6" class="px-3 py-6 text-center text-gray-400">{{ 'reports.profitReport.dailySummary.noData' | transloco }}</td>
             </tr>
             <tr *ngFor="let d of dailySummary" (click)="selectDay(d.saleDate)"
               class="hover:bg-gray-50 transition cursor-pointer"
@@ -233,12 +232,12 @@
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
-          Product Breakdown
+          {{ 'reports.profitReport.breakdown.title' | transloco }}
           <span *ngIf="selectedDay" class="font-normal" style="color:var(--theme-accent)">— {{ selectedDay | date:'dd MMM yyyy' }}</span>
         </h2>
         <button *ngIf="selectedDay" (click)="clearDaySelection()"
           class="text-xs px-2 py-1 rounded-lg" style="background:var(--theme-hover);color:var(--theme-text)">
-          Clear day filter
+          {{ 'reports.profitReport.breakdown.clearDayFilter' | transloco }}
         </button>
       </div>
 
@@ -246,21 +245,21 @@
         <table class="w-full text-xs">
           <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Product</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Qty</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Sell Price</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Cost Price</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Sales (৳)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Profit (৳)</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.date' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.product' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.qty' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.sellPrice' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.costPrice' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.sales' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'reports.profitReport.breakdown.columns.profit' | transloco }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr *ngIf="isLoading">
-              <td colspan="7" class="px-3 py-6 text-center text-gray-400">Loading…</td>
+              <td colspan="7" class="px-3 py-6 text-center text-gray-400">{{ 'reports.profitReport.breakdown.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isLoading && filteredProductDaily.length === 0">
-              <td colspan="7" class="px-3 py-6 text-center text-gray-400">No products found</td>
+              <td colspan="7" class="px-3 py-6 text-center text-gray-400">{{ 'reports.profitReport.breakdown.noData' | transloco }}</td>
             </tr>
             <tr *ngFor="let p of filteredProductDaily" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ p.saleDate | date:'dd MMM yy' }}</td>
