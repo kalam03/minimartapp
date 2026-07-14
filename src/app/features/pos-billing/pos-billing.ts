@@ -35,9 +35,11 @@ export interface Invoice {
   standalone: true,
   imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule],
   // Note: ActivatedRoute + Router are injected but not imported here (they're provided by the router module)
-  // Loads assets/i18n/pos-billing/{en,bn}.json only when this route is hit —
+  // Loads assets/i18n/posBilling/{en,bn}.json only when this route is hit —
   // see Multilingual_Localization_Architecture.md Section 5.1.
-  providers: [provideTranslocoScope('pos-billing')],
+  // Scope name deliberately has no hyphen (unlike the folder's old name) —
+  // a hyphenated scope name caused all lookups to silently miss.
+  providers: [provideTranslocoScope('posBilling')],
   templateUrl: './pos-billing.html',
   styleUrls: ['./pos-billing.css'],
 })
@@ -56,9 +58,9 @@ export class PosBillingComponent implements OnInit {
     this.receiptData = this.receiptService.getReceiptData();
   }
 
-  /** Shorthand for the 'pos-billing' scope — see provideTranslocoScope above. */
+  /** Shorthand for the 'posBilling' scope — see provideTranslocoScope above. */
   private t(key: string, params?: Record<string, unknown>): string {
-    return this.transloco.translate(`pos-billing.${key}`, params);
+    return this.transloco.translate(`posBilling.${key}`, params);
   }
 
   /** When opened from Order List, this holds the active order id */

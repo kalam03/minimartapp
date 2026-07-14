@@ -2,6 +2,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslocoService } from '@jsverse/transloco';
+import { environment } from '../../environments/environment';
 
 export interface AppLanguage {
   code: 'en' | 'bn';
@@ -43,7 +44,7 @@ export class LanguageService {
     // Fire-and-forget: the UI has already switched by the time this
     // resolves, and an anonymous/offline caller (e.g. the login screen
     // itself) simply has nothing to PUT to yet.
-    this.http.put('/api/users/preferences/language', { language: code }).subscribe({
+    this.http.put(`${environment.baseUrl}/users/preferences/language`, { language: code }).subscribe({
       error: () => { /* not logged in yet, or offline — localStorage/cookie already cover it */ },
     });
   }

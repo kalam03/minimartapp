@@ -10,9 +10,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
-        {{ 'pos-billing.banner.processingOrder' | transloco: { id: activeOrderId } }}
+        {{ 'posBilling.banner.processingOrder' | transloco: { id: activeOrderId } }}
       </div>
-      <div *ngIf="orderLoading" class="text-xs font-normal opacity-80">{{ 'pos-billing.banner.loadingItems' | transloco }}</div>
+      <div *ngIf="orderLoading" class="text-xs font-normal opacity-80">{{ 'posBilling.banner.loadingItems' | transloco }}</div>
     </div>
 
     <!-- FIRST ROW: Product Selection + Cart Items -->
@@ -29,7 +29,7 @@
                 d="M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4"
               ></path>
             </svg>
-            {{ 'pos-billing.product.sectionTitle' | transloco }}
+            {{ 'posBilling.product.sectionTitle' | transloco }}
           </h2>
         </div>
         <div class="p-3">
@@ -42,7 +42,7 @@
                 [ngModel]="searchProductTerm"
                 (ngModelChange)="onProductSearch($event)"
                 (keydown)="onProductKeydown($event)"
-                [placeholder]="'pos-billing.product.searchPlaceholder' | transloco"
+                [placeholder]="'posBilling.product.searchPlaceholder' | transloco"
                 class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:outline-none"
               />
               <svg
@@ -74,14 +74,14 @@
                   <div class="font-semibold">{{ product.productName }}</div>
                   <div class="flex justify-between text-xs">
                     <span class="" style="color:#4f5faa">৳{{ product.salePrice.toFixed(2) }}</span>
-                    <span class="text-gray-400">{{ 'pos-billing.product.stock' | transloco: { qty: product.stockQty } }}</span>
+                    <span class="text-gray-400">{{ 'posBilling.product.stock' | transloco: { qty: product.stockQty } }}</span>
                   </div>
                 </div>
                 <div
                   *ngIf="filteredProducts.length === 0"
                   class="p-2 text-center text-gray-500 text-sm"
                 >
-                  {{ 'pos-billing.product.noProductsFound' | transloco }}
+                  {{ 'posBilling.product.noProductsFound' | transloco }}
                 </div>
               </div>
             </div>
@@ -89,7 +89,7 @@
           <!-- Product Details Row - Compact -->
           <div class="grid grid-cols-3 gap-2 mb-2">
             <div>
-              <label class="text-xs text-gray-500">{{ 'pos-billing.product.price' | transloco }}</label>
+              <label class="text-xs text-gray-500">{{ 'posBilling.product.price' | transloco }}</label>
               <input
                 type="text"
                 [value]="(selectedProduct?.salePrice || 0).toFixed(2)"
@@ -99,7 +99,7 @@
             </div>
             <div>
               <label class="text-xs text-gray-500 flex items-center gap-1">
-                {{ 'pos-billing.product.qty' | transloco }}
+                {{ 'posBilling.product.qty' | transloco }}
                 <span *ngIf="selectedProduct" class="px-1.5 py-0.5 rounded text-xs font-semibold"
                   [ngStyle]="{'background': isWeightProduct ? 'var(--theme-text)' : '#f3f4f6',
                               'color':      isWeightProduct ? 'var(--theme-primary)'  : '#6b7280'}">
@@ -130,7 +130,7 @@
               </div>
             </div>
             <div>
-              <label class="text-xs text-gray-500">{{ 'pos-billing.product.total' | transloco }}</label>
+              <label class="text-xs text-gray-500">{{ 'posBilling.product.total' | transloco }}</label>
               <input
                 type="text"
                 [value]="((selectedProduct?.salePrice || 0) * productQuantity).toFixed(2)"
@@ -146,13 +146,13 @@
               (click)="addToCart()"
               class="flex-1 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'"
             >
-              {{ 'pos-billing.product.addToCart' | transloco }}
+              {{ 'posBilling.product.addToCart' | transloco }}
             </button>
             <button
               (click)="resetProduct()"
               class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200"
             >
-              {{ 'pos-billing.product.clear' | transloco }}
+              {{ 'posBilling.product.clear' | transloco }}
             </button>
           </div>
         </div>
@@ -165,22 +165,22 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>
-            {{ 'pos-billing.cart.sectionTitle' | transloco: { count: cartItems.length } }}
+            {{ 'posBilling.cart.sectionTitle' | transloco: { count: cartItems.length } }}
           </h2>
           <button *ngIf="cartItems.length > 0" (click)="clearCart()"
             class="text-xs px-2 py-0.5 rounded transition" style="color:var(--theme-accent);border:1px solid var(--theme-border)" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'">
-            {{ 'pos-billing.cart.clearAll' | transloco }}
+            {{ 'posBilling.cart.clearAll' | transloco }}
           </button>
         </div>
         <div class="overflow-auto" style="max-height: 260px">
           <table class="w-full text-xs" *ngIf="cartItems.length > 0">
             <thead style="background:var(--theme-primary);color:var(--theme-text)" class="sticky top-0">
               <tr>
-                <th class="px-2 py-1.5 text-left">{{ 'pos-billing.cart.table.product' | transloco }}</th>
-                <th class="px-2 py-1.5 text-center">{{ 'pos-billing.cart.table.qty' | transloco }}</th>
-                <th class="px-2 py-1.5 text-right">{{ 'pos-billing.cart.table.price' | transloco }}</th>
-                <th class="px-2 py-1.5 text-right">{{ 'pos-billing.cart.table.total' | transloco }}</th>
-                <th class="px-2 py-1.5 text-center">{{ 'pos-billing.cart.table.del' | transloco }}</th>
+                <th class="px-2 py-1.5 text-left">{{ 'posBilling.cart.table.product' | transloco }}</th>
+                <th class="px-2 py-1.5 text-center">{{ 'posBilling.cart.table.qty' | transloco }}</th>
+                <th class="px-2 py-1.5 text-right">{{ 'posBilling.cart.table.price' | transloco }}</th>
+                <th class="px-2 py-1.5 text-right">{{ 'posBilling.cart.table.total' | transloco }}</th>
+                <th class="px-2 py-1.5 text-center">{{ 'posBilling.cart.table.del' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
@@ -195,7 +195,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                     </svg>
-                    {{ 'pos-billing.cart.outOfStock' | transloco }}
+                    {{ 'posBilling.cart.outOfStock' | transloco }}
                   </span>
                 </td>
                 <td class="px-2 py-1.5 text-center">
@@ -214,7 +214,7 @@
             <svg class="w-8 h-8 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>
-            <p class="text-xs">{{ 'pos-billing.cart.empty' | transloco }}</p>
+            <p class="text-xs">{{ 'posBilling.cart.empty' | transloco }}</p>
           </div>
         </div>
       </div>
@@ -234,7 +234,7 @@
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
               ></path>
             </svg>
-            {{ 'pos-billing.customer.sectionTitle' | transloco }}
+            {{ 'posBilling.customer.sectionTitle' | transloco }}
           </h2>
         </div>
         <div class="p-3">
@@ -245,7 +245,7 @@
               [ngModel]="searchCustomerTerm"
               (ngModelChange)="onCustomerSearch($event)"
               (keydown)="onCustomerKeydown($event)"
-              [placeholder]="'pos-billing.customer.searchPlaceholder' | transloco"
+              [placeholder]="'posBilling.customer.searchPlaceholder' | transloco"
               class="w-full px-3 py-1.5 pl-8 text-sm border rounded-lg focus:outline-none focus:outline-none"
             />
             <svg
@@ -279,11 +279,11 @@
                   <span class="text-xs text-gray-500">{{ customer.phone }}</span>
                   <span *ngIf="(customer.currentBalance || 0) > 0"
                         class="text-xs font-semibold" style="color:#ef4444">
-                    {{ 'pos-billing.customer.due' | transloco: { amount: (customer.currentBalance || 0).toFixed(2) } }}
+                    {{ 'posBilling.customer.due' | transloco: { amount: (customer.currentBalance || 0).toFixed(2) } }}
                   </span>
                   <span *ngIf="(customer.currentBalance || 0) < 0"
                         class="text-xs font-semibold" style="color:#10b981">
-                    {{ 'pos-billing.customer.credit' | transloco: { amount: (-(customer.currentBalance || 0)).toFixed(2) } }}
+                    {{ 'posBilling.customer.credit' | transloco: { amount: (-(customer.currentBalance || 0)).toFixed(2) } }}
                   </span>
                 </div>
               </div>
@@ -291,7 +291,7 @@
                 *ngIf="filteredCustomers.length === 0"
                 class="p-2 text-center text-gray-500 text-sm"
               >
-                {{ 'pos-billing.customer.noCustomersFound' | transloco }}
+                {{ 'posBilling.customer.noCustomersFound' | transloco }}
               </div>
             </div>
           </div>
@@ -299,19 +299,19 @@
           <!-- Customer Details - Compact Grid -->
           <div class="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <label class="text-xs text-gray-500">{{ 'pos-billing.customer.mobile' | transloco }}</label>
+              <label class="text-xs text-gray-500">{{ 'posBilling.customer.mobile' | transloco }}</label>
               <input
                 type="text"
                 [(ngModel)]="customerPhone"
                 [readonly]="!!selectedCustomerId"
                 maxlength="11"
-                [placeholder]="'pos-billing.customer.mobilePlaceholder' | transloco"
+                [placeholder]="'posBilling.customer.mobilePlaceholder' | transloco"
                 [class]="'w-full px-2 py-1 text-sm border rounded-lg ' + (selectedCustomerId ? 'bg-gray-50' : 'focus:outline-none focus:outline-none')"
               />
             </div>
 
             <div>
-              <label class="text-xs text-gray-500">{{ 'pos-billing.customer.discount' | transloco }}</label>
+              <label class="text-xs text-gray-500">{{ 'posBilling.customer.discount' | transloco }}</label>
               <div class="flex items-center gap-1">
                 <app-financial-input
                   [(ngModel)]="discountAmount"
@@ -321,14 +321,14 @@
                 ></app-financial-input>
                 <span
                   class="text-xs font-semibold text-gray-600 whitespace-nowrap px-1.5 py-1 bg-gray-100 rounded-lg"
-                  [title]="'pos-billing.customer.discountTitle' | transloco"
+                  [title]="'posBilling.customer.discountTitle' | transloco"
                 >{{ discountPercent.toFixed(2) }}%</span>
               </div>
             </div>
           </div>
 
           <div class="mb-2">
-            <label class="text-xs text-gray-500">{{ 'pos-billing.customer.address' | transloco }}</label>
+            <label class="text-xs text-gray-500">{{ 'posBilling.customer.address' | transloco }}</label>
             <textarea
               rows="1"
               [value]="selectedCustomer?.address || ''"
@@ -341,23 +341,23 @@
           <div *ngIf="selectedCustomerId && previousDue !== 0" class="mb-2 px-3 py-2 rounded-lg flex justify-between items-center text-xs font-semibold"
                [style.background]="previousDue > 0 ? '#fee2e2' : '#d1fae5'"
                [style.color]="previousDue > 0 ? '#b91c1c' : '#065f46'">
-            <span>{{ (previousDue > 0 ? 'pos-billing.customer.previousDue' : 'pos-billing.customer.advanceCredit') | transloco }}</span>
+            <span>{{ (previousDue > 0 ? 'posBilling.customer.previousDue' : 'posBilling.customer.advanceCredit') | transloco }}</span>
             <span>{{ previousDue > 0 ? '+' : '-' }}৳{{ (Math.abs(previousDue)).toFixed(2) }}</span>
           </div>
 
           <!-- Transport & Payment - Compact -->
 
           <div>
-            <label class="text-xs text-gray-500">{{ 'pos-billing.customer.transport' | transloco }}</label>
+            <label class="text-xs text-gray-500">{{ 'posBilling.customer.transport' | transloco }}</label>
             <select
               [ngModel]="transportType"
               (ngModelChange)="onTransportTypeChange($event)"
               class="w-full px-2 py-1 text-sm border rounded-lg"
             >
-              <option value="">{{ 'pos-billing.customer.transportSelect' | transloco }}</option>
-              <option value="pickup">{{ 'pos-billing.customer.transportPickup' | transloco }}</option>
-              <option value="delivery">{{ 'pos-billing.customer.transportDelivery' | transloco }}</option>
-              <option value="courier">{{ 'pos-billing.customer.transportCourier' | transloco }}</option>
+              <option value="">{{ 'posBilling.customer.transportSelect' | transloco }}</option>
+              <option value="pickup">{{ 'posBilling.customer.transportPickup' | transloco }}</option>
+              <option value="delivery">{{ 'posBilling.customer.transportDelivery' | transloco }}</option>
+              <option value="courier">{{ 'posBilling.customer.transportCourier' | transloco }}</option>
             </select>
           </div>
         </div>
@@ -375,18 +375,18 @@
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
               ></path>
             </svg>
-            {{ 'pos-billing.bill.sectionTitle' | transloco }}
+            {{ 'posBilling.bill.sectionTitle' | transloco }}
           </h2>
         </div>
         <div class="p-3">
           <!-- Bill Summary - Compact -->
           <div class="space-y-1 text-sm">
             <div class="flex justify-between">
-              <span class="text-gray-600">{{ 'pos-billing.bill.total' | transloco }}</span>
+              <span class="text-gray-600">{{ 'posBilling.bill.total' | transloco }}</span>
               <span class="font-semibold">৳{{ subtotal.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-600">{{ 'pos-billing.bill.transport' | transloco }}</span>
+              <span class="text-gray-600">{{ 'posBilling.bill.transport' | transloco }}</span>
               <app-financial-input
                 [(ngModel)]="transportCost"
                 (ngModelChange)="onTransportCostChange($event)"
@@ -395,38 +395,38 @@
               ></app-financial-input>
             </div>
             <div class="flex justify-between text-red-600">
-              <span>{{ 'pos-billing.bill.discount' | transloco }}</span>
+              <span>{{ 'posBilling.bill.discount' | transloco }}</span>
               <span>-৳{{ discountAmount.toFixed(2) }}</span>
             </div>
             <div *ngIf="previousDue > 0" class="flex justify-between font-semibold" style="color:#ef4444">
-              <span>{{ 'pos-billing.bill.previousDue' | transloco }}</span>
+              <span>{{ 'posBilling.bill.previousDue' | transloco }}</span>
               <span>+৳{{ previousDue.toFixed(2) }}</span>
             </div>
             <div *ngIf="previousDue < 0" class="flex justify-between font-semibold" style="color:#10b981">
-              <span>{{ 'pos-billing.bill.advanceCredit' | transloco }}</span>
+              <span>{{ 'posBilling.bill.advanceCredit' | transloco }}</span>
               <span>-৳{{ (Math.abs(previousDue)).toFixed(2) }}</span>
             </div>
             <div class="flex justify-between pt-1 border-t font-bold">
-              <span>{{ 'pos-billing.bill.gross' | transloco }}</span>
+              <span>{{ 'posBilling.bill.gross' | transloco }}</span>
               <span class="text-green-600">৳{{ grossAmount.toFixed(2) }}</span>
             </div>
           </div>
 
           <!-- Payment Section - Compact -->
           <div class="mt-2 pt-2 border-t">
-            <label class="text-xs text-gray-500">{{ 'pos-billing.bill.paymentMethod' | transloco }}</label>
+            <label class="text-xs text-gray-500">{{ 'posBilling.bill.paymentMethod' | transloco }}</label>
             <select
               [(ngModel)]="selectedPaymentMethod"
               class="w-full px-2 py-1 text-sm border rounded-lg focus:outline-none focus:outline-none mb-2"
             >
-              <option value="cash">{{ 'pos-billing.bill.cash' | transloco }}</option>
-              <option value="bkash">{{ 'pos-billing.bill.bkash' | transloco }}</option>
-              <option value="bank">{{ 'pos-billing.bill.bank' | transloco }}</option>
+              <option value="cash">{{ 'posBilling.bill.cash' | transloco }}</option>
+              <option value="bkash">{{ 'posBilling.bill.bkash' | transloco }}</option>
+              <option value="bank">{{ 'posBilling.bill.bank' | transloco }}</option>
             </select>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-xs text-gray-500">{{ 'pos-billing.bill.amountPaid' | transloco }}</label>
+              <label class="text-xs text-gray-500">{{ 'posBilling.bill.amountPaid' | transloco }}</label>
               <app-financial-input
                 [(ngModel)]="paymentCash"
                 (ngModelChange)="onPaymentCashChange($event)"
@@ -435,7 +435,7 @@
               ></app-financial-input>
             </div>
             <div>
-              <label class="text-xs text-gray-500">{{ 'pos-billing.bill.return' | transloco }}</label>
+              <label class="text-xs text-gray-500">{{ 'posBilling.bill.return' | transloco }}</label>
               <input
                 type="text"
                 [value]="returnCash.toFixed(2)"
@@ -447,7 +447,7 @@
 
 
           <div class="mt-2">
-            <label class="text-xs text-gray-500">{{ 'pos-billing.bill.due' | transloco }}</label>
+            <label class="text-xs text-gray-500">{{ 'posBilling.bill.due' | transloco }}</label>
             <input
               type="text"
               [value]="dueAmount.toFixed(2)"
@@ -469,7 +469,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            {{ 'pos-billing.bill.submitBill' | transloco }}
+            {{ 'posBilling.bill.submitBill' | transloco }}
           </button>
 
           <!-- Reset Button -->
@@ -477,7 +477,7 @@
             (click)="resetForm()"
             class="w-full mt-2 py-1.5 rounded-lg text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
           >
-            {{ 'pos-billing.bill.reset' | transloco }}
+            {{ 'posBilling.bill.reset' | transloco }}
           </button>
         </div>
       </div>
