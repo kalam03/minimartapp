@@ -8,41 +8,41 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          {{ editingId ? 'Edit Unit Type' : 'Add Unit Type' }}
+          {{ (editingId ? 'unitTypes.title.edit' : 'unitTypes.title.addNew') | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Unit Code *</label>
-            <input type="text" [(ngModel)]="form.unitCode" placeholder="e.g. PCS, KG, DOZ" maxlength="10"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'unitTypes.form.unitCode' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.unitCode" [placeholder]="'unitTypes.form.unitCodePlaceholder' | transloco" maxlength="10"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none uppercase ' + (isFieldInvalid('unitCode') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('unitCode')" class="text-red-600 text-xs mt-1">{{ validationErrors['unitCode'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Unit Name *</label>
-            <input type="text" [(ngModel)]="form.unitName" placeholder="e.g. Kilogram (kg)"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'unitTypes.form.unitName' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.unitName" [placeholder]="'unitTypes.form.unitNamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('unitName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('unitName')" class="text-red-600 text-xs mt-1">{{ validationErrors['unitName'] }}</p>
           </div>
           <div class="flex items-end pb-1.5">
             <label class="flex items-center gap-2 text-xs font-semibold" style="color:var(--theme-primary)">
               <input type="checkbox" [(ngModel)]="form.isWeight" class="w-4 h-4 rounded border-gray-400" />
-              Sold by weight / volume
+              {{ 'unitTypes.form.isWeight' | transloco }}
             </label>
           </div>
           <div class="flex items-end gap-2">
             <button (click)="saveUnitType()" [disabled]="isSaving"
               class="flex-1 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Saving...' : (editingId ? 'Update' : 'Add Unit Type') }}
+              {{ (isSaving ? 'unitTypes.buttons.saving' : (editingId ? 'unitTypes.buttons.update' : 'unitTypes.buttons.add')) | transloco }}
             </button>
             <button (click)="resetForm()" class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
-              {{ editingId ? 'Cancel' : 'Reset' }}
+              {{ (editingId ? 'unitTypes.buttons.cancel' : 'unitTypes.buttons.reset') | transloco }}
             </button>
           </div>
         </div>
         <p class="text-gray-400 text-xs">
-          "Sold by weight / volume" enables decimal quantities in POS (e.g. 0.5 kg) instead of whole counts.
+          {{ 'unitTypes.form.weightHint' | transloco }}
         </p>
       </div>
     </div>
@@ -50,23 +50,23 @@
     <!-- Unit Type List -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Unit Types</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredUnitTypes.length }} of {{ unitTypes.length }}</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'unitTypes.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'unitTypes.table.countSummary' | transloco: { filtered: filteredUnitTypes.length, total: unitTypes.length } }}</span>
       </div>
       <div class="px-3 py-2 border-b">
-        <input type="text" [(ngModel)]="searchText" placeholder="Search by code or name…"
+        <input type="text" [(ngModel)]="searchText" [placeholder]="'unitTypes.search.placeholder' | transloco"
           class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">ID</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Code</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Name</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Type</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Status</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Actions</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'unitTypes.table.id' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'unitTypes.table.code' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'unitTypes.table.name' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'unitTypes.table.type' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'unitTypes.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'unitTypes.table.actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -75,23 +75,23 @@
               <td class="px-3 py-2 font-semibold text-gray-900 whitespace-nowrap">{{ u.unitCode }}</td>
               <td class="px-3 py-2 text-gray-700 whitespace-nowrap">{{ u.unitName }}</td>
               <td class="px-3 py-2 text-center">
-                <span *ngIf="u.isWeight" class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">Weight / Volume</span>
-                <span *ngIf="!u.isWeight" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">Count</span>
+                <span *ngIf="u.isWeight" class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">{{ 'unitTypes.table.weightVolume' | transloco }}</span>
+                <span *ngIf="!u.isWeight" class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">{{ 'unitTypes.table.count' | transloco }}</span>
               </td>
               <td class="px-3 py-2 text-center">
                 <span [class]="u.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
-                  {{ u.isActive ? 'Active' : 'Inactive' }}
+                  {{ (u.isActive ? 'unitTypes.table.active' : 'unitTypes.table.inactive') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-2 text-center whitespace-nowrap">
-                <button (click)="editUnitType(u)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">Edit</button>
+                <button (click)="editUnitType(u)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'unitTypes.buttons.edit' | transloco }}</button>
                 <button (click)="toggleActive(u)" [class]="u.isActive ? 'text-xs font-semibold text-red-600' : 'text-xs font-semibold text-green-600'">
-                  {{ u.isActive ? 'Deactivate' : 'Reactivate' }}
+                  {{ (u.isActive ? 'unitTypes.buttons.deactivate' : 'unitTypes.buttons.reactivate') | transloco }}
                 </button>
               </td>
             </tr>
             <tr *ngIf="filteredUnitTypes.length === 0">
-              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">No unit types found</td>
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'unitTypes.table.noUnitTypes' | transloco }}</td>
             </tr>
           </tbody>
         </table>

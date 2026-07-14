@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { DepartmentService, Department } from '../../services/department.service';
 import { DesignationService, Designation } from '../../services/designation.service';
 import {
@@ -15,13 +16,17 @@ type Tab = 'employees' | 'salary' | 'attendance' | 'payroll' | 'bonus' | 'advanc
 @Component({
   selector: 'app-payroll',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/payroll/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('payroll')],
   templateUrl: './payroll.component.html',
   styleUrls: ['./payroll.component.css']
 })
 export class PayrollComponent implements OnInit {
 
   activeTab: Tab = 'employees';
+  // ids stay fixed (used for tab switching logic); displayed labels are
+  // looked up via tabLabelKey() below so the underlying id never changes.
   tabs: { id: Tab; label: string }[] = [
     { id: 'employees',  label: 'Employees' },
     { id: 'salary',     label: 'Salary Structure' },
@@ -30,6 +35,10 @@ export class PayrollComponent implements OnInit {
     { id: 'bonus',      label: 'Bonus' },
     { id: 'advance',    label: 'Advance' },
   ];
+
+  tabLabelKey(id: Tab): string {
+    return `tabs.${id}`;
+  }
 
   months = [
     { id: 1, name: 'January' }, { id: 2, name: 'February' }, { id: 3, name: 'March' },
@@ -51,8 +60,42 @@ export class PayrollComponent implements OnInit {
     private departmentService: DepartmentService,
     private designationService: DesignationService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'payroll' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`payroll.${key}`, params);
+  }
+
+  // The maps below translate the *displayed* label of a fixed enum value
+  // without changing the underlying value that's stored/compared/sent to
+  // the backend (gender code, salary type, attendance status, payment
+  // method, bonus type all stay in English in the data model).
+  genderLabelKey(code: string): string {
+    const map: Record<string, string> = { M: 'options.genderMale', F: 'options.genderFemale', O: 'options.genderOther' };
+    return map[code] ?? code;
+  }
+  salaryTypeLabelKey(type: string): string {
+    const map: Record<string, string> = { Monthly: 'options.salaryTypeMonthly', Daily: 'options.salaryTypeDaily', Hourly: 'options.salaryTypeHourly' };
+    return map[type] ?? type;
+  }
+  attStatusLabelKey(status: string): string {
+    const map: Record<string, string> = { Present: 'options.statusPresent', Absent: 'options.statusAbsent', Leave: 'options.statusLeave' };
+    return map[status] ?? status;
+  }
+  paymentMethodLabelKey(method: string): string {
+    const map: Record<string, string> = { Cash: 'options.paymentMethodCash', Bank: 'options.paymentMethodBank', 'Mobile Banking': 'options.paymentMethodMobile' };
+    return map[method] ?? method;
+  }
+  bonusTypeLabelKey(type: string): string {
+    const map: Record<string, string> = {
+      'Festival Bonus': 'options.bonusTypeFestival', 'Performance Bonus': 'options.bonusTypePerformance',
+      'Incentive': 'options.bonusTypeIncentive', 'Other': 'options.bonusTypeOther'
+    };
+    return map[type] ?? type;
+  }
 
   ngOnInit(): void {
     this.loadDepartments();
@@ -97,11 +140,11 @@ export class PayrollComponent implements OnInit {
     if (!this.newDepartmentName.trim()) return;
     this.departmentService.create({ departmentName: this.newDepartmentName.trim() }).subscribe({
       next: (res) => {
-        this.alertService.success(res.message || 'Department added');
+        this.alertService.success(res.message || this.t('messages.departmentAdded'));
         this.newDepartmentName = '';
         this.loadDepartments();
       },
-      error: (err: any) => this.alertService.error('Failed to add department: ' + (err.error?.message || err.message))
+      error: (err: any) => this.alertService.error(this.t('messages.departmentAddError', { error: err.error?.message || err.message }))
     });
   }
 
@@ -109,11 +152,11 @@ export class PayrollComponent implements OnInit {
     if (!this.newDesignationName.trim()) return;
     this.designationService.create({ designationName: this.newDesignationName.trim() }).subscribe({
       next: (res) => {
-        this.alertService.success(res.message || 'Designation added');
+        this.alertService.success(res.message || this.t('messages.designationAdded'));
         this.newDesignationName = '';
         this.loadDesignations();
       },
-      error: (err: any) => this.alertService.error('Failed to add designation: ' + (err.error?.message || err.message))
+      error: (err: any) => this.alertService.error(this.t('messages.designationAddError', { error: err.error?.message || err.message }))
     });
   }
 
@@ -145,32 +188,32 @@ export class PayrollComponent implements OnInit {
   loadEmployees(): void {
     this.payrollService.getEmployees().subscribe({
       next: (res) => { this.employees = res.data || []; this.cdr.detectChanges(); },
-      error: (err: any) => this.alertService.error('Failed to load employees: ' + (err.error?.message || err.message))
+      error: (err: any) => this.alertService.error(this.t('messages.employeesLoadError', { error: err.error?.message || err.message }))
     });
   }
 
   validateEmpForm(): boolean {
     this.empValidationErrors = {};
     if (!this.empForm.firstName.trim())
-      this.empValidationErrors['firstName'] = 'First name is required';
+      this.empValidationErrors['firstName'] = this.t('validation.firstNameRequired');
     if (!this.empForm.nidNo.trim())
-      this.empValidationErrors['nidNo'] = 'NID number is required';
+      this.empValidationErrors['nidNo'] = this.t('validation.nidRequired');
     if (!this.empForm.departmentId)
-      this.empValidationErrors['departmentId'] = 'Department is required';
+      this.empValidationErrors['departmentId'] = this.t('validation.departmentRequired');
     if (!this.empForm.designationId)
-      this.empValidationErrors['designationId'] = 'Designation is required';
+      this.empValidationErrors['designationId'] = this.t('validation.designationRequired');
     if (!this.empForm.gender)
-      this.empValidationErrors['gender'] = 'Gender is required';
+      this.empValidationErrors['gender'] = this.t('validation.genderRequired');
     if (!this.empForm.presentAddress.trim())
-      this.empValidationErrors['presentAddress'] = 'Present address is required';
+      this.empValidationErrors['presentAddress'] = this.t('validation.addressRequired');
 
     const mobile = this.empForm.mobile.trim();
     if (!mobile)
-      this.empValidationErrors['mobile'] = 'Phone number is required';
+      this.empValidationErrors['mobile'] = this.t('validation.phoneRequired');
     else if (!/^\d+$/.test(mobile))
-      this.empValidationErrors['mobile'] = 'Phone number must contain digits only';
+      this.empValidationErrors['mobile'] = this.t('validation.phoneDigitsOnly');
     else if (mobile.length > 11)
-      this.empValidationErrors['mobile'] = 'Phone number cannot exceed 11 characters';
+      this.empValidationErrors['mobile'] = this.t('validation.phoneMaxLength');
 
     return Object.keys(this.empValidationErrors).length === 0;
   }
@@ -203,13 +246,13 @@ export class PayrollComponent implements OnInit {
     req$.subscribe({
       next: (res: any) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Employee saved successfully!');
+        this.alertService.success(res.message || this.t('messages.employeeSaved'));
         this.resetEmpForm();
         this.loadEmployees();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to save employee: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.employeeSaveError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -229,8 +272,11 @@ export class PayrollComponent implements OnInit {
 
   toggleEmployeeActive(e: Employee): void {
     this.payrollService.updateEmployee(e.employeeId, { firstName: e.firstName, isActive: !e.isActive }).subscribe({
-      next: () => { this.alertService.success(`Employee ${!e.isActive ? 'activated' : 'deactivated'}`); this.loadEmployees(); },
-      error: (err: any) => this.alertService.error('Failed to update: ' + (err.error?.message || err.message))
+      next: () => {
+        this.alertService.success(this.t(!e.isActive ? 'messages.employeeActivated' : 'messages.employeeDeactivated'));
+        this.loadEmployees();
+      },
+      error: (err: any) => this.alertService.error(this.t('messages.employeeStatusError', { error: err.error?.message || err.message }))
     });
   }
 
@@ -293,11 +339,11 @@ export class PayrollComponent implements OnInit {
 
   saveSalaryStructure(): void {
     if (!this.salaryEmployeeId) {
-      this.alertService.warning('Select an employee first');
+      this.alertService.warning(this.t('messages.selectEmployeeFirst'));
       return;
     }
     if (!this.salaryForm.basicSalary || this.salaryForm.basicSalary <= 0) {
-      this.alertService.warning('Basic salary must be greater than 0');
+      this.alertService.warning(this.t('messages.basicSalaryPositive'));
       return;
     }
     this.isSaving = true;
@@ -313,12 +359,12 @@ export class PayrollComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Salary structure saved');
+        this.alertService.success(res.message || this.t('messages.salaryStructureSaved'));
         this.loadSalaryStructure();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to save salary structure: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.salaryStructureError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -354,7 +400,7 @@ export class PayrollComponent implements OnInit {
 
   markAttendance(): void {
     if (!this.attEmployeeId) {
-      this.alertService.warning('Select an employee first');
+      this.alertService.warning(this.t('messages.selectEmployeeFirst'));
       return;
     }
     const date = this.attForm.attendanceDate;
@@ -370,12 +416,12 @@ export class PayrollComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Attendance recorded');
+        this.alertService.success(res.message || this.t('messages.attendanceRecorded'));
         this.loadAttendance();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to mark attendance: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.attendanceError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -429,7 +475,7 @@ export class PayrollComponent implements OnInit {
 
   processSalaryPayment(): void {
     if (!this.payForm.employeeId) {
-      this.alertService.warning('Select an employee first');
+      this.alertService.warning(this.t('messages.selectEmployeeFirst'));
       return;
     }
     this.isSaving = true;
@@ -449,13 +495,13 @@ export class PayrollComponent implements OnInit {
       next: (res) => {
         this.isSaving = false;
         this.lastResult = res.data;
-        this.alertService.success(res.message || 'Salary processed successfully!');
+        this.alertService.success(res.message || this.t('messages.salaryProcessed'));
         this.resetPayForm();
         this.loadSalaryPayments();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to process salary: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.salaryProcessError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -481,6 +527,8 @@ export class PayrollComponent implements OnInit {
   }
 
   monthName(m: number): string { return this.months.find(x => x.id === m)?.name || String(m); }
+  /** Translation key for a month id — the id itself is what's stored, this is display-only. */
+  monthLabelKey(m: number): string { return `months.month${m}`; }
 
   // ══════════════════════════════════════════════════════════════════
   // Bonus
@@ -503,7 +551,7 @@ export class PayrollComponent implements OnInit {
 
   addBonus(): void {
     if (!this.bonusForm.employeeId || !this.bonusForm.amount || this.bonusForm.amount <= 0) {
-      this.alertService.warning('Select an employee and enter a valid amount');
+      this.alertService.warning(this.t('messages.selectEmployeeAndAmount'));
       return;
     }
     this.isSaving = true;
@@ -517,13 +565,13 @@ export class PayrollComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Bonus recorded successfully!');
+        this.alertService.success(res.message || this.t('messages.bonusRecorded'));
         this.bonusForm = { employeeId: null, bonusDate: toLocalDateString(), bonusType: 'Festival Bonus', amount: null, remarks: '', paymentMethod: 'Cash' };
         this.loadBonuses();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to record bonus: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.bonusError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -549,7 +597,7 @@ export class PayrollComponent implements OnInit {
 
   addAdvance(): void {
     if (!this.advanceForm.employeeId || !this.advanceForm.amount || this.advanceForm.amount <= 0) {
-      this.alertService.warning('Select an employee and enter a valid amount');
+      this.alertService.warning(this.t('messages.selectEmployeeAndAmount'));
       return;
     }
     this.isSaving = true;
@@ -562,13 +610,13 @@ export class PayrollComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Advance recorded successfully!');
+        this.alertService.success(res.message || this.t('messages.advanceRecorded'));
         this.advanceForm = { employeeId: null, advanceDate: toLocalDateString(), amount: null, remarks: '', paymentMethod: 'Cash' };
         this.loadAdvances();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to record advance: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.advanceError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -576,18 +624,18 @@ export class PayrollComponent implements OnInit {
   repayAdvance(advanceId: number): void {
     const amount = this.repayAmounts[advanceId];
     if (!amount || amount <= 0) {
-      this.alertService.warning('Enter a valid repayment amount');
+      this.alertService.warning(this.t('messages.repaymentValidAmount'));
       return;
     }
     this.payrollService.repayAdvance({ advanceId, amount: +amount, paymentMethod: 'Cash' }).subscribe({
       next: (res) => {
         const applied = res.data?.appliedAmount ?? amount;
         const txnNo = res.data?.txnNo ? ` (GL ${res.data.txnNo})` : '';
-        this.alertService.success(`Repayment of ৳${applied.toFixed(2)} recorded and posted to the Cash Vault ledger${txnNo}.`);
+        this.alertService.success(this.t('messages.repaymentRecorded', { amount: '৳' + applied.toFixed(2), txnNo }));
         this.repayAmounts[advanceId] = 0;
         this.loadAdvances();
       },
-      error: (err: any) => this.alertService.error('Failed to record repayment: ' + (err.error?.message || err.message))
+      error: (err: any) => this.alertService.error(this.t('messages.repaymentError', { error: err.error?.message || err.message }))
     });
   }
 }

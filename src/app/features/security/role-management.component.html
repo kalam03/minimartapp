@@ -15,43 +15,43 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          {{ editingId ? 'Edit Role' : 'Add New Role' }}
+          {{ (editingId ? 'security.roles.title.edit' : 'security.roles.title.addNew') | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Role Code *</label>
-            <input type="text" [(ngModel)]="form.roleCode" (blur)="validateField('roleCode')" placeholder="e.g. CASHIER"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.roles.form.roleCode' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.roleCode" (blur)="validateField('roleCode')" [placeholder]="'security.roles.form.roleCodePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('roleCode') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('roleCode')" class="text-red-600 text-xs mt-1">{{ validationErrors.roleCode }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Role Name *</label>
-            <input type="text" [(ngModel)]="form.roleName" (blur)="validateField('roleName')" placeholder="e.g. Cashier"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.roles.form.roleName' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.roleName" (blur)="validateField('roleName')" [placeholder]="'security.roles.form.roleNamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('roleName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('roleName')" class="text-red-600 text-xs mt-1">{{ validationErrors.roleName }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Description</label>
-            <input type="text" [(ngModel)]="form.description" placeholder="Short description"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.roles.form.description' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.description" [placeholder]="'security.roles.form.descriptionPlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg transition outline-none" />
           </div>
           <div *ngIf="editingId" class="flex items-end pb-1">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" [(ngModel)]="form.isActive"
                 class="w-4 h-4 text-blue-600 rounded border-gray-400" />
-              <span class="text-sm font-medium text-gray-700">Active</span>
+              <span class="text-sm font-medium text-gray-700">{{ 'security.roles.form.active' | transloco }}</span>
             </label>
           </div>
         </div>
         <div class="flex gap-2 mt-2 flex-wrap">
           <button (click)="openCreateForm()"
-            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
+            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">{{ 'security.roles.buttons.reset' | transloco }}</button>
           <button (click)="submitForm()"
             class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            {{ editingId ? 'Update Role' : 'Save Role' }}
+            {{ (editingId ? 'security.roles.buttons.update' : 'security.roles.buttons.save') | transloco }}
           </button>
         </div>
       </div>
@@ -60,42 +60,42 @@
     <!-- Roles Table -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Role List</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredRoles.length }} of {{ roles.length }} roles</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'security.roles.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'security.roles.table.countSummary' | transloco: { filtered: filteredRoles.length, total: roles.length } }}</span>
       </div>
       <div class="px-3 py-2 border-b flex gap-2">
         <input type="text" [(ngModel)]="searchText"
-          placeholder="Search by code, name, description…"
+          [placeholder]="'security.roles.table.searchPlaceholder' | transloco"
           class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         <select [(ngModel)]="statusFilter"
           class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-          <option value="">All Status</option>
-          <option value="active">Active ({{ activeCount }})</option>
-          <option value="inactive">Inactive ({{ inactiveCount }})</option>
+          <option value="">{{ 'security.roles.table.allStatus' | transloco }}</option>
+          <option value="active">{{ 'security.roles.table.activeOption' | transloco: { count: activeCount } }}</option>
+          <option value="inactive">{{ 'security.roles.table.inactiveOption' | transloco: { count: inactiveCount } }}</option>
         </select>
         <button (click)="searchText=''; statusFilter=''"
-          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'security.roles.table.clear' | transloco }}</button>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">#</th>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">Code</th>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">Name</th>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">Description</th>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">Status</th>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">Created By</th>
-              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">Created Date</th>
-              <th class="px-3 py-2 text-right text-xs font-semibold" style="color:var(--theme-text)">Actions</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colNo' | transloco }}</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colCode' | transloco }}</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colName' | transloco }}</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colDescription' | transloco }}</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colStatus' | transloco }}</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colCreatedBy' | transloco }}</th>
+              <th class="px-3 py-2 text-left text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colCreatedDate' | transloco }}</th>
+              <th class="px-3 py-2 text-right text-xs font-semibold" style="color:var(--theme-text)">{{ 'security.roles.table.colActions' | transloco }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr *ngIf="isLoading">
-              <td colspan="8" class="py-8 text-center text-gray-400 text-sm">Loading…</td>
+              <td colspan="8" class="py-8 text-center text-gray-400 text-sm">{{ 'security.roles.table.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isLoading && filteredRoles.length === 0">
-              <td colspan="8" class="py-8 text-center text-gray-400 text-sm">No roles found.</td>
+              <td colspan="8" class="py-8 text-center text-gray-400 text-sm">{{ 'security.roles.table.noRoles' | transloco }}</td>
             </tr>
             <tr *ngFor="let role of filteredRoles; let i = index"
               class="hover:bg-gray-50 transition-colors">
@@ -107,13 +107,13 @@
               <td class="px-3 py-1.5 text-gray-500 text-xs">{{ role.description || '—' }}</td>
               <td class="px-4 py-3">
                 <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + (role.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">
-                  {{ role.isActive ? 'Active' : 'Inactive' }}
+                  {{ (role.isActive ? 'security.roles.table.active' : 'security.roles.table.inactive') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-1.5 text-xs text-gray-500">{{ role.createdBy }}</td>
               <td class="px-3 py-1.5 text-xs text-gray-500">{{ role.createdDate | date:'dd MMM yyyy' }}</td>
               <td class="px-3 py-1.5 text-right">
-                <button (click)="openEditForm(role)" title="Edit Role"
+                <button (click)="openEditForm(role)" [title]="'security.roles.table.editTooltip' | transloco"
                   class="p-1.5 rounded-lg transition" style="color:var(--theme-primary)" onmouseover="this.style.background='#eef0fc'" onmouseout="this.style.background='transparent'">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

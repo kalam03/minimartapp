@@ -1,13 +1,16 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { CustomerService } from '../../services/customer.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
   selector: 'app-customer',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/customers/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('customers')],
   templateUrl: './customer.component.html',
   styleUrls: ['./customer.component.css']
 })
@@ -39,8 +42,14 @@ export class CustomerComponent implements OnInit {
   constructor(
     private customerService: CustomerService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'customers' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`customers.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.getAllCustomers();
@@ -53,32 +62,32 @@ export class CustomerComponent implements OnInit {
     switch (fieldName) {
       case 'customerName':
         if (!value) {
-          this.validationErrors.customerName = 'Customer name is required';
+          this.validationErrors.customerName = this.t('validation.nameRequired');
         } else if (value.length < 2) {
-          this.validationErrors.customerName = 'Customer name must be at least 2 characters';
+          this.validationErrors.customerName = this.t('validation.nameMinLength');
         } else if (value.length > 100) {
-          this.validationErrors.customerName = 'Customer name must not exceed 100 characters';
+          this.validationErrors.customerName = this.t('validation.nameMaxLength');
         }
         break;
       case 'phone':
         if (!value) {
-          this.validationErrors.phone = 'Phone number is required';
+          this.validationErrors.phone = this.t('validation.phoneRequired');
         } else if (!/^[0-9]{11}$/.test(value)) {
-          this.validationErrors.phone = 'Phone number must be exactly 11 digits';
+          this.validationErrors.phone = this.t('validation.phoneInvalid');
         }
         break;
       case 'address':
         if (value && value.length < 2) {
-          this.validationErrors.address = 'Address must be at least 2 characters';
+          this.validationErrors.address = this.t('validation.addressMinLength');
         } else if (value.length > 200) {
-          this.validationErrors.address = 'Address must not exceed 200 characters';
+          this.validationErrors.address = this.t('validation.addressMaxLength');
         }
         break;
       case 'currentBalance':
         if (isNaN(Number(value))) {
-          this.validationErrors.currentBalance = 'Balance must be a number';
+          this.validationErrors.currentBalance = this.t('validation.balanceInvalid');
         } else if (Number(value) < 0) {
-          this.validationErrors.currentBalance = 'Balance cannot be negative';
+          this.validationErrors.currentBalance = this.t('validation.balanceNegative');
         }
         break;
     }
@@ -118,13 +127,13 @@ export class CustomerComponent implements OnInit {
 
     this.customerService.createCustomer(payload).subscribe({
       next: (response: any) => {
-        this.alertService.success('Customer created successfully!');
+        this.alertService.success(this.t('messages.createSuccess'));
         this.resetForm();
         this.getAllCustomers();
       },
       error: (err: any) => {
         console.error('Error creating customer:', err);
-        this.alertService.error('Failed to create customer: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.createError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -151,14 +160,14 @@ export class CustomerComponent implements OnInit {
 
     this.customerService.updateCustomer(this.editingId, payload).subscribe({
       next: (response: any) => {
-        this.alertService.success('Customer updated successfully!');
+        this.alertService.success(this.t('messages.updateSuccess'));
         this.resetForm();
         this.editingId = null;
         this.getAllCustomers();
       },
       error: (err: any) => {
         console.error('Error updating customer:', err);
-        this.alertService.error('Failed to update customer: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.updateError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -170,16 +179,16 @@ export class CustomerComponent implements OnInit {
   }
 
   deleteCustomer(id: number, name: string): void {
-    this.alertService.confirm(`Are you sure you want to delete "${name}"?`).then((confirmed: boolean) => {
+    this.alertService.confirm(this.t('messages.deleteConfirm', { name })).then((confirmed: boolean) => {
       if (confirmed) {
         this.customerService.deleteCustomer(id, 1).subscribe({
           next: (response: any) => {
-            this.alertService.success('Customer deleted successfully!');
+            this.alertService.success(this.t('messages.deleteSuccess'));
             this.getAllCustomers();
           },
           error: (err: any) => {
             console.error('Error deleting customer:', err);
-            this.alertService.error('Failed to delete customer: ' + (err.error?.message || err.message));
+            this.alertService.error(this.t('messages.deleteError', { error: err.error?.message || err.message }));
           }
         });
       }
@@ -196,7 +205,7 @@ export class CustomerComponent implements OnInit {
       error: (err: any) => {
         console.error('Error loading customers:', err);
         this.customers = [];
-        this.alertService.error('Failed to load customers: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }));
       }
     });
   }

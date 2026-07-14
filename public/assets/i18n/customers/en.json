@@ -1,0 +1,65 @@
+{
+  "title": {
+    "addNew": "Add New Customer",
+    "edit": "Edit Customer",
+    "list": "Customer List"
+  },
+  "form": {
+    "customerName": "Customer Name *",
+    "customerNamePlaceholder": "Enter customer name",
+    "phone": "Phone *",
+    "phonePlaceholder": "01XXXXXXXXX",
+    "address": "Address",
+    "addressPlaceholder": "Enter address",
+    "currentBalance": "Current Balance (৳)",
+    "currentBalancePlaceholder": "0.00"
+  },
+  "buttons": {
+    "save": "Save Customer",
+    "update": "Update Customer",
+    "reset": "Reset",
+    "cancelEdit": "Cancel Edit",
+    "edit": "Edit",
+    "delete": "Delete",
+    "clear": "Clear"
+  },
+  "table": {
+    "id": "ID",
+    "customerName": "Customer Name",
+    "phone": "Phone",
+    "address": "Address",
+    "balance": "Balance",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noCustomers": "No customers found",
+    "countSummary": "{{filtered}} of {{total}} customers",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} customers",
+    "filteredFrom": "(filtered from {{total}})"
+  },
+  "search": {
+    "placeholder": "Search by name, phone, address…"
+  },
+  "validation": {
+    "nameRequired": "Customer name is required",
+    "nameMinLength": "Customer name must be at least 2 characters",
+    "nameMaxLength": "Customer name must not exceed 100 characters",
+    "phoneRequired": "Phone number is required",
+    "phoneInvalid": "Phone number must be exactly 11 digits",
+    "addressMinLength": "Address must be at least 2 characters",
+    "addressMaxLength": "Address must not exceed 200 characters",
+    "balanceInvalid": "Balance must be a number",
+    "balanceNegative": "Balance cannot be negative"
+  },
+  "messages": {
+    "createSuccess": "Customer created successfully!",
+    "createError": "Failed to create customer: {{error}}",
+    "updateSuccess": "Customer updated successfully!",
+    "updateError": "Failed to update customer: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteSuccess": "Customer deleted successfully!",
+    "deleteError": "Failed to delete customer: {{error}}",
+    "loadError": "Failed to load customers: {{error}}"
+  }
+}

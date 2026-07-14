@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import {
   UserService,
   RoleResponse,
@@ -12,7 +13,9 @@ import { AlertService } from '../../shared/alert.service';
 @Component({
   selector: 'app-role-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/security/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('security')],
   templateUrl: './role-management.component.html',
   styleUrls: ['./role-management.component.css']
 })
@@ -41,12 +44,12 @@ export class RoleManagementComponent implements OnInit {
     const val = (this.form as any)[field]?.toString().trim() || '';
     this.validationErrors[field as keyof typeof this.validationErrors] = '';
     if (field === 'roleCode') {
-      if (!val) this.validationErrors.roleCode = 'Role code is required';
-      else if (val.length > 20) this.validationErrors.roleCode = 'Max 20 characters';
+      if (!val) this.validationErrors.roleCode = this.t('roles.messages.codeRequired');
+      else if (val.length > 20) this.validationErrors.roleCode = this.t('roles.messages.codeMaxLength');
     }
     if (field === 'roleName') {
-      if (!val) this.validationErrors.roleName = 'Role name is required';
-      else if (val.length > 100) this.validationErrors.roleName = 'Max 100 characters';
+      if (!val) this.validationErrors.roleName = this.t('roles.messages.nameRequired');
+      else if (val.length > 100) this.validationErrors.roleName = this.t('roles.messages.nameMaxLength');
     }
   }
 
@@ -61,8 +64,14 @@ export class RoleManagementComponent implements OnInit {
   constructor(
     private userService: UserService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'security' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`security.${key}`, params);
+  }
 
   ngOnInit(): void { this.loadRoles(); }
 
@@ -70,7 +79,7 @@ export class RoleManagementComponent implements OnInit {
     this.isLoading = true;
     this.userService.getRoles().subscribe({
       next: (data) => { this.roles = data; this.isLoading = false; this.cdr.detectChanges(); },
-      error: () => { this.alertService.error('Failed to load roles.', 'Error'); this.isLoading = false; }
+      error: () => { this.alertService.error(this.t('roles.messages.loadError'), this.t('roles.messages.error')); this.isLoading = false; }
     });
   }
 
@@ -101,8 +110,8 @@ export class RoleManagementComponent implements OnInit {
     }
 
     const msg = this.editingId
-      ? `Are you sure you want to update role "${this.form.roleName}"?`
-      : `Are you sure you want to create role "${this.form.roleName}"?`;
+      ? this.t('roles.messages.updateConfirm', { name: this.form.roleName })
+      : this.t('roles.messages.createConfirm', { name: this.form.roleName });
 
     this.alertService.confirm(msg).then((confirmed: boolean) => {
       if (!confirmed) return;
@@ -116,12 +125,12 @@ export class RoleManagementComponent implements OnInit {
         };
         this.userService.updateRole(this.editingId, dto).subscribe({
           next: () => {
-            this.alertService.success('Role updated.', 'Success');
+            this.alertService.success(this.t('roles.messages.updateSuccess'), this.t('roles.messages.success'));
             this.openCreateForm();
             this.loadRoles();
           },
           error: (err) => {
-            this.alertService.error(err?.error?.message || 'Failed to update role.', 'Error');
+            this.alertService.error(err?.error?.message || this.t('roles.messages.updateError'), this.t('roles.messages.error'));
           }
         });
       } else {
@@ -132,12 +141,12 @@ export class RoleManagementComponent implements OnInit {
         };
         this.userService.createRole(dto).subscribe({
           next: () => {
-            this.alertService.success('Role created.', 'Success');
+            this.alertService.success(this.t('roles.messages.createSuccess'), this.t('roles.messages.success'));
             this.openCreateForm();
             this.loadRoles();
           },
           error: (err) => {
-            this.alertService.error(err?.error?.message || 'Failed to create role.', 'Error');
+            this.alertService.error(err?.error?.message || this.t('roles.messages.createError'), this.t('roles.messages.error'));
           }
         });
       }

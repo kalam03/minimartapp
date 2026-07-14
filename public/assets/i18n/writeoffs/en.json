@@ -1,0 +1,61 @@
+{
+  "form": {
+    "title": "Destroy Product / Stock Write-Off",
+    "product": "Product *",
+    "selectProduct": "Select Product",
+    "productOption": "{{name}} ({{stock}} {{unit}} in stock)",
+    "quantity": "Quantity to Destroy *",
+    "quantityPlaceholder": "Enter quantity",
+    "reason": "Reason *",
+    "selectReason": "Select Reason",
+    "writeOffDate": "Write-Off Date",
+    "estimatedValue": "Estimated loss value (at cost): {{value}}"
+  },
+  "reasons": {
+    "damaged": "Damaged",
+    "expired": "Expired",
+    "stolen": "Stolen",
+    "qualityIssue": "Quality Issue",
+    "other": "Other"
+  },
+  "buttons": {
+    "destroyStock": "Destroy Stock",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "apply": "Apply",
+    "clear": "Clear"
+  },
+  "report": {
+    "title": "Write-Off Report",
+    "recordsCount": "{{count}} record(s)",
+    "from": "From",
+    "to": "To",
+    "product": "Product",
+    "allProducts": "All Products",
+    "totalQtyDestroyed": "Total Qty Destroyed: {{qty}}",
+    "totalLossValue": "Total Loss Value: {{value}}",
+    "colDate": "Date",
+    "colProduct": "Product",
+    "colQuantity": "Quantity",
+    "colUnitCost": "Unit Cost",
+    "colTotalValue": "Total Value",
+    "colReason": "Reason",
+    "colLoggedBy": "Logged By",
+    "noWriteOffs": "No write-offs found",
+    "loading": "Loading..."
+  },
+  "validation": {
+    "productRequired": "Product is required",
+    "quantityRequired": "Quantity must be greater than 0",
+    "quantityExceedsStock": "Only {{stock}} {{unit}} in stock",
+    "reasonRequired": "Reason is required"
+  },
+  "messages": {
+    "confirmTitle": "Confirm Write-Off",
+    "confirmBody": "Destroy <strong>{{quantity}} {{unit}}</strong> of \"{{name}}\"?<br>Estimated loss value: <strong>{{value}}</strong>",
+    "confirmDestroy": "Destroy",
+    "confirmCancel": "Cancel",
+    "writeOffSuccess": "Write-off logged successfully!",
+    "writeOffError": "Failed to log write-off: {{error}}"
+  }
+}

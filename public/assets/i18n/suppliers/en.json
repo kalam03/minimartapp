@@ -1,0 +1,77 @@
+{
+  "title": {
+    "addNew": "Add New Supplier",
+    "edit": "Edit Supplier",
+    "list": "Supplier List"
+  },
+  "form": {
+    "supplierName": "Supplier Name *",
+    "supplierNamePlaceholder": "Enter supplier name",
+    "phone": "Phone *",
+    "phonePlaceholder": "01XXXXXXXXX",
+    "email": "Email",
+    "emailPlaceholder": "Enter email address",
+    "address": "Address",
+    "addressPlaceholder": "Enter address",
+    "contactPerson": "Contact Person",
+    "contactPersonPlaceholder": "Enter contact person name",
+    "contactPersonPhone": "Contact Person Phone",
+    "contactPersonPhonePlaceholder": "01XXXXXXXXX",
+    "openingBalance": "Opening Balance (৳)",
+    "openingBalancePlaceholder": "0.00"
+  },
+  "buttons": {
+    "save": "Save Supplier",
+    "update": "Update Supplier",
+    "reset": "Reset",
+    "cancelEdit": "Cancel Edit",
+    "edit": "Edit",
+    "delete": "Delete",
+    "clear": "Clear"
+  },
+  "table": {
+    "id": "ID",
+    "supplierName": "Supplier Name",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "balance": "Balance",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noSuppliers": "No suppliers found",
+    "countSummary": "{{filtered}} of {{total}} suppliers",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} suppliers",
+    "filteredFrom": "(filtered from {{total}})",
+    "pageSize": "Page size:"
+  },
+  "search": {
+    "placeholder": "Search by name, phone, email, address, contact person…"
+  },
+  "validation": {
+    "nameRequired": "Supplier name is required",
+    "nameMinLength": "Supplier name must be at least 2 characters",
+    "nameMaxLength": "Supplier name must not exceed 100 characters",
+    "phoneRequired": "Phone number is required",
+    "phoneInvalid": "Phone number must be exactly 11 digits",
+    "emailInvalid": "Invalid email format",
+    "addressMinLength": "Address must be at least 2 characters",
+    "addressMaxLength": "Address must not exceed 200 characters",
+    "contactPersonMinLength": "Contact person must be at least 2 characters",
+    "contactPersonMaxLength": "Contact person must not exceed 100 characters",
+    "contactPersonPhoneInvalid": "Phone number must be exactly 11 digits",
+    "openingBalanceInvalid": "Opening balance must be a number",
+    "openingBalanceNegative": "Opening balance cannot be negative"
+  },
+  "messages": {
+    "createSuccess": "Supplier created successfully!",
+    "createError": "Failed to create supplier: {{error}}",
+    "updateSuccess": "Supplier updated successfully!",
+    "updateError": "Failed to update supplier: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteSuccess": "Supplier deleted successfully!",
+    "deleteError": "Failed to delete supplier: {{error}}",
+    "loadError": "Failed to load suppliers: {{error}}"
+  }
+}

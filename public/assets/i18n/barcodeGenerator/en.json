@@ -1,0 +1,45 @@
+{
+  "title": {
+    "main": "Barcode Generator",
+    "settings": "Barcode Settings",
+    "preview": "Preview — {{count}} label(s)"
+  },
+  "filter": {
+    "from": "From",
+    "to": "To",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "search": "Search",
+    "searchPlaceholder": "Search by name or barcode…",
+    "apply": "Apply",
+    "reset": "Reset",
+    "countSummary": "{{products}} products · {{selected}} selected"
+  },
+  "table": {
+    "productName": "Product Name",
+    "category": "Category",
+    "salePrice": "Sale Price",
+    "unit": "Unit",
+    "barcode": "Barcode",
+    "willBeGenerated": "— will be generated —",
+    "noProducts": "No products found",
+    "loading": "Loading…"
+  },
+  "settings": {
+    "barcodeWidth": "Barcode Width (px per bar)",
+    "barcodeHeight": "Barcode Height (px)",
+    "copiesPerProduct": "Copies per Product",
+    "showProductName": "Show product name on label",
+    "showPrice": "Show price on label"
+  },
+  "buttons": {
+    "generate": "Generate Barcodes ({{count}} selected)",
+    "print": "Print",
+    "clear": "Clear"
+  },
+  "messages": {
+    "selectAtLeastOne": "Select at least one product to generate barcodes for.",
+    "sizeMustBePositive": "Barcode width and height must be greater than zero.",
+    "loadError": "Failed to load products"
+  }
+}

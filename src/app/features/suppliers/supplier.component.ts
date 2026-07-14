@@ -1,13 +1,19 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { SupplierService } from '../../services/supplier.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
   selector: 'app-supplier',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/suppliers/{en,bn}.json only when this route is hit —
+  // see Multilingual_Localization_Architecture.md Section 5.1. Scope name
+  // deliberately has no hyphen (a hyphenated scope name caused all lookups
+  // to silently miss — see pos-billing's rename to 'posBilling').
+  providers: [provideTranslocoScope('suppliers')],
   templateUrl: './supplier.component.html',
   styleUrls: ['./supplier.component.css']
 })
@@ -45,8 +51,14 @@ export class SupplierComponent implements OnInit {
   constructor(
     private supplierService: SupplierService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'suppliers' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`suppliers.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.getAllSuppliers();
@@ -59,49 +71,49 @@ export class SupplierComponent implements OnInit {
     switch (fieldName) {
       case 'supplierName':
         if (!value) {
-          this.validationErrors.supplierName = 'Supplier name is required';
+          this.validationErrors.supplierName = this.t('validation.nameRequired');
         } else if (value.length < 2) {
-          this.validationErrors.supplierName = 'Supplier name must be at least 2 characters';
+          this.validationErrors.supplierName = this.t('validation.nameMinLength');
         } else if (value.length > 100) {
-          this.validationErrors.supplierName = 'Supplier name must not exceed 100 characters';
+          this.validationErrors.supplierName = this.t('validation.nameMaxLength');
         }
         break;
       case 'phone':
         if (!value) {
-          this.validationErrors.phone = 'Phone number is required';
+          this.validationErrors.phone = this.t('validation.phoneRequired');
         } else if (!/^[0-9]{11}$/.test(value)) {
-          this.validationErrors.phone = 'Phone number must be exactly 11 digits';
+          this.validationErrors.phone = this.t('validation.phoneInvalid');
         }
         break;
       case 'email':
         if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          this.validationErrors.email = 'Invalid email format';
+          this.validationErrors.email = this.t('validation.emailInvalid');
         }
         break;
       case 'address':
         if (value && value.length < 2) {
-          this.validationErrors.address = 'Address must be at least 2 characters';
+          this.validationErrors.address = this.t('validation.addressMinLength');
         } else if (value.length > 200) {
-          this.validationErrors.address = 'Address must not exceed 200 characters';
+          this.validationErrors.address = this.t('validation.addressMaxLength');
         }
         break;
       case 'contactPerson':
         if (value && value.length < 2) {
-          this.validationErrors.contactPerson = 'Contact person must be at least 2 characters';
+          this.validationErrors.contactPerson = this.t('validation.contactPersonMinLength');
         } else if (value.length > 100) {
-          this.validationErrors.contactPerson = 'Contact person must not exceed 100 characters';
+          this.validationErrors.contactPerson = this.t('validation.contactPersonMaxLength');
         }
         break;
       case 'contactPersonPhone':
         if (value && !/^[0-9]{11}$/.test(value)) {
-          this.validationErrors.contactPersonPhone = 'Phone number must be exactly 11 digits';
+          this.validationErrors.contactPersonPhone = this.t('validation.contactPersonPhoneInvalid');
         }
         break;
       case 'openingBalance':
         if (isNaN(Number(value))) {
-          this.validationErrors.openingBalance = 'Opening balance must be a number';
+          this.validationErrors.openingBalance = this.t('validation.openingBalanceInvalid');
         } else if (Number(value) < 0) {
-          this.validationErrors.openingBalance = 'Opening balance cannot be negative';
+          this.validationErrors.openingBalance = this.t('validation.openingBalanceNegative');
         }
         break;
     }
@@ -135,13 +147,13 @@ export class SupplierComponent implements OnInit {
   createSupplier(): void {
     this.supplierService.createSupplier(this.supplierForm).subscribe({
       next: (response: any) => {
-        this.alertService.success('Supplier created successfully!');
+        this.alertService.success(this.t('messages.createSuccess'));
         this.resetForm();
         this.getAllSuppliers();
       },
       error: (err: any) => {
         console.error('Error creating supplier:', err);
-        this.alertService.error('Failed to create supplier: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.createError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -158,14 +170,14 @@ export class SupplierComponent implements OnInit {
 
     this.supplierService.updateSupplier(this.editingId, this.supplierForm).subscribe({
       next: (response: any) => {
-        this.alertService.success('Supplier updated successfully!');
+        this.alertService.success(this.t('messages.updateSuccess'));
         this.resetForm();
         this.editingId = null;
         this.getAllSuppliers();
       },
       error: (err: any) => {
         console.error('Error updating supplier:', err);
-        this.alertService.error('Failed to update supplier: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.updateError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -177,16 +189,16 @@ export class SupplierComponent implements OnInit {
   }
 
   deleteSupplier(id: number, name: string): void {
-    this.alertService.confirm(`Are you sure you want to delete "${name}"?`).then((confirmed: boolean) => {
+    this.alertService.confirm(this.t('messages.deleteConfirm', { name })).then((confirmed: boolean) => {
       if (confirmed) {
         this.supplierService.deleteSupplier(id).subscribe({
           next: (response: any) => {
-            this.alertService.success('Supplier deleted successfully!');
+            this.alertService.success(this.t('messages.deleteSuccess'));
             this.getAllSuppliers();
           },
           error: (err: any) => {
             console.error('Error deleting supplier:', err);
-            this.alertService.error('Failed to delete supplier: ' + (err.error?.message || err.message));
+            this.alertService.error(this.t('messages.deleteError', { error: err.error?.message || err.message }));
           }
         });
       }
@@ -207,7 +219,7 @@ export class SupplierComponent implements OnInit {
       error: (err: any) => {
         console.error('Error loading suppliers:', err);
         this.suppliers = [];
-        this.alertService.error('Failed to load suppliers: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }));
       }
     });
   }

@@ -1,0 +1,52 @@
+{
+  "title": {
+    "addNew": "Add Category",
+    "edit": "Edit Category",
+    "list": "Categories"
+  },
+  "form": {
+    "categoryName": "Category Name *",
+    "categoryNamePlaceholder": "e.g. Beverages"
+  },
+  "buttons": {
+    "add": "Add Category",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate"
+  },
+  "table": {
+    "id": "ID",
+    "categoryName": "Category Name",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "countSummary": "{{filtered}} of {{total}}",
+    "noCategories": "No categories found"
+  },
+  "search": {
+    "placeholder": "Search by name…"
+  },
+  "validation": {
+    "nameRequired": "Category name is required",
+    "nameDuplicate": "This category name is already registered"
+  },
+  "messages": {
+    "loadError": "Failed to load categories: {{error}}",
+    "updateSuccess": "Category updated successfully!",
+    "updateError": "Failed to update category: {{error}}",
+    "createSuccess": "Category added successfully!",
+    "createError": "Failed to add category: {{error}}",
+    "deactivateConfirm": "Are you sure you want to deactivate \"{{name}}\"?",
+    "reactivateConfirm": "Are you sure you want to reactivate \"{{name}}\"?",
+    "deactivateTitle": "Deactivate Category",
+    "reactivateTitle": "Reactivate Category",
+    "deactivateSuccess": "Category deactivated.",
+    "reactivateSuccess": "Category reactivated.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}

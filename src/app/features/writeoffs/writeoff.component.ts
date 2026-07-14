@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { WriteOffService, WriteOff } from '../../services/writeoff.service';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
@@ -10,13 +11,18 @@ import { toLocalDateString } from '../../shared/date-utils';
 @Component({
   selector: 'app-writeoff',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/writeoffs/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('writeoffs')],
   templateUrl: './writeoff.component.html',
   styleUrls: ['./writeoff.component.css']
 })
 export class WriteOffComponent implements OnInit {
   Math = Math;
 
+  // Underlying values stay in English — they're persisted to the backend
+  // as the write-off's "reason" field. Only the displayed label is
+  // translated, via reasonLabelKey() below.
   reasons = ['Damaged', 'Expired', 'Stolen', 'Quality Issue', 'Other'];
 
   products: Product[] = [];
@@ -54,8 +60,27 @@ export class WriteOffComponent implements OnInit {
     private writeOffService: WriteOffService,
     private productService: ProductService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'writeoffs' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`writeoffs.${key}`, params);
+  }
+
+  /** Maps a stored reason value to its translation key (display only — the
+   *  underlying English value is still what's saved/filtered/compared). */
+  reasonLabelKey(reason: string): string {
+    const map: Record<string, string> = {
+      'Damaged': 'reasons.damaged',
+      'Expired': 'reasons.expired',
+      'Stolen': 'reasons.stolen',
+      'Quality Issue': 'reasons.qualityIssue',
+      'Other': 'reasons.other'
+    };
+    return map[reason] ?? reason;
+  }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -75,13 +100,16 @@ export class WriteOffComponent implements OnInit {
   validateForm(): boolean {
     this.validationErrors = {};
     if (!+this.form.productId)
-      this.validationErrors['productId'] = 'Product is required';
+      this.validationErrors['productId'] = this.t('validation.productRequired');
     if (!this.form.quantity || +this.form.quantity <= 0)
-      this.validationErrors['quantity'] = 'Quantity must be greater than 0';
+      this.validationErrors['quantity'] = this.t('validation.quantityRequired');
     if (this.selectedProduct && this.form.quantity && +this.form.quantity > this.selectedProduct.stockQty)
-      this.validationErrors['quantity'] = `Only ${this.selectedProduct.stockQty} ${this.selectedProduct.unitType} in stock`;
+      this.validationErrors['quantity'] = this.t('validation.quantityExceedsStock', {
+        stock: this.selectedProduct.stockQty,
+        unit: this.selectedProduct.unitType
+      });
     if (!this.form.reason.trim())
-      this.validationErrors['reason'] = 'Reason is required';
+      this.validationErrors['reason'] = this.t('validation.reasonRequired');
     return Object.keys(this.validationErrors).length === 0;
   }
 
@@ -95,11 +123,15 @@ export class WriteOffComponent implements OnInit {
     const productName = this.selectedProduct?.productName ?? '';
     this.alertService
       .confirm(
-        `Destroy <strong>${this.form.quantity} ${this.selectedProduct?.unitType}</strong> of "${productName}"?<br>` +
-          `Estimated loss value: <strong>৳ ${this.estimatedValue.toFixed(2)}</strong>`,
-        'Confirm Write-Off',
-        'Destroy',
-        'Cancel'
+        this.t('messages.confirmBody', {
+          quantity: this.form.quantity,
+          unit: this.selectedProduct?.unitType,
+          name: productName,
+          value: '৳ ' + this.estimatedValue.toFixed(2)
+        }),
+        this.t('messages.confirmTitle'),
+        this.t('messages.confirmDestroy'),
+        this.t('messages.confirmCancel')
       )
       .then((confirmed: boolean) => {
         if (!confirmed) return;
@@ -115,14 +147,14 @@ export class WriteOffComponent implements OnInit {
           .subscribe({
             next: (res: any) => {
               this.isSaving = false;
-              this.alertService.success(res.message || 'Write-off logged successfully!');
+              this.alertService.success(res.message || this.t('messages.writeOffSuccess'));
               this.resetForm();
               this.loadProducts();
               this.loadReport();
             },
             error: (err: any) => {
               this.isSaving = false;
-              this.alertService.error('Failed to log write-off: ' + (err.error?.message || err.message));
+              this.alertService.error(this.t('messages.writeOffError', { error: err.error?.message || err.message }));
             }
           });
       });

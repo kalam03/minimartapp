@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { OrderService, OrderListDto } from '../../services/order.service';
 import { toLocalDateString } from '../../shared/date-utils';
 
@@ -11,7 +12,9 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/orders/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('orders')],
   template: `
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
@@ -26,9 +29,9 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            Order Management
+            {{ 'orders.list.title' | transloco }}
           </h1>
-          <p class="text-xs mt-0.5" style="color:var(--theme-accent)">Manage and process customer orders</p>
+          <p class="text-xs mt-0.5" style="color:var(--theme-accent)">{{ 'orders.list.subtitle' | transloco }}</p>
         </div>
         <button (click)="newOrder()"
           class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition"
@@ -37,7 +40,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
-          New Order
+          {{ 'orders.list.newOrder' | transloco }}
         </button>
       </div>
 
@@ -56,18 +59,18 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               <span class="inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle"
                     [style]="'background:' + s.color"></span>
             </span>
-            {{ s.label }}
+            {{ statusLabelKey(s.value) | transloco }}
           </button>
         </div>
 
         <!-- Date range + Search -->
         <div class="flex items-center gap-1.5 ml-auto flex-wrap">
-          <span class="text-xs text-gray-400">From</span>
+          <span class="text-xs text-gray-400">{{ 'orders.list.from' | transloco }}</span>
           <input type="date" [(ngModel)]="fromDate"
             class="text-xs border rounded-md px-2 py-1 outline-none"
             style="border-color:#d1d5f0;min-width:115px"
             onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
-          <span class="text-xs text-gray-400">To</span>
+          <span class="text-xs text-gray-400">{{ 'orders.list.to' | transloco }}</span>
           <input type="date" [(ngModel)]="toDate"
             class="text-xs border rounded-md px-2 py-1 outline-none"
             style="border-color:#d1d5f0;min-width:115px"
@@ -82,7 +85,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
             </svg>
-            Search
+            {{ 'orders.list.search' | transloco }}
           </button>
 
           <button (click)="resetFilters()"
@@ -93,7 +96,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
-            Reset
+            {{ 'orders.list.reset' | transloco }}
           </button>
         </div>
       </div>
@@ -102,7 +105,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
     <!-- Loading -->
     <div *ngIf="loading" class="flex items-center justify-center py-16">
       <div class="animate-spin rounded-full h-8 w-8 border-4 border-indigo-200 border-t-indigo-600"></div>
-      <span class="ml-3 text-sm text-gray-500">Loading orders…</span>
+      <span class="ml-3 text-sm text-gray-500">{{ 'orders.list.loading' | transloco }}</span>
     </div>
 
     <!-- Idle (not yet searched) -->
@@ -112,8 +115,8 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
       </svg>
-      <p class="text-sm font-medium text-gray-500">Select date range and click Search</p>
-      <p class="text-xs text-gray-400 mt-1">Orders will appear here after searching.</p>
+      <p class="text-sm font-medium text-gray-500">{{ 'orders.list.idleTitle' | transloco }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ 'orders.list.idleSubtitle' | transloco }}</p>
     </div>
 
     <!-- Empty (searched but no results) -->
@@ -123,11 +126,11 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
       </svg>
-      <p class="text-sm">No orders found for the selected filters.</p>
+      <p class="text-sm">{{ 'orders.list.emptyMessage' | transloco }}</p>
       <button (click)="newOrder()"
         class="mt-4 px-4 py-2 text-xs rounded-lg font-semibold text-white"
         style="background:var(--theme-primary)">
-        + Create First Order
+        {{ 'orders.list.createFirstOrder' | transloco }}
       </button>
     </div>
 
@@ -138,13 +141,13 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
         <table class="w-full text-xs">
           <thead>
             <tr style="background:var(--theme-text);color:var(--theme-primary)">
-              <th class="px-3 py-2 text-left font-semibold w-20">#Order</th>
-              <th class="px-3 py-2 text-left font-semibold">Customer</th>
-              <th class="px-3 py-2 text-center font-semibold w-24">Date</th>
-              <th class="px-3 py-2 text-center font-semibold w-16">Items</th>
-              <th class="px-3 py-2 text-right font-semibold w-28">Amount</th>
-              <th class="px-3 py-2 text-center font-semibold w-24">Status</th>
-              <th class="px-3 py-2 text-center font-semibold w-28">Action</th>
+              <th class="px-3 py-2 text-left font-semibold w-20">{{ 'orders.list.colOrder' | transloco }}</th>
+              <th class="px-3 py-2 text-left font-semibold">{{ 'orders.list.colCustomer' | transloco }}</th>
+              <th class="px-3 py-2 text-center font-semibold w-24">{{ 'orders.list.colDate' | transloco }}</th>
+              <th class="px-3 py-2 text-center font-semibold w-16">{{ 'orders.list.colItems' | transloco }}</th>
+              <th class="px-3 py-2 text-right font-semibold w-28">{{ 'orders.list.colAmount' | transloco }}</th>
+              <th class="px-3 py-2 text-center font-semibold w-24">{{ 'orders.list.colStatus' | transloco }}</th>
+              <th class="px-3 py-2 text-center font-semibold w-28">{{ 'orders.list.colAction' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -160,7 +163,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
 
               <!-- Customer -->
               <td class="px-3 py-2">
-                <div class="font-medium text-gray-800">{{ o.customerName || 'Walk-in' }}</div>
+                <div class="font-medium text-gray-800">{{ o.customerName || ('orders.list.walkIn' | transloco) }}</div>
                 <div class="text-gray-400 flex items-center gap-1" *ngIf="o.customerPhone">
                   <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -197,7 +200,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               <td class="px-3 py-2 text-center">
                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                       [style]="statusStyle(o.status)">
-                  {{ o.status }}
+                  {{ statusLabelKey(o.status) | transloco }}
                 </span>
               </td>
 
@@ -211,7 +214,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                     style="background:var(--theme-primary)"
                     onmouseover="this.style.background='var(--theme-primary-light)'"
                     onmouseout="this.style.background='var(--theme-primary)'">
-                    Open
+                    {{ 'orders.list.open' | transloco }}
                   </button>
                   <button
                     (click)="cancelOrder(o)"
@@ -227,7 +230,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                     </svg>
-                    Cancel
+                    {{ 'orders.list.cancel' | transloco }}
                   </button>
                 </div>
                 <span *ngIf="o.status === 'Completed'"
@@ -235,14 +238,14 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                   </svg>
-                  Done
+                  {{ 'orders.list.done' | transloco }}
                 </span>
                 <span *ngIf="o.status === 'Cancelled'"
                   class="inline-flex items-center gap-1 text-red-400 text-xs">
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                   </svg>
-                  Cancelled
+                  {{ 'orders.list.statusCancelled' | transloco }}
                 </span>
               </td>
             </tr>
@@ -252,7 +255,7 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
 
       <!-- Footer count -->
       <div class="px-4 py-2 text-xs text-gray-400 border-t" style="border-color:#f0f2fb">
-        Showing {{ filteredOrders.length }} of {{ allOrders.length }} orders
+        {{ 'orders.list.footerSummary' | transloco: { filtered: filteredOrders.length, total: allOrders.length } }}
       </div>
     </div>
 
@@ -283,8 +286,26 @@ export class OrderListComponent implements OnInit {
     private orderSvc: OrderService,
     private router:   Router,
     private cdr:      ChangeDetectorRef,
-    private zone:     NgZone
+    private zone:     NgZone,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'orders' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`orders.${key}`, params);
+  }
+
+  /** Maps a raw status value (English, from the backend) to its translation key. */
+  statusLabelKey(status: string): string {
+    const map: Record<string, string> = {
+      '':           'orders.list.statusAll',
+      'New':        'orders.list.statusNew',
+      'Processing': 'orders.list.statusProcessing',
+      'Completed':  'orders.list.statusCompleted',
+      'Cancelled':  'orders.list.statusCancelled',
+    };
+    return map[status] ?? 'orders.list.statusAll';
+  }
 
   ngOnInit(): void {
     const today = toLocalDateString();
@@ -349,7 +370,7 @@ export class OrderListComponent implements OnInit {
   }
 
   cancelOrder(order: OrderRow): void {
-    if (!confirm(`Cancel Order #${order.orderId}? This cannot be undone.`)) return;
+    if (!confirm(this.t('list.cancelConfirm', { id: order.orderId }))) return;
     order._cancelling = true;
     this.orderSvc.updateOrderStatus(order.orderId, { status: 'Cancelled' }).subscribe({
       next: () => {
@@ -367,7 +388,7 @@ export class OrderListComponent implements OnInit {
       error: () => {
         this.zone.run(() => {
           order._cancelling = false;
-          alert(`Failed to cancel Order #${order.orderId}. Please try again.`);
+          alert(this.t('list.cancelError', { id: order.orderId }));
           this.cdr.detectChanges();
         });
       }

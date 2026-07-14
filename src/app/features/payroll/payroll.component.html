@@ -7,7 +7,7 @@
         <button *ngFor="let t of tabs" (click)="setTab(t.id)"
           [class]="'px-3 py-1.5 rounded-lg text-xs font-semibold transition ' + (activeTab === t.id ? 'bg-white' : 'text-white hover:bg-white/10')"
           [style]="activeTab === t.id ? 'color:var(--theme-primary)' : ''">
-          {{ t.label }}
+          {{ tabLabelKey(t.id) | transloco }}
         </button>
       </div>
     </div>
@@ -19,12 +19,12 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <div class="bg-white rounded-xl shadow-md overflow-hidden border">
           <div class="px-3 py-2" style="background:var(--theme-primary)">
-            <h2 class="text-white font-semibold text-sm">Departments</h2>
+            <h2 class="text-white font-semibold text-sm">{{ 'payroll.employees.departmentsTitle' | transloco }}</h2>
           </div>
           <div class="p-3 flex gap-2">
-            <input type="text" [(ngModel)]="newDepartmentName" placeholder="e.g. Sales, Accounts"
+            <input type="text" [(ngModel)]="newDepartmentName" [placeholder]="'payroll.employees.deptPlaceholder' | transloco"
               class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
-            <button (click)="addDepartment()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:var(--theme-primary)">Add</button>
+            <button (click)="addDepartment()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:var(--theme-primary)">{{ 'payroll.employees.addButton' | transloco }}</button>
           </div>
           <div class="px-3 pb-3 flex flex-wrap gap-1">
             <span *ngFor="let d of departments" class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{{ d.departmentName }}</span>
@@ -32,12 +32,12 @@
         </div>
         <div class="bg-white rounded-xl shadow-md overflow-hidden border">
           <div class="px-3 py-2" style="background:var(--theme-primary)">
-            <h2 class="text-white font-semibold text-sm">Designations</h2>
+            <h2 class="text-white font-semibold text-sm">{{ 'payroll.employees.designationsTitle' | transloco }}</h2>
           </div>
           <div class="p-3 flex gap-2">
-            <input type="text" [(ngModel)]="newDesignationName" placeholder="e.g. Manager, Cashier"
+            <input type="text" [(ngModel)]="newDesignationName" [placeholder]="'payroll.employees.desigPlaceholder' | transloco"
               class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
-            <button (click)="addDesignation()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:var(--theme-primary)">Add</button>
+            <button (click)="addDesignation()" class="text-white px-3 py-1 rounded-lg text-xs font-semibold" style="background:var(--theme-primary)">{{ 'payroll.employees.addButton' | transloco }}</button>
           </div>
           <div class="px-3 pb-3 flex flex-wrap gap-1">
             <span *ngFor="let d of designations" class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">{{ d.designationName }}</span>
@@ -48,91 +48,91 @@
       <!-- Add/Edit Employee Form -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">{{ editingEmployeeId ? 'Edit Employee' : 'Add Employee' }}</h2>
+          <h2 class="text-white font-semibold text-sm">{{ (editingEmployeeId ? 'payroll.employees.editTitle' : 'payroll.employees.addTitle') | transloco }}</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">First Name *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.firstName' | transloco }}</label>
               <input type="text" [(ngModel)]="empForm.firstName"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('firstName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('firstName')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['firstName'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Last Name</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.lastName' | transloco }}</label>
               <input type="text" [(ngModel)]="empForm.lastName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Gender *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.gender' | transloco }}</label>
               <select [(ngModel)]="empForm.gender"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('gender') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-                <option value="">-- Select --</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-                <option value="O">Other</option>
+                <option value="">{{ 'payroll.options.selectDash' | transloco }}</option>
+                <option value="M">{{ 'payroll.options.genderMale' | transloco }}</option>
+                <option value="F">{{ 'payroll.options.genderFemale' | transloco }}</option>
+                <option value="O">{{ 'payroll.options.genderOther' | transloco }}</option>
               </select>
               <p *ngIf="isEmpFieldInvalid('gender')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['gender'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone Number *</label>
-              <input type="text" [(ngModel)]="empForm.mobile" placeholder="01XXXXXXXXX" maxlength="11" inputmode="numeric"
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.phone' | transloco }}</label>
+              <input type="text" [(ngModel)]="empForm.mobile" [placeholder]="'payroll.employees.phonePlaceholder' | transloco" maxlength="11" inputmode="numeric"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('mobile') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('mobile')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['mobile'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Email</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.email' | transloco }}</label>
               <input type="email" [(ngModel)]="empForm.email" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Department *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.department' | transloco }}</label>
               <select [(ngModel)]="empForm.departmentId"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('departmentId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-                <option [ngValue]="null">-- Select --</option>
+                <option [ngValue]="null">{{ 'payroll.options.selectDash' | transloco }}</option>
                 <option *ngFor="let d of departments" [ngValue]="d.departmentId">{{ d.departmentName }}</option>
               </select>
               <p *ngIf="isEmpFieldInvalid('departmentId')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['departmentId'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Designation *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.designation' | transloco }}</label>
               <select [(ngModel)]="empForm.designationId"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('designationId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-                <option [ngValue]="null">-- Select --</option>
+                <option [ngValue]="null">{{ 'payroll.options.selectDash' | transloco }}</option>
                 <option *ngFor="let d of designations" [ngValue]="d.designationId">{{ d.designationName }}</option>
               </select>
               <p *ngIf="isEmpFieldInvalid('designationId')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['designationId'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Joining Date</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.joiningDate' | transloco }}</label>
               <input type="date" [(ngModel)]="empForm.joiningDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Salary Type</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.salaryType' | transloco }}</label>
               <select [(ngModel)]="empForm.salaryType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option value="Monthly">Monthly</option>
-                <option value="Daily">Daily</option>
-                <option value="Hourly">Hourly</option>
+                <option value="Monthly">{{ 'payroll.options.salaryTypeMonthly' | transloco }}</option>
+                <option value="Daily">{{ 'payroll.options.salaryTypeDaily' | transloco }}</option>
+                <option value="Hourly">{{ 'payroll.options.salaryTypeHourly' | transloco }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Basic Salary (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.basicSalary' | transloco }}</label>
               <input type="number" [(ngModel)]="empForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">NID No. *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.nid' | transloco }}</label>
               <input type="text" [(ngModel)]="empForm.nidNo"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('nidNo') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('nidNo')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['nidNo'] }}</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bank Name</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.bankName' | transloco }}</label>
               <input type="text" [(ngModel)]="empForm.bankName" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bank Account No.</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.bankAccount' | transloco }}</label>
               <input type="text" [(ngModel)]="empForm.bankAccountNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="lg:col-span-2">
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Present Address *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.employees.presentAddress' | transloco }}</label>
               <input type="text" [(ngModel)]="empForm.presentAddress"
                 [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isEmpFieldInvalid('presentAddress') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
               <p *ngIf="isEmpFieldInvalid('presentAddress')" class="text-red-600 text-xs mt-1">{{ empValidationErrors['presentAddress'] }}</p>
@@ -141,9 +141,9 @@
           <div class="flex gap-2 mt-3">
             <button (click)="saveEmployee()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Saving...' : (editingEmployeeId ? 'Update Employee' : 'Add Employee') }}
+              {{ (isSaving ? 'payroll.employees.saving' : (editingEmployeeId ? 'payroll.employees.updateButton' : 'payroll.employees.saveButton')) | transloco }}
             </button>
-            <button (click)="resetEmpForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
+            <button (click)="resetEmpForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">{{ 'payroll.employees.resetButton' | transloco }}</button>
           </div>
         </div>
       </div>

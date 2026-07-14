@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import JsBarcode from 'jsbarcode';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
 import { AlertService } from '../../shared/alert.service';
@@ -17,7 +18,9 @@ interface BarcodeLabel {
 @Component({
   selector: 'app-barcode-generator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/barcodeGenerator/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('barcodeGenerator')],
   templateUrl: './barcode-generator.component.html',
   styleUrls: ['./barcode-generator.component.css']
 })
@@ -53,8 +56,14 @@ export class BarcodeGeneratorComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'barcodeGenerator' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`barcodeGenerator.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadCategories();
@@ -89,7 +98,7 @@ export class BarcodeGeneratorComponent implements OnInit {
       error: (err: any) => {
         this.products = [];
         this.isLoading = false;
-        this.errorMsg = err?.error?.message || 'Failed to load products';
+        this.errorMsg = err?.error?.message || this.t('messages.loadError');
         this.cdr.detectChanges();
       }
     });
@@ -186,11 +195,11 @@ export class BarcodeGeneratorComponent implements OnInit {
   // ── Generate + render ─────────────────────────────────────────────────
   generate(): void {
     if (this.selectedProducts.length === 0) {
-      this.alertService.error('Select at least one product to generate barcodes for.');
+      this.alertService.error(this.t('messages.selectAtLeastOne'));
       return;
     }
     if (this.barcodeWidth <= 0 || this.barcodeHeight <= 0) {
-      this.alertService.error('Barcode width and height must be greater than zero.');
+      this.alertService.error(this.t('messages.sizeMustBePositive'));
       return;
     }
     if (this.copies < 1) {

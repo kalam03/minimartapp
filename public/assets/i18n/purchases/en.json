@@ -1,0 +1,60 @@
+{
+  "title": {
+    "selectProduct": "Select Product",
+    "cartCount": "Cart ({{count}})",
+    "supplierInfo": "Supplier Information",
+    "purchaseSummary": "Purchase Summary"
+  },
+  "form": {
+    "searchProductPlaceholder": "Search product...",
+    "costPrice": "Cost Price",
+    "qty": "Qty",
+    "total": "Total",
+    "searchSupplierPlaceholder": "Search supplier...",
+    "contact": "Contact",
+    "discountPercent": "Discount %",
+    "address": "Address",
+    "transport": "Transport",
+    "transportSelect": "Select",
+    "transportPickup": "Pickup",
+    "transportDelivery": "Delivery",
+    "transportCourier": "Courier",
+    "paymentMethod": "Payment Method",
+    "paymentCash": "Cash",
+    "paymentCredit": "Credit",
+    "paymentBank": "Bank Transfer",
+    "amountPaid": "Amount Paid",
+    "dueAmount": "Due Amount"
+  },
+  "buttons": {
+    "addToCart": "+ Add to Cart",
+    "reset": "Reset",
+    "clearAll": "Clear All",
+    "remove": "Remove",
+    "submitPurchaseOrder": "Submit Purchase Order"
+  },
+  "cart": {
+    "empty": "Cart is empty"
+  },
+  "summary": {
+    "subtotal": "Subtotal:",
+    "transport": "Transport:",
+    "discount": "Discount:",
+    "netAmount": "Net Amount:"
+  },
+  "messages": {
+    "noProductsFound": "No products found",
+    "noSuppliersFound": "No suppliers found",
+    "noProductSelectedTitle": "No Product Selected",
+    "noProductSelectedBody": "Please select a product to add to the cart.",
+    "clearCartConfirm": "Are you sure you want to clear the cart?",
+    "cartEmptyWarning": "Cart is empty. Please add items to continue.",
+    "selectSupplierWarning": "Please select a supplier.",
+    "confirmSubmitTitle": "Confirm Purchase Submission",
+    "confirmSubmitBody": "Are you sure you want to submit the purchase order? Total: ${{total}}",
+    "submitSuccess": "Purchase Order Submitted Successfully!\nPO: {{po}}",
+    "submitErrorTitle": "Error submitting purchase order",
+    "submitErrorBody": "An error occurred while submitting the purchase order. Please try again.",
+    "viewDetails": "Purchase Order Details:\nPO: {{po}}\nSupplier: {{supplier}}\nTotal: ${{total}}\nDiscount: ${{discount}}\nGross: ${{gross}}\nPaid: ${{paid}}\nDue: ${{due}}\nDate: {{date}}"
+  }
+}

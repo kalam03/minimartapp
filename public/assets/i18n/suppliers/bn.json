@@ -1,0 +1,77 @@
+{
+  "title": {
+    "addNew": "নতুন সরবরাহকারী যুক্ত করুন",
+    "edit": "সরবরাহকারী সম্পাদনা করুন",
+    "list": "সরবরাহকারীর তালিকা"
+  },
+  "form": {
+    "supplierName": "সরবরাহকারীর নাম *",
+    "supplierNamePlaceholder": "সরবরাহকারীর নাম লিখুন",
+    "phone": "ফোন *",
+    "phonePlaceholder": "01XXXXXXXXX",
+    "email": "ইমেইল",
+    "emailPlaceholder": "ইমেইল ঠিকানা লিখুন",
+    "address": "ঠিকানা",
+    "addressPlaceholder": "ঠিকানা লিখুন",
+    "contactPerson": "যোগাযোগের ব্যক্তি",
+    "contactPersonPlaceholder": "যোগাযোগের ব্যক্তির নাম লিখুন",
+    "contactPersonPhone": "যোগাযোগের ব্যক্তির ফোন",
+    "contactPersonPhonePlaceholder": "01XXXXXXXXX",
+    "openingBalance": "প্রারম্ভিক ব্যালেন্স (৳)",
+    "openingBalancePlaceholder": "0.00"
+  },
+  "buttons": {
+    "save": "সরবরাহকারী সংরক্ষণ করুন",
+    "update": "সরবরাহকারী আপডেট করুন",
+    "reset": "রিসেট",
+    "cancelEdit": "সম্পাদনা বাতিল",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "clear": "পরিষ্কার করুন"
+  },
+  "table": {
+    "id": "আইডি",
+    "supplierName": "সরবরাহকারীর নাম",
+    "phone": "ফোন",
+    "email": "ইমেইল",
+    "address": "ঠিকানা",
+    "balance": "ব্যালেন্স",
+    "status": "অবস্থা",
+    "actions": "কার্যক্রম",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "noSuppliers": "কোনো সরবরাহকারী পাওয়া যায়নি",
+    "countSummary": "{{total}}টির মধ্যে {{filtered}}টি সরবরাহকারী",
+    "showingSummary": "{{total}}টি সরবরাহকারীর মধ্যে {{from}} - {{to}} দেখানো হচ্ছে",
+    "filteredFrom": "({{total}}টি থেকে ফিল্টার করা)",
+    "pageSize": "পৃষ্ঠার আকার:"
+  },
+  "search": {
+    "placeholder": "নাম, ফোন, ইমেইল, ঠিকানা, যোগাযোগের ব্যক্তি দিয়ে খুঁজুন…"
+  },
+  "validation": {
+    "nameRequired": "সরবরাহকারীর নাম আবশ্যক",
+    "nameMinLength": "সরবরাহকারীর নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+    "nameMaxLength": "সরবরাহকারীর নাম ১০০ অক্ষরের বেশি হতে পারবে না",
+    "phoneRequired": "ফোন নম্বর আবশ্যক",
+    "phoneInvalid": "ফোন নম্বর ঠিক ১১ ডিজিটের হতে হবে",
+    "emailInvalid": "ইমেইল ফরম্যাট সঠিক নয়",
+    "addressMinLength": "ঠিকানা কমপক্ষে ২ অক্ষরের হতে হবে",
+    "addressMaxLength": "ঠিকানা ২০০ অক্ষরের বেশি হতে পারবে না",
+    "contactPersonMinLength": "যোগাযোগের ব্যক্তির নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+    "contactPersonMaxLength": "যোগাযোগের ব্যক্তির নাম ১০০ অক্ষরের বেশি হতে পারবে না",
+    "contactPersonPhoneInvalid": "ফোন নম্বর ঠিক ১১ ডিজিটের হতে হবে",
+    "openingBalanceInvalid": "প্রারম্ভিক ব্যালেন্স একটি সংখ্যা হতে হবে",
+    "openingBalanceNegative": "প্রারম্ভিক ব্যালেন্স ঋণাত্মক হতে পারবে না"
+  },
+  "messages": {
+    "createSuccess": "সরবরাহকারী সফলভাবে যুক্ত হয়েছে!",
+    "createError": "সরবরাহকারী যুক্ত করতে ব্যর্থ: {{error}}",
+    "updateSuccess": "সরবরাহকারী সফলভাবে আপডেট হয়েছে!",
+    "updateError": "সরবরাহকারী আপডেট করতে ব্যর্থ: {{error}}",
+    "deleteConfirm": "আপনি কি নিশ্চিত \"{{name}}\" মুছে ফেলতে চান?",
+    "deleteSuccess": "সরবরাহকারী সফলভাবে মুছে ফেলা হয়েছে!",
+    "deleteError": "সরবরাহকারী মুছতে ব্যর্থ: {{error}}",
+    "loadError": "সরবরাহকারী লোড করতে ব্যর্থ: {{error}}"
+  }
+}

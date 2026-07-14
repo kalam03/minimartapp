@@ -1,0 +1,60 @@
+{
+  "title": {
+    "selectProduct": "পণ্য নির্বাচন করুন",
+    "cartCount": "কার্ট ({{count}})",
+    "supplierInfo": "সরবরাহকারীর তথ্য",
+    "purchaseSummary": "ক্রয় সারসংক্ষেপ"
+  },
+  "form": {
+    "searchProductPlaceholder": "পণ্য খুঁজুন...",
+    "costPrice": "ক্রয় মূল্য",
+    "qty": "পরিমাণ",
+    "total": "মোট",
+    "searchSupplierPlaceholder": "সরবরাহকারী খুঁজুন...",
+    "contact": "যোগাযোগ",
+    "discountPercent": "ছাড় %",
+    "address": "ঠিকানা",
+    "transport": "পরিবহন",
+    "transportSelect": "নির্বাচন করুন",
+    "transportPickup": "পিকআপ",
+    "transportDelivery": "ডেলিভারি",
+    "transportCourier": "কুরিয়ার",
+    "paymentMethod": "পেমেন্ট পদ্ধতি",
+    "paymentCash": "নগদ",
+    "paymentCredit": "ক্রেডিট",
+    "paymentBank": "ব্যাংক ট্রান্সফার",
+    "amountPaid": "পরিশোধিত পরিমাণ",
+    "dueAmount": "বাকি পরিমাণ"
+  },
+  "buttons": {
+    "addToCart": "+ কার্টে যুক্ত করুন",
+    "reset": "রিসেট",
+    "clearAll": "সব পরিষ্কার করুন",
+    "remove": "মুছুন",
+    "submitPurchaseOrder": "ক্রয় অর্ডার জমা দিন"
+  },
+  "cart": {
+    "empty": "কার্ট খালি"
+  },
+  "summary": {
+    "subtotal": "সাবটোটাল:",
+    "transport": "পরিবহন:",
+    "discount": "ছাড়:",
+    "netAmount": "নেট পরিমাণ:"
+  },
+  "messages": {
+    "noProductsFound": "কোনো পণ্য পাওয়া যায়নি",
+    "noSuppliersFound": "কোনো সরবরাহকারী পাওয়া যায়নি",
+    "noProductSelectedTitle": "কোনো পণ্য নির্বাচন করা হয়নি",
+    "noProductSelectedBody": "কার্টে যুক্ত করতে একটি পণ্য নির্বাচন করুন।",
+    "clearCartConfirm": "আপনি কি নিশ্চিত কার্ট পরিষ্কার করতে চান?",
+    "cartEmptyWarning": "কার্ট খালি। চালিয়ে যেতে আইটেম যুক্ত করুন।",
+    "selectSupplierWarning": "একটি সরবরাহকারী নির্বাচন করুন।",
+    "confirmSubmitTitle": "ক্রয় জমা নিশ্চিতকরণ",
+    "confirmSubmitBody": "আপনি কি ক্রয় অর্ডার জমা দিতে নিশ্চিত? মোট: ${{total}}",
+    "submitSuccess": "ক্রয় অর্ডার সফলভাবে জমা হয়েছে!\nপিও: {{po}}",
+    "submitErrorTitle": "ক্রয় অর্ডার জমা দিতে ত্রুটি",
+    "submitErrorBody": "ক্রয় অর্ডার জমা দেওয়ার সময় একটি ত্রুটি হয়েছে। আবার চেষ্টা করুন।",
+    "viewDetails": "ক্রয় অর্ডারের বিবরণ:\nপিও: {{po}}\nসরবরাহকারী: {{supplier}}\nমোট: ${{total}}\nছাড়: ${{discount}}\nমোট (গ্রস): ${{gross}}\nপরিশোধিত: ${{paid}}\nবাকি: ${{due}}\nতারিখ: {{date}}"
+  }
+}

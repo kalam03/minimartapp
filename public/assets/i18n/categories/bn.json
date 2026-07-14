@@ -1,0 +1,52 @@
+{
+  "title": {
+    "addNew": "ক্যাটাগরি যুক্ত করুন",
+    "edit": "ক্যাটাগরি সম্পাদনা করুন",
+    "list": "ক্যাটাগরি তালিকা"
+  },
+  "form": {
+    "categoryName": "ক্যাটাগরির নাম *",
+    "categoryNamePlaceholder": "যেমন: পানীয়"
+  },
+  "buttons": {
+    "add": "ক্যাটাগরি যুক্ত করুন",
+    "update": "আপডেট করুন",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "reset": "রিসেট",
+    "cancel": "বাতিল",
+    "edit": "সম্পাদনা",
+    "deactivate": "নিষ্ক্রিয় করুন",
+    "reactivate": "পুনরায় সক্রিয় করুন"
+  },
+  "table": {
+    "id": "আইডি",
+    "categoryName": "ক্যাটাগরির নাম",
+    "status": "অবস্থা",
+    "actions": "কার্যক্রম",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "countSummary": "{{total}}টির মধ্যে {{filtered}}টি",
+    "noCategories": "কোনো ক্যাটাগরি পাওয়া যায়নি"
+  },
+  "search": {
+    "placeholder": "নাম দিয়ে খুঁজুন…"
+  },
+  "validation": {
+    "nameRequired": "ক্যাটাগরির নাম আবশ্যক",
+    "nameDuplicate": "এই ক্যাটাগরির নাম ইতিমধ্যে নিবন্ধিত"
+  },
+  "messages": {
+    "loadError": "ক্যাটাগরি লোড করতে ব্যর্থ: {{error}}",
+    "updateSuccess": "ক্যাটাগরি সফলভাবে আপডেট হয়েছে!",
+    "updateError": "ক্যাটাগরি আপডেট করতে ব্যর্থ: {{error}}",
+    "createSuccess": "ক্যাটাগরি সফলভাবে যুক্ত হয়েছে!",
+    "createError": "ক্যাটাগরি যুক্ত করতে ব্যর্থ: {{error}}",
+    "deactivateConfirm": "আপনি কি নিশ্চিত \"{{name}}\" নিষ্ক্রিয় করতে চান?",
+    "reactivateConfirm": "আপনি কি নিশ্চিত \"{{name}}\" পুনরায় সক্রিয় করতে চান?",
+    "deactivateTitle": "ক্যাটাগরি নিষ্ক্রিয় করুন",
+    "reactivateTitle": "ক্যাটাগরি পুনরায় সক্রিয় করুন",
+    "deactivateSuccess": "ক্যাটাগরি নিষ্ক্রিয় করা হয়েছে।",
+    "reactivateSuccess": "ক্যাটাগরি পুনরায় সক্রিয় করা হয়েছে।",
+    "actionFailed": "ব্যর্থ: {{error}}"
+  }
+}

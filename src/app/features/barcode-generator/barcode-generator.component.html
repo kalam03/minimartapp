@@ -8,40 +8,40 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h.01M4 12h.01M4 18h.01M8 6h12M8 12h12M8 18h12"/>
           </svg>
-          Barcode Generator
+          {{ 'barcodeGenerator.title.main' | transloco }}
         </h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredProducts.length }} products · {{ selectedCount }} selected</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'barcodeGenerator.filter.countSummary' | transloco: { products: filteredProducts.length, selected: selectedCount } }}</span>
       </div>
 
       <div class="px-3 py-2 flex flex-wrap items-end gap-2">
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">From</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'barcodeGenerator.filter.from' | transloco }}</label>
           <input type="date" [(ngModel)]="fromDate"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">To</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'barcodeGenerator.filter.to' | transloco }}</label>
           <input type="date" [(ngModel)]="toDate"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">Category</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'barcodeGenerator.filter.category' | transloco }}</label>
           <select [(ngModel)]="categoryFilter" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-40">
-            <option value="">All Categories</option>
+            <option value="">{{ 'barcodeGenerator.filter.allCategories' | transloco }}</option>
             <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
           </select>
         </div>
         <div class="flex-1 min-w-[160px]">
-          <label class="block text-xs text-gray-500 mb-0.5">Search</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'barcodeGenerator.filter.search' | transloco }}</label>
           <input type="text" [(ngModel)]="searchText"
-            placeholder="Search by name or barcode…"
+            [placeholder]="'barcodeGenerator.filter.searchPlaceholder' | transloco"
             class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
         <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
-          Apply
+          {{ 'barcodeGenerator.filter.apply' | transloco }}
         </button>
         <button (click)="resetFilter()" class="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">
-          Reset
+          {{ 'barcodeGenerator.filter.reset' | transloco }}
         </button>
       </div>
     </div>
@@ -62,11 +62,11 @@
                 <th class="px-3 py-2 text-center w-10">
                   <input type="checkbox" [checked]="isAllVisibleSelected" (change)="toggleSelectAll($event)">
                 </th>
-                <th class="px-3 py-2 text-left">Product Name</th>
-                <th class="px-3 py-2 text-left">Category</th>
-                <th class="px-3 py-2 text-right">Sale Price</th>
-                <th class="px-3 py-2 text-center">Unit</th>
-                <th class="px-3 py-2 text-left">Barcode</th>
+                <th class="px-3 py-2 text-left">{{ 'barcodeGenerator.table.productName' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'barcodeGenerator.table.category' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'barcodeGenerator.table.salePrice' | transloco }}</th>
+                <th class="px-3 py-2 text-center">{{ 'barcodeGenerator.table.unit' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'barcodeGenerator.table.barcode' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
@@ -80,13 +80,13 @@
                 <td class="px-3 py-2 text-gray-600">{{ getCategoryName(product.categoryId) }}</td>
                 <td class="px-3 py-2 text-right font-semibold text-green-600">৳ {{ (product.salePrice || 0).toFixed(2) }}</td>
                 <td class="px-3 py-2 text-center">{{ product.unitType || 'PCS' }}</td>
-                <td class="px-3 py-2 text-gray-500">{{ product.barcode || '— will be generated —' }}</td>
+                <td class="px-3 py-2 text-gray-500">{{ product.barcode || ('barcodeGenerator.table.willBeGenerated' | transloco) }}</td>
               </tr>
               <tr *ngIf="!isLoading && filteredProducts.length === 0">
-                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">No products found</td>
+                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'barcodeGenerator.table.noProducts' | transloco }}</td>
               </tr>
               <tr *ngIf="isLoading">
-                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">Loading…</td>
+                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'barcodeGenerator.table.loading' | transloco }}</td>
               </tr>
             </tbody>
           </table>
@@ -96,37 +96,37 @@
       <!-- ── Barcode Settings ─────────────────────────────────────────── -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border h-fit">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Barcode Settings</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'barcodeGenerator.title.settings' | transloco }}</h2>
         </div>
         <div class="p-3 flex flex-col gap-3">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Barcode Width (px per bar)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'barcodeGenerator.settings.barcodeWidth' | transloco }}</label>
             <input type="number" min="1" [(ngModel)]="barcodeWidth"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Barcode Height (px)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'barcodeGenerator.settings.barcodeHeight' | transloco }}</label>
             <input type="number" min="10" [(ngModel)]="barcodeHeight"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Copies per Product</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'barcodeGenerator.settings.copiesPerProduct' | transloco }}</label>
             <input type="number" min="1" [(ngModel)]="copies"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
           </div>
           <div class="flex items-center gap-2">
             <input type="checkbox" id="showName" [(ngModel)]="showProductName">
-            <label for="showName" class="text-xs text-gray-600">Show product name on label</label>
+            <label for="showName" class="text-xs text-gray-600">{{ 'barcodeGenerator.settings.showProductName' | transloco }}</label>
           </div>
           <div class="flex items-center gap-2">
             <input type="checkbox" id="showPrice" [(ngModel)]="showPrice">
-            <label for="showPrice" class="text-xs text-gray-600">Show price on label</label>
+            <label for="showPrice" class="text-xs text-gray-600">{{ 'barcodeGenerator.settings.showPrice' | transloco }}</label>
           </div>
 
           <button (click)="generate()"
             class="text-white px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5"
             style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
-            Generate Barcodes ({{ selectedCount }} selected)
+            {{ 'barcodeGenerator.buttons.generate' | transloco: { count: selectedCount } }}
           </button>
         </div>
       </div>
@@ -135,10 +135,10 @@
     <!-- ── Generated Labels Preview / Print Area ───────────────────────── -->
     <div *ngIf="generatedLabels.length > 0" class="bg-white rounded-xl shadow-md overflow-hidden border mt-3 print-area">
       <div class="px-3 py-2 flex items-center justify-between no-print" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Preview — {{ generatedLabels.length }} label(s)</h2>
+        <h2 class="text-white font-semibold text-sm">{{ 'barcodeGenerator.title.preview' | transloco: { count: generatedLabels.length } }}</h2>
         <div class="flex gap-2">
-          <button (click)="print()" class="px-3 py-1 bg-white text-xs font-semibold rounded-lg" style="color:var(--theme-primary)">Print</button>
-          <button (click)="clearGenerated()" class="px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100">Clear</button>
+          <button (click)="print()" class="px-3 py-1 bg-white text-xs font-semibold rounded-lg" style="color:var(--theme-primary)">{{ 'barcodeGenerator.buttons.print' | transloco }}</button>
+          <button (click)="clearGenerated()" class="px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100">{{ 'barcodeGenerator.buttons.clear' | transloco }}</button>
         </div>
       </div>
       <div class="p-3 flex flex-wrap gap-3 label-grid">

@@ -10,23 +10,23 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
             </svg>
-            User Function Permissions
+            {{ 'security.permissions.title' | transloco }}
           </h1>
           <p class="text-xs mt-0.5" style="color:var(--theme-accent)">
-            Assign page-level access flags to each user
+            {{ 'security.permissions.subtitle' | transloco }}
           </p>
         </div>
 
         <!-- User selector -->
         <div class="flex items-center gap-2">
-          <label class="text-xs font-semibold whitespace-nowrap" style="color:var(--theme-accent)">Select User</label>
+          <label class="text-xs font-semibold whitespace-nowrap" style="color:var(--theme-accent)">{{ 'security.permissions.selectUser' | transloco }}</label>
           <select
             [(ngModel)]="selectedUserId"
             (ngModelChange)="onUserChange()"
             class="px-3 py-1.5 text-sm border border-indigo-400 rounded-lg outline-none min-w-[200px]"
             style="background:var(--theme-primary-light);color:var(--theme-text)"
           >
-            <option [ngValue]="null">-- Choose a user --</option>
+            <option [ngValue]="null">{{ 'security.permissions.chooseUserPlaceholder' | transloco }}</option>
             <option *ngFor="let u of users" [value]="u.userId">
               {{ u.userName }} ({{ u.role || 'User' }})
             </option>
@@ -38,7 +38,7 @@
     <!-- Loading spinner -->
     <div *ngIf="loading" class="flex items-center justify-center py-16">
       <div class="animate-spin rounded-full h-10 w-10 border-4 border-indigo-200 border-t-indigo-600"></div>
-      <span class="ml-3 text-sm text-gray-500">Loading permissions…</span>
+      <span class="ml-3 text-sm text-gray-500">{{ 'security.permissions.loading' | transloco }}</span>
     </div>
 
     <!-- Placeholder when no user selected -->
@@ -47,7 +47,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
       </svg>
-      <p class="text-sm">Select a user above to manage their function permissions.</p>
+      <p class="text-sm">{{ 'security.permissions.selectUserPrompt' | transloco }}</p>
     </div>
 
     <!-- Permission matrix -->
@@ -63,7 +63,7 @@
               {{ mod.moduleId }}
             </span>
             <span class="text-white font-semibold text-sm">{{ mod.moduleName }}</span>
-            <span class="text-xs ml-2" style="color:var(--theme-accent)">{{ mod.rows.length }} function(s)</span>
+            <span class="text-xs ml-2" style="color:var(--theme-accent)">{{ 'security.permissions.functionCount' | transloco: { count: mod.rows.length } }}</span>
           </div>
           <div class="flex gap-2">
             <button (click)="grantAllModule(mod)"
@@ -71,14 +71,14 @@
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
               </svg>
-              Grant All
+              {{ 'security.permissions.grantAll' | transloco }}
             </button>
             <button (click)="revokeAllModule(mod)"
               class="flex items-center gap-1 px-2 py-0.5 text-xs rounded font-semibold bg-red-500 hover:bg-red-600 text-white transition">
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
               </svg>
-              Revoke All
+              {{ 'security.permissions.revokeAll' | transloco }}
             </button>
           </div>
         </div>
@@ -89,63 +89,63 @@
             <!-- Column headers -->
             <thead>
               <tr style="background:var(--theme-text);color:var(--theme-primary)">
-                <th class="px-3 py-2 text-left font-semibold w-56">Function</th>
-                <th class="px-3 py-2 text-left font-semibold w-20 text-gray-500">Route</th>
+                <th class="px-3 py-2 text-left font-semibold w-56">{{ 'security.permissions.colFunction' | transloco }}</th>
+                <th class="px-3 py-2 text-left font-semibold w-20 text-gray-500">{{ 'security.permissions.colRoute' | transloco }}</th>
                 <!-- Column toggle headers -->
                 <th class="px-2 py-2 text-center w-16 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allView')" title="Toggle View for all">
+                    (click)="toggleModuleColumn(mod, 'allView')" [title]="'security.permissions.toggleViewAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allView" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span class="font-semibold text-indigo-700">View</span>
+                    <span class="font-semibold text-indigo-700">{{ 'security.permissions.colView' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-14 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allAdd')" title="Toggle Add for all">
+                    (click)="toggleModuleColumn(mod, 'allAdd')" [title]="'security.permissions.toggleAddAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allAdd" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Add</span>
+                    <span>{{ 'security.permissions.colAdd' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-14 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allEdit')" title="Toggle Edit for all">
+                    (click)="toggleModuleColumn(mod, 'allEdit')" [title]="'security.permissions.toggleEditAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allEdit" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Edit</span>
+                    <span>{{ 'security.permissions.colEdit' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-16 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allDel')" title="Toggle Delete for all">
+                    (click)="toggleModuleColumn(mod, 'allDel')" [title]="'security.permissions.toggleDeleteAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allDel" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Delete</span>
+                    <span>{{ 'security.permissions.colDelete' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-14 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allAuth')" title="Toggle Auth for all">
+                    (click)="toggleModuleColumn(mod, 'allAuth')" [title]="'security.permissions.toggleAuthAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allAuth" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Auth</span>
+                    <span>{{ 'security.permissions.colAuth' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-16 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allProcess')" title="Toggle Process for all">
+                    (click)="toggleModuleColumn(mod, 'allProcess')" [title]="'security.permissions.toggleProcessAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allProcess" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Process</span>
+                    <span>{{ 'security.permissions.colProcess' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-20 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allRptView')" title="Toggle Report View for all">
+                    (click)="toggleModuleColumn(mod, 'allRptView')" [title]="'security.permissions.toggleRptViewAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allRptView" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Rpt View</span>
+                    <span>{{ 'security.permissions.colRptView' | transloco }}</span>
                   </div>
                 </th>
                 <th class="px-2 py-2 text-center w-20 cursor-pointer hover:bg-indigo-100"
-                    (click)="toggleModuleColumn(mod, 'allRptPrint')" title="Toggle Report Print for all">
+                    (click)="toggleModuleColumn(mod, 'allRptPrint')" [title]="'security.permissions.toggleRptPrintAll' | transloco">
                   <div class="flex flex-col items-center gap-0.5">
                     <input type="checkbox" [checked]="mod.allRptPrint" class="accent-indigo-700 w-3.5 h-3.5 cursor-pointer" readonly/>
-                    <span>Rpt Print</span>
+                    <span>{{ 'security.permissions.colRptPrint' | transloco }}</span>
                   </div>
                 </th>
               </tr>
@@ -162,7 +162,7 @@
                   <div class="font-semibold text-gray-800 leading-tight">{{ row.functionName }}</div>
                   <div class="text-gray-400 text-xs mt-0.5">
                     <span class="font-mono px-1 py-0.5 rounded" style="background:#f0f0f0">{{ row.functionId }}</span>
-                    <span *ngIf="row.isFinancial" class="ml-1 px-1 rounded text-orange-600 bg-orange-50">₿ Financial</span>
+                    <span *ngIf="row.isFinancial" class="ml-1 px-1 rounded text-orange-600 bg-orange-50">₿ {{ 'security.permissions.financial' | transloco }}</span>
                   </div>
                 </td>
 
@@ -261,9 +261,9 @@
       <div class="sticky bottom-0 z-10 mt-2 bg-white border-t shadow-lg rounded-xl px-4 py-3 flex items-center justify-between">
         <div class="text-xs text-gray-500">
           <span class="font-semibold" style="color:var(--theme-primary)">{{ selectedUser?.userName }}</span>
-          — {{ allRows.length }} functions across {{ modules.length }} modules
+          — {{ 'security.permissions.summary' | transloco: { count: allRows.length, modules: modules.length } }}
           <span *ngIf="hasChanges" class="ml-2 px-2 py-0.5 rounded-full text-orange-700 bg-orange-100 font-semibold">
-            Unsaved changes
+            {{ 'security.permissions.unsavedChanges' | transloco }}
           </span>
         </div>
         <button
@@ -281,7 +281,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
           </svg>
-          {{ saving ? 'Saving…' : 'Save Permissions' }}
+          {{ (saving ? 'security.permissions.saving' : 'security.permissions.savePermissions') | transloco }}
         </button>
       </div>
 

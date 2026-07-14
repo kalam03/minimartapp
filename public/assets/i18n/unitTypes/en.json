@@ -1,0 +1,62 @@
+{
+  "title": {
+    "addNew": "Add Unit Type",
+    "edit": "Edit Unit Type",
+    "list": "Unit Types"
+  },
+  "form": {
+    "unitCode": "Unit Code *",
+    "unitCodePlaceholder": "e.g. PCS, KG, DOZ",
+    "unitName": "Unit Name *",
+    "unitNamePlaceholder": "e.g. Kilogram (kg)",
+    "isWeight": "Sold by weight / volume",
+    "weightHint": "\"Sold by weight / volume\" enables decimal quantities in POS (e.g. 0.5 kg) instead of whole counts."
+  },
+  "buttons": {
+    "add": "Add Unit Type",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate"
+  },
+  "table": {
+    "id": "ID",
+    "code": "Code",
+    "name": "Name",
+    "type": "Type",
+    "status": "Status",
+    "actions": "Actions",
+    "weightVolume": "Weight / Volume",
+    "count": "Count",
+    "active": "Active",
+    "inactive": "Inactive",
+    "countSummary": "{{filtered}} of {{total}}",
+    "noUnitTypes": "No unit types found"
+  },
+  "search": {
+    "placeholder": "Search by code or name…"
+  },
+  "validation": {
+    "codeRequired": "Unit code is required",
+    "codeFormat": "Use up to 10 letters/numbers, e.g. PCS, KG, DOZ",
+    "nameRequired": "Unit name is required",
+    "codeDuplicate": "This unit code is already registered"
+  },
+  "messages": {
+    "loadError": "Failed to load unit types: {{error}}",
+    "updateSuccess": "Unit type updated successfully!",
+    "updateError": "Failed to update unit type: {{error}}",
+    "createSuccess": "Unit type added successfully!",
+    "createError": "Failed to add unit type: {{error}}",
+    "deactivateConfirm": "Are you sure you want to deactivate \"{{name}}\"?",
+    "reactivateConfirm": "Are you sure you want to reactivate \"{{name}}\"?",
+    "deactivateTitle": "Deactivate Unit Type",
+    "reactivateTitle": "Reactivate Unit Type",
+    "deactivateSuccess": "Unit type deactivated.",
+    "reactivateSuccess": "Unit type reactivated.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}

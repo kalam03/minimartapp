@@ -1,0 +1,62 @@
+{
+  "title": {
+    "addNew": "একক প্রকার যুক্ত করুন",
+    "edit": "একক প্রকার সম্পাদনা করুন",
+    "list": "একক প্রকার তালিকা"
+  },
+  "form": {
+    "unitCode": "একক কোড *",
+    "unitCodePlaceholder": "যেমন: PCS, KG, DOZ",
+    "unitName": "এককের নাম *",
+    "unitNamePlaceholder": "যেমন: কিলোগ্রাম (kg)",
+    "isWeight": "ওজন / আয়তন অনুযায়ী বিক্রি হয়",
+    "weightHint": "\"ওজন / আয়তন অনুযায়ী বিক্রি হয়\" চালু করলে পিওএস-এ পূর্ণসংখ্যার পরিবর্তে দশমিক পরিমাণ (যেমন 0.5 kg) ব্যবহার করা যায়।"
+  },
+  "buttons": {
+    "add": "একক প্রকার যুক্ত করুন",
+    "update": "আপডেট করুন",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "reset": "রিসেট",
+    "cancel": "বাতিল",
+    "edit": "সম্পাদনা",
+    "deactivate": "নিষ্ক্রিয় করুন",
+    "reactivate": "পুনরায় সক্রিয় করুন"
+  },
+  "table": {
+    "id": "আইডি",
+    "code": "কোড",
+    "name": "নাম",
+    "type": "প্রকার",
+    "status": "অবস্থা",
+    "actions": "কার্যক্রম",
+    "weightVolume": "ওজন / আয়তন",
+    "count": "সংখ্যা",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "countSummary": "{{total}}টির মধ্যে {{filtered}}টি",
+    "noUnitTypes": "কোনো একক প্রকার পাওয়া যায়নি"
+  },
+  "search": {
+    "placeholder": "কোড বা নাম দিয়ে খুঁজুন…"
+  },
+  "validation": {
+    "codeRequired": "একক কোড আবশ্যক",
+    "codeFormat": "সর্বোচ্চ ১০টি অক্ষর/সংখ্যা ব্যবহার করুন, যেমন: PCS, KG, DOZ",
+    "nameRequired": "এককের নাম আবশ্যক",
+    "codeDuplicate": "এই একক কোড ইতিমধ্যে নিবন্ধিত"
+  },
+  "messages": {
+    "loadError": "একক প্রকার লোড করতে ব্যর্থ: {{error}}",
+    "updateSuccess": "একক প্রকার সফলভাবে আপডেট হয়েছে!",
+    "updateError": "একক প্রকার আপডেট করতে ব্যর্থ: {{error}}",
+    "createSuccess": "একক প্রকার সফলভাবে যুক্ত হয়েছে!",
+    "createError": "একক প্রকার যুক্ত করতে ব্যর্থ: {{error}}",
+    "deactivateConfirm": "আপনি কি নিশ্চিত \"{{name}}\" নিষ্ক্রিয় করতে চান?",
+    "reactivateConfirm": "আপনি কি নিশ্চিত \"{{name}}\" পুনরায় সক্রিয় করতে চান?",
+    "deactivateTitle": "একক প্রকার নিষ্ক্রিয় করুন",
+    "reactivateTitle": "একক প্রকার পুনরায় সক্রিয় করুন",
+    "deactivateSuccess": "একক প্রকার নিষ্ক্রিয় করা হয়েছে।",
+    "reactivateSuccess": "একক প্রকার পুনরায় সক্রিয় করা হয়েছে।",
+    "actionFailed": "ব্যর্থ: {{error}}"
+  }
+}

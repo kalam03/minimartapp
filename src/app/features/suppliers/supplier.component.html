@@ -19,19 +19,19 @@
               d="M12 4v16m8-8H4"
             ></path>
           </svg>
-          {{ editingId ? 'Edit Supplier' : 'Add New Supplier' }}
+          {{ (editingId ? 'suppliers.title.edit' : 'suppliers.title.addNew') | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Supplier Name -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Supplier Name *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.supplierName' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="supplierForm.supplierName"
               (blur)="validateField('supplierName')"
-              placeholder="Enter supplier name"
+              [placeholder]="'suppliers.form.supplierNamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('supplierName') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('supplierName')" class="text-red-600 text-xs mt-1">
@@ -41,13 +41,13 @@
 
           <!-- Phone -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.phone' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="supplierForm.phone"
               (input)="onPhoneInput($event, 'phone')"
               (blur)="validateField('phone')"
-              placeholder="01XXXXXXXXX"
+              [placeholder]="'suppliers.form.phonePlaceholder' | transloco"
               maxlength="11"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('phone') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
@@ -58,12 +58,12 @@
 
           <!-- Email -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Email</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.email' | transloco }}</label>
             <input
               type="email"
               [(ngModel)]="supplierForm.email"
               (blur)="validateField('email')"
-              placeholder="Enter email address"
+              [placeholder]="'suppliers.form.emailPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('email') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('email')" class="text-red-600 text-xs mt-1">
@@ -73,12 +73,12 @@
 
           <!-- Address -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Address</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.address' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="supplierForm.address"
               (blur)="validateField('address')"
-              placeholder="Enter address"
+              [placeholder]="'suppliers.form.addressPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('address') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('address')" class="text-red-600 text-xs mt-1">
@@ -88,12 +88,12 @@
 
           <!-- Contact Person -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Contact Person</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.contactPerson' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="supplierForm.contactPerson"
               (blur)="validateField('contactPerson')"
-              placeholder="Enter contact person name"
+              [placeholder]="'suppliers.form.contactPersonPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('contactPerson') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('contactPerson')" class="text-red-600 text-xs mt-1">
@@ -103,13 +103,13 @@
 
           <!-- Contact Person Phone -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Contact Person Phone</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.contactPersonPhone' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="supplierForm.contactPersonPhone"
               (input)="onPhoneInput($event, 'contactPersonPhone')"
               (blur)="validateField('contactPersonPhone')"
-              placeholder="01XXXXXXXXX"
+              [placeholder]="'suppliers.form.contactPersonPhonePlaceholder' | transloco"
               maxlength="11"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('contactPersonPhone') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
@@ -120,12 +120,12 @@
 
           <!-- Opening Balance -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Opening Balance (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.openingBalance' | transloco }}</label>
             <input
               type="number"
               [(ngModel)]="supplierForm.openingBalance"
               (blur)="validateField('openingBalance')"
-              placeholder="0.00"
+              [placeholder]="'suppliers.form.openingBalancePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('openingBalance') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('openingBalance')" class="text-red-600 text-xs mt-1">
@@ -148,20 +148,20 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            {{ editingId ? 'Update Supplier' : 'Save Supplier' }}
+            {{ (editingId ? 'suppliers.buttons.update' : 'suppliers.buttons.save') | transloco }}
           </button>
           <button
             (click)="resetForm()"
             class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition"
           >
-            Reset
+            {{ 'suppliers.buttons.reset' | transloco }}
           </button>
           <button
             *ngIf="editingId"
             (click)="cancelEdit()"
             class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100 transition"
           >
-            Cancel Edit
+            {{ 'suppliers.buttons.cancelEdit' | transloco }}
           </button>
         </div>
       </div>
@@ -170,15 +170,15 @@
     <!-- Suppliers Table Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Supplier List</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredSuppliers.length }} of {{ suppliers.length }} suppliers</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'suppliers.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'suppliers.table.countSummary' | transloco: { filtered: filteredSuppliers.length, total: suppliers.length } }}</span>
       </div>
       <div class="px-3 py-2 border-b flex gap-2">
         <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
-          placeholder="Search by name, phone, email, address, contact person…"
+          [placeholder]="'suppliers.search.placeholder' | transloco"
           class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         <button (click)="searchText=''; currentPage=1"
-          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'suppliers.buttons.clear' | transloco }}</button>
       </div>
 
       <!-- Table -->
@@ -187,25 +187,25 @@
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('supplierId')">
-                ID {{ getSortIcon('supplierId') }}
+                {{ 'suppliers.table.id' | transloco }} {{ getSortIcon('supplierId') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('supplierName')">
-                Supplier Name {{ getSortIcon('supplierName') }}
+                {{ 'suppliers.table.supplierName' | transloco }} {{ getSortIcon('supplierName') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('phone')">
-                Phone {{ getSortIcon('phone') }}
+                {{ 'suppliers.table.phone' | transloco }} {{ getSortIcon('phone') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('email')">
-                Email {{ getSortIcon('email') }}
+                {{ 'suppliers.table.email' | transloco }} {{ getSortIcon('email') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('address')">
-                Address {{ getSortIcon('address') }}
+                {{ 'suppliers.table.address' | transloco }} {{ getSortIcon('address') }}
               </th>
               <th class="px-3 py-2 text-right cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('currentBalance')">
-                Balance {{ getSortIcon('currentBalance') }}
+                {{ 'suppliers.table.balance' | transloco }} {{ getSortIcon('currentBalance') }}
               </th>
-              <th class="px-3 py-2 text-center">Status</th>
-              <th class="px-3 py-2 text-center">Actions</th>
+              <th class="px-3 py-2 text-center">{{ 'suppliers.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center">{{ 'suppliers.table.actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -232,7 +232,7 @@
                       : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'
                   "
                 >
-                  {{ supplier.isActive ? 'Active' : 'Inactive' }}
+                  {{ (supplier.isActive ? 'suppliers.table.active' : 'suppliers.table.inactive') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-2 text-center">
@@ -240,14 +240,14 @@
                   <button
                     (click)="editSupplier(supplier)"
                     class="text-white px-2 py-1 rounded text-xs transition" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'"
-                    title="Edit"
+                    [title]="'suppliers.buttons.edit' | transloco"
                   >
                     ✎
                   </button>
                   <button
                     (click)="deleteSupplier(supplier.supplierId, supplier.supplierName)"
                     class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition"
-                    title="Delete"
+                    [title]="'suppliers.buttons.delete' | transloco"
                   >
                     ✕
                   </button>
@@ -256,7 +256,7 @@
             </tr>
             <tr *ngIf="paginatedSuppliers.length === 0">
               <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">
-                No suppliers found
+                {{ 'suppliers.table.noSuppliers' | transloco }}
               </td>
             </tr>
           </tbody>
@@ -266,7 +266,7 @@
       <!-- Pagination Controls -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
-          Showing {{ paginatedSuppliers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, filteredSuppliers.length) }} of {{ filteredSuppliers.length }} suppliers<span *ngIf="filteredSuppliers.length !== suppliers.length" class="text-gray-400"> (filtered from {{ suppliers.length }})</span>
+          {{ 'suppliers.table.showingSummary' | transloco: { from: (paginatedSuppliers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0), to: Math.min(currentPage * pageSize, filteredSuppliers.length), total: filteredSuppliers.length } }}<span *ngIf="filteredSuppliers.length !== suppliers.length" class="text-gray-400"> {{ 'suppliers.table.filteredFrom' | transloco: { total: suppliers.length } }}</span>
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">
@@ -299,7 +299,7 @@
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">
-          <label class="text-gray-600">Page size:</label>
+          <label class="text-gray-600">{{ 'suppliers.table.pageSize' | transloco }}</label>
           <select [(ngModel)]="pageSize" (change)="currentPage = 1" class="px-2 py-1 border border-gray-400 rounded">
             <option [value]="5">5</option>
             <option [value]="10">10</option>

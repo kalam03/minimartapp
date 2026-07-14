@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { CategoryService, Category } from '../../services/category.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
   selector: 'app-category',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/categories/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('categories')],
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.css']
 })
@@ -35,8 +38,14 @@ export class CategoryComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'categories' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`categories.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadCategories();
@@ -48,7 +57,7 @@ export class CategoryComponent implements OnInit {
         this.categories = res.data || [];
       },
       error: (err: any) => {
-        this.alertService.error('Failed to load categories: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -57,13 +66,13 @@ export class CategoryComponent implements OnInit {
     this.validationErrors = {};
 
     if (!this.form.categoryName.trim())
-      this.validationErrors['categoryName'] = 'Category name is required';
+      this.validationErrors['categoryName'] = this.t('validation.nameRequired');
 
     const dupe = this.categories.find(c =>
       c.categoryName.toLowerCase() === this.form.categoryName.trim().toLowerCase() &&
       c.categoryId !== this.editingId
     );
-    if (dupe) this.validationErrors['categoryName'] = 'This category name is already registered';
+    if (dupe) this.validationErrors['categoryName'] = this.t('validation.nameDuplicate');
 
     return Object.keys(this.validationErrors).length === 0;
   }
@@ -84,13 +93,13 @@ export class CategoryComponent implements OnInit {
       }).subscribe({
         next: (res) => {
           this.isSaving = false;
-          this.alertService.success(res.message || 'Category updated successfully!');
+          this.alertService.success(res.message || this.t('messages.updateSuccess'));
           this.resetForm();
           this.loadCategories();
         },
         error: (err: any) => {
           this.isSaving = false;
-          this.alertService.error('Failed to update category: ' + (err.error?.message || err.message));
+          this.alertService.error(this.t('messages.updateError', { error: err.error?.message || err.message }));
         }
       });
       return;
@@ -101,13 +110,13 @@ export class CategoryComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Category added successfully!');
+        this.alertService.success(res.message || this.t('messages.createSuccess'));
         this.resetForm();
         this.loadCategories();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to add category: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.createError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -122,25 +131,24 @@ export class CategoryComponent implements OnInit {
   }
 
   async toggleActive(c: Category): Promise<void> {
-    const action = c.isActive ? 'deactivate' : 'reactivate';
     const confirmed = await this.alertService.confirm(
-      `Are you sure you want to ${action} "${c.categoryName}"?`,
-      c.isActive ? 'Deactivate Category' : 'Reactivate Category'
+      this.t(c.isActive ? 'messages.deactivateConfirm' : 'messages.reactivateConfirm', { name: c.categoryName }),
+      this.t(c.isActive ? 'messages.deactivateTitle' : 'messages.reactivateTitle')
     );
     if (!confirmed) return;
 
     if (c.isActive) {
       this.categoryService.deleteCategory(c.categoryId).subscribe({
-        next: () => { this.alertService.success('Category deactivated.'); this.loadCategories(); },
-        error: (err: any) => this.alertService.error('Failed: ' + (err.error?.message || err.message))
+        next: () => { this.alertService.success(this.t('messages.deactivateSuccess')); this.loadCategories(); },
+        error: (err: any) => this.alertService.error(this.t('messages.actionFailed', { error: err.error?.message || err.message }))
       });
     } else {
       this.categoryService.updateCategory(c.categoryId, {
         categoryName: c.categoryName,
         isActive: true,
       }).subscribe({
-        next: () => { this.alertService.success('Category reactivated.'); this.loadCategories(); },
-        error: (err: any) => this.alertService.error('Failed: ' + (err.error?.message || err.message))
+        next: () => { this.alertService.success(this.t('messages.reactivateSuccess')); this.loadCategories(); },
+        error: (err: any) => this.alertService.error(this.t('messages.actionFailed', { error: err.error?.message || err.message }))
       });
     }
   }

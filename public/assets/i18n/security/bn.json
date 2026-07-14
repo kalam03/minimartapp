@@ -1,0 +1,192 @@
+{
+  "roles": {
+    "title": {
+      "addNew": "নতুন রোল যুক্ত করুন",
+      "edit": "রোল সম্পাদনা করুন",
+      "list": "রোলের তালিকা"
+    },
+    "form": {
+      "roleCode": "রোল কোড *",
+      "roleCodePlaceholder": "যেমন: CASHIER",
+      "roleName": "রোলের নাম *",
+      "roleNamePlaceholder": "যেমন: ক্যাশিয়ার",
+      "description": "বর্ণনা",
+      "descriptionPlaceholder": "সংক্ষিপ্ত বর্ণনা",
+      "active": "সক্রিয়"
+    },
+    "buttons": {
+      "reset": "রিসেট",
+      "save": "রোল সংরক্ষণ করুন",
+      "update": "রোল আপডেট করুন"
+    },
+    "table": {
+      "countSummary": "{{total}}টির মধ্যে {{filtered}}টি রোল",
+      "searchPlaceholder": "কোড, নাম, বর্ণনা দিয়ে খুঁজুন…",
+      "allStatus": "সব অবস্থা",
+      "activeOption": "সক্রিয় ({{count}})",
+      "inactiveOption": "নিষ্ক্রিয় ({{count}})",
+      "clear": "পরিষ্কার করুন",
+      "colNo": "#",
+      "colCode": "কোড",
+      "colName": "নাম",
+      "colDescription": "বর্ণনা",
+      "colStatus": "অবস্থা",
+      "colCreatedBy": "তৈরি করেছেন",
+      "colCreatedDate": "তৈরির তারিখ",
+      "colActions": "কার্যক্রম",
+      "loading": "লোড হচ্ছে…",
+      "noRoles": "কোনো রোল পাওয়া যায়নি।",
+      "active": "সক্রিয়",
+      "inactive": "নিষ্ক্রিয়",
+      "editTooltip": "রোল সম্পাদনা করুন"
+    },
+    "messages": {
+      "loadError": "রোল লোড করতে ব্যর্থ।",
+      "codeRequired": "রোল কোড আবশ্যক",
+      "codeMaxLength": "সর্বোচ্চ ২০ অক্ষর",
+      "nameRequired": "রোলের নাম আবশ্যক",
+      "nameMaxLength": "সর্বোচ্চ ১০০ অক্ষর",
+      "updateConfirm": "আপনি কি নিশ্চিত \"{{name}}\" রোল আপডেট করতে চান?",
+      "createConfirm": "আপনি কি নিশ্চিত \"{{name}}\" রোল তৈরি করতে চান?",
+      "updateSuccess": "রোল আপডেট হয়েছে।",
+      "updateError": "রোল আপডেট করতে ব্যর্থ।",
+      "createSuccess": "রোল তৈরি হয়েছে।",
+      "createError": "রোল তৈরি করতে ব্যর্থ।",
+      "success": "সফল",
+      "error": "ত্রুটি"
+    }
+  },
+  "users": {
+    "title": {
+      "addNew": "নতুন ইউজার যুক্ত করুন"
+    },
+    "form": {
+      "username": "ইউজারনেম *",
+      "usernamePlaceholder": "ইউজারনেম লিখুন",
+      "password": "পাসওয়ার্ড *",
+      "passwordPlaceholder": "পাসওয়ার্ড লিখুন",
+      "defaultRole": "ডিফল্ট রোল",
+      "active": "সক্রিয়",
+      "role": "রোল"
+    },
+    "buttons": {
+      "save": "ইউজার সংরক্ষণ করুন",
+      "reset": "রিসেট",
+      "update": "ইউজার আপডেট করুন",
+      "cancel": "বাতিল",
+      "savePassword": "পাসওয়ার্ড সংরক্ষণ করুন",
+      "search": "খুঁজুন",
+      "assign": "নির্ধারণ করুন",
+      "close": "বন্ধ করুন"
+    },
+    "editTitle": "ইউজার সম্পাদনা — {{name}}",
+    "passwordTitleReset": "পাসওয়ার্ড রিসেট করুন",
+    "passwordTitleChange": "পাসওয়ার্ড পরিবর্তন করুন",
+    "form2": {
+      "currentPassword": "বর্তমান পাসওয়ার্ড *",
+      "currentPasswordPlaceholder": "বর্তমান পাসওয়ার্ড",
+      "newPassword": "নতুন পাসওয়ার্ড *",
+      "newPasswordPlaceholder": "নতুন পাসওয়ার্ড"
+    },
+    "roleModal": {
+      "title": "রোল নির্ধারণ — {{name}}",
+      "assignedRoles": "নির্ধারিত রোল",
+      "noRolesAssigned": "এখনও কোনো রোল নির্ধারণ করা হয়নি।",
+      "addRole": "রোল যুক্ত করুন",
+      "selectRolePlaceholder": "রোল নির্বাচন করুন…",
+      "remove": "মুছুন"
+    },
+    "search": {
+      "label": "খুঁজুন",
+      "placeholder": "ইউজারনেম দিয়ে খুঁজুন…",
+      "statusLabel": "অবস্থা",
+      "all": "সব",
+      "active": "সক্রিয়",
+      "inactive": "নিষ্ক্রিয়"
+    },
+    "table": {
+      "colNo": "#",
+      "colUsername": "ইউজারনেম",
+      "colRole": "রোল",
+      "colAssignedRoles": "নির্ধারিত রোল",
+      "colStatus": "অবস্থা",
+      "colCreated": "তৈরি হয়েছে",
+      "colActions": "কার্যক্রম",
+      "loading": "লোড হচ্ছে…",
+      "noUsers": "কোনো ইউজার পাওয়া যায়নি।",
+      "editTooltip": "ইউজার সম্পাদনা করুন",
+      "changePasswordTooltip": "পাসওয়ার্ড পরিবর্তন করুন",
+      "adminResetTooltip": "অ্যাডমিন পাসওয়ার্ড রিসেট",
+      "manageRolesTooltip": "রোল পরিচালনা করুন",
+      "showingSummary": "{{total}}টির মধ্যে {{from}} – {{to}} ইউজার দেখানো হচ্ছে",
+      "pageSize": "পৃষ্ঠার আকার:",
+      "active": "সক্রিয়",
+      "inactive": "নিষ্ক্রিয়"
+    },
+    "messages": {
+      "loadError": "ইউজার লোড করতে ব্যর্থ",
+      "usernameRequired": "ইউজারনেম আবশ্যক",
+      "passwordRequired": "পাসওয়ার্ড আবশ্যক",
+      "newPasswordRequired": "নতুন পাসওয়ার্ড আবশ্যক",
+      "currentPasswordRequired": "বর্তমান পাসওয়ার্ড আবশ্যক",
+      "createConfirm": "\"{{name}}\" ইউজার তৈরি করবেন?",
+      "createSuccess": "ইউজার সফলভাবে তৈরি হয়েছে।",
+      "createError": "ইউজার তৈরি করতে ব্যর্থ।",
+      "updateConfirm": "\"{{name}}\" ইউজার আপডেট করবেন?",
+      "updateSuccess": "ইউজার সফলভাবে আপডেট হয়েছে।",
+      "updateError": "ইউজার আপডেট করতে ব্যর্থ।",
+      "passwordConfirm": "\"{{name}}\" এর পাসওয়ার্ড পরিবর্তন করবেন?",
+      "passwordSuccess": "পাসওয়ার্ড সফলভাবে পরিবর্তিত হয়েছে।",
+      "passwordError": "পাসওয়ার্ড পরিবর্তন করতে ব্যর্থ।",
+      "selectRoleWarning": "একটি রোল নির্বাচন করুন।",
+      "roleAssignedSuccess": "রোল নির্ধারিত হয়েছে।",
+      "roleAssignError": "রোল নির্ধারণ করতে ব্যর্থ।",
+      "removeRoleConfirm": "ইউজার থেকে এই রোল মুছে ফেলবেন?",
+      "roleRemovedSuccess": "রোল মুছে ফেলা হয়েছে।",
+      "roleRemoveError": "রোল মুছতে ব্যর্থ।",
+      "success": "সফল",
+      "error": "ত্রুটি",
+      "validation": "যাচাইকরণ"
+    }
+  },
+  "permissions": {
+    "title": "ইউজার ফাংশন পারমিশন",
+    "subtitle": "প্রতিটি ইউজারকে পেজ-লেভেল অ্যাক্সেস ফ্ল্যাগ নির্ধারণ করুন",
+    "selectUser": "ইউজার নির্বাচন করুন",
+    "chooseUserPlaceholder": "-- একজন ইউজার বেছে নিন --",
+    "loading": "পারমিশন লোড হচ্ছে…",
+    "selectUserPrompt": "ফাংশন পারমিশন পরিচালনা করতে উপরে একজন ইউজার নির্বাচন করুন।",
+    "functionCount": "{{count}}টি ফাংশন",
+    "grantAll": "সব প্রদান করুন",
+    "revokeAll": "সব প্রত্যাহার করুন",
+    "colFunction": "ফাংশন",
+    "colRoute": "রুট",
+    "colView": "দেখুন",
+    "colAdd": "যুক্ত করুন",
+    "colEdit": "সম্পাদনা",
+    "colDelete": "মুছুন",
+    "colAuth": "অনুমোদন",
+    "colProcess": "প্রক্রিয়া",
+    "colRptView": "রিপোর্ট দেখুন",
+    "colRptPrint": "রিপোর্ট প্রিন্ট",
+    "financial": "আর্থিক",
+    "unsavedChanges": "সংরক্ষণ করা হয়নি",
+    "summary": "{{modules}}টি মডিউলে {{count}}টি ফাংশন",
+    "saving": "সংরক্ষণ হচ্ছে…",
+    "savePermissions": "পারমিশন সংরক্ষণ করুন",
+    "toggleViewAll": "সবার জন্য দেখুন টগল করুন",
+    "toggleAddAll": "সবার জন্য যুক্ত করুন টগল করুন",
+    "toggleEditAll": "সবার জন্য সম্পাদনা টগল করুন",
+    "toggleDeleteAll": "সবার জন্য মুছুন টগল করুন",
+    "toggleAuthAll": "সবার জন্য অনুমোদন টগল করুন",
+    "toggleProcessAll": "সবার জন্য প্রক্রিয়া টগল করুন",
+    "toggleRptViewAll": "সবার জন্য রিপোর্ট দেখুন টগল করুন",
+    "toggleRptPrintAll": "সবার জন্য রিপোর্ট প্রিন্ট টগল করুন",
+    "messages": {
+      "loadUsersError": "ইউজার লোড করতে ব্যর্থ।",
+      "loadPermissionsError": "পারমিশন লোড করতে ব্যর্থ।",
+      "saveSuccess": "পারমিশন সফলভাবে সংরক্ষিত হয়েছে!",
+      "saveError": "পারমিশন সংরক্ষণ করতে ব্যর্থ: {{error}}"
+    }
+  }
+}

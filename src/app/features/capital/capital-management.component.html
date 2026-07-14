@@ -6,7 +6,7 @@
 
       <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
         <div class="px-3 py-2 border-b border-white border-opacity-10">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Net Capital</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'capital.summary.netCapital' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold"
@@ -14,37 +14,37 @@
             [class.text-red-400]="netCapital < 0">
             ৳{{ netCapital | number:'1.2-2' }}
           </p>
-          <p class="text-xs mt-1" style="color:var(--theme-accent)">Credit − Debit</p>
+          <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'capital.summary.netCapitalHint' | transloco }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Credit (In)</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'capital.summary.totalCreditIn' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-green-600">৳{{ txnTotalCredit | number:'1.2-2' }}</p>
-          <p class="text-xs text-gray-400 mt-1">All incoming entries</p>
+          <p class="text-xs text-gray-400 mt-1">{{ 'capital.summary.totalCreditHint' | transloco }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Debit (Out)</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'capital.summary.totalDebitOut' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold text-orange-600">৳{{ txnTotalDebit | number:'1.2-2' }}</p>
-          <p class="text-xs text-gray-400 mt-1">All outgoing entries</p>
+          <p class="text-xs text-gray-400 mt-1">{{ 'capital.summary.totalDebitHint' | transloco }}</p>
         </div>
       </div>
 
       <div class="bg-white rounded-xl shadow-md border overflow-hidden">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <p class="text-xs font-semibold" style="color:var(--theme-accent)">Total Transactions</p>
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'capital.summary.totalTransactions' | transloco }}</p>
         </div>
         <div class="px-3 py-2">
           <p class="text-xl font-bold" style="color:var(--theme-primary)">{{ txnTotal }}</p>
-          <p class="text-xs text-gray-400 mt-1">Matching current filter</p>
+          <p class="text-xs text-gray-400 mt-1">{{ 'capital.summary.totalTransactionsHint' | transloco }}</p>
         </div>
       </div>
 
@@ -57,7 +57,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          New Capital Transaction
+          {{ 'capital.form.title' | transloco }}
         </h2>
       </div>
       <div class="p-3">
@@ -65,17 +65,17 @@
 
           <!-- TXN Date -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transaction Date *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnDate' | transloco }}</label>
             <input type="date" [(ngModel)]="form.txnDate"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
 
           <!-- TXN Type -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transaction Type *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnType' | transloco }}</label>
             <select [(ngModel)]="form.txnTypeId" (ngModelChange)="onTxnTypeChange()"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('txnTypeId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-              <option [value]="0">-- Select Type --</option>
+              <option [value]="0">{{ 'capital.form.selectType' | transloco }}</option>
               <option *ngFor="let t of txnTypes" [value]="t.id">{{ t.name }}</option>
             </select>
             <p *ngIf="isFieldInvalid('txnTypeId')" class="text-red-600 text-xs mt-1">{{ validationErrors['txnTypeId'] }}</p>
@@ -83,20 +83,20 @@
 
           <!-- GL Account -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Account *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.account' | transloco }}</label>
             <input type="text" [(ngModel)]="form.glAccount" placeholder="CASH VAULT"
               list="glAccountList"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('glAccount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <datalist id="glAccountList">
-              <option value="CASH VAULT">CASH VAULT - your single cash account</option>
+              <option value="CASH VAULT">{{ 'capital.form.accountHint' | transloco }}</option>
             </datalist>
-            <p class="text-gray-400 text-xs mt-1">Sales and purchases post here automatically. Leave as CASH VAULT unless you're logging a specific bank transfer.</p>
+            <p class="text-gray-400 text-xs mt-1">{{ 'capital.form.accountNote' | transloco }}</p>
             <p *ngIf="isFieldInvalid('glAccount')" class="text-red-600 text-xs mt-1">{{ validationErrors['glAccount'] }}</p>
           </div>
 
           <!-- Amount -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Amount (৳) *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.amount' | transloco }}</label>
             <input type="number" [(ngModel)]="form.amount" placeholder="0.00" step="0.01" min="0"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('amount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('amount')" class="text-red-600 text-xs mt-1">{{ validationErrors['amount'] }}</p>
@@ -104,34 +104,34 @@
 
           <!-- DR / CR -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">DR / CR *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.drCr' | transloco }}</label>
             <div *ngIf="isDrCrFixed" class="flex items-center gap-2 mt-1">
               <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
                 [class.bg-orange-100]="form.drCr==='D'" [class.text-orange-700]="form.drCr==='D'"
                 [class.bg-green-100]="form.drCr==='C'"  [class.text-green-700]="form.drCr==='C'">
-                {{ form.drCr === 'D' ? '↓ Debit (D)' : '↑ Credit (C)' }}
+                {{ (form.drCr === 'D' ? 'capital.form.debitLabel' : 'capital.form.creditLabel') | transloco }}
               </span>
-              <span class="text-xs text-gray-400">Auto-set by type</span>
+              <span class="text-xs text-gray-400">{{ 'capital.form.autoSetByType' | transloco }}</span>
             </div>
             <select *ngIf="!isDrCrFixed" [(ngModel)]="form.drCr"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('drCr') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-              <option value="C">Credit (C) — Money In ↑</option>
-              <option value="D">Debit (D)  — Money Out ↓</option>
+              <option value="C">{{ 'capital.form.creditOption' | transloco }}</option>
+              <option value="D">{{ 'capital.form.debitOption' | transloco }}</option>
             </select>
             <p *ngIf="isFieldInvalid('drCr')" class="text-red-600 text-xs mt-1">{{ validationErrors['drCr'] }}</p>
           </div>
 
           <!-- Refund party-type toggle (REFUND only) -->
           <div *ngIf="isRefundType">
-            <label class="block text-xs font-semibold mb-0.5 text-red-700">Refund To / From *</label>
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.refundToFrom' | transloco }}</label>
             <div [class]="'flex gap-3 px-2 py-1.5 text-sm border rounded-lg ' + (isFieldInvalid('refundPartyType') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
               <label class="flex items-center gap-1 cursor-pointer">
                 <input type="radio" name="refundPartyType" value="customer" [(ngModel)]="refundPartyType" />
-                <span class="text-xs">Customer</span>
+                <span class="text-xs">{{ 'capital.form.customer' | transloco }}</span>
               </label>
               <label class="flex items-center gap-1 cursor-pointer">
                 <input type="radio" name="refundPartyType" value="supplier" [(ngModel)]="refundPartyType" />
-                <span class="text-xs">Supplier</span>
+                <span class="text-xs">{{ 'capital.form.supplier' | transloco }}</span>
               </label>
             </div>
             <p *ngIf="isFieldInvalid('refundPartyType')" class="text-red-600 text-xs mt-1">{{ validationErrors['refundPartyType'] }}</p>
@@ -139,10 +139,10 @@
 
           <!-- Customer dropdown (RECEIPT, or REFUND-to-customer) -->
           <div *ngIf="needsCustomer">
-            <label class="block text-xs font-semibold mb-0.5 text-red-700">Customer *</label>
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.customerField' | transloco }}</label>
             <select [(ngModel)]="selectedCustomerId"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('customerId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-              <option [value]="0">-- Select Customer --</option>
+              <option [value]="0">{{ 'capital.form.selectCustomer' | transloco }}</option>
               <option *ngFor="let c of customers" [value]="c.customerId">
                 {{ c.customerName }} — {{ c.phone }}
               </option>
@@ -152,10 +152,10 @@
 
           <!-- Supplier dropdown (PAYMENT, or REFUND-from-supplier) -->
           <div *ngIf="needsSupplier">
-            <label class="block text-xs font-semibold mb-0.5 text-red-700">Supplier *</label>
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.supplierField' | transloco }}</label>
             <select [(ngModel)]="selectedSupplierId"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('vendorId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-              <option [value]="0">-- Select Supplier --</option>
+              <option [value]="0">{{ 'capital.form.selectSupplier' | transloco }}</option>
               <option *ngFor="let s of suppliers" [value]="s.supplierId">
                 {{ s.supplierName }} — {{ s.phone }}
               </option>
@@ -168,28 +168,27 @@
                same GL ledger automatically. -->
           <div *ngIf="+form.txnTypeId === 14" class="md:col-span-2 lg:col-span-4">
             <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-              Salary payments are processed from the <strong>Payroll</strong> page, not here. Go to Payroll →
-              Process Payroll to run an employee's salary; it will post to this ledger automatically.
+              {{ 'capital.form.salaryNotice' | transloco }}
             </p>
           </div>
 
           <!-- Investor dropdown (INVESTMENT only) -->
           <div *ngIf="needsInvestor">
-            <label class="block text-xs font-semibold mb-0.5 text-red-700">Investor *</label>
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.investorField' | transloco }}</label>
             <select [(ngModel)]="selectedInvestorId"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('investorId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
-              <option [value]="0">-- Select Investor --</option>
+              <option [value]="0">{{ 'capital.form.selectInvestor' | transloco }}</option>
               <option *ngFor="let i of investors" [value]="i.investorId">
                 {{ i.investorName }}
               </option>
             </select>
             <p *ngIf="isFieldInvalid('investorId')" class="text-red-600 text-xs mt-1">{{ validationErrors['investorId'] }}</p>
-            <p *ngIf="selectedInvestor" class="text-gray-400 text-xs mt-1">Invested to date: ৳{{ selectedInvestor.currentBalance | number:'1.2-2' }}</p>
+            <p *ngIf="selectedInvestor" class="text-gray-400 text-xs mt-1">{{ 'capital.form.investedToDate' | transloco: { amount: (selectedInvestor.currentBalance | number:'1.2-2') } }}</p>
           </div>
 
           <!-- TXN Mode -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transaction Mode</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnMode' | transloco }}</label>
             <select [(ngModel)]="form.txnMode"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
               <option *ngFor="let m of txnModes" [value]="m">{{ m }}</option>
@@ -198,28 +197,28 @@
 
           <!-- Reference No -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Reference No</label>
-            <input type="text" [(ngModel)]="form.referenceNo" placeholder="Invoice / voucher ref"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.referenceNo' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.referenceNo" [placeholder]="'capital.form.referenceNoPlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
 
           <!-- User note (appended to auto-narration) -->
           <div class="lg:col-span-2">
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">
-              {{ needsDescription ? 'Description *' : 'Additional Note' }}
-              <span *ngIf="!needsDescription" class="font-normal text-gray-400">(optional)</span>
+              {{ (needsDescription ? 'capital.form.description' : 'capital.form.additionalNote') | transloco }}
+              <span *ngIf="!needsDescription" class="font-normal text-gray-400">{{ 'capital.form.optional' | transloco }}</span>
             </label>
-            <input type="text" [(ngModel)]="userNarration" placeholder="e.g. monthly rent, electricity bill, staff bonus…"
+            <input type="text" [(ngModel)]="userNarration" [placeholder]="'capital.form.narrationPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('userNarration') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('userNarration')" class="text-red-600 text-xs mt-1">{{ validationErrors['userNarration'] }}</p>
-            <p *ngIf="needsDescription && !isFieldInvalid('userNarration')" class="text-gray-400 text-xs mt-1">Expense entries must always explain what the money was spent on.</p>
+            <p *ngIf="needsDescription && !isFieldInvalid('userNarration')" class="text-gray-400 text-xs mt-1">{{ 'capital.form.expenseHint' | transloco }}</p>
           </div>
 
         </div>
 
         <!-- Auto-generated narration preview -->
         <div *ngIf="autoNarration" class="mt-3 px-3 py-2 rounded-lg border border-indigo-200 bg-indigo-50 text-xs text-indigo-900">
-          <p class="font-semibold mb-0.5" style="color:var(--theme-primary)">Narration (auto-generated)</p>
+          <p class="font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.narrationPreviewTitle' | transloco }}</p>
           <p class="italic">{{ autoNarration }}</p>
         </div>
 
@@ -231,9 +230,8 @@
               d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
           </svg>
           <span>
-            <strong>No available capital.</strong>
-            Net capital is <strong>৳{{ netCapital | number:'1.2-2' }}</strong>.
-            Debit transactions are blocked — please add a <strong>Credit</strong> entry first.
+            <strong>{{ 'capital.warnings.noCapitalTitle' | transloco }}</strong>
+            {{ 'capital.warnings.noCapitalBody' | transloco: { amount: ('৳' + (netCapital | number:'1.2-2')) } }}
           </span>
         </div>
 
@@ -245,10 +243,8 @@
               d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
           </svg>
           <span>
-            <strong>Amount exceeds available capital.</strong>
-            You entered <strong>৳{{ (form.amount ?? 0) | number:'1.2-2' }}</strong>
-            but only <strong>৳{{ netCapital | number:'1.2-2' }}</strong> is available.
-            This debit transaction is restricted.
+            <strong>{{ 'capital.warnings.exceedsTitle' | transloco }}</strong>
+            {{ 'capital.warnings.exceedsBody' | transloco: { entered: ('৳' + ((form.amount ?? 0) | number:'1.2-2')), available: ('৳' + (netCapital | number:'1.2-2')) } }}
           </span>
         </div>
 
@@ -261,11 +257,11 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
-            Save Transaction
+            {{ 'capital.buttons.saveTransaction' | transloco }}
           </button>
           <button (click)="resetForm()"
             class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
-            Reset
+            {{ 'capital.buttons.reset' | transloco }}
           </button>
         </div>
       </div>
@@ -274,22 +270,22 @@
     <!-- ── Capital Transactions Grid ──────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Capital Transactions</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ txnTotal }} records</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'capital.grid.title' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'capital.grid.recordsCount' | transloco: { count: txnTotal } }}</span>
       </div>
 
       <!-- Summary bar (full-dataset totals) -->
       <div class="grid grid-cols-3 divide-x border-b" style="background:#f5f6fd">
         <div class="px-4 py-2 text-center">
-          <p class="text-xs text-gray-400 mb-0.5">Total Debit (Out)</p>
+          <p class="text-xs text-gray-400 mb-0.5">{{ 'capital.grid.totalDebitOut' | transloco }}</p>
           <p class="text-sm font-bold text-orange-600">৳{{ txnTotalDebit | number:'1.2-2' }}</p>
         </div>
         <div class="px-4 py-2 text-center">
-          <p class="text-xs text-gray-400 mb-0.5">Total Credit (In)</p>
+          <p class="text-xs text-gray-400 mb-0.5">{{ 'capital.grid.totalCreditIn' | transloco }}</p>
           <p class="text-sm font-bold text-green-600">৳{{ txnTotalCredit | number:'1.2-2' }}</p>
         </div>
         <div class="px-4 py-2 text-center">
-          <p class="text-xs text-gray-400 mb-0.5">Net Capital (C − D)</p>
+          <p class="text-xs text-gray-400 mb-0.5">{{ 'capital.grid.netCapital' | transloco }}</p>
           <p class="text-sm font-bold"
             [class.text-green-600]="netCapital >= 0"
             [class.text-red-600]="netCapital < 0">৳{{ netCapital | number:'1.2-2' }}</p>
@@ -300,27 +296,25 @@
       <div class="px-3 py-2 border-b">
         <div class="flex flex-wrap gap-2">
           <input type="date" [(ngModel)]="txnFromDate" (change)="applyFilters()"
-            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36"
-            placeholder="From date">
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
           <input type="date" [(ngModel)]="txnToDate" (change)="applyFilters()"
-            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36"
-            placeholder="To date">
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
           <select [(ngModel)]="txnTypeFilter" (change)="applyFilters()"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-            <option [value]="0">All Types</option>
+            <option [value]="0">{{ 'capital.grid.allTypes' | transloco }}</option>
             <option *ngFor="let t of txnTypes" [value]="t.id">{{ t.name }}</option>
           </select>
           <select [(ngModel)]="txnDrCrFilter" (change)="applyFilters()"
             class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-            <option value="">All (D/C)</option>
-            <option value="D">Debit (D)</option>
-            <option value="C">Credit (C)</option>
+            <option value="">{{ 'capital.grid.allDrCr' | transloco }}</option>
+            <option value="D">{{ 'capital.grid.debitOption' | transloco }}</option>
+            <option value="C">{{ 'capital.grid.creditOption' | transloco }}</option>
           </select>
           <input type="text" [(ngModel)]="txnSearch" (input)="applyFilters()"
-            placeholder="Search TXN no, ref, GL account, narration…"
+            [placeholder]="'capital.grid.searchPlaceholder' | transloco"
             class="flex-1 min-w-[200px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
           <button (click)="resetFilters()"
-            class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'capital.buttons.clear' | transloco }}</button>
         </div>
       </div>
 
@@ -329,26 +323,26 @@
         <table class="w-full text-xs">
           <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">#</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">TXN No</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Type</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">GL Account</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Party</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">D/C</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Amount (৳)</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Mode</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Reference</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Narration</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Status</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colNo' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colDate' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colTxnNo' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colType' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colGlAccount' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colParty' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'capital.grid.colDrCr' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'capital.grid.colAmount' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colMode' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colReference' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.grid.colNarration' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'capital.grid.colStatus' | transloco }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr *ngIf="isLoading">
-              <td colspan="12" class="px-3 py-6 text-center text-gray-400">Loading…</td>
+              <td colspan="12" class="px-3 py-6 text-center text-gray-400">{{ 'capital.grid.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isLoading && txnList.length === 0">
-              <td colspan="12" class="px-3 py-6 text-center text-gray-400">No transactions found</td>
+              <td colspan="12" class="px-3 py-6 text-center text-gray-400">{{ 'capital.grid.noTransactions' | transloco }}</td>
             </tr>
             <tr *ngFor="let t of txnList; let i = index" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-500">{{ (txnPage-1)*txnPageSize + i + 1 }}</td>
@@ -366,7 +360,7 @@
                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                   [class.bg-orange-100]="t.drCr==='D'" [class.text-orange-700]="t.drCr==='D'"
                   [class.bg-green-100]="t.drCr==='C'"  [class.text-green-700]="t.drCr==='C'">
-                  {{ t.drCr === 'D' ? '↓ Debit' : '↑ Credit' }}
+                  {{ (t.drCr === 'D' ? 'capital.grid.debit' : 'capital.grid.credit') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-2 text-right font-semibold"
@@ -381,7 +375,7 @@
                 <span class="px-2 py-0.5 rounded-full text-xs font-medium"
                   [class.bg-green-100]="t.authStatus==='A'" [class.text-green-700]="t.authStatus==='A'"
                   [class.bg-yellow-100]="t.authStatus!=='A'" [class.text-yellow-700]="t.authStatus!=='A'">
-                  {{ t.authStatus === 'A' ? 'Approved' : 'Pending' }}
+                  {{ (t.authStatus === 'A' ? 'capital.grid.approved' : 'capital.grid.pending') | transloco }}
                 </span>
               </td>
             </tr>
@@ -392,9 +386,7 @@
       <!-- Pagination -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex items-center justify-between text-xs">
         <span class="text-gray-500">
-          Showing {{ txnList.length > 0 ? (txnPage-1)*txnPageSize + 1 : 0 }}
-          – {{ Math.min(txnPage*txnPageSize, txnTotal) }}
-          of {{ txnTotal }}
+          {{ 'capital.grid.showingSummary' | transloco: { from: (txnList.length > 0 ? (txnPage-1)*txnPageSize + 1 : 0), to: Math.min(txnPage*txnPageSize, txnTotal), total: txnTotal } }}
         </span>
         <div class="flex gap-1">
           <button (click)="txnPage=txnPage-1; loadTransactions()" [disabled]="txnPage===1"
@@ -418,31 +410,31 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
-          Cash Flow — Period Report
+          {{ 'capital.report.title' | transloco }}
         </h2>
-        <span class="text-xs" style="color:var(--theme-accent)">Cash Vault</span>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'capital.report.cashVault' | transloco }}</span>
       </div>
 
       <!-- Shared filter for both sections below -->
       <div class="px-4 py-2 border-b flex flex-wrap items-end gap-2">
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">From</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'capital.report.from' | transloco }}</label>
           <input type="date" [(ngModel)]="dcrFromDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">To</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'capital.report.to' | transloco }}</label>
           <input type="date" [(ngModel)]="dcrToDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
-        <button (click)="applyDcrFilter()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:var(--theme-primary)">Apply</button>
-        <button (click)="resetDcrFilter()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">This Month</button>
+        <button (click)="applyDcrFilter()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:var(--theme-primary)">{{ 'capital.buttons.apply' | transloco }}</button>
+        <button (click)="resetDcrFilter()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'capital.buttons.thisMonth' | transloco }}</button>
 
         <div class="ml-auto flex gap-4 text-xs text-right">
           <div>
-            <div class="text-gray-500">Opening ({{ dcrFromDate | date:'dd MMM' }})</div>
+            <div class="text-gray-500">{{ 'capital.report.opening' | transloco: { date: (dcrFromDate | date:'dd MMM') } }}</div>
             <div class="font-semibold text-gray-800">৳ {{ dcrOpeningBalance | number:'1.2-2' }}</div>
           </div>
           <div>
-            <div class="text-gray-500">Closing ({{ dcrToDate | date:'dd MMM' }})</div>
+            <div class="text-gray-500">{{ 'capital.report.closing' | transloco: { date: (dcrToDate | date:'dd MMM') } }}</div>
             <div class="font-bold" [class.text-green-600]="dcrClosingBalance >= 0" [class.text-red-600]="dcrClosingBalance < 0">
               ৳ {{ dcrClosingBalance | number:'1.2-2' }}
             </div>
@@ -452,9 +444,9 @@
 
       <!-- By Category: Sale, Purchase, Expense, Payment, Received, Refund, Salary, Investment... -->
       <div class="px-4 py-3 border-b">
-        <p class="text-xs font-semibold text-gray-500 mb-2">By Category — {{ dcrFromDate | date:'dd MMM' }} to {{ dcrToDate | date:'dd MMM yyyy' }}</p>
-        <div *ngIf="isCategoryLoading" class="text-center text-gray-400 text-xs py-4">Loading…</div>
-        <div *ngIf="!isCategoryLoading && categoryTotals.length === 0" class="text-center text-gray-400 text-xs py-4">No activity in this range</div>
+        <p class="text-xs font-semibold text-gray-500 mb-2">{{ 'capital.report.byCategory' | transloco: { from: (dcrFromDate | date:'dd MMM'), to: (dcrToDate | date:'dd MMM yyyy') } }}</p>
+        <div *ngIf="isCategoryLoading" class="text-center text-gray-400 text-xs py-4">{{ 'capital.report.loading' | transloco }}</div>
+        <div *ngIf="!isCategoryLoading && categoryTotals.length === 0" class="text-center text-gray-400 text-xs py-4">{{ 'capital.report.noActivity' | transloco }}</div>
         <div *ngIf="!isCategoryLoading && categoryTotals.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
           <div *ngFor="let c of categoryTotals"
             class="rounded-lg border px-3 py-2"
@@ -473,14 +465,14 @@
           </div>
         </div>
         <div class="flex justify-end gap-6 mt-3 text-xs">
-          <span class="text-gray-500">Period Credit: <strong class="text-green-600">৳ {{ periodTotalCredit | number:'1.2-2' }}</strong></span>
-          <span class="text-gray-500">Period Debit: <strong class="text-orange-600">৳ {{ periodTotalDebit | number:'1.2-2' }}</strong></span>
+          <span class="text-gray-500">{{ 'capital.report.periodCredit' | transloco: { amount: ('৳ ' + (periodTotalCredit | number:'1.2-2')) } }}</span>
+          <span class="text-gray-500">{{ 'capital.report.periodDebit' | transloco: { amount: ('৳ ' + (periodTotalDebit | number:'1.2-2')) } }}</span>
         </div>
       </div>
 
       <!-- Daily Cash Register -->
       <div class="px-4 pt-3">
-        <p class="text-xs font-semibold text-gray-500">Daily Cash Register</p>
+        <p class="text-xs font-semibold text-gray-500">{{ 'capital.report.dailyCashRegister' | transloco }}</p>
       </div>
 
       <!-- Table -->
@@ -488,20 +480,20 @@
         <table class="w-full text-xs">
           <thead style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Date</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Opening</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Credit (In)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Debit (Out)</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Net Change</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Closing</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'capital.report.colDate' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'capital.report.colOpening' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'capital.report.colCreditIn' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'capital.report.colDebitOut' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'capital.report.colNetChange' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'capital.report.colClosing' | transloco }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
             <tr *ngIf="isDcrLoading">
-              <td colspan="6" class="px-3 py-6 text-center text-gray-400">Loading…</td>
+              <td colspan="6" class="px-3 py-6 text-center text-gray-400">{{ 'capital.report.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isDcrLoading && dcrList.length === 0">
-              <td colspan="6" class="px-3 py-6 text-center text-gray-400">No activity in this range</td>
+              <td colspan="6" class="px-3 py-6 text-center text-gray-400">{{ 'capital.report.noActivity' | transloco }}</td>
             </tr>
             <tr *ngFor="let d of dcrList" class="hover:bg-gray-50 transition">
               <td class="px-3 py-2 text-gray-700 font-medium whitespace-nowrap">{{ d.txnDate | date:'dd MMM yyyy' }}</td>
@@ -558,7 +550,7 @@
     <!-- After-balance line (debit only) -->
     <div *ngIf="confirmType === 'warning'"
       class="mx-5 mb-3 px-3 py-2 rounded-lg bg-orange-50 border border-orange-200 text-xs text-orange-800 flex justify-between">
-      <span>Balance after this debit:</span>
+      <span>{{ 'capital.confirmModal.balanceAfterDebit' | transloco }}</span>
       <strong>৳{{ (netCapital - (form.amount ?? 0)) | number:'1.2-2' }}</strong>
     </div>
 
@@ -566,14 +558,14 @@
     <div class="px-5 py-3 bg-gray-50 border-t flex justify-end gap-2">
       <button (click)="cancelConfirm()"
         class="px-4 py-1.5 text-xs font-semibold bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition">
-        Cancel
+        {{ 'capital.buttons.cancel' | transloco }}
       </button>
       <button (click)="confirmSubmit()"
         class="px-4 py-1.5 text-xs font-semibold text-white rounded-lg transition"
         [class.bg-orange-500]="confirmType === 'warning'"
         [class.hover:bg-orange-600]="confirmType === 'warning'"
         [style.background]="confirmType === 'normal' ? 'var(--theme-primary)' : null">
-        Yes, Save Transaction
+        {{ 'capital.buttons.yesSaveTransaction' | transloco }}
       </button>
     </div>
 

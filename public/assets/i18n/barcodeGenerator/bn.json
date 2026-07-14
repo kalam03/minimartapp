@@ -1,0 +1,45 @@
+{
+  "title": {
+    "main": "বারকোড জেনারেটর",
+    "settings": "বারকোড সেটিংস",
+    "preview": "প্রিভিউ — {{count}} লেবেল"
+  },
+  "filter": {
+    "from": "শুরু তারিখ",
+    "to": "শেষ তারিখ",
+    "category": "ক্যাটাগরি",
+    "allCategories": "সব ক্যাটাগরি",
+    "search": "খুঁজুন",
+    "searchPlaceholder": "নাম বা বারকোড দিয়ে খুঁজুন…",
+    "apply": "প্রয়োগ করুন",
+    "reset": "রিসেট",
+    "countSummary": "{{products}}টি পণ্য · {{selected}}টি নির্বাচিত"
+  },
+  "table": {
+    "productName": "পণ্যের নাম",
+    "category": "ক্যাটাগরি",
+    "salePrice": "বিক্রয় মূল্য",
+    "unit": "একক",
+    "barcode": "বারকোড",
+    "willBeGenerated": "— তৈরি হবে —",
+    "noProducts": "কোনো পণ্য পাওয়া যায়নি",
+    "loading": "লোড হচ্ছে…"
+  },
+  "settings": {
+    "barcodeWidth": "বারকোড প্রস্থ (px প্রতি বার)",
+    "barcodeHeight": "বারকোড উচ্চতা (px)",
+    "copiesPerProduct": "প্রতি পণ্যে কপি সংখ্যা",
+    "showProductName": "লেবেলে পণ্যের নাম দেখান",
+    "showPrice": "লেবেলে মূল্য দেখান"
+  },
+  "buttons": {
+    "generate": "বারকোড তৈরি করুন ({{count}} নির্বাচিত)",
+    "print": "প্রিন্ট",
+    "clear": "পরিষ্কার করুন"
+  },
+  "messages": {
+    "selectAtLeastOne": "বারকোড তৈরি করতে অন্তত একটি পণ্য নির্বাচন করুন।",
+    "sizeMustBePositive": "বারকোডের প্রস্থ এবং উচ্চতা শূন্যের চেয়ে বেশি হতে হবে।",
+    "loadError": "পণ্য লোড করতে ব্যর্থ"
+  }
+}

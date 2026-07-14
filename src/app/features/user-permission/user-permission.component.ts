@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import {
   PermissionService,
   UserPermissionRow,
@@ -26,7 +27,9 @@ interface ModuleGroup {
 @Component({
   selector: 'app-user-permission',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/security/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('security')],
   templateUrl: './user-permission.component.html'
 })
 export class UserPermissionComponent implements OnInit {
@@ -58,8 +61,14 @@ export class UserPermissionComponent implements OnInit {
   constructor(
     private permSvc:   PermissionService,
     private alertSvc:  AlertService,
-    private cdr:       ChangeDetectorRef
+    private cdr:       ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'security' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`security.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -71,7 +80,7 @@ export class UserPermissionComponent implements OnInit {
         this.users = res?.data ?? [];
         this.cdr.detectChanges();
       },
-      error: () => this.alertSvc.error('Failed to load users.')
+      error: () => this.alertSvc.error(this.t('permissions.messages.loadUsersError'))
     });
   }
 
@@ -94,7 +103,7 @@ export class UserPermissionComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.alertSvc.error('Failed to load permissions.');
+        this.alertSvc.error(this.t('permissions.messages.loadPermissionsError'));
       }
     });
   }
@@ -223,12 +232,12 @@ export class UserPermissionComponent implements OnInit {
       next: res => {
         this.saving = false;
         this.hasChanges = false;
-        this.alertSvc.success(res.message ?? 'Permissions saved successfully!');
+        this.alertSvc.success(res.message ?? this.t('permissions.messages.saveSuccess'));
         this.cdr.detectChanges();
       },
       error: err => {
         this.saving = false;
-        this.alertSvc.error('Failed to save permissions: ' + (err.error?.message ?? err.message));
+        this.alertSvc.error(this.t('permissions.messages.saveError', { error: err.error?.message ?? err.message }));
       }
     });
   }

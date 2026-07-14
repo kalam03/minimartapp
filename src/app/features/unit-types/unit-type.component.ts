@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { UnitTypeService, UnitType } from '../../services/unit-type.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
   selector: 'app-unit-type',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/unitTypes/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('unitTypes')],
   templateUrl: './unit-type.component.html',
   styleUrls: ['./unit-type.component.css']
 })
@@ -40,8 +43,14 @@ export class UnitTypeComponent implements OnInit {
 
   constructor(
     private unitTypeService: UnitTypeService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'unitTypes' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`unitTypes.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadUnitTypes();
@@ -53,7 +62,7 @@ export class UnitTypeComponent implements OnInit {
         this.unitTypes = res.data || [];
       },
       error: (err: any) => {
-        this.alertService.error('Failed to load unit types: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -62,18 +71,18 @@ export class UnitTypeComponent implements OnInit {
     this.validationErrors = {};
 
     if (!this.form.unitCode.trim())
-      this.validationErrors['unitCode'] = 'Unit code is required';
+      this.validationErrors['unitCode'] = this.t('validation.codeRequired');
     else if (!/^[A-Za-z0-9._-]{1,10}$/.test(this.form.unitCode.trim()))
-      this.validationErrors['unitCode'] = 'Use up to 10 letters/numbers, e.g. PCS, KG, DOZ';
+      this.validationErrors['unitCode'] = this.t('validation.codeFormat');
 
     if (!this.form.unitName.trim())
-      this.validationErrors['unitName'] = 'Unit name is required';
+      this.validationErrors['unitName'] = this.t('validation.nameRequired');
 
     const dupe = this.unitTypes.find(u =>
       u.unitCode.toLowerCase() === this.form.unitCode.trim().toLowerCase() &&
       u.unitTypeId !== this.editingId
     );
-    if (dupe) this.validationErrors['unitCode'] = 'This unit code is already registered';
+    if (dupe) this.validationErrors['unitCode'] = this.t('validation.codeDuplicate');
 
     return Object.keys(this.validationErrors).length === 0;
   }
@@ -96,13 +105,13 @@ export class UnitTypeComponent implements OnInit {
       }).subscribe({
         next: (res) => {
           this.isSaving = false;
-          this.alertService.success(res.message || 'Unit type updated successfully!');
+          this.alertService.success(res.message || this.t('messages.updateSuccess'));
           this.resetForm();
           this.loadUnitTypes();
         },
         error: (err: any) => {
           this.isSaving = false;
-          this.alertService.error('Failed to update unit type: ' + (err.error?.message || err.message));
+          this.alertService.error(this.t('messages.updateError', { error: err.error?.message || err.message }));
         }
       });
       return;
@@ -115,13 +124,13 @@ export class UnitTypeComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Unit type added successfully!');
+        this.alertService.success(res.message || this.t('messages.createSuccess'));
         this.resetForm();
         this.loadUnitTypes();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to add unit type: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.createError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -138,17 +147,16 @@ export class UnitTypeComponent implements OnInit {
   }
 
   async toggleActive(u: UnitType): Promise<void> {
-    const action = u.isActive ? 'deactivate' : 'reactivate';
     const confirmed = await this.alertService.confirm(
-      `Are you sure you want to ${action} "${u.unitName}"?`,
-      u.isActive ? 'Deactivate Unit Type' : 'Reactivate Unit Type'
+      this.t(u.isActive ? 'messages.deactivateConfirm' : 'messages.reactivateConfirm', { name: u.unitName }),
+      this.t(u.isActive ? 'messages.deactivateTitle' : 'messages.reactivateTitle')
     );
     if (!confirmed) return;
 
     if (u.isActive) {
       this.unitTypeService.deleteUnitType(u.unitTypeId).subscribe({
-        next: () => { this.alertService.success('Unit type deactivated.'); this.loadUnitTypes(); },
-        error: (err: any) => this.alertService.error('Failed: ' + (err.error?.message || err.message))
+        next: () => { this.alertService.success(this.t('messages.deactivateSuccess')); this.loadUnitTypes(); },
+        error: (err: any) => this.alertService.error(this.t('messages.actionFailed', { error: err.error?.message || err.message }))
       });
     } else {
       this.unitTypeService.updateUnitType(u.unitTypeId, {
@@ -157,8 +165,8 @@ export class UnitTypeComponent implements OnInit {
         isWeight: u.isWeight,
         isActive: true,
       }).subscribe({
-        next: () => { this.alertService.success('Unit type reactivated.'); this.loadUnitTypes(); },
-        error: (err: any) => this.alertService.error('Failed: ' + (err.error?.message || err.message))
+        next: () => { this.alertService.success(this.t('messages.reactivateSuccess')); this.loadUnitTypes(); },
+        error: (err: any) => this.alertService.error(this.t('messages.actionFailed', { error: err.error?.message || err.message }))
       });
     }
   }

@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
@@ -19,7 +20,9 @@ interface OrderCartItem {
 @Component({
   selector: 'app-order-entry',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/orders/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('orders')],
   template: `
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
@@ -42,9 +45,9 @@ interface OrderCartItem {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
-              New Order
+              {{ 'orders.entry.title' | transloco }}
             </h1>
-            <p class="text-xs" style="color:var(--theme-accent)">Add products and save as a pending order</p>
+            <p class="text-xs" style="color:var(--theme-accent)">{{ 'orders.entry.subtitle' | transloco }}</p>
           </div>
         </div>
         <div class="text-xs" style="color:var(--theme-accent)">{{ today | date:'dd MMM yyyy' }}</div>
@@ -62,7 +65,7 @@ interface OrderCartItem {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M20 7L4 7M20 12L4 12M20 17L4 17M8 3v4m8-4v4"/>
             </svg>
-            Select Product
+            {{ 'orders.entry.selectProduct' | transloco }}
           </h2>
         </div>
         <div class="p-3">
@@ -72,7 +75,7 @@ interface OrderCartItem {
             <input #productSearchInput type="text"
               [ngModel]="searchTerm" (ngModelChange)="onSearch($event)"
               (keydown)="onKeydown($event)"
-              placeholder="Search product by name or barcode…"
+              [placeholder]="'orders.entry.searchPlaceholder' | transloco"
               class="w-full pl-8 pr-3 py-2 text-sm border rounded-lg outline-none"
               style="border-color:#d1d5f0"
               onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
@@ -101,7 +104,7 @@ interface OrderCartItem {
                 <div class="text-right">
                   <div class="font-semibold">&#2547;{{ p.salePrice | number:'1.2-2' }}</div>
                   <div [style]="p.stockQty <= 0 ? 'color:#ef4444' : 'color:#10b981'">
-                    Stock: {{ p.stockQty }}
+                    {{ 'orders.entry.stock' | transloco: { count: p.stockQty } }}
                   </div>
                 </div>
               </div>
@@ -119,12 +122,12 @@ interface OrderCartItem {
                     [style]="selectedProduct.stockQty <= 0
                       ? 'background:#fee2e2;color:#b91c1c'
                       : 'background:#d1fae5;color:#065f46'">
-                Stock: {{ selectedProduct.stockQty }}
+                {{ 'orders.entry.stock' | transloco: { count: selectedProduct.stockQty } }}
               </span>
             </div>
             <div class="grid grid-cols-3 gap-2">
               <div>
-                <label class="block text-xs text-gray-500 mb-1">Qty ({{ selectedProduct.unitType || 'PCS' }})</label>
+                <label class="block text-xs text-gray-500 mb-1">{{ 'orders.entry.qtyLabel' | transloco: { unit: (selectedProduct.unitType || 'PCS') } }}</label>
                 <input type="number" #quantityInput
                   [(ngModel)]="qty"
                   [min]="isWeight ? 0.001 : 1"
@@ -135,7 +138,7 @@ interface OrderCartItem {
                   style="border-color:#d1d5f0"/>
               </div>
               <div>
-                <label class="block text-xs text-gray-500 mb-1">Unit Price</label>
+                <label class="block text-xs text-gray-500 mb-1">{{ 'orders.entry.unitPrice' | transloco }}</label>
                 <input type="number" [(ngModel)]="unitPrice" min="0"
                   class="w-full px-2 py-1.5 text-sm border rounded outline-none"
                   style="border-color:#d1d5f0"/>
@@ -146,14 +149,14 @@ interface OrderCartItem {
                   style="background:var(--theme-primary)"
                   onmouseover="this.style.background='var(--theme-primary-light)'"
                   onmouseout="this.style.background='var(--theme-primary)'">
-                  + Add
+                  {{ 'orders.entry.add' | transloco }}
                 </button>
               </div>
             </div>
           </div>
 
           <div *ngIf="!selectedProduct" class="text-center text-gray-400 py-6 text-xs">
-            Search and select a product to add it to the order
+            {{ 'orders.entry.noProductSelected' | transloco }}
           </div>
         </div>
       </div>
@@ -169,13 +172,13 @@ interface OrderCartItem {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
-              Cart ({{ cartItems.length }})
+              {{ 'orders.entry.cartCount' | transloco: { count: cartItems.length } }}
             </h2>
             <button *ngIf="cartItems.length > 0" (click)="clearCart()"
               class="text-xs px-2 py-0.5 rounded font-medium transition"
               style="color:var(--theme-accent)"
               onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--theme-accent)'">
-              Clear All
+              {{ 'orders.entry.clearAll' | transloco }}
             </button>
           </div>
 
@@ -184,17 +187,17 @@ interface OrderCartItem {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17"/>
             </svg>
-            No items yet. Search and add products.
+            {{ 'orders.entry.cartEmpty' | transloco }}
           </div>
 
           <div *ngIf="cartItems.length > 0" class="overflow-x-auto">
             <table class="w-full text-xs">
               <thead>
                 <tr style="background:var(--theme-text);color:var(--theme-primary)">
-                  <th class="px-3 py-1.5 text-left">Product</th>
-                  <th class="px-2 py-1.5 text-center w-20">Qty</th>
-                  <th class="px-2 py-1.5 text-right w-24">Price</th>
-                  <th class="px-2 py-1.5 text-right w-24">Total</th>
+                  <th class="px-3 py-1.5 text-left">{{ 'orders.entry.colProduct' | transloco }}</th>
+                  <th class="px-2 py-1.5 text-center w-20">{{ 'orders.entry.colQty' | transloco }}</th>
+                  <th class="px-2 py-1.5 text-right w-24">{{ 'orders.entry.colPrice' | transloco }}</th>
+                  <th class="px-2 py-1.5 text-right w-24">{{ 'orders.entry.colTotal' | transloco }}</th>
                   <th class="px-2 py-1.5 w-8"></th>
                 </tr>
               </thead>
@@ -207,7 +210,7 @@ interface OrderCartItem {
                       <span>{{ item.product.unitType || 'PCS' }}</span>
                       <span class="text-gray-300">|</span>
                       <span [style]="item.product.stockQty <= 0 ? 'color:#ef4444' : 'color:#6b7280'">
-                        Stock: {{ item.product.stockQty }}
+                        {{ 'orders.entry.stock' | transloco: { count: item.product.stockQty } }}
                       </span>
                     </div>
                     <!-- Exceed-stock warning -->
@@ -217,7 +220,7 @@ interface OrderCartItem {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                       </svg>
-                      Exceeds stock ({{ item.product.stockQty }} available)
+                      {{ 'orders.entry.exceedsStock' | transloco: { count: item.product.stockQty } }}
                     </div>
                   </td>
                   <td class="px-2 py-1.5 text-center">
@@ -249,10 +252,10 @@ interface OrderCartItem {
           <div *ngIf="cartItems.length > 0"
                class="px-3 py-2 space-y-1 text-xs" style="border-top:1px solid #f0f2fb">
             <div class="flex justify-between text-gray-500">
-              <span>Sub Total</span><span>&#2547;{{ subTotal | number:'1.2-2' }}</span>
+              <span>{{ 'orders.entry.subTotal' | transloco }}</span><span>&#2547;{{ subTotal | number:'1.2-2' }}</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-500">Discount</span>
+              <span class="text-gray-500">{{ 'orders.entry.discount' | transloco }}</span>
               <div class="flex items-center gap-1">
                 <span class="text-gray-400">&#2547;</span>
                 <input type="number" [(ngModel)]="discount" min="0"
@@ -261,7 +264,7 @@ interface OrderCartItem {
               </div>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-gray-500">Transport</span>
+              <span class="text-gray-500">{{ 'orders.entry.transport' | transloco }}</span>
               <div class="flex items-center gap-1">
                 <span class="text-gray-400">&#2547;</span>
                 <input type="number" [(ngModel)]="transport" min="0"
@@ -271,7 +274,7 @@ interface OrderCartItem {
             </div>
             <div class="flex justify-between font-bold text-sm pt-1"
                  style="border-top:1px solid var(--theme-text);color:var(--theme-primary)">
-              <span>Grand Total</span>
+              <span>{{ 'orders.entry.grandTotal' | transloco }}</span>
               <span>&#2547;{{ grandTotal | number:'1.2-2' }}</span>
             </div>
           </div>
@@ -285,8 +288,8 @@ interface OrderCartItem {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
-              Customer Info
-              <span class="ml-auto text-red-300 text-xs font-normal">* Phone required</span>
+              {{ 'orders.entry.customerInfo' | transloco }}
+              <span class="ml-auto text-red-300 text-xs font-normal">{{ 'orders.entry.phoneRequiredNote' | transloco }}</span>
             </h3>
           </div>
           <div class="p-3 space-y-2">
@@ -294,9 +297,9 @@ interface OrderCartItem {
             <!-- Customer Name (searchable dropdown) -->
             <div class="customer-search-wrap relative">
               <label class="block text-xs font-medium mb-1" style="color:#374151">
-                Customer Name
+                {{ 'orders.entry.customerName' | transloco }}
                 <span *ngIf="selectedCustomer" class="ml-1 text-green-600 text-xs">
-                  (&#10003; matched)
+                  {{ 'orders.entry.matched' | transloco }}
                 </span>
               </label>
               <div class="relative">
@@ -310,7 +313,7 @@ interface OrderCartItem {
                   (ngModelChange)="onCustomerSearch($event)"
                   (focus)="onCustomerFocus()"
                   (keydown)="onCustomerKeydown($event)"
-                  placeholder="Search by name or walk-in…"
+                  [placeholder]="'orders.entry.customerSearchPlaceholder' | transloco"
                   class="w-full pl-8 pr-8 py-1.5 text-xs border rounded-lg outline-none transition"
                   [style]="'border-color:' + (phoneError ? '#ef4444' : '#d1d5f0')"
                   onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
@@ -350,7 +353,7 @@ interface OrderCartItem {
               <div *ngIf="showCustomerDropdown && filteredCustomers.length === 0 && customerNameTerm.length >= 2"
                 class="absolute z-30 w-full mt-1 bg-white border rounded-lg shadow-xl px-3 py-2 text-xs text-gray-400"
                 style="border-color:#d1d5f0">
-                No customer found — fill phone manually below
+                {{ 'orders.entry.noCustomerFound' | transloco }}
               </div>
             </div>
 
@@ -358,14 +361,14 @@ interface OrderCartItem {
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-xs font-medium mb-1" style="color:#374151">
-                  Phone <span class="text-red-500">*</span>
-                  <span class="ml-1 text-gray-400 font-normal">(max 11 digits)</span>
+                  {{ 'orders.entry.phone' | transloco }} <span class="text-red-500">*</span>
+                  <span class="ml-1 text-gray-400 font-normal">{{ 'orders.entry.phoneMaxDigits' | transloco }}</span>
                 </label>
                 <input type="text"
                   [(ngModel)]="customerPhone"
                   (ngModelChange)="onPhoneChange($event)"
                   (blur)="validatePhone()"
-                  placeholder="01XXXXXXXXX"
+                  [placeholder]="'orders.entry.phonePlaceholder' | transloco"
                   maxlength="11"
                   class="w-full px-2 py-1.5 text-xs border rounded outline-none transition"
                   [style]="'border-color:' + (phoneError ? '#ef4444' : '#d1d5f0')"
@@ -373,10 +376,10 @@ interface OrderCartItem {
                 <p *ngIf="phoneError" class="text-red-500 text-xs mt-0.5">{{ phoneError }}</p>
               </div>
               <div>
-                <label class="block text-xs font-medium mb-1" style="color:#374151">Address</label>
+                <label class="block text-xs font-medium mb-1" style="color:#374151">{{ 'orders.entry.address' | transloco }}</label>
                 <input type="text"
                   [(ngModel)]="customerAddress"
-                  placeholder="Optional"
+                  [placeholder]="'orders.entry.addressPlaceholder' | transloco"
                   class="w-full px-2 py-1.5 text-xs border rounded outline-none"
                   style="border-color:#d1d5f0"
                   onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
@@ -385,8 +388,8 @@ interface OrderCartItem {
 
             <!-- Notes -->
             <div>
-              <label class="block text-xs font-medium mb-1" style="color:#374151">Notes</label>
-              <textarea [(ngModel)]="notes" rows="2" placeholder="Special instructions…"
+              <label class="block text-xs font-medium mb-1" style="color:#374151">{{ 'orders.entry.notes' | transloco }}</label>
+              <textarea [(ngModel)]="notes" rows="2" [placeholder]="'orders.entry.notesPlaceholder' | transloco"
                 class="w-full px-2 py-1.5 text-xs border rounded outline-none resize-none"
                 style="border-color:#d1d5f0"
                 onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'">
@@ -410,7 +413,7 @@ interface OrderCartItem {
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
           </svg>
-          {{ saving ? 'Saving Order…' : 'Save Order' }}
+          {{ (saving ? 'orders.entry.savingOrder' : 'orders.entry.saveOrder') | transloco }}
         </button>
 
       </div><!-- /right col -->
@@ -462,8 +465,14 @@ export class OrderEntryComponent implements OnInit {
     private orderSvc:    OrderService,
     private customerSvc: CustomerService,
     private alertSvc:    AlertService,
-    private router:      Router
+    private router:      Router,
+    private transloco:   TranslocoService
   ) {}
+
+  /** Shorthand for the 'orders' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`orders.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.productSvc.getAllProducts(this.filters).subscribe({
@@ -571,11 +580,11 @@ export class OrderEntryComponent implements OnInit {
 
   validatePhone(): boolean {
     if (!this.customerPhone.trim()) {
-      this.phoneError = 'Phone number is required.';
+      this.phoneError = this.t('messages.phoneErrorRequired');
       return false;
     }
     if (this.customerPhone.length > 11) {
-      this.phoneError = 'Maximum 11 digits.';
+      this.phoneError = this.t('messages.phoneErrorMax');
       return false;
     }
     this.phoneError = '';
@@ -586,7 +595,7 @@ export class OrderEntryComponent implements OnInit {
   addToCart(): void {
     if (!this.selectedProduct) return;
     if (this.qty <= 0) {
-      this.alertSvc.warning('Quantity must be greater than 0.', 'Invalid Qty');
+      this.alertSvc.warning(this.t('messages.qtyInvalid'), this.t('messages.qtyInvalidTitle'));
       return;
     }
 
@@ -595,8 +604,8 @@ export class OrderEntryComponent implements OnInit {
     // Out of stock check
     if (stock <= 0) {
       this.alertSvc.warning(
-        `"${this.selectedProduct.productName}" is out of stock.`,
-        'Out of Stock'
+        this.t('messages.outOfStock', { name: this.selectedProduct.productName }),
+        this.t('messages.outOfStockTitle')
       );
       return;
     }
@@ -607,9 +616,13 @@ export class OrderEntryComponent implements OnInit {
     // Exceed stock check
     if (totalQty > stock) {
       this.alertSvc.warning(
-        `Only ${stock} unit(s) of "${this.selectedProduct.productName}" in stock.\n` +
-        `Already in cart: ${existing?.quantity ?? 0}. You tried to add: ${this.qty}.`,
-        'Insufficient Stock'
+        this.t('messages.insufficientStock', {
+          stock,
+          name: this.selectedProduct.productName,
+          existing: existing?.quantity ?? 0,
+          qty: this.qty
+        }),
+        this.t('messages.insufficientStockTitle')
       );
       return;
     }
@@ -639,8 +652,8 @@ export class OrderEntryComponent implements OnInit {
     // Warn if exceeds stock but don't block (allow saving as order/reservation)
     if (item.quantity > item.product.stockQty && item.product.stockQty > 0) {
       this.alertSvc.warning(
-        `Qty ${item.quantity} exceeds available stock (${item.product.stockQty}) for "${item.product.productName}".`,
-        'Stock Warning'
+        this.t('messages.stockWarning', { qty: item.quantity, stock: item.product.stockQty, name: item.product.productName }),
+        this.t('messages.stockWarningTitle')
       );
     }
     item.subtotal = +(item.quantity * item.unitPrice).toFixed(2);
@@ -655,23 +668,23 @@ export class OrderEntryComponent implements OnInit {
   // ── Save ───────────────────────────────────────────────────────
   async saveOrder(): Promise<void> {
     if (this.cartItems.length === 0) {
-      await this.alertSvc.warning('Add at least one product to the order.', 'Empty Cart');
+      await this.alertSvc.warning(this.t('messages.emptyCart'), this.t('messages.emptyCartTitle'));
       return;
     }
     if (!this.validatePhone()) {
-      await this.alertSvc.warning('Phone number is required (max 11 digits).', 'Validation Error');
+      await this.alertSvc.warning(this.t('messages.phoneRequired'), this.t('messages.validationErrorTitle'));
       return;
     }
 
     // Final stock check across entire cart
     const stockErrors = this.cartItems
       .filter(i => i.quantity > i.product.stockQty)
-      .map(i => `• ${i.product.productName}: need ${i.quantity}, available ${i.product.stockQty}`);
+      .map(i => this.t('messages.stockErrorLine', { name: i.product.productName, need: i.quantity, available: i.product.stockQty }));
 
     if (stockErrors.length > 0) {
       await this.alertSvc.warning(
-        'The following items exceed available stock:\n' + stockErrors.join('\n'),
-        'Insufficient Stock'
+        this.t('messages.stockErrorsHeader') + stockErrors.join('\n'),
+        this.t('messages.insufficientStockTitle')
       );
       return;
     }
@@ -697,14 +710,14 @@ export class OrderEntryComponent implements OnInit {
       next: async res => {
         this.saving = false;
         await this.alertSvc.success(
-          `Order #${res.data.orderId} saved!\nTotal: &#2547;${this.grandTotal.toFixed(2)}`,
-          'Order Created'
+          this.t('messages.orderSaved', { id: res.data.orderId, total: this.grandTotal.toFixed(2) }),
+          this.t('messages.orderCreatedTitle')
         );
         this.router.navigate(['/orders']);
       },
       error: async err => {
         this.saving = false;
-        await this.alertSvc.error(err?.error?.message || 'Failed to save order.', 'Error');
+        await this.alertSvc.error(err?.error?.message || this.t('messages.saveFailed'), this.t('messages.errorTitle'));
       }
     });
   }

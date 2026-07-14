@@ -19,19 +19,19 @@
               d="M12 4v16m8-8H4"
             ></path>
           </svg>
-          {{ editingId ? 'Edit Customer' : 'Add New Customer' }}
+          {{ (editingId ? 'customers.title.edit' : 'customers.title.addNew') | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Customer Name -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Customer Name *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'customers.form.customerName' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="customerForm.customerName"
               (blur)="validateField('customerName')"
-              placeholder="Enter customer name"
+              [placeholder]="'customers.form.customerNamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('customerName') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('customerName')" class="text-red-600 text-xs mt-1">
@@ -41,13 +41,13 @@
 
           <!-- Phone -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone <span class="text-red-500">*</span></label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'customers.form.phone' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="customerForm.phone"
               (input)="onPhoneInput($event)"
               (blur)="validateField('phone')"
-              placeholder="01XXXXXXXXX"
+              [placeholder]="'customers.form.phonePlaceholder' | transloco"
               maxlength="11"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('phone') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
@@ -58,12 +58,12 @@
 
           <!-- Address -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Address</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'customers.form.address' | transloco }}</label>
             <input
               type="text"
               [(ngModel)]="customerForm.address"
               (blur)="validateField('address')"
-              placeholder="Enter address"
+              [placeholder]="'customers.form.addressPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('address') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('address')" class="text-red-600 text-xs mt-1">
@@ -73,12 +73,12 @@
 
           <!-- Current Balance -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Current Balance (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'customers.form.currentBalance' | transloco }}</label>
             <input
               type="number"
               [(ngModel)]="customerForm.currentBalance"
               (blur)="validateField('currentBalance')"
-              placeholder="0.00"
+              [placeholder]="'customers.form.currentBalancePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('currentBalance') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('currentBalance')" class="text-red-600 text-xs mt-1">
@@ -101,20 +101,20 @@
                 d="M5 13l4 4L19 7"
               ></path>
             </svg>
-            {{ editingId ? 'Update Customer' : 'Save Customer' }}
+            {{ (editingId ? 'customers.buttons.update' : 'customers.buttons.save') | transloco }}
           </button>
           <button
             (click)="resetForm()"
             class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition"
           >
-            Reset
+            {{ 'customers.buttons.reset' | transloco }}
           </button>
           <button
             *ngIf="editingId"
             (click)="cancelEdit()"
             class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-100 transition"
           >
-            Cancel Edit
+            {{ 'customers.buttons.cancelEdit' | transloco }}
           </button>
         </div>
       </div>
@@ -123,15 +123,15 @@
     <!-- Customers Table Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Customer List</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredCustomers.length }} of {{ customers.length }} customers</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'customers.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'customers.table.countSummary' | transloco: { filtered: filteredCustomers.length, total: customers.length } }}</span>
       </div>
       <div class="px-3 py-2 border-b flex gap-2">
         <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
-          placeholder="Search by name, phone, address…"
+          [placeholder]="'customers.search.placeholder' | transloco"
           class="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         <button (click)="searchText=''; currentPage=1"
-          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'customers.buttons.clear' | transloco }}</button>
       </div>
 
       <!-- Table -->
@@ -140,22 +140,22 @@
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('customerId')">
-                ID {{ getSortIcon('customerId') }}
+                {{ 'customers.table.id' | transloco }} {{ getSortIcon('customerId') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('customerName')">
-                Customer Name {{ getSortIcon('customerName') }}
+                {{ 'customers.table.customerName' | transloco }} {{ getSortIcon('customerName') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('phone')">
-                Phone {{ getSortIcon('phone') }}
+                {{ 'customers.table.phone' | transloco }} {{ getSortIcon('phone') }}
               </th>
               <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('address')">
-                Address {{ getSortIcon('address') }}
+                {{ 'customers.table.address' | transloco }} {{ getSortIcon('address') }}
               </th>
               <th class="px-3 py-2 text-right cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('currentBalance')">
-                Balance {{ getSortIcon('currentBalance') }}
+                {{ 'customers.table.balance' | transloco }} {{ getSortIcon('currentBalance') }}
               </th>
-              <th class="px-3 py-2 text-center">Status</th>
-              <th class="px-3 py-2 text-center">Actions</th>
+              <th class="px-3 py-2 text-center">{{ 'customers.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center">{{ 'customers.table.actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -181,7 +181,7 @@
                       : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'
                   "
                 >
-                  {{ customer.isActive ? 'Active' : 'Inactive' }}
+                  {{ (customer.isActive ? 'customers.table.active' : 'customers.table.inactive') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-2 text-center">
@@ -189,7 +189,7 @@
                   <button
                     (click)="editCustomer(customer)"
                     class="text-white px-2 py-1 rounded text-xs transition flex items-center" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'"
-                    title="Edit"
+                    [title]="'customers.buttons.edit' | transloco"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -199,7 +199,7 @@
                   <button
                     (click)="deleteCustomer(customer.customerId, customer.customerName)"
                     class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition flex items-center"
-                    title="Delete"
+                    [title]="'customers.buttons.delete' | transloco"
                   >
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -210,7 +210,7 @@
             </tr>
             <tr *ngIf="paginatedCustomers.length === 0">
               <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">
-                No customers found
+                {{ 'customers.table.noCustomers' | transloco }}
               </td>
             </tr>
           </tbody>
@@ -220,7 +220,7 @@
       <!-- Pagination Controls -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
-          Showing {{ paginatedCustomers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} - {{ Math.min(currentPage * pageSize, filteredCustomers.length) }} of {{ filteredCustomers.length }} customers<span *ngIf="filteredCustomers.length !== customers.length" class="text-gray-400"> (filtered from {{ customers.length }})</span>
+          {{ 'customers.table.showingSummary' | transloco: { from: (paginatedCustomers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0), to: Math.min(currentPage * pageSize, filteredCustomers.length), total: filteredCustomers.length } }}<span *ngIf="filteredCustomers.length !== customers.length" class="text-gray-400"> {{ 'customers.table.filteredFrom' | transloco: { total: customers.length } }}</span>
         </div>
 
         <div class="flex items-center gap-2 justify-center md:justify-end">

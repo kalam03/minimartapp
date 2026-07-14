@@ -14,27 +14,27 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          Add New User
+          {{ 'security.users.title.addNew' | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Username *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form.username' | transloco }}</label>
             <input type="text" [(ngModel)]="createForm.userName" (blur)="validateCreateField('userName')"
-              placeholder="Enter username"
+              [placeholder]="'security.users.form.usernamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isCreateInvalid('userName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isCreateInvalid('userName')" class="text-red-600 text-xs mt-1">{{ createErrors.userName }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Password *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form.password' | transloco }}</label>
             <input type="password" [(ngModel)]="createForm.password" (blur)="validateCreateField('password')"
-              placeholder="Enter password"
+              [placeholder]="'security.users.form.passwordPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isCreateInvalid('password') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isCreateInvalid('password')" class="text-red-600 text-xs mt-1">{{ createErrors.password }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Default Role</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form.defaultRole' | transloco }}</label>
             <select [(ngModel)]="createForm.role"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg transition outline-none">
               <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
@@ -45,10 +45,10 @@
           <button (click)="submitCreate()"
             class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            Save User
+            {{ 'security.users.buttons.save' | transloco }}
           </button>
           <button (click)="openCreateForm()"
-            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
+            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">{{ 'security.users.buttons.reset' | transloco }}</button>
         </div>
       </div>
     </div>
@@ -56,21 +56,21 @@
     <!-- Edit User Form -->
     <div *ngIf="showEditForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
       <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Edit User — {{ selectedUser?.userName }}</h2>
-        <button (click)="showEditForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
+        <h2 class="text-white font-semibold text-sm">{{ 'security.users.editTitle' | transloco: { name: selectedUser?.userName } }}</h2>
+        <button (click)="showEditForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" [title]="'security.users.buttons.close' | transloco">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Username *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form.username' | transloco }}</label>
             <input type="text" [(ngModel)]="editForm.userName" (blur)="validateEditField('userName')"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isEditInvalid('userName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isEditInvalid('userName')" class="text-red-600 text-xs mt-1">{{ editErrors.userName }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Role</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form.role' | transloco }}</label>
             <select [(ngModel)]="editForm.role"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg transition outline-none">
               <option *ngFor="let r of roleOptions" [value]="r">{{ r }}</option>
@@ -79,7 +79,7 @@
           <div class="flex items-end pb-1">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" [(ngModel)]="editForm.isActive" class="w-4 h-4 text-blue-600 rounded border-gray-400" />
-              <span class="text-sm font-medium text-gray-700">Active</span>
+              <span class="text-sm font-medium text-gray-700">{{ 'security.users.form.active' | transloco }}</span>
             </label>
           </div>
         </div>
@@ -87,10 +87,10 @@
           <button (click)="submitEdit()"
             class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            Update User
+            {{ 'security.users.buttons.update' | transloco }}
           </button>
           <button (click)="showEditForm=false"
-            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Cancel</button>
+            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">{{ 'security.users.buttons.cancel' | transloco }}</button>
         </div>
       </div>
     </div>
@@ -99,25 +99,25 @@
     <div *ngIf="showPasswordForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
       <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
-          {{ isAdminReset ? 'Reset Password' : 'Change Password' }} — {{ selectedUser?.userName }}
+          {{ (isAdminReset ? 'security.users.passwordTitleReset' : 'security.users.passwordTitleChange') | transloco }} — {{ selectedUser?.userName }}
         </h2>
-        <button (click)="showPasswordForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
+        <button (click)="showPasswordForm=false" class="text-white opacity-70 hover:opacity-100 flex items-center" [title]="'security.users.buttons.close' | transloco">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div *ngIf="!isAdminReset">
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Current Password *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form2.currentPassword' | transloco }}</label>
             <input type="password" [(ngModel)]="passwordForm.oldPassword" (blur)="validatePasswordField('oldPassword')"
-              placeholder="Current password"
+              [placeholder]="'security.users.form2.currentPasswordPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isPasswordInvalid('oldPassword') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isPasswordInvalid('oldPassword')" class="text-red-600 text-xs mt-1">{{ passwordErrors.oldPassword }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">New Password *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.form2.newPassword' | transloco }}</label>
             <input type="password" [(ngModel)]="passwordForm.newPassword" (blur)="validatePasswordField('newPassword')"
-              placeholder="New password"
+              [placeholder]="'security.users.form2.newPasswordPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isPasswordInvalid('newPassword') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isPasswordInvalid('newPassword')" class="text-red-600 text-xs mt-1">{{ passwordErrors.newPassword }}</p>
           </div>
@@ -126,10 +126,10 @@
           <button (click)="submitPasswordChange()"
             class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1.5" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            Save Password
+            {{ 'security.users.buttons.savePassword' | transloco }}
           </button>
           <button (click)="showPasswordForm=false"
-            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Cancel</button>
+            class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">{{ 'security.users.buttons.cancel' | transloco }}</button>
         </div>
       </div>
     </div>
@@ -138,15 +138,15 @@
     <div *ngIf="showRoleModal" class="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
         <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Assign Roles — {{ selectedUser?.userName }}</h2>
-          <button (click)="showRoleModal=false" class="text-white opacity-70 hover:opacity-100 flex items-center" title="Close">
+          <h2 class="text-white font-semibold text-sm">{{ 'security.users.roleModal.title' | transloco: { name: selectedUser?.userName } }}</h2>
+          <button (click)="showRoleModal=false" class="text-white opacity-70 hover:opacity-100 flex items-center" [title]="'security.users.buttons.close' | transloco">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
         <div class="p-4">
           <div class="mb-3">
-            <p class="text-xs font-semibold mb-1" style="color:var(--theme-primary)">Assigned Roles</p>
-            <div *ngIf="userRoles.length === 0" class="text-xs text-gray-400 italic">No roles assigned yet.</div>
+            <p class="text-xs font-semibold mb-1" style="color:var(--theme-primary)">{{ 'security.users.roleModal.assignedRoles' | transloco }}</p>
+            <div *ngIf="userRoles.length === 0" class="text-xs text-gray-400 italic">{{ 'security.users.roleModal.noRolesAssigned' | transloco }}</div>
             <div *ngFor="let ur of userRoles"
               class="flex items-center justify-between bg-purple-50 rounded-lg px-3 py-2 mb-1">
               <div>
@@ -154,19 +154,19 @@
                 <span class="text-xs text-gray-500 ml-2">({{ ur.roleCode }})</span>
               </div>
               <button (click)="removeRole(ur.userRoleId, ur.userId, ur.roleId)"
-                class="text-red-500 hover:text-red-700 transition text-xs font-semibold">Remove</button>
+                class="text-red-500 hover:text-red-700 transition text-xs font-semibold">{{ 'security.users.roleModal.remove' | transloco }}</button>
             </div>
           </div>
           <div class="border-t pt-3">
-            <p class="text-xs font-semibold mb-1" style="color:var(--theme-primary)">Add Role</p>
+            <p class="text-xs font-semibold mb-1" style="color:var(--theme-primary)">{{ 'security.users.roleModal.addRole' | transloco }}</p>
             <div class="flex gap-2">
               <select [(ngModel)]="assignRoleId"
                 class="flex-1 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option [value]="0">Select role…</option>
+                <option [value]="0">{{ 'security.users.roleModal.selectRolePlaceholder' | transloco }}</option>
                 <option *ngFor="let r of availableRoles" [value]="r.roleId">{{ r.roleName }}</option>
               </select>
               <button (click)="submitAssignRole()"
-                class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">Assign</button>
+                class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">{{ 'security.users.buttons.assign' | transloco }}</button>
             </div>
           </div>
         </div>
@@ -177,23 +177,23 @@
     <div class="bg-white rounded-xl shadow-md border mb-3 p-3">
       <div class="flex flex-col md:flex-row gap-3 items-end">
         <div class="flex-1">
-          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Search</label>
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.search.label' | transloco }}</label>
           <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
-            placeholder="Search by username…"
+            [placeholder]="'security.users.search.placeholder' | transloco"
             class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Status</label>
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'security.users.search.statusLabel' | transloco }}</label>
           <select [(ngModel)]="filterActive" (change)="onFilterChange()"
             class="px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-            <option [ngValue]="undefined">All</option>
-            <option [ngValue]="true">Active</option>
-            <option [ngValue]="false">Inactive</option>
+            <option [ngValue]="undefined">{{ 'security.users.search.all' | transloco }}</option>
+            <option [ngValue]="true">{{ 'security.users.search.active' | transloco }}</option>
+            <option [ngValue]="false">{{ 'security.users.search.inactive' | transloco }}</option>
           </select>
         </div>
         <button (click)="onSearch()"
           class="text-white px-3 py-1.5 text-xs rounded-lg transition font-semibold" style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
-          Search
+          {{ 'security.users.buttons.search' | transloco }}
         </button>
       </div>
     </div>
@@ -204,21 +204,21 @@
         <table class="w-full text-sm">
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userId')">#  {{ getSortIcon('userId') }}</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userName')">Username {{ getSortIcon('userName') }}</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('role')">Role {{ getSortIcon('role') }}</th>
-              <th class="px-3 py-2 text-left">Assigned Roles</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('isActive')">Status {{ getSortIcon('isActive') }}</th>
-              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('createdAt')">Created {{ getSortIcon('createdAt') }}</th>
-              <th class="px-3 py-2 text-right">Actions</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userId')">{{ 'security.users.table.colNo' | transloco }}  {{ getSortIcon('userId') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('userName')">{{ 'security.users.table.colUsername' | transloco }} {{ getSortIcon('userName') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('role')">{{ 'security.users.table.colRole' | transloco }} {{ getSortIcon('role') }}</th>
+              <th class="px-3 py-2 text-left">{{ 'security.users.table.colAssignedRoles' | transloco }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('isActive')">{{ 'security.users.table.colStatus' | transloco }} {{ getSortIcon('isActive') }}</th>
+              <th class="px-3 py-2 text-left cursor-pointer" onmouseover="this.style.background='var(--theme-hover)'" onmouseout="this.style.background='transparent'" (click)="setSortColumn('createdAt')">{{ 'security.users.table.colCreated' | transloco }} {{ getSortIcon('createdAt') }}</th>
+              <th class="px-3 py-2 text-right">{{ 'security.users.table.colActions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="isLoading">
-              <td colspan="7" class="py-8 text-center text-gray-400 text-sm">Loading…</td>
+              <td colspan="7" class="py-8 text-center text-gray-400 text-sm">{{ 'security.users.table.loading' | transloco }}</td>
             </tr>
             <tr *ngIf="!isLoading && users.length === 0">
-              <td colspan="7" class="py-8 text-center text-gray-400 text-sm">No users found.</td>
+              <td colspan="7" class="py-8 text-center text-gray-400 text-sm">{{ 'security.users.table.noUsers' | transloco }}</td>
             </tr>
             <tr *ngFor="let user of paginatedUsers" class="border-b hover:bg-gray-50 transition-colors text-xs">
               <td class="px-3 py-2 text-gray-500">#{{ user.userId }}</td>
@@ -237,34 +237,34 @@
               </td>
               <td class="px-3 py-2">
                 <span [class]="'px-2 py-0.5 rounded-full text-xs font-medium ' + (user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700')">
-                  {{ user.isActive ? 'Active' : 'Inactive' }}
+                  {{ (user.isActive ? 'security.users.table.active' : 'security.users.table.inactive') | transloco }}
                 </span>
               </td>
               <td class="px-3 py-2 text-gray-500">{{ user.createdAt | date:'dd MMM yyyy' }}</td>
               <td class="px-3 py-2">
                 <div class="flex items-center justify-end gap-1">
-                  <button (click)="openEditForm(user)" title="Edit User"
+                  <button (click)="openEditForm(user)" [title]="'security.users.table.editTooltip' | transloco"
                     class="p-1.5 rounded-lg transition" style="color:var(--theme-primary)" onmouseover="this.style.background='#eef0fc'" onmouseout="this.style.background='transparent'">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-2.828 1.172H7v-2a4 4 0 011.172-2.828z"></path>
                     </svg>
                   </button>
-                  <button (click)="openPasswordForm(user)" title="Change Password"
+                  <button (click)="openPasswordForm(user)" [title]="'security.users.table.changePasswordTooltip' | transloco"
                     class="p-1.5 rounded-lg text-orange-600 hover:bg-orange-50 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                     </svg>
                   </button>
-                  <button (click)="openPasswordForm(user, true)" title="Admin Reset Password"
+                  <button (click)="openPasswordForm(user, true)" [title]="'security.users.table.adminResetTooltip' | transloco"
                     class="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
                   </button>
-                  <button (click)="openRoleModal(user)" title="Manage Roles"
+                  <button (click)="openRoleModal(user)" [title]="'security.users.table.manageRolesTooltip' | transloco"
                     class="p-1.5 rounded-lg text-purple-600 hover:bg-purple-50 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -281,7 +281,7 @@
       <!-- Pagination -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs">
         <div class="text-gray-600">
-          Showing {{ paginatedUsers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0 }} – {{ Math.min(currentPage * pageSize, users.length) }} of {{ users.length }} users
+          {{ 'security.users.table.showingSummary' | transloco: { from: (paginatedUsers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0), to: Math.min(currentPage * pageSize, users.length), total: users.length } }}
         </div>
         <div class="flex items-center gap-2 justify-center">
           <button (click)="prevPage()" [disabled]="currentPage === 1"
@@ -298,7 +298,7 @@
             class="px-2 py-1 rounded border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition">→</button>
         </div>
         <div class="flex items-center gap-2">
-          <label class="text-gray-600">Page size:</label>
+          <label class="text-gray-600">{{ 'security.users.table.pageSize' | transloco }}</label>
           <select [(ngModel)]="pageSize" (change)="currentPage = 1" class="px-2 py-1 border border-gray-400 rounded">
             <option [value]="5">5</option>
             <option [value]="10">10</option>

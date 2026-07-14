@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { CapitalService, DailyCashRegisterRow, CapitalCategoryTotal } from '../../services/capital.service';
 import { CustomerService, Customer } from '../../services/customer.service';
 import { SupplierService } from '../../services/supplier.service';
@@ -11,7 +12,13 @@ import { toLocalDateString } from '../../shared/date-utils';
 @Component({
   selector: 'app-capital-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/capital/{en,bn}.json only when this route is hit.
+  // Note: txnTypes/txnModes names and the auto-generated narration text (saved
+  // as ledger data) are intentionally left in English — they are persisted
+  // business records, not just UI chrome, so translating them would change
+  // stored data rather than just the display language.
+  providers: [provideTranslocoScope('capital')],
   templateUrl: './capital-management.component.html',
   styleUrls: ['./capital-management.component.css']
 })
@@ -215,8 +222,14 @@ export class CapitalManagementComponent implements OnInit {
     private supplierService: SupplierService,
     private investorService: InvestorService,
     private alertService:    AlertService,
-    private cdr:             ChangeDetectorRef
+    private cdr:             ChangeDetectorRef,
+    private transloco:       TranslocoService
   ) {}
+
+  /** Shorthand for the 'capital' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`capital.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -342,26 +355,26 @@ export class CapitalManagementComponent implements OnInit {
   validateForm(): boolean {
     this.validationErrors = {};
     if (!+this.form.txnTypeId)
-      this.validationErrors['txnTypeId'] = 'Transaction type is required';
+      this.validationErrors['txnTypeId'] = this.t('validation.typeRequired');
     if (this.isSalaryType)
-      this.validationErrors['txnTypeId'] = 'Salary is processed from the Payroll page, not here';
+      this.validationErrors['txnTypeId'] = this.t('validation.salaryNotAllowed');
     if (!this.form.glAccount.trim())
-      this.validationErrors['glAccount'] = 'GL Account is required';
+      this.validationErrors['glAccount'] = this.t('validation.accountRequired');
     if (!this.form.drCr)
-      this.validationErrors['drCr'] = 'DR/CR is required';
+      this.validationErrors['drCr'] = this.t('validation.drCrRequired');
     if (!this.form.amount || +this.form.amount <= 0)
-      this.validationErrors['amount'] = 'Amount must be greater than 0';
+      this.validationErrors['amount'] = this.t('validation.amountRequired');
 
     if (this.isRefundType && !this.refundPartyType)
-      this.validationErrors['refundPartyType'] = 'Choose whether this refund is to a customer or from a supplier';
+      this.validationErrors['refundPartyType'] = this.t('validation.refundPartyRequired');
     if (this.needsCustomer && !+this.selectedCustomerId)
-      this.validationErrors['customerId'] = 'Customer is required';
+      this.validationErrors['customerId'] = this.t('validation.customerRequired');
     if (this.needsSupplier && !+this.selectedSupplierId)
-      this.validationErrors['vendorId'] = 'Supplier is required';
+      this.validationErrors['vendorId'] = this.t('validation.supplierRequired');
     if (this.needsInvestor && !+this.selectedInvestorId)
-      this.validationErrors['investorId'] = 'Investor is required for Investment Received';
+      this.validationErrors['investorId'] = this.t('validation.investorRequired');
     if (this.needsDescription && !this.userNarration.trim())
-      this.validationErrors['userNarration'] = 'A description is required for expense entries';
+      this.validationErrors['userNarration'] = this.t('validation.descriptionRequired');
 
     return Object.keys(this.validationErrors).length === 0;
   }
@@ -370,13 +383,15 @@ export class CapitalManagementComponent implements OnInit {
     if (!this.validateForm()) return;
 
     if (this.capitalDepleted) {
-      this.alertService.warning('Insufficient capital! Net capital is ৳0.00. Please add a Credit entry first.');
+      this.alertService.warning(this.t('messages.capitalDepletedWarning'));
       return;
     }
     if (this.debitExceedsCapital) {
       this.alertService.warning(
-        `Debit amount ৳${(+this.form.amount!).toLocaleString('en-US', { minimumFractionDigits: 2 })} ` +
-        `exceeds available net capital ৳${this.netCapital.toLocaleString('en-US', { minimumFractionDigits: 2 })}. Transaction restricted.`
+        this.t('messages.debitExceedsWarning', {
+          amount: (+this.form.amount!).toLocaleString('en-US', { minimumFractionDigits: 2 }),
+          netCapital: this.netCapital.toLocaleString('en-US', { minimumFractionDigits: 2 })
+        })
       );
       return;
     }
@@ -407,7 +422,7 @@ export class CapitalManagementComponent implements OnInit {
     if (this.needsInvestor && this.selectedInvestor)
       partyLine = `<br><span class="text-gray-500 text-xs">Investor:</span> <strong>${this.selectedInvestor.investorName}</strong>`;
 
-    this.confirmTitle   = 'Confirm Transaction';
+    this.confirmTitle   = this.t('confirmModal.title');
     this.confirmMessage =
       `You are about to save a <strong>${drcrLabel}</strong> transaction.<br>` +
       `<br>` +
@@ -427,7 +442,7 @@ export class CapitalManagementComponent implements OnInit {
     this.capitalService.createTransaction(this._pendingPayload).subscribe({
       next: (res: any) => {
         if (res.success) {
-          this.alertService.success(`Transaction ${res.data?.txnNo} saved successfully!`);
+          this.alertService.success(this.t('messages.transactionSaved', { txnNo: res.data?.txnNo }));
           this.resetForm();
           this.loadTransactions();
           this.loadPeriodReports();
@@ -438,7 +453,7 @@ export class CapitalManagementComponent implements OnInit {
         this._pendingPayload = null;
       },
       error: (err: any) => {
-        this.alertService.error('Failed to save transaction: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.saveError', { error: err.error?.message || err.message }));
         this._pendingPayload = null;
       }
     });

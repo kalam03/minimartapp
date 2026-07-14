@@ -1,0 +1,192 @@
+{
+  "roles": {
+    "title": {
+      "addNew": "Add New Role",
+      "edit": "Edit Role",
+      "list": "Role List"
+    },
+    "form": {
+      "roleCode": "Role Code *",
+      "roleCodePlaceholder": "e.g. CASHIER",
+      "roleName": "Role Name *",
+      "roleNamePlaceholder": "e.g. Cashier",
+      "description": "Description",
+      "descriptionPlaceholder": "Short description",
+      "active": "Active"
+    },
+    "buttons": {
+      "reset": "Reset",
+      "save": "Save Role",
+      "update": "Update Role"
+    },
+    "table": {
+      "countSummary": "{{filtered}} of {{total}} roles",
+      "searchPlaceholder": "Search by code, name, description…",
+      "allStatus": "All Status",
+      "activeOption": "Active ({{count}})",
+      "inactiveOption": "Inactive ({{count}})",
+      "clear": "Clear",
+      "colNo": "#",
+      "colCode": "Code",
+      "colName": "Name",
+      "colDescription": "Description",
+      "colStatus": "Status",
+      "colCreatedBy": "Created By",
+      "colCreatedDate": "Created Date",
+      "colActions": "Actions",
+      "loading": "Loading…",
+      "noRoles": "No roles found.",
+      "active": "Active",
+      "inactive": "Inactive",
+      "editTooltip": "Edit Role"
+    },
+    "messages": {
+      "loadError": "Failed to load roles.",
+      "codeRequired": "Role code is required",
+      "codeMaxLength": "Max 20 characters",
+      "nameRequired": "Role name is required",
+      "nameMaxLength": "Max 100 characters",
+      "updateConfirm": "Are you sure you want to update role \"{{name}}\"?",
+      "createConfirm": "Are you sure you want to create role \"{{name}}\"?",
+      "updateSuccess": "Role updated.",
+      "updateError": "Failed to update role.",
+      "createSuccess": "Role created.",
+      "createError": "Failed to create role.",
+      "success": "Success",
+      "error": "Error"
+    }
+  },
+  "users": {
+    "title": {
+      "addNew": "Add New User"
+    },
+    "form": {
+      "username": "Username *",
+      "usernamePlaceholder": "Enter username",
+      "password": "Password *",
+      "passwordPlaceholder": "Enter password",
+      "defaultRole": "Default Role",
+      "active": "Active",
+      "role": "Role"
+    },
+    "buttons": {
+      "save": "Save User",
+      "reset": "Reset",
+      "update": "Update User",
+      "cancel": "Cancel",
+      "savePassword": "Save Password",
+      "search": "Search",
+      "assign": "Assign",
+      "close": "Close"
+    },
+    "editTitle": "Edit User — {{name}}",
+    "passwordTitleReset": "Reset Password",
+    "passwordTitleChange": "Change Password",
+    "form2": {
+      "currentPassword": "Current Password *",
+      "currentPasswordPlaceholder": "Current password",
+      "newPassword": "New Password *",
+      "newPasswordPlaceholder": "New password"
+    },
+    "roleModal": {
+      "title": "Assign Roles — {{name}}",
+      "assignedRoles": "Assigned Roles",
+      "noRolesAssigned": "No roles assigned yet.",
+      "addRole": "Add Role",
+      "selectRolePlaceholder": "Select role…",
+      "remove": "Remove"
+    },
+    "search": {
+      "label": "Search",
+      "placeholder": "Search by username…",
+      "statusLabel": "Status",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "colNo": "#",
+      "colUsername": "Username",
+      "colRole": "Role",
+      "colAssignedRoles": "Assigned Roles",
+      "colStatus": "Status",
+      "colCreated": "Created",
+      "colActions": "Actions",
+      "loading": "Loading…",
+      "noUsers": "No users found.",
+      "editTooltip": "Edit User",
+      "changePasswordTooltip": "Change Password",
+      "adminResetTooltip": "Admin Reset Password",
+      "manageRolesTooltip": "Manage Roles",
+      "showingSummary": "Showing {{from}} – {{to}} of {{total}} users",
+      "pageSize": "Page size:",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "messages": {
+      "loadError": "Failed to load users",
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "newPasswordRequired": "New password is required",
+      "currentPasswordRequired": "Current password is required",
+      "createConfirm": "Create user \"{{name}}\"?",
+      "createSuccess": "User created successfully.",
+      "createError": "Failed to create user.",
+      "updateConfirm": "Update user \"{{name}}\"?",
+      "updateSuccess": "User updated successfully.",
+      "updateError": "Failed to update user.",
+      "passwordConfirm": "Change password for \"{{name}}\"?",
+      "passwordSuccess": "Password changed successfully.",
+      "passwordError": "Failed to change password.",
+      "selectRoleWarning": "Please select a role.",
+      "roleAssignedSuccess": "Role assigned.",
+      "roleAssignError": "Failed to assign role.",
+      "removeRoleConfirm": "Remove this role from the user?",
+      "roleRemovedSuccess": "Role removed.",
+      "roleRemoveError": "Failed to remove role.",
+      "success": "Success",
+      "error": "Error",
+      "validation": "Validation"
+    }
+  },
+  "permissions": {
+    "title": "User Function Permissions",
+    "subtitle": "Assign page-level access flags to each user",
+    "selectUser": "Select User",
+    "chooseUserPlaceholder": "-- Choose a user --",
+    "loading": "Loading permissions…",
+    "selectUserPrompt": "Select a user above to manage their function permissions.",
+    "functionCount": "{{count}} function(s)",
+    "grantAll": "Grant All",
+    "revokeAll": "Revoke All",
+    "colFunction": "Function",
+    "colRoute": "Route",
+    "colView": "View",
+    "colAdd": "Add",
+    "colEdit": "Edit",
+    "colDelete": "Delete",
+    "colAuth": "Auth",
+    "colProcess": "Process",
+    "colRptView": "Rpt View",
+    "colRptPrint": "Rpt Print",
+    "financial": "Financial",
+    "unsavedChanges": "Unsaved changes",
+    "summary": "{{count}} functions across {{modules}} modules",
+    "saving": "Saving…",
+    "savePermissions": "Save Permissions",
+    "toggleViewAll": "Toggle View for all",
+    "toggleAddAll": "Toggle Add for all",
+    "toggleEditAll": "Toggle Edit for all",
+    "toggleDeleteAll": "Toggle Delete for all",
+    "toggleAuthAll": "Toggle Auth for all",
+    "toggleProcessAll": "Toggle Process for all",
+    "toggleRptViewAll": "Toggle Report View for all",
+    "toggleRptPrintAll": "Toggle Report Print for all",
+    "messages": {
+      "loadUsersError": "Failed to load users.",
+      "loadPermissionsError": "Failed to load permissions.",
+      "saveSuccess": "Permissions saved successfully!",
+      "saveError": "Failed to save permissions: {{error}}"
+    }
+  }
+}

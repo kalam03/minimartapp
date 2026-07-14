@@ -1,0 +1,61 @@
+{
+  "form": {
+    "title": "পণ্য নষ্ট / স্টক রাইট-অফ",
+    "product": "পণ্য *",
+    "selectProduct": "পণ্য নির্বাচন করুন",
+    "productOption": "{{name}} (স্টকে {{stock}} {{unit}})",
+    "quantity": "নষ্ট করার পরিমাণ *",
+    "quantityPlaceholder": "পরিমাণ লিখুন",
+    "reason": "কারণ *",
+    "selectReason": "কারণ নির্বাচন করুন",
+    "writeOffDate": "রাইট-অফের তারিখ",
+    "estimatedValue": "আনুমানিক ক্ষতির মূল্য (ক্রয়মূল্যে): {{value}}"
+  },
+  "reasons": {
+    "damaged": "ক্ষতিগ্রস্ত",
+    "expired": "মেয়াদোত্তীর্ণ",
+    "stolen": "চুরি হয়েছে",
+    "qualityIssue": "মান সমস্যা",
+    "other": "অন্যান্য"
+  },
+  "buttons": {
+    "destroyStock": "স্টক নষ্ট করুন",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "reset": "রিসেট",
+    "apply": "প্রয়োগ করুন",
+    "clear": "পরিষ্কার করুন"
+  },
+  "report": {
+    "title": "রাইট-অফ রিপোর্ট",
+    "recordsCount": "{{count}}টি রেকর্ড",
+    "from": "শুরু",
+    "to": "শেষ",
+    "product": "পণ্য",
+    "allProducts": "সব পণ্য",
+    "totalQtyDestroyed": "মোট নষ্ট পরিমাণ: {{qty}}",
+    "totalLossValue": "মোট ক্ষতির মূল্য: {{value}}",
+    "colDate": "তারিখ",
+    "colProduct": "পণ্য",
+    "colQuantity": "পরিমাণ",
+    "colUnitCost": "একক মূল্য",
+    "colTotalValue": "মোট মূল্য",
+    "colReason": "কারণ",
+    "colLoggedBy": "লগ করেছেন",
+    "noWriteOffs": "কোনো রাইট-অফ পাওয়া যায়নি",
+    "loading": "লোড হচ্ছে..."
+  },
+  "validation": {
+    "productRequired": "পণ্য আবশ্যক",
+    "quantityRequired": "পরিমাণ শূন্যের চেয়ে বেশি হতে হবে",
+    "quantityExceedsStock": "স্টকে কেবল {{stock}} {{unit}} আছে",
+    "reasonRequired": "কারণ আবশ্যক"
+  },
+  "messages": {
+    "confirmTitle": "রাইট-অফ নিশ্চিতকরণ",
+    "confirmBody": "\"{{name}}\" এর <strong>{{quantity}} {{unit}}</strong> নষ্ট করবেন?<br>আনুমানিক ক্ষতির মূল্য: <strong>{{value}}</strong>",
+    "confirmDestroy": "নষ্ট করুন",
+    "confirmCancel": "বাতিল",
+    "writeOffSuccess": "রাইট-অফ সফলভাবে লগ করা হয়েছে!",
+    "writeOffError": "রাইট-অফ লগ করতে ব্যর্থ: {{error}}"
+  }
+}

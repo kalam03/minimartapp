@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
@@ -31,7 +32,9 @@ export interface PurchaseOrder {
 @Component({
   selector: 'app-purchase',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent],
+  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule],
+  // Loads assets/i18n/purchases/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('purchases')],
   templateUrl: './purchase.component.html',
   styleUrls: ['./purchase.component.css'],
 })
@@ -41,8 +44,14 @@ export class PurchaseComponent implements OnInit {
     private supplierService: SupplierService,
     private alertService: AlertService,
     private purchaseService: PurchaseService,
+    private transloco: TranslocoService,
   ) {}
   Math = Math;
+
+  /** Shorthand for the 'purchases' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`purchases.${key}`, params);
+  }
 
   // ViewChild references for input elements
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
@@ -471,7 +480,7 @@ export class PurchaseComponent implements OnInit {
 
   async addToCart() {
     if (!this.selectedProduct) {
-      this.alertService.info('Please select a product to add to the cart.', 'No Product Selected');
+      this.alertService.info(this.t('messages.noProductSelectedBody'), this.t('messages.noProductSelectedTitle'));
       setTimeout(() => {
         if (this.productSearchInput) {
           this.productSearchInput.nativeElement.focus();
@@ -518,7 +527,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   clearCart(): void {
-    if (confirm('Are you sure you want to clear the cart?')) {
+    if (confirm(this.t('messages.clearCartConfirm'))) {
       this.cartItems = [];
       this.discountPercent = 0;
       this.calculateTotals();
@@ -549,18 +558,18 @@ export class PurchaseComponent implements OnInit {
 
   async submitPurchase() {
     if (this.cartItems.length === 0) {
-      await this.alertService.warning('Cart is empty. Please add items to continue.');
+      await this.alertService.warning(this.t('messages.cartEmptyWarning'));
       return;
     }
 
     if (!this.selectedSupplierId) {
-      await this.alertService.warning('Please select a supplier.');
+      await this.alertService.warning(this.t('messages.selectSupplierWarning'));
       return;
     }
 
     const confirmed = await this.alertService.confirm(
-      `Are you sure you want to submit the purchase order? Total: $${this.grossAmount.toFixed(2)}`,
-      'Confirm Purchase Submission',
+      this.t('messages.confirmSubmitBody', { total: this.grossAmount.toFixed(2) }),
+      this.t('messages.confirmSubmitTitle'),
     );
 
     if (confirmed) {
@@ -604,7 +613,7 @@ export class PurchaseComponent implements OnInit {
       this.purchaseService.createPurchase(purchaseData).subscribe({
         next: async (response: any) => {
           await this.alertService.success(
-            `Purchase Order Submitted Successfully!\nPO: ${response.purchaseOrderNo || newPurchaseOrder.purchaseOrderNo}`,
+            this.t('messages.submitSuccess', { po: response.purchaseOrderNo || newPurchaseOrder.purchaseOrderNo }),
           );
           this.purchaseOrders.unshift(newPurchaseOrder);
           this.resetForm();
@@ -612,9 +621,8 @@ export class PurchaseComponent implements OnInit {
         error: (error) => {
           console.error('Error recording purchase:', error);
           this.alertService.error(
-            'Error submitting purchase order',
-            error.message ||
-              'An error occurred while submitting the purchase order. Please try again.',
+            this.t('messages.submitErrorTitle'),
+            error.message || this.t('messages.submitErrorBody'),
           );
         },
       });
@@ -630,7 +638,16 @@ export class PurchaseComponent implements OnInit {
 
   async viewPurchaseOrder(order: PurchaseOrder): Promise<void> {
     await this.alertService.info(
-      `Purchase Order Details:\nPO: ${order.purchaseOrderNo}\nSupplier: ${order.supplierName}\nTotal: $${order.totalAmount}\nDiscount: $${order.discountAmount}\nGross: $${order.grossAmount}\nPaid: $${order.paidAmount}\nDue: $${order.dueAmount}\nDate: ${order.date}`,
+      this.t('messages.viewDetails', {
+        po: order.purchaseOrderNo,
+        supplier: order.supplierName,
+        total: order.totalAmount,
+        discount: order.discountAmount,
+        gross: order.grossAmount,
+        paid: order.paidAmount,
+        due: order.dueAmount,
+        date: order.date,
+      }),
     );
   }
 

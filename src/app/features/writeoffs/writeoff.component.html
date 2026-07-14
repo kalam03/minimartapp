@@ -8,21 +8,21 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
           </svg>
-          Destroy Product / Stock Write-Off
+          {{ 'writeoffs.form.title' | transloco }}
         </h2>
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Product -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Product *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'writeoffs.form.product' | transloco }}</label>
             <select
               [(ngModel)]="form.productId"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('productId') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             >
-              <option [value]="0">Select Product</option>
+              <option [value]="0">{{ 'writeoffs.form.selectProduct' | transloco }}</option>
               <option *ngFor="let p of products" [value]="p.productId">
-                {{ p.productName }} ({{ p.stockQty }} {{ p.unitType }} in stock)
+                {{ 'writeoffs.form.productOption' | transloco: { name: p.productName, stock: p.stockQty, unit: p.unitType } }}
               </option>
             </select>
             <p *ngIf="isFieldInvalid('productId')" class="text-red-600 text-xs mt-1">{{ validationErrors['productId'] }}</p>
@@ -30,13 +30,13 @@
 
           <!-- Quantity -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Quantity to Destroy *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'writeoffs.form.quantity' | transloco }}</label>
             <input
               type="number"
               [(ngModel)]="form.quantity"
               min="0"
               step="0.01"
-              placeholder="Enter quantity"
+              [placeholder]="'writeoffs.form.quantityPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('quantity') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             />
             <p *ngIf="isFieldInvalid('quantity')" class="text-red-600 text-xs mt-1">{{ validationErrors['quantity'] }}</p>
@@ -44,20 +44,20 @@
 
           <!-- Reason -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Reason *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'writeoffs.form.reason' | transloco }}</label>
             <select
               [(ngModel)]="form.reason"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg transition outline-none ' + (isFieldInvalid('reason') ? 'border-red-500 bg-red-50' : 'border-gray-400')"
             >
-              <option value="">Select Reason</option>
-              <option *ngFor="let r of reasons" [value]="r">{{ r }}</option>
+              <option value="">{{ 'writeoffs.form.selectReason' | transloco }}</option>
+              <option *ngFor="let r of reasons" [value]="r">{{ reasonLabelKey(r) | transloco }}</option>
             </select>
             <p *ngIf="isFieldInvalid('reason')" class="text-red-600 text-xs mt-1">{{ validationErrors['reason'] }}</p>
           </div>
 
           <!-- Date -->
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Write-Off Date</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'writeoffs.form.writeOffDate' | transloco }}</label>
             <input
               type="date"
               [(ngModel)]="form.writeOffDate"
@@ -68,7 +68,7 @@
 
         <!-- Estimated Value -->
         <div *ngIf="selectedProduct && form.quantity" class="mt-3 px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
-          Estimated loss value (at cost): <strong>৳ {{ estimatedValue.toFixed(2) }}</strong>
+          {{ 'writeoffs.form.estimatedValue' | transloco: { value: ('৳ ' + estimatedValue.toFixed(2)) } }}
           — {{ form.quantity }} {{ selectedProduct.unitType }} × ৳{{ (selectedProduct.purchasePrice || 0).toFixed(2) }}
         </div>
 
@@ -82,10 +82,10 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
             </svg>
-            {{ isSaving ? 'Saving...' : 'Destroy Stock' }}
+            {{ (isSaving ? 'writeoffs.buttons.saving' : 'writeoffs.buttons.destroyStock') | transloco }}
           </button>
           <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
-            Reset
+            {{ 'writeoffs.buttons.reset' | transloco }}
           </button>
         </div>
       </div>
@@ -94,33 +94,33 @@
     <!-- Write-Off Report Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Write-Off Report</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ reportList.length }} record(s)</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'writeoffs.report.title' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'writeoffs.report.recordsCount' | transloco: { count: reportList.length } }}</span>
       </div>
 
       <!-- Filters -->
       <div class="px-3 py-2 border-b flex flex-wrap gap-2 items-end">
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">From</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'writeoffs.report.from' | transloco }}</label>
           <input type="date" [(ngModel)]="reportFromDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">To</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'writeoffs.report.to' | transloco }}</label>
           <input type="date" [(ngModel)]="reportToDate" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-0.5">Product</label>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'writeoffs.report.product' | transloco }}</label>
           <select [(ngModel)]="reportProductId" class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
-            <option [value]="0">All Products</option>
+            <option [value]="0">{{ 'writeoffs.report.allProducts' | transloco }}</option>
             <option *ngFor="let p of products" [value]="p.productId">{{ p.productName }}</option>
           </select>
         </div>
-        <button (click)="applyReportFilters()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:var(--theme-primary)">Apply</button>
-        <button (click)="resetReportFilters()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">Clear</button>
+        <button (click)="applyReportFilters()" class="px-2 py-1 text-xs text-white rounded-lg" style="background:var(--theme-primary)">{{ 'writeoffs.buttons.apply' | transloco }}</button>
+        <button (click)="resetReportFilters()" class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'writeoffs.buttons.clear' | transloco }}</button>
 
         <div class="ml-auto text-xs text-right">
-          <div class="text-gray-500">Total Qty Destroyed: <strong class="text-gray-800">{{ grandTotalQty.toFixed(2) }}</strong></div>
-          <div class="text-gray-500">Total Loss Value: <strong class="text-red-600">৳ {{ grandTotalValue.toFixed(2) }}</strong></div>
+          <div class="text-gray-500">{{ 'writeoffs.report.totalQtyDestroyed' | transloco: { qty: grandTotalQty.toFixed(2) } }}</div>
+          <div class="text-gray-500">{{ 'writeoffs.report.totalLossValue' | transloco: { value: ('৳ ' + grandTotalValue.toFixed(2)) } }}</div>
         </div>
       </div>
 
@@ -129,13 +129,13 @@
         <table class="w-full text-sm">
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left">Date</th>
-              <th class="px-3 py-2 text-left">Product</th>
-              <th class="px-3 py-2 text-right">Quantity</th>
-              <th class="px-3 py-2 text-right">Unit Cost</th>
-              <th class="px-3 py-2 text-right">Total Value</th>
-              <th class="px-3 py-2 text-left">Reason</th>
-              <th class="px-3 py-2 text-left">Logged By</th>
+              <th class="px-3 py-2 text-left">{{ 'writeoffs.report.colDate' | transloco }}</th>
+              <th class="px-3 py-2 text-left">{{ 'writeoffs.report.colProduct' | transloco }}</th>
+              <th class="px-3 py-2 text-right">{{ 'writeoffs.report.colQuantity' | transloco }}</th>
+              <th class="px-3 py-2 text-right">{{ 'writeoffs.report.colUnitCost' | transloco }}</th>
+              <th class="px-3 py-2 text-right">{{ 'writeoffs.report.colTotalValue' | transloco }}</th>
+              <th class="px-3 py-2 text-left">{{ 'writeoffs.report.colReason' | transloco }}</th>
+              <th class="px-3 py-2 text-left">{{ 'writeoffs.report.colLoggedBy' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -145,14 +145,14 @@
               <td class="px-3 py-2 text-right">{{ w.quantity }} {{ w.unitType }}</td>
               <td class="px-3 py-2 text-right">৳ {{ w.unitCost.toFixed(2) }}</td>
               <td class="px-3 py-2 text-right font-semibold text-red-600">৳ {{ w.totalValue.toFixed(2) }}</td>
-              <td class="px-3 py-2 text-gray-600">{{ w.reason }}</td>
+              <td class="px-3 py-2 text-gray-600">{{ reasonLabelKey(w.reason) | transloco }}</td>
               <td class="px-3 py-2 text-gray-500">{{ w.createdBy || '-' }}</td>
             </tr>
             <tr *ngIf="!isLoadingReport && reportList.length === 0">
-              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">No write-offs found</td>
+              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'writeoffs.report.noWriteOffs' | transloco }}</td>
             </tr>
             <tr *ngIf="isLoadingReport">
-              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">Loading...</td>
+              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'writeoffs.report.loading' | transloco }}</td>
             </tr>
           </tbody>
         </table>
