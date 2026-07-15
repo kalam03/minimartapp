@@ -9,6 +9,7 @@ import { languageInterceptor } from './services/language.interceptor.fn';
 import { provideServiceWorker } from '@angular/service-worker';
 import { AppConfigService } from './services/app-config.service';
 import { TranslocoHttpLoader } from './services/transloco-loader';
+import { BnGlobalTextDigitsService } from './shared/bn-global-text-digits.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,11 @@ export const appConfig: ApplicationConfig = {
     // — see AppConfigService for why (runtime-configurable API URL, no rebuild
     // needed to change it after deploy).
     provideAppInitializer(() => inject(AppConfigService).load()),
+    // Global Bangla-digit display for read-only numeric text app-wide (grid
+    // cells, totals, badges, IDs — anything not going through
+    // BnNumberAccessorDirective/FinancialInputComponent). See the service
+    // for how; no per-component wiring needed for this half either.
+    provideAppInitializer(() => inject(BnGlobalTextDigitsService).init()),
     provideRouter(routes),
     provideHttpClient(
       withInterceptors([authInterceptor, languageInterceptor])
