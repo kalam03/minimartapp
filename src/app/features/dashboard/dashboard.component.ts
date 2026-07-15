@@ -5,6 +5,9 @@ import { TranslocoModule, provideTranslocoScope } from '@jsverse/transloco';
 import { CustomerService } from '../../services/customer.service';
 import { PurchaseService, PurchaseSummaryDto } from '../../services/purchase.service';
 import { SaleService, SalesSummaryDto, DailyPerformanceDto } from '../../services/sale.service';
+import { ProductService } from '../../services/product.service';
+import { SupplierService } from '../../services/supplier.service';
+import { Product as ApiProduct } from '../../models/product';
 import { toLocalDateString } from '../../shared/date-utils';
 
 interface Transaction {
@@ -16,17 +19,6 @@ interface Transaction {
   partyName: string;
   paymentStatus?: 'paid' | 'partial' | 'pending';
   paymentMethod?: 'cash' | 'card' | 'bank';
-}
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  stock: number;
-  reorderLevel: number;
-  purchasePrice: number;
-  sellingPrice: number;
-  location?: string;
 }
 
 interface Party {
@@ -570,11 +562,11 @@ interface DailyStats {
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                   <tr *ngFor="let p of filteredTopProducts" class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-2 font-medium text-gray-800">{{ p.name }}</td>
-                    <td class="px-3 py-2 text-gray-500">{{ p.category }}</td>
-                    <td class="px-3 py-2 text-right text-gray-600">{{ p.stock }}</td>
+                    <td class="px-3 py-2 font-medium text-gray-800">{{ p.productName }}</td>
+                    <td class="px-3 py-2 text-gray-500">{{ p.categoryName }}</td>
+                    <td class="px-3 py-2 text-right text-gray-600">{{ p.stockQty }}</td>
                     <td class="px-3 py-2 text-right text-gray-600">৳{{ p.purchasePrice | number:'1.2-2' }}</td>
-                    <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳{{ (p.stock * p.purchasePrice) | number:'1.2-2' }}</td>
+                    <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳{{ p.totalStockValue | number:'1.2-2' }}</td>
                   </tr>
                   <tr *ngIf="filteredTopProducts.length === 0">
                     <td colspan="5" class="px-3 py-4 text-center text-gray-400">{{ 'dashboard.topProducts.noMatch' | transloco }}</td>
@@ -753,6 +745,8 @@ export class DashboardComponent implements OnInit {
     private customerService: CustomerService,
     private purchaseService: PurchaseService,
     private saleService: SaleService,
+    private productService: ProductService,
+    private supplierService: SupplierService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -765,6 +759,37 @@ export class DashboardComponent implements OnInit {
     this.loadSupplierDue();
     this.loadLowStock();
     this.loadRecentTransactions();
+    this.loadInventoryProducts();
+    this.loadSuppliersCount();
+  }
+
+  /** Real product list backing Inventory Value / Top Products by Inventory Value (was static mock data). */
+  loadInventoryProducts(): void {
+    this.productService.getAllProducts({ isActive: true }).subscribe({
+      next: (response: any) => {
+        this.apiProducts = Array.isArray(response) ? response : response.data || [];
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error loading products for inventory:', err);
+        this.apiProducts = [];
+      }
+    });
+  }
+
+  /** Real supplier count backing the "Total Suppliers" KPI card (was static mock data). */
+  loadSuppliersCount(): void {
+    this.supplierService.getAllSuppliers().subscribe({
+      next: (response: any) => {
+        const list = Array.isArray(response) ? response : response.data || [];
+        this.totalSuppliers = list.length;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error loading suppliers:', err);
+        this.totalSuppliers = 0;
+      }
+    });
   }
 
   getAllCustomers(): void {
@@ -903,16 +928,13 @@ export class DashboardComponent implements OnInit {
     { id: 20, name: 'Tools & Equipment', type: 'supplier', dueAmount: 7300, totalPurchases: 26700, phone: '+1 (555) 000-1111', email: 'tools@equip.com', address: '000 Tool Dr' }
   ];
 
-  private products: Product[] = [
-    { id: 1, name: 'Wireless Mouse', category: 'Electronics', stock: 5, reorderLevel: 10, purchasePrice: 15, sellingPrice: 29, location: 'Aisle 1' },
-    { id: 2, name: 'Mechanical Keyboard', category: 'Electronics', stock: 3, reorderLevel: 8, purchasePrice: 45, sellingPrice: 89, location: 'Aisle 1' },
-    { id: 3, name: 'USB-C Cable (2m)', category: 'Accessories', stock: 25, reorderLevel: 15, purchasePrice: 5, sellingPrice: 12, location: 'Aisle 2' },
-    { id: 4, name: 'Laptop Stand', category: 'Furniture', stock: 8, reorderLevel: 12, purchasePrice: 25, sellingPrice: 49, location: 'Aisle 3' },
-    { id: 5, name: 'Webcam HD', category: 'Electronics', stock: 2, reorderLevel: 5, purchasePrice: 35, sellingPrice: 69, location: 'Aisle 1' },
-    { id: 6, name: 'Desk Lamp', category: 'Lighting', stock: 15, reorderLevel: 10, purchasePrice: 18, sellingPrice: 39, location: 'Aisle 4' },
-    { id: 7, name: 'Monitor 24"', category: 'Electronics', stock: 4, reorderLevel: 6, purchasePrice: 120, sellingPrice: 199, location: 'Aisle 1' },
-    { id: 8, name: 'External SSD 1TB', category: 'Storage', stock: 6, reorderLevel: 8, purchasePrice: 85, sellingPrice: 149, location: 'Aisle 1' }
-  ];
+  // Real product list from the API — backs totalProducts/inventoryValue/
+  // lowStockProducts/topProductsByValue below (was a static mock array).
+  apiProducts: ApiProduct[] = [];
+
+  // Real supplier count from the API — backs the "Total Suppliers" KPI card
+  // (was `this.parties.filter(p => p.type === 'supplier').length` over mock data).
+  totalSuppliers = 0;
 
   // Date filter properties
   todayDate: string = toLocalDateString();
@@ -999,10 +1021,6 @@ export class DashboardComponent implements OnInit {
     return this.customers.length;
   }
 
-  get totalSuppliers(): number {
-    return this.parties.filter(p => p.type === 'supplier').length;
-  }
-
   get totalCustomerDue(): number {
     return this.customers.reduce((sum, customer) => sum + customer.dueAmount, 0);
   }
@@ -1012,11 +1030,11 @@ export class DashboardComponent implements OnInit {
   }
 
   get totalProducts(): number {
-    return this.products.length;
+    return this.apiProducts.length;
   }
 
   get inventoryValue(): number {
-    return this.products.reduce((sum, p) => sum + (p.stock * p.purchasePrice), 0);
+    return this.apiProducts.reduce((sum, p) => sum + p.totalStockValue, 0);
   }
 
   get avgTransactionValue(): number {
@@ -1039,15 +1057,15 @@ export class DashboardComponent implements OnInit {
       .slice(0, 10);
   }
 
-  get lowStockProducts(): Product[] {
-    return this.products
-      .filter(p => p.stock < p.reorderLevel)
-      .sort((a, b) => a.stock - b.stock);
+  get lowStockProducts(): ApiProduct[] {
+    return this.apiProducts
+      .filter(p => p.stockStatus === 'Low Stock' || p.stockStatus === 'Out of Stock')
+      .sort((a, b) => a.stockQty - b.stockQty);
   }
 
-  get topProductsByValue(): Product[] {
-    return this.products
-      .sort((a, b) => (b.stock * b.purchasePrice) - (a.stock * a.purchasePrice))
+  get topProductsByValue(): ApiProduct[] {
+    return [...this.apiProducts]
+      .sort((a, b) => b.totalStockValue - a.totalStockValue)
       .slice(0, 5);
   }
 
@@ -1057,10 +1075,10 @@ export class DashboardComponent implements OnInit {
       .slice(0, 10);
   }
 
-  get filteredTopProducts(): Product[] {
+  get filteredTopProducts(): ApiProduct[] {
     const q = this.topProductsSearch.toLowerCase().trim();
     return this.topProductsByValue.filter(p =>
-      !q || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+      !q || p.productName.toLowerCase().includes(q) || (p.categoryName || '').toLowerCase().includes(q)
     );
   }
 
