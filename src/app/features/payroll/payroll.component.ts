@@ -37,7 +37,7 @@ export class PayrollComponent implements OnInit {
   ];
 
   tabLabelKey(id: Tab): string {
-    return `tabs.${id}`;
+    return `payroll.tabs.${id}`;
   }
 
   months = [
@@ -74,25 +74,25 @@ export class PayrollComponent implements OnInit {
   // the backend (gender code, salary type, attendance status, payment
   // method, bonus type all stay in English in the data model).
   genderLabelKey(code: string): string {
-    const map: Record<string, string> = { M: 'options.genderMale', F: 'options.genderFemale', O: 'options.genderOther' };
+    const map: Record<string, string> = { M: 'payroll.options.genderMale', F: 'payroll.options.genderFemale', O: 'payroll.options.genderOther' };
     return map[code] ?? code;
   }
   salaryTypeLabelKey(type: string): string {
-    const map: Record<string, string> = { Monthly: 'options.salaryTypeMonthly', Daily: 'options.salaryTypeDaily', Hourly: 'options.salaryTypeHourly' };
+    const map: Record<string, string> = { Monthly: 'payroll.options.salaryTypeMonthly', Daily: 'payroll.options.salaryTypeDaily', Hourly: 'payroll.options.salaryTypeHourly' };
     return map[type] ?? type;
   }
   attStatusLabelKey(status: string): string {
-    const map: Record<string, string> = { Present: 'options.statusPresent', Absent: 'options.statusAbsent', Leave: 'options.statusLeave' };
+    const map: Record<string, string> = { Present: 'payroll.options.statusPresent', Absent: 'payroll.options.statusAbsent', Leave: 'payroll.options.statusLeave' };
     return map[status] ?? status;
   }
   paymentMethodLabelKey(method: string): string {
-    const map: Record<string, string> = { Cash: 'options.paymentMethodCash', Bank: 'options.paymentMethodBank', 'Mobile Banking': 'options.paymentMethodMobile' };
+    const map: Record<string, string> = { Cash: 'payroll.options.paymentMethodCash', Bank: 'payroll.options.paymentMethodBank', 'Mobile Banking': 'payroll.options.paymentMethodMobile' };
     return map[method] ?? method;
   }
   bonusTypeLabelKey(type: string): string {
     const map: Record<string, string> = {
-      'Festival Bonus': 'options.bonusTypeFestival', 'Performance Bonus': 'options.bonusTypePerformance',
-      'Incentive': 'options.bonusTypeIncentive', 'Other': 'options.bonusTypeOther'
+      'Festival Bonus': 'payroll.options.bonusTypeFestival', 'Performance Bonus': 'payroll.options.bonusTypePerformance',
+      'Incentive': 'payroll.options.bonusTypeIncentive', 'Other': 'payroll.options.bonusTypeOther'
     };
     return map[type] ?? type;
   }
@@ -528,7 +528,7 @@ export class PayrollComponent implements OnInit {
 
   monthName(m: number): string { return this.months.find(x => x.id === m)?.name || String(m); }
   /** Translation key for a month id — the id itself is what's stored, this is display-only. */
-  monthLabelKey(m: number): string { return `months.month${m}`; }
+  monthLabelKey(m: number): string { return `payroll.months.month${m}`; }
 
   // ══════════════════════════════════════════════════════════════════
   // Bonus

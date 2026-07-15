@@ -8,127 +8,127 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
-          Register Investor
+          {{ 'investors.form.title' | transloco }}
         </h2>
       </div>
       <div class="p-3">
 
         <!-- ── Basic Info ─────────────────────────────────────────── -->
-        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">Basic Info</p>
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">{{ 'investors.form.basicInfo' | transloco }}</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Investor Name *</label>
-            <input type="text" [(ngModel)]="form.investorName" placeholder="Full name"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.investorName' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.investorName" [placeholder]="'investors.form.investorNamePlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('investorName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('investorName')" class="text-red-600 text-xs mt-1">{{ validationErrors['investorName'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Phone</label>
-            <input type="text" [(ngModel)]="form.phone" placeholder="e.g. 01XXXXXXXXX"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.phone' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.phone" [placeholder]="'investors.form.phonePlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">NID Number</label>
-            <input type="text" [(ngModel)]="form.nid" placeholder="National ID number"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.nid' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.nid" [placeholder]="'investors.form.nidPlaceholder' | transloco"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('nid') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('nid')" class="text-red-600 text-xs mt-1">{{ validationErrors['nid'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date of Birth</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.dateOfBirth' | transloco }}</label>
             <input type="date" [(ngModel)]="form.dateOfBirth"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Father's Name</label>
-            <input type="text" [(ngModel)]="form.fatherName" placeholder="Father's name"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.fatherName' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.fatherName" [placeholder]="'investors.form.fatherNamePlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Mother's Name</label>
-            <input type="text" [(ngModel)]="form.motherName" placeholder="Mother's name"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.motherName' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.motherName" [placeholder]="'investors.form.motherNamePlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Occupation</label>
-            <input type="text" [(ngModel)]="form.occupation" placeholder="e.g. Businessman"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.occupation' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.occupation" [placeholder]="'investors.form.occupationPlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Nationality</label>
-            <input type="text" [(ngModel)]="form.nationality" placeholder="e.g. Bangladeshi"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.nationality' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.nationality" [placeholder]="'investors.form.nationalityPlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
         </div>
 
         <!-- ── Address ────────────────────────────────────────────── -->
-        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">Address</p>
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">{{ 'investors.form.address' | transloco }}</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Present Address</label>
-            <textarea rows="2" [(ngModel)]="form.presentAddress" placeholder="Present address"
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.presentAddress' | transloco }}</label>
+            <textarea rows="2" [(ngModel)]="form.presentAddress" [placeholder]="'investors.form.presentAddressPlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none"></textarea>
           </div>
           <div>
             <div class="flex items-center justify-between mb-0.5">
-              <label class="block text-xs font-semibold" style="color:var(--theme-primary)">Permanent Address</label>
+              <label class="block text-xs font-semibold" style="color:var(--theme-primary)">{{ 'investors.form.permanentAddress' | transloco }}</label>
               <button type="button" (click)="copyPresentToPermanent()"
-                class="text-xs text-indigo-600 hover:underline">Same as present</button>
+                class="text-xs text-indigo-600 hover:underline">{{ 'investors.form.sameAsPresent' | transloco }}</button>
             </div>
-            <textarea rows="2" [(ngModel)]="form.permanentAddress" placeholder="Permanent address"
+            <textarea rows="2" [(ngModel)]="form.permanentAddress" [placeholder]="'investors.form.permanentAddressPlaceholder' | transloco"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none"></textarea>
           </div>
         </div>
 
         <!-- ── Shareholding & Investment ──────────────────────────── -->
-        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">Shareholding &amp; Investment</p>
+        <p class="text-xs font-semibold uppercase tracking-wide mb-2" style="color:var(--theme-primary)">{{ 'investors.form.shareholdingInvestment' | transloco }}</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Share Percentage (%) *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.sharePercentage' | transloco }}</label>
             <input type="number" step="0.01" min="0" max="100" [(ngModel)]="form.sharePercentage" placeholder="0.00"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('sharePercentage') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('sharePercentage')" class="text-red-600 text-xs mt-1">{{ validationErrors['sharePercentage'] }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Number of Shares</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.numberOfShares' | transloco }}</label>
             <input type="number" min="0" [(ngModel)]="form.numberOfShares" placeholder="0"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Share Value (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.shareValue' | transloco }}</label>
             <input type="number" step="0.01" min="0" [(ngModel)]="form.shareValue" placeholder="0.00"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Investment Amount (৳)</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.investmentAmount' | transloco }}</label>
             <input type="number" step="0.01" min="0" [(ngModel)]="form.investmentAmount" placeholder="0.00"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
-            <p class="text-gray-400 text-xs mt-1">Recorded as this investor's opening balance.</p>
+            <p class="text-gray-400 text-xs mt-1">{{ 'investors.form.investmentAmountHint' | transloco }}</p>
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Joining Date</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.joiningDate' | transloco }}</label>
             <input type="date" [(ngModel)]="form.joiningDate"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
           </div>
           <div>
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Leaving Date</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'investors.form.leavingDate' | transloco }}</label>
             <input type="date" [(ngModel)]="form.leavingDate"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('leavingDate') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('leavingDate')" class="text-red-600 text-xs mt-1">{{ validationErrors['leavingDate'] }}</p>
-            <p *ngIf="!isFieldInvalid('leavingDate')" class="text-gray-400 text-xs mt-1">Leave blank if still active.</p>
+            <p *ngIf="!isFieldInvalid('leavingDate')" class="text-gray-400 text-xs mt-1">{{ 'investors.form.leavingDateHint' | transloco }}</p>
           </div>
           <div class="flex items-center gap-2 mt-1">
             <input type="checkbox" id="isDirector" [(ngModel)]="form.isDirector"
               class="w-4 h-4 rounded border-gray-400" />
-            <label for="isDirector" class="text-xs font-semibold" style="color:var(--theme-primary)">Is a Director / Board Member</label>
+            <label for="isDirector" class="text-xs font-semibold" style="color:var(--theme-primary)">{{ 'investors.form.isDirector' | transloco }}</label>
           </div>
         </div>
 
         <div class="flex gap-2 mt-3">
           <button (click)="saveInvestor()" [disabled]="isSaving"
             class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-            {{ isSaving ? 'Saving...' : 'Add Investor' }}
+            {{ (isSaving ? 'investors.buttons.saving' : 'investors.buttons.addInvestor') | transloco }}
           </button>
-          <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">Reset</button>
+          <button (click)="resetForm()" class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">{{ 'investors.buttons.reset' | transloco }}</button>
         </div>
       </div>
     </div>
@@ -136,27 +136,27 @@
     <!-- Investor List -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-        <h2 class="text-white font-semibold text-sm">Investors</h2>
-        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredInvestors.length }} of {{ investors.length }}</span>
+        <h2 class="text-white font-semibold text-sm">{{ 'investors.list.title' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ 'investors.list.countSummary' | transloco: { shown: filteredInvestors.length, total: investors.length } }}</span>
       </div>
       <div class="px-3 py-2 border-b">
-        <input type="text" [(ngModel)]="searchText" placeholder="Search by name, phone, NID…"
+        <input type="text" [(ngModel)]="searchText" [placeholder]="'investors.list.searchPlaceholder' | transloco"
           class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
-              <th class="px-3 py-2 text-left whitespace-nowrap">ID</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Name</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Phone</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">NID</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Share %</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Investment (৳)</th>
-              <th class="px-3 py-2 text-left whitespace-nowrap">Joining Date</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Director</th>
-              <th class="px-3 py-2 text-right whitespace-nowrap">Total Invested to Date</th>
-              <th class="px-3 py-2 text-center whitespace-nowrap">Status</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'investors.list.colId' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'investors.list.colName' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'investors.list.colPhone' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'investors.list.colNid' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'investors.list.colSharePercent' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'investors.list.colInvestment' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'investors.list.colJoiningDate' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'investors.list.colDirector' | transloco }}</th>
+              <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'investors.list.colTotalInvested' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'investors.list.colStatus' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -169,18 +169,18 @@
               <td class="px-3 py-2 text-right text-gray-700">{{ i.investmentAmount ? (i.investmentAmount | number:'1.2-2') : '-' }}</td>
               <td class="px-3 py-2 text-gray-600 whitespace-nowrap">{{ i.joiningDate ? (i.joiningDate | date:'dd MMM yyyy') : '-' }}</td>
               <td class="px-3 py-2 text-center">
-                <span *ngIf="i.isDirector" class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">Director</span>
+                <span *ngIf="i.isDirector" class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">{{ 'investors.list.director' | transloco }}</span>
                 <span *ngIf="!i.isDirector" class="text-gray-300">-</span>
               </td>
               <td class="px-3 py-2 text-right font-semibold text-green-600 whitespace-nowrap">৳ {{ i.currentBalance | number:'1.2-2' }}</td>
               <td class="px-3 py-2 text-center">
                 <span [class]="i.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
-                  {{ i.isActive ? 'Active' : 'Inactive' }}
+                  {{ (i.isActive ? 'investors.list.active' : 'investors.list.inactive') | transloco }}
                 </span>
               </td>
             </tr>
             <tr *ngIf="filteredInvestors.length === 0">
-              <td colspan="10" class="px-4 py-8 text-center text-gray-400 text-sm">No investors found</td>
+              <td colspan="10" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'investors.list.noInvestors' | transloco }}</td>
             </tr>
           </tbody>
         </table>

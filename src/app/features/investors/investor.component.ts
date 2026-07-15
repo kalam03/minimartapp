@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
@@ -8,7 +9,9 @@ import { toLocalDateString } from '../../shared/date-utils';
 @Component({
   selector: 'app-investor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslocoModule],
+  // Loads assets/i18n/investors/{en,bn}.json only when this route is hit.
+  providers: [provideTranslocoScope('investors')],
   templateUrl: './investor.component.html',
   styleUrls: ['./investor.component.css']
 })
@@ -57,8 +60,14 @@ export class InvestorComponent implements OnInit {
   constructor(
     private investorService: InvestorService,
     private alertService: AlertService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {}
+
+  /** Shorthand for the 'investors' scope — see provideTranslocoScope above. */
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate(`investors.${key}`, params);
+  }
 
   ngOnInit(): void {
     this.loadInvestors();
@@ -71,7 +80,7 @@ export class InvestorComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err: any) => {
-        this.alertService.error('Failed to load investors: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }));
       }
     });
   }
@@ -80,17 +89,17 @@ export class InvestorComponent implements OnInit {
     this.validationErrors = {};
 
     if (!this.form.investorName.trim())
-      this.validationErrors['investorName'] = 'Investor name is required';
+      this.validationErrors['investorName'] = this.t('validation.nameRequired');
 
     const share = this.form.sharePercentage;
     if (share === null || share === undefined || +share <= 0 || +share > 100)
-      this.validationErrors['sharePercentage'] = 'Share percentage is required and must be between 0 and 100';
+      this.validationErrors['sharePercentage'] = this.t('validation.shareRequired');
 
     if (this.form.nid && !/^[0-9A-Za-z-]{5,30}$/.test(this.form.nid.trim()))
-      this.validationErrors['nid'] = 'Enter a valid NID number';
+      this.validationErrors['nid'] = this.t('validation.nidInvalid');
 
     if (this.form.leavingDate && this.form.joiningDate && this.form.leavingDate < this.form.joiningDate)
-      this.validationErrors['leavingDate'] = 'Leaving date cannot be before joining date';
+      this.validationErrors['leavingDate'] = this.t('validation.leavingBeforeJoining');
 
     return Object.keys(this.validationErrors).length === 0;
   }
@@ -126,13 +135,13 @@ export class InvestorComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.isSaving = false;
-        this.alertService.success(res.message || 'Investor added successfully!');
+        this.alertService.success(res.message || this.t('messages.addSuccess'));
         this.resetForm();
         this.loadInvestors();
       },
       error: (err: any) => {
         this.isSaving = false;
-        this.alertService.error('Failed to add investor: ' + (err.error?.message || err.message));
+        this.alertService.error(this.t('messages.addError', { error: err.error?.message || err.message }));
       }
     });
   }

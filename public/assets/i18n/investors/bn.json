@@ -1,0 +1,72 @@
+{
+  "form": {
+    "title": "বিনিয়োগকারী নিবন্ধন",
+    "basicInfo": "মৌলিক তথ্য",
+    "investorName": "বিনিয়োগকারীর নাম *",
+    "investorNamePlaceholder": "পূর্ণ নাম",
+    "phone": "ফোন",
+    "phonePlaceholder": "যেমন: ০১XXXXXXXXX",
+    "nid": "এনআইডি নম্বর",
+    "nidPlaceholder": "জাতীয় পরিচয়পত্র নম্বর",
+    "dateOfBirth": "জন্ম তারিখ",
+    "fatherName": "পিতার নাম",
+    "fatherNamePlaceholder": "পিতার নাম",
+    "motherName": "মাতার নাম",
+    "motherNamePlaceholder": "মাতার নাম",
+    "occupation": "পেশা",
+    "occupationPlaceholder": "যেমন: ব্যবসায়ী",
+    "nationality": "জাতীয়তা",
+    "nationalityPlaceholder": "যেমন: বাংলাদেশী",
+    "address": "ঠিকানা",
+    "presentAddress": "বর্তমান ঠিকানা",
+    "presentAddressPlaceholder": "বর্তমান ঠিকানা",
+    "permanentAddress": "স্থায়ী ঠিকানা",
+    "permanentAddressPlaceholder": "স্থায়ী ঠিকানা",
+    "sameAsPresent": "বর্তমান ঠিকানার মতো",
+    "shareholdingInvestment": "শেয়ার ও বিনিয়োগ",
+    "sharePercentage": "শেয়ার শতাংশ (%) *",
+    "numberOfShares": "শেয়ার সংখ্যা",
+    "shareValue": "শেয়ার মূল্য (৳)",
+    "investmentAmount": "বিনিয়োগের পরিমাণ (৳)",
+    "investmentAmountHint": "এই বিনিয়োগকারীর শুরুর ব্যালেন্স হিসেবে রেকর্ড করা হবে।",
+    "joiningDate": "যোগদানের তারিখ",
+    "leavingDate": "প্রস্থানের তারিখ",
+    "leavingDateHint": "সক্রিয় থাকলে খালি রাখুন।",
+    "isDirector": "পরিচালক / বোর্ড সদস্য কিনা"
+  },
+  "buttons": {
+    "addInvestor": "বিনিয়োগকারী যুক্ত করুন",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "reset": "রিসেট"
+  },
+  "list": {
+    "title": "বিনিয়োগকারী",
+    "countSummary": "{{total}}টির মধ্যে {{shown}}টি",
+    "searchPlaceholder": "নাম, ফোন, এনআইডি দিয়ে খুঁজুন…",
+    "colId": "আইডি",
+    "colName": "নাম",
+    "colPhone": "ফোন",
+    "colNid": "এনআইডি",
+    "colSharePercent": "শেয়ার %",
+    "colInvestment": "বিনিয়োগ (৳)",
+    "colJoiningDate": "যোগদানের তারিখ",
+    "colDirector": "পরিচালক",
+    "colTotalInvested": "এই তারিখ পর্যন্ত মোট বিনিয়োগ",
+    "colStatus": "অবস্থা",
+    "director": "পরিচালক",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "noInvestors": "কোনো বিনিয়োগকারী পাওয়া যায়নি"
+  },
+  "validation": {
+    "nameRequired": "বিনিয়োগকারীর নাম আবশ্যক",
+    "shareRequired": "শেয়ার শতাংশ আবশ্যক এবং ০ থেকে ১০০ এর মধ্যে হতে হবে",
+    "nidInvalid": "একটি সঠিক এনআইডি নম্বর লিখুন",
+    "leavingBeforeJoining": "প্রস্থানের তারিখ যোগদানের তারিখের আগে হতে পারবে না"
+  },
+  "messages": {
+    "loadError": "বিনিয়োগকারী লোড করতে ব্যর্থ: {{error}}",
+    "addSuccess": "বিনিয়োগকারী সফলভাবে যুক্ত হয়েছে!",
+    "addError": "বিনিয়োগকারী যুক্ত করতে ব্যর্থ: {{error}}"
+  }
+}

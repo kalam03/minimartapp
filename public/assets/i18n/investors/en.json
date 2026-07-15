@@ -1,0 +1,72 @@
+{
+  "form": {
+    "title": "Register Investor",
+    "basicInfo": "Basic Info",
+    "investorName": "Investor Name *",
+    "investorNamePlaceholder": "Full name",
+    "phone": "Phone",
+    "phonePlaceholder": "e.g. 01XXXXXXXXX",
+    "nid": "NID Number",
+    "nidPlaceholder": "National ID number",
+    "dateOfBirth": "Date of Birth",
+    "fatherName": "Father's Name",
+    "fatherNamePlaceholder": "Father's name",
+    "motherName": "Mother's Name",
+    "motherNamePlaceholder": "Mother's name",
+    "occupation": "Occupation",
+    "occupationPlaceholder": "e.g. Businessman",
+    "nationality": "Nationality",
+    "nationalityPlaceholder": "e.g. Bangladeshi",
+    "address": "Address",
+    "presentAddress": "Present Address",
+    "presentAddressPlaceholder": "Present address",
+    "permanentAddress": "Permanent Address",
+    "permanentAddressPlaceholder": "Permanent address",
+    "sameAsPresent": "Same as present",
+    "shareholdingInvestment": "Shareholding & Investment",
+    "sharePercentage": "Share Percentage (%) *",
+    "numberOfShares": "Number of Shares",
+    "shareValue": "Share Value (৳)",
+    "investmentAmount": "Investment Amount (৳)",
+    "investmentAmountHint": "Recorded as this investor's opening balance.",
+    "joiningDate": "Joining Date",
+    "leavingDate": "Leaving Date",
+    "leavingDateHint": "Leave blank if still active.",
+    "isDirector": "Is a Director / Board Member"
+  },
+  "buttons": {
+    "addInvestor": "Add Investor",
+    "saving": "Saving...",
+    "reset": "Reset"
+  },
+  "list": {
+    "title": "Investors",
+    "countSummary": "{{shown}} of {{total}}",
+    "searchPlaceholder": "Search by name, phone, NID…",
+    "colId": "ID",
+    "colName": "Name",
+    "colPhone": "Phone",
+    "colNid": "NID",
+    "colSharePercent": "Share %",
+    "colInvestment": "Investment (৳)",
+    "colJoiningDate": "Joining Date",
+    "colDirector": "Director",
+    "colTotalInvested": "Total Invested to Date",
+    "colStatus": "Status",
+    "director": "Director",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noInvestors": "No investors found"
+  },
+  "validation": {
+    "nameRequired": "Investor name is required",
+    "shareRequired": "Share percentage is required and must be between 0 and 100",
+    "nidInvalid": "Enter a valid NID number",
+    "leavingBeforeJoining": "Leaving date cannot be before joining date"
+  },
+  "messages": {
+    "loadError": "Failed to load investors: {{error}}",
+    "addSuccess": "Investor added successfully!",
+    "addError": "Failed to add investor: {{error}}"
+  }
+}

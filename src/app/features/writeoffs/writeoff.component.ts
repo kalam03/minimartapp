@@ -73,11 +73,11 @@ export class WriteOffComponent implements OnInit {
    *  underlying English value is still what's saved/filtered/compared). */
   reasonLabelKey(reason: string): string {
     const map: Record<string, string> = {
-      'Damaged': 'reasons.damaged',
-      'Expired': 'reasons.expired',
-      'Stolen': 'reasons.stolen',
-      'Quality Issue': 'reasons.qualityIssue',
-      'Other': 'reasons.other'
+      'Damaged': 'writeoffs.reasons.damaged',
+      'Expired': 'writeoffs.reasons.expired',
+      'Stolen': 'writeoffs.reasons.stolen',
+      'Quality Issue': 'writeoffs.reasons.qualityIssue',
+      'Other': 'writeoffs.reasons.other'
     };
     return map[reason] ?? reason;
   }

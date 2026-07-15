@@ -151,25 +151,25 @@
       <!-- Employee List -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Employees</h2>
-          <span class="text-xs" style="color:var(--theme-accent)">{{ filteredEmployees.length }} of {{ employees.length }}</span>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.employees.listTitle' | transloco }}</h2>
+          <span class="text-xs" style="color:var(--theme-accent)">{{ 'payroll.employees.countSummary' | transloco: { shown: filteredEmployees.length, total: employees.length } }}</span>
         </div>
         <div class="px-3 py-2 border-b">
-          <input type="text" [(ngModel)]="empSearch" placeholder="Search by name, code, mobile, designation…"
+          <input type="text" [(ngModel)]="empSearch" [placeholder]="'payroll.employees.searchPlaceholder' | transloco"
             class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
-                <th class="px-3 py-2 text-left">Code</th>
-                <th class="px-3 py-2 text-left">Name</th>
-                <th class="px-3 py-2 text-left">Department</th>
-                <th class="px-3 py-2 text-left">Designation</th>
-                <th class="px-3 py-2 text-left">Mobile</th>
-                <th class="px-3 py-2 text-right">Basic Salary</th>
-                <th class="px-3 py-2 text-center">Status</th>
-                <th class="px-3 py-2 text-center">Actions</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.employees.colCode' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.employees.colName' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.employees.colDepartment' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.employees.colDesignation' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.employees.colMobile' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.employees.colBasicSalary' | transloco }}</th>
+                <th class="px-3 py-2 text-center">{{ 'payroll.employees.colStatus' | transloco }}</th>
+                <th class="px-3 py-2 text-center">{{ 'payroll.employees.colActions' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
@@ -182,18 +182,18 @@
                 <td class="px-3 py-2 text-right">{{ e.basicSalary ? '৳ ' + (e.basicSalary | number:'1.2-2') : '-' }}</td>
                 <td class="px-3 py-2 text-center">
                   <span [class]="e.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
-                    {{ e.isActive ? 'Active' : 'Inactive' }}
+                    {{ (e.isActive ? 'payroll.employees.active' : 'payroll.employees.inactive') | transloco }}
                   </span>
                 </td>
                 <td class="px-3 py-2 text-center whitespace-nowrap">
-                  <button (click)="editEmployee(e)" class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
+                  <button (click)="editEmployee(e)" class="text-blue-600 hover:underline text-xs mr-2">{{ 'payroll.employees.edit' | transloco }}</button>
                   <button (click)="toggleEmployeeActive(e)" class="text-xs hover:underline" [class]="e.isActive ? 'text-red-600' : 'text-green-600'">
-                    {{ e.isActive ? 'Deactivate' : 'Activate' }}
+                    {{ (e.isActive ? 'payroll.employees.deactivate' : 'payroll.employees.activate') | transloco }}
                   </button>
                 </td>
               </tr>
               <tr *ngIf="filteredEmployees.length === 0">
-                <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">No employees found</td>
+                <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'payroll.employees.noEmployees' | transloco }}</td>
               </tr>
             </tbody>
           </table>
@@ -205,62 +205,61 @@
     <ng-container *ngIf="activeTab === 'salary'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Salary Structure</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.salary.title' | transloco }}</h2>
         </div>
         <div class="p-3">
           <div class="mb-3">
-            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.employee' | transloco }}</label>
             <select [(ngModel)]="salaryEmployeeId" (ngModelChange)="onSalaryEmployeeChange()"
               class="w-full md:w-1/2 px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-              <option [ngValue]="null">-- Select Employee --</option>
+              <option [ngValue]="null">{{ 'payroll.salary.selectEmployee' | transloco }}</option>
               <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }} ({{ e.employeeCode }})</option>
             </select>
           </div>
 
           <div *ngIf="salaryEmployeeId" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Basic Salary (৳) *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.basicSalary' | transloco }}</label>
               <input type="number" [(ngModel)]="salaryForm.basicSalary" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">House Rent (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.houseRent' | transloco }}</label>
               <input type="number" [(ngModel)]="salaryForm.houseRent" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Medical (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.medical' | transloco }}</label>
               <input type="number" [(ngModel)]="salaryForm.medical" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Transport (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.transport' | transloco }}</label>
               <input type="number" [(ngModel)]="salaryForm.transport" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Food (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.food' | transloco }}</label>
               <input type="number" [(ngModel)]="salaryForm.food" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Other Allowance (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.otherAllowance' | transloco }}</label>
               <input type="number" [(ngModel)]="salaryForm.otherAllowance" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Effective From *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.salary.effectiveFrom' | transloco }}</label>
               <input type="date" [(ngModel)]="salaryForm.effectiveFrom" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="flex items-end">
-              <p class="text-sm font-semibold" style="color:var(--theme-primary)">Gross Salary: ৳ {{ salaryFormGross | number:'1.2-2' }}</p>
+              <p class="text-sm font-semibold" style="color:var(--theme-primary)">{{ 'payroll.salary.grossSalary' | transloco: { amount: (salaryFormGross | number:'1.2-2') } }}</p>
             </div>
           </div>
 
           <div *ngIf="salaryEmployeeId" class="flex gap-2 mt-3">
             <button (click)="saveSalaryStructure()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Saving...' : 'Save Salary Structure' }}
+              {{ (isSaving ? 'payroll.salary.saving' : 'payroll.salary.saveButton') | transloco }}
             </button>
           </div>
 
           <div *ngIf="currentStructure" class="mt-4 p-3 rounded-lg bg-gray-50 border text-xs text-gray-600">
-            Current active structure effective from <strong>{{ currentStructure.effectiveFrom | date:'mediumDate' }}</strong> —
-            Gross: <strong>৳ {{ currentStructure.grossSalary | number:'1.2-2' }}</strong>
+            {{ 'payroll.salary.currentStructure' | transloco: { date: (currentStructure.effectiveFrom | date:'mediumDate'), gross: ('৳ ' + (currentStructure.grossSalary | number:'1.2-2')) } }}
           </div>
         </div>
       </div>
@@ -270,42 +269,42 @@
     <ng-container *ngIf="activeTab === 'attendance'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Mark Attendance</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.attendance.markTitle' | transloco }}</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.attendance.employee' | transloco }}</label>
               <select [(ngModel)]="attEmployeeId" (ngModelChange)="onAttEmployeeChange()" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option [ngValue]="null">-- Select --</option>
+                <option [ngValue]="null">{{ 'payroll.options.selectDash' | transloco }}</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.attendance.date' | transloco }}</label>
               <input type="date" [(ngModel)]="attForm.attendanceDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Status *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.attendance.status' | transloco }}</label>
               <select [(ngModel)]="attForm.status" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-                <option value="Leave">Leave</option>
+                <option value="Present">{{ 'payroll.options.statusPresent' | transloco }}</option>
+                <option value="Absent">{{ 'payroll.options.statusAbsent' | transloco }}</option>
+                <option value="Leave">{{ 'payroll.options.statusLeave' | transloco }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">In Time</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.attendance.inTime' | transloco }}</label>
               <input type="time" [(ngModel)]="attForm.inTime" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Out Time</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.attendance.outTime' | transloco }}</label>
               <input type="time" [(ngModel)]="attForm.outTime" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="markAttendance()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Saving...' : 'Save Attendance' }}
+              {{ (isSaving ? 'payroll.attendance.saving' : 'payroll.attendance.saveButton') | transloco }}
             </button>
           </div>
         </div>
@@ -313,10 +312,10 @@
 
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2 flex items-center justify-between flex-wrap gap-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Attendance History</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.attendance.historyTitle' | transloco }}</h2>
           <div class="flex items-center gap-2">
             <input type="date" [(ngModel)]="attFromDate" (ngModelChange)="loadAttendance()" class="px-2 py-1 text-xs rounded-lg outline-none" />
-            <span class="text-white text-xs">to</span>
+            <span class="text-white text-xs">{{ 'payroll.attendance.to' | transloco }}</span>
             <input type="date" [(ngModel)]="attToDate" (ngModelChange)="loadAttendance()" class="px-2 py-1 text-xs rounded-lg outline-none" />
           </div>
         </div>
@@ -324,11 +323,11 @@
           <table class="w-full text-sm">
             <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
-                <th class="px-3 py-2 text-left">Date</th>
-                <th class="px-3 py-2 text-left">In Time</th>
-                <th class="px-3 py-2 text-left">Out Time</th>
-                <th class="px-3 py-2 text-right">Working Hours</th>
-                <th class="px-3 py-2 text-center">Status</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.attendance.colDate' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.attendance.colInTime' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.attendance.colOutTime' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.attendance.colWorkingHours' | transloco }}</th>
+                <th class="px-3 py-2 text-center">{{ 'payroll.attendance.colStatus' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
@@ -338,14 +337,14 @@
                 <td class="px-3 py-2">{{ a.outTime ? (a.outTime | date:'shortTime') : '-' }}</td>
                 <td class="px-3 py-2 text-right">{{ a.workingHour ?? '-' }}</td>
                 <td class="px-3 py-2 text-center">
-                  <span [class]="'px-2 py-1 text-xs rounded-full ' + statusBadgeClass(a.status)">{{ a.status }}</span>
+                  <span [class]="'px-2 py-1 text-xs rounded-full ' + statusBadgeClass(a.status)">{{ attStatusLabelKey(a.status) | transloco }}</span>
                 </td>
               </tr>
               <tr *ngIf="!attEmployeeId">
-                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">Select an employee to view attendance</td>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'payroll.attendance.selectEmployeePrompt' | transloco }}</td>
               </tr>
               <tr *ngIf="attEmployeeId && attendanceList.length === 0">
-                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No records found in this range</td>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'payroll.attendance.noRecords' | transloco }}</td>
               </tr>
             </tbody>
           </table>
@@ -357,59 +356,59 @@
     <ng-container *ngIf="activeTab === 'payroll'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Process Salary Payment</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.payroll.processTitle' | transloco }}</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.employee' | transloco }}</label>
               <select [(ngModel)]="payForm.employeeId" (ngModelChange)="onPayEmployeeChange()" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option [ngValue]="null">-- Select --</option>
+                <option [ngValue]="null">{{ 'payroll.options.selectDash' | transloco }}</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }} ({{ e.employeeCode }})</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Month *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.month' | transloco }}</label>
               <select [(ngModel)]="payForm.salaryMonth" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option *ngFor="let m of months" [ngValue]="m.id">{{ m.name }}</option>
+                <option *ngFor="let m of months" [ngValue]="m.id">{{ monthLabelKey(m.id) | transloco }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Year *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.year' | transloco }}</label>
               <select [(ngModel)]="payForm.salaryYear" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
                 <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Date</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.paymentDate' | transloco }}</label>
               <input type="date" [(ngModel)]="payForm.paymentDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Overtime (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.overtime' | transloco }}</label>
               <input type="number" [(ngModel)]="payForm.overtimeAmount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bonus (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.bonus' | transloco }}</label>
               <input type="number" [(ngModel)]="payForm.bonusAmount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Deduction (৳)</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.deduction' | transloco }}</label>
               <input type="number" [(ngModel)]="payForm.deduction" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Method</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.paymentMethod' | transloco }}</label>
               <select [(ngModel)]="payForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank</option>
-                <option value="Mobile Banking">Mobile Banking</option>
+                <option value="Cash">{{ 'payroll.options.paymentMethodCash' | transloco }}</option>
+                <option value="Bank">{{ 'payroll.options.paymentMethodBank' | transloco }}</option>
+                <option value="Mobile Banking">{{ 'payroll.options.paymentMethodMobile' | transloco }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Reference No.</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.referenceNo' | transloco }}</label>
               <input type="text" [(ngModel)]="payForm.referenceNo" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div class="lg:col-span-3">
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Remarks</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.payroll.remarks' | transloco }}</label>
               <input type="text" [(ngModel)]="payForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
@@ -417,23 +416,27 @@
           <!-- Due-advance warning — shown as soon as an employee with an
                outstanding advance is selected, before payment is processed -->
           <div *ngIf="payForm.employeeId && payDueAdvanceTotal > 0" class="mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
-            ⚠ This employee has an outstanding advance of <strong>৳{{ payDueAdvanceTotal | number:'1.2-2' }}</strong> still due.
-            Consider entering it (or part of it) in the <strong>Deduction</strong> field above, or collect/repay it separately from the Advance tab.
+            {{ 'payroll.payroll.dueAdvanceWarning' | transloco: { amount: ('৳' + (payDueAdvanceTotal | number:'1.2-2')) } }}
           </div>
-          <div *ngIf="payForm.employeeId && isCheckingDueAdvance" class="mt-3 text-xs text-gray-400">Checking outstanding advances…</div>
+          <div *ngIf="payForm.employeeId && isCheckingDueAdvance" class="mt-3 text-xs text-gray-400">{{ 'payroll.payroll.checkingAdvances' | transloco }}</div>
 
           <div class="flex gap-2 mt-3">
             <button (click)="processSalaryPayment()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Processing...' : 'Process Salary Payment' }}
+              {{ (isSaving ? 'payroll.payroll.processing' : 'payroll.payroll.processButton') | transloco }}
             </button>
           </div>
 
           <div *ngIf="lastResult" class="mt-4 p-3 rounded-lg bg-green-50 border border-green-200 text-xs text-green-800">
-            <strong>{{ lastResult.txnNo }}</strong> processed — Gross: ৳{{ lastResult.grossSalary | number:'1.2-2' }},
-            Net: ৳{{ lastResult.netSalary | number:'1.2-2' }}
-            (Working: {{ lastResult.workingDays }}, Present: {{ lastResult.presentDays }},
-            Leave: {{ lastResult.leaveDays }}, Absent: {{ lastResult.absentDays }})
+            {{ 'payroll.payroll.resultSummary' | transloco: {
+              txnNo: lastResult.txnNo,
+              gross: ('৳' + (lastResult.grossSalary | number:'1.2-2')),
+              net: ('৳' + (lastResult.netSalary | number:'1.2-2')),
+              working: lastResult.workingDays,
+              present: lastResult.presentDays,
+              leave: lastResult.leaveDays,
+              absent: lastResult.absentDays
+            } }}
           </div>
         </div>
       </div>
@@ -441,31 +444,31 @@
       <!-- Salary Payment History -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Salary Payment History</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.payroll.historyTitle' | transloco }}</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
-                <th class="px-3 py-2 text-left">Employee</th>
-                <th class="px-3 py-2 text-left">Month/Year</th>
-                <th class="px-3 py-2 text-right">Gross</th>
-                <th class="px-3 py-2 text-right">Net</th>
-                <th class="px-3 py-2 text-left">Payment Date</th>
-                <th class="px-3 py-2 text-left">Method</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.payroll.colEmployee' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.payroll.colMonthYear' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.payroll.colGross' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.payroll.colNet' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.payroll.colPaymentDate' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.payroll.colMethod' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let s of salaryPayments" class="border-b hover:bg-gray-50 text-xs md:text-sm">
                 <td class="px-3 py-2 font-medium text-gray-900">{{ s.fullName }} ({{ s.employeeCode }})</td>
-                <td class="px-3 py-2">{{ monthName(s.salaryMonth) }} {{ s.salaryYear }}</td>
+                <td class="px-3 py-2">{{ monthLabelKey(s.salaryMonth) | transloco }} {{ s.salaryYear }}</td>
                 <td class="px-3 py-2 text-right">৳ {{ s.grossSalary | number:'1.2-2' }}</td>
                 <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳ {{ s.netSalary | number:'1.2-2' }}</td>
                 <td class="px-3 py-2">{{ s.paymentDate ? (s.paymentDate | date:'mediumDate') : '-' }}</td>
-                <td class="px-3 py-2">{{ s.paymentMethod || '-' }}</td>
+                <td class="px-3 py-2">{{ s.paymentMethod ? (paymentMethodLabelKey(s.paymentMethod) | transloco) : '-' }}</td>
               </tr>
               <tr *ngIf="salaryPayments.length === 0">
-                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">No salary payments yet</td>
+                <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'payroll.payroll.noPayments' | transloco }}</td>
               </tr>
             </tbody>
           </table>
@@ -477,51 +480,51 @@
     <ng-container *ngIf="activeTab === 'bonus'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Add Bonus</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.bonus.addTitle' | transloco }}</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.bonus.employee' | transloco }}</label>
               <select [(ngModel)]="bonusForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option [ngValue]="null">-- Select --</option>
+                <option [ngValue]="null">{{ 'payroll.options.selectDash' | transloco }}</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.bonus.date' | transloco }}</label>
               <input type="date" [(ngModel)]="bonusForm.bonusDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Bonus Type</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.bonus.bonusType' | transloco }}</label>
               <select [(ngModel)]="bonusForm.bonusType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option value="Festival Bonus">Festival Bonus</option>
-                <option value="Performance Bonus">Performance Bonus</option>
-                <option value="Incentive">Incentive</option>
-                <option value="Other">Other</option>
+                <option value="Festival Bonus">{{ 'payroll.options.bonusTypeFestival' | transloco }}</option>
+                <option value="Performance Bonus">{{ 'payroll.options.bonusTypePerformance' | transloco }}</option>
+                <option value="Incentive">{{ 'payroll.options.bonusTypeIncentive' | transloco }}</option>
+                <option value="Other">{{ 'payroll.options.bonusTypeOther' | transloco }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Amount (৳) *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.bonus.amount' | transloco }}</label>
               <input type="number" [(ngModel)]="bonusForm.amount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Method</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.bonus.paymentMethod' | transloco }}</label>
               <select [(ngModel)]="bonusForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank</option>
-                <option value="Mobile Banking">Mobile Banking</option>
+                <option value="Cash">{{ 'payroll.options.paymentMethodCash' | transloco }}</option>
+                <option value="Bank">{{ 'payroll.options.paymentMethodBank' | transloco }}</option>
+                <option value="Mobile Banking">{{ 'payroll.options.paymentMethodMobile' | transloco }}</option>
               </select>
             </div>
             <div class="lg:col-span-3">
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Remarks</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.bonus.remarks' | transloco }}</label>
               <input type="text" [(ngModel)]="bonusForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="addBonus()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Saving...' : 'Add Bonus' }}
+              {{ (isSaving ? 'payroll.bonus.saving' : 'payroll.bonus.addButton') | transloco }}
             </button>
           </div>
         </div>
@@ -529,29 +532,29 @@
 
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Bonus History</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.bonus.historyTitle' | transloco }}</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
-                <th class="px-3 py-2 text-left">Employee</th>
-                <th class="px-3 py-2 text-left">Date</th>
-                <th class="px-3 py-2 text-left">Type</th>
-                <th class="px-3 py-2 text-right">Amount</th>
-                <th class="px-3 py-2 text-left">Remarks</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.bonus.colEmployee' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.bonus.colDate' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.bonus.colType' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.bonus.colAmount' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.bonus.colRemarks' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let b of bonusList" class="border-b hover:bg-gray-50 text-xs md:text-sm">
                 <td class="px-3 py-2 font-medium text-gray-900">{{ b.fullName }}</td>
                 <td class="px-3 py-2">{{ b.bonusDate | date:'mediumDate' }}</td>
-                <td class="px-3 py-2">{{ b.bonusType || '-' }}</td>
+                <td class="px-3 py-2">{{ b.bonusType ? (bonusTypeLabelKey(b.bonusType) | transloco) : '-' }}</td>
                 <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳ {{ b.amount | number:'1.2-2' }}</td>
                 <td class="px-3 py-2 text-gray-600">{{ b.remarks || '-' }}</td>
               </tr>
               <tr *ngIf="bonusList.length === 0">
-                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No bonuses recorded yet</td>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'payroll.bonus.noBonuses' | transloco }}</td>
               </tr>
             </tbody>
           </table>
@@ -563,42 +566,42 @@
     <ng-container *ngIf="activeTab === 'advance'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Add Advance</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.advance.addTitle' | transloco }}</h2>
         </div>
         <div class="p-3">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Employee *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.advance.employee' | transloco }}</label>
               <select [(ngModel)]="advanceForm.employeeId" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option [ngValue]="null">-- Select --</option>
+                <option [ngValue]="null">{{ 'payroll.options.selectDash' | transloco }}</option>
                 <option *ngFor="let e of activeEmployees" [ngValue]="e.employeeId">{{ e.fullName }}</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Date *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.advance.date' | transloco }}</label>
               <input type="date" [(ngModel)]="advanceForm.advanceDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Amount (৳) *</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.advance.amount' | transloco }}</label>
               <input type="number" [(ngModel)]="advanceForm.amount" min="0" step="0.01" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Payment Method</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.advance.paymentMethod' | transloco }}</label>
               <select [(ngModel)]="advanceForm.paymentMethod" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank</option>
-                <option value="Mobile Banking">Mobile Banking</option>
+                <option value="Cash">{{ 'payroll.options.paymentMethodCash' | transloco }}</option>
+                <option value="Bank">{{ 'payroll.options.paymentMethodBank' | transloco }}</option>
+                <option value="Mobile Banking">{{ 'payroll.options.paymentMethodMobile' | transloco }}</option>
               </select>
             </div>
             <div class="lg:col-span-4">
-              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">Remarks</label>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'payroll.advance.remarks' | transloco }}</label>
               <input type="text" [(ngModel)]="advanceForm.remarks" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
             </div>
           </div>
           <div class="flex gap-2 mt-3">
             <button (click)="addAdvance()" [disabled]="isSaving"
               class="text-white px-3 py-1 rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
-              {{ isSaving ? 'Saving...' : 'Add Advance' }}
+              {{ (isSaving ? 'payroll.advance.saving' : 'payroll.advance.addButton') | transloco }}
             </button>
           </div>
         </div>
@@ -606,17 +609,17 @@
 
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
-          <h2 class="text-white font-semibold text-sm">Advance History</h2>
+          <h2 class="text-white font-semibold text-sm">{{ 'payroll.advance.historyTitle' | transloco }}</h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
               <tr>
-                <th class="px-3 py-2 text-left">Employee</th>
-                <th class="px-3 py-2 text-left">Date</th>
-                <th class="px-3 py-2 text-right">Amount</th>
-                <th class="px-3 py-2 text-right">Remaining</th>
-                <th class="px-3 py-2 text-left">Repay</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.advance.colEmployee' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.advance.colDate' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.advance.colAmount' | transloco }}</th>
+                <th class="px-3 py-2 text-right">{{ 'payroll.advance.colRemaining' | transloco }}</th>
+                <th class="px-3 py-2 text-left">{{ 'payroll.advance.colRepay' | transloco }}</th>
               </tr>
             </thead>
             <tbody>
@@ -630,14 +633,14 @@
                 <td class="px-3 py-2">
                   <div class="flex items-center gap-1" *ngIf="a.remainingAmount > 0">
                     <input type="number" min="0" [step]="0.01" [(ngModel)]="repayAmounts[a.advanceId]"
-                      class="w-20 px-1.5 py-1 text-xs border border-gray-300 rounded-lg outline-none" placeholder="Amount" />
-                    <button (click)="repayAdvance(a.advanceId)" class="text-xs text-white px-2 py-1 rounded-lg" style="background:var(--theme-primary)">Repay</button>
+                      class="w-20 px-1.5 py-1 text-xs border border-gray-300 rounded-lg outline-none" [placeholder]="'payroll.advance.repayPlaceholder' | transloco" />
+                    <button (click)="repayAdvance(a.advanceId)" class="text-xs text-white px-2 py-1 rounded-lg" style="background:var(--theme-primary)">{{ 'payroll.advance.repayButton' | transloco }}</button>
                   </div>
-                  <span *ngIf="a.remainingAmount <= 0" class="text-xs text-green-600">Fully repaid</span>
+                  <span *ngIf="a.remainingAmount <= 0" class="text-xs text-green-600">{{ 'payroll.advance.fullyRepaid' | transloco }}</span>
                 </td>
               </tr>
               <tr *ngIf="advanceList.length === 0">
-                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No advances recorded yet</td>
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'payroll.advance.noAdvances' | transloco }}</td>
               </tr>
             </tbody>
           </table>
