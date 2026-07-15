@@ -223,9 +223,7 @@
               <label class="text-xs font-semibold" style="color:var(--theme-primary)">{{ 'purchases.form.paymentMethod' | transloco }}</label>
               <select [ngModel]="selectedPaymentMethod" (ngModelChange)="selectedPaymentMethod = $event"
                 class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg">
-                <option value="cash">{{ 'purchases.form.paymentCash' | transloco }}</option>
-                <option value="credit">{{ 'purchases.form.paymentCredit' | transloco }}</option>
-                <option value="bank">{{ 'purchases.form.paymentBank' | transloco }}</option>
+                <option *ngFor="let pm of paymentMethods" [value]="pm.value">{{ pm.labelKey | transloco }}</option>
               </select>
             </div>
           </div>

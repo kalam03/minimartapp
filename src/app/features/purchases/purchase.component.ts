@@ -10,6 +10,7 @@ import { SupplierService } from '../../services/supplier.service';
 import { PurchaseService } from '../../services/purchase.service';
 import { Supplier } from '../../models/Supplier';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
+import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
 
 export interface PurchaseCartItem {
   productId: number;
@@ -92,7 +93,9 @@ export class PurchaseComponent implements OnInit {
   discountPercent: number = 0;
   transportCost: number = 0;
   transportType: string = '';
-  selectedPaymentMethod: string = 'credit';
+  selectedPaymentMethod: string = DEFAULT_PAYMENT_METHOD;
+  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  readonly paymentMethods = PAYMENT_METHODS;
   paymentAmount: number = 0;
   returnAmount: number = 0;
   dueAmount: number = 0;
@@ -403,7 +406,7 @@ export class PurchaseComponent implements OnInit {
     this.discountPercent = 0;
     this.transportCost = 0;
     this.transportType = '';
-    this.selectedPaymentMethod = 'credit';
+    this.selectedPaymentMethod = DEFAULT_PAYMENT_METHOD;
     this.paymentAmount = 0;
     this.calculateTotals();
   }

@@ -11,6 +11,7 @@ import {
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
+import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD, paymentMethodLabelKey } from '../../shared/payment-methods';
 
 type Tab = 'employees' | 'salary' | 'attendance' | 'payroll' | 'bonus' | 'advance';
 
@@ -54,6 +55,9 @@ export class PayrollComponent implements OnInit {
   employees: Employee[] = [];
   isSaving = false;
 
+  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  readonly paymentMethods = PAYMENT_METHODS;
+
   get activeEmployees(): Employee[] { return this.employees.filter(e => e.isActive); }
 
   constructor(
@@ -87,8 +91,7 @@ export class PayrollComponent implements OnInit {
     return map[status] ?? status;
   }
   paymentMethodLabelKey(method: string): string {
-    const map: Record<string, string> = { Cash: 'payroll.options.paymentMethodCash', Bank: 'payroll.options.paymentMethodBank', 'Mobile Banking': 'payroll.options.paymentMethodMobile' };
-    return map[method] ?? method;
+    return paymentMethodLabelKey(method);
   }
   bonusTypeLabelKey(type: string): string {
     const map: Record<string, string> = {
@@ -445,7 +448,7 @@ export class PayrollComponent implements OnInit {
     salaryYear: new Date().getFullYear(),
     overtimeAmount: 0, bonusAmount: 0, deduction: 0,
     paymentDate: toLocalDateString(),
-    paymentMethod: 'Cash', referenceNo: '', remarks: ''
+    paymentMethod: DEFAULT_PAYMENT_METHOD, referenceNo: '', remarks: ''
   };
   lastResult: ProcessSalaryPaymentResult | null = null;
   salaryPayments: SalaryPayment[] = [];
@@ -514,7 +517,7 @@ export class PayrollComponent implements OnInit {
       salaryYear: new Date().getFullYear(),
       overtimeAmount: 0, bonusAmount: 0, deduction: 0,
       paymentDate: toLocalDateString(),
-      paymentMethod: 'Cash', referenceNo: '', remarks: ''
+      paymentMethod: DEFAULT_PAYMENT_METHOD, referenceNo: '', remarks: ''
     };
     this.payDueAdvanceTotal = 0;
   }
@@ -537,7 +540,7 @@ export class PayrollComponent implements OnInit {
   bonusForm = {
     employeeId: null as number | null, bonusDate: toLocalDateString(),
     bonusType: 'Festival Bonus', amount: null as number | null,
-    remarks: '', paymentMethod: 'Cash'
+    remarks: '', paymentMethod: DEFAULT_PAYMENT_METHOD
   };
   bonusList: EmployeeBonus[] = [];
   isBonusLoading = false;
@@ -567,7 +570,7 @@ export class PayrollComponent implements OnInit {
       next: (res) => {
         this.isSaving = false;
         this.alertService.success(res.message || this.t('messages.bonusRecorded'));
-        this.bonusForm = { employeeId: null, bonusDate: toLocalDateString(), bonusType: 'Festival Bonus', amount: null, remarks: '', paymentMethod: 'Cash' };
+        this.bonusForm = { employeeId: null, bonusDate: toLocalDateString(), bonusType: 'Festival Bonus', amount: null, remarks: '', paymentMethod: DEFAULT_PAYMENT_METHOD };
         this.loadBonuses();
       },
       error: (err: any) => {
@@ -582,7 +585,7 @@ export class PayrollComponent implements OnInit {
   // ══════════════════════════════════════════════════════════════════
   advanceForm = {
     employeeId: null as number | null, advanceDate: toLocalDateString(),
-    amount: null as number | null, remarks: '', paymentMethod: 'Cash'
+    amount: null as number | null, remarks: '', paymentMethod: DEFAULT_PAYMENT_METHOD
   };
   advanceList: EmployeeAdvance[] = [];
   isAdvanceLoading = false;
@@ -612,7 +615,7 @@ export class PayrollComponent implements OnInit {
       next: (res) => {
         this.isSaving = false;
         this.alertService.success(res.message || this.t('messages.advanceRecorded'));
-        this.advanceForm = { employeeId: null, advanceDate: toLocalDateString(), amount: null, remarks: '', paymentMethod: 'Cash' };
+        this.advanceForm = { employeeId: null, advanceDate: toLocalDateString(), amount: null, remarks: '', paymentMethod: DEFAULT_PAYMENT_METHOD };
         this.loadAdvances();
       },
       error: (err: any) => {
@@ -628,7 +631,7 @@ export class PayrollComponent implements OnInit {
       this.alertService.warning(this.t('messages.repaymentValidAmount'));
       return;
     }
-    this.payrollService.repayAdvance({ advanceId, amount: +amount, paymentMethod: 'Cash' }).subscribe({
+    this.payrollService.repayAdvance({ advanceId, amount: +amount, paymentMethod: DEFAULT_PAYMENT_METHOD }).subscribe({
       next: (res) => {
         const applied = res.data?.appliedAmount ?? amount;
         const txnNo = res.data?.txnNo ? ` (GL ${res.data.txnNo})` : '';

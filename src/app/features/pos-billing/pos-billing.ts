@@ -12,6 +12,7 @@ import { SaleService, StockConflictError } from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
 import { OrderService } from '../../services/order.service';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
+import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
 
 
 export interface CartItem {
@@ -112,7 +113,9 @@ export class PosBillingComponent implements OnInit {
   discountPercent: number = 0;
   transportCost: number = 0;
   transportType: string = '';
-  selectedPaymentMethod: string = 'cash';
+  selectedPaymentMethod: string = DEFAULT_PAYMENT_METHOD;
+  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  readonly paymentMethods = PAYMENT_METHODS;
   paymentCash: number = 0;
   returnCash: number = 0;
   dueAmount: number = 0;
@@ -565,7 +568,7 @@ export class PosBillingComponent implements OnInit {
     this.discountPercent = 0;
     this.transportCost = 0;
     this.transportType = '';
-    this.selectedPaymentMethod = 'cash';
+    this.selectedPaymentMethod = DEFAULT_PAYMENT_METHOD;
     this.paymentCash = 0;
     this.calculateTotals();
   }

@@ -9,16 +9,20 @@ import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
+import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD, paymentMethodLabelKey } from '../../shared/payment-methods';
 
 @Component({
   selector: 'app-capital-management',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/capital/{en,bn}.json only when this route is hit.
-  // Note: txnTypes/txnModes names and the auto-generated narration text (saved
-  // as ledger data) are intentionally left in English — they are persisted
+  // Note: txnTypes names and the auto-generated narration text (saved as
+  // ledger data) are intentionally left in English — they are persisted
   // business records, not just UI chrome, so translating them would change
-  // stored data rather than just the display language.
+  // stored data rather than just the display language. txnMode is different:
+  // it's now the same canonical Payment Method list used on every other
+  // transaction page (see shared/payment-methods.ts) — only its *displayed*
+  // label is translated, the stored value stays the fixed English string.
   providers: [provideTranslocoScope('capital')],
   templateUrl: './capital-management.component.html',
   styleUrls: ['./capital-management.component.css']
@@ -47,7 +51,11 @@ export class CapitalManagementComponent implements OnInit {
     { id: 15, code: 'INVESTMENT', name: 'Investor Investment Received', autoDrCr: 'C' },
   ];
 
-  readonly txnModes = ['Cash', 'Bank', 'Card', 'Cheque', 'Online Transfer', 'Other'];
+  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  readonly paymentMethods = PAYMENT_METHODS;
+  paymentMethodLabelKey(value: string): string {
+    return paymentMethodLabelKey(value);
+  }
 
   // ── Form ─────────────────────────────────────────────────────────────
   // Single Cash Vault model: every entry (manual or auto-posted from
@@ -62,7 +70,7 @@ export class CapitalManagementComponent implements OnInit {
     drCr:        'C',
     amount:      null as number | null,
     referenceNo: '',
-    txnMode:     'Cash',
+    txnMode:     DEFAULT_PAYMENT_METHOD,
   };
   userNarration  = '';          // user's optional extra note
   isDrCrFixed    = false;
@@ -473,7 +481,7 @@ export class CapitalManagementComponent implements OnInit {
       drCr:        'C',
       amount:      null,
       referenceNo: '',
-      txnMode:     'Cash',
+      txnMode:     DEFAULT_PAYMENT_METHOD,
     };
     this.userNarration      = '';
     this.selectedCustomerId = 0;

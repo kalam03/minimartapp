@@ -46,6 +46,13 @@
     "changeTheme": "থিম পরিবর্তন করুন",
     "changeLanguage": "ভাষা পরিবর্তন করুন"
   },
+  "paymentMethods": {
+    "cash": "নগদ",
+    "bkash": "bKash",
+    "nagad": "Nagad",
+    "rocket": "Rocket",
+    "bankAccount": "ব্যাংক অ্যাকাউন্ট"
+  },
   "validation": {
     "required": "{{field}} আবশ্যক",
     "invalid": "{{field}} সঠিক নয়"

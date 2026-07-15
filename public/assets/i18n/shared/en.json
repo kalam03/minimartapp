@@ -46,6 +46,13 @@
     "changeTheme": "Change theme",
     "changeLanguage": "Change language"
   },
+  "paymentMethods": {
+    "cash": "Cash",
+    "bkash": "bKash",
+    "nagad": "Nagad",
+    "rocket": "Rocket",
+    "bankAccount": "Bank account"
+  },
   "validation": {
     "required": "{{field}} is required",
     "invalid": "{{field}} is invalid"

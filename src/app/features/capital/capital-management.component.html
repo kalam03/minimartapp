@@ -191,7 +191,7 @@
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnMode' | transloco }}</label>
             <select [(ngModel)]="form.txnMode"
               class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
-              <option *ngFor="let m of txnModes" [value]="m">{{ m }}</option>
+              <option *ngFor="let pm of paymentMethods" [value]="pm.value">{{ pm.labelKey | transloco }}</option>
             </select>
           </div>
 
@@ -368,7 +368,7 @@
                 [class.text-green-600]="t.drCr==='C'">
                 ৳{{ t.amount | number:'1.2-2' }}
               </td>
-              <td class="px-3 py-2 text-gray-500">{{ t.txnMode || '-' }}</td>
+              <td class="px-3 py-2 text-gray-500">{{ t.txnMode ? (paymentMethodLabelKey(t.txnMode) | transloco) : '-' }}</td>
               <td class="px-3 py-2 text-gray-500">{{ t.referenceNo || '-' }}</td>
               <td class="px-3 py-2 text-gray-500 max-w-[160px] truncate" [title]="t.narration">{{ t.narration || '-' }}</td>
               <td class="px-3 py-2 text-center">
