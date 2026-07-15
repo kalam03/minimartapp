@@ -8,6 +8,7 @@ import { CategoryService } from '../../services/category.service';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
 import { Product, ProductFilter } from '../../models/product';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 interface BarcodeLabel {
   product: Product;
@@ -18,7 +19,7 @@ interface BarcodeLabel {
 @Component({
   selector: 'app-barcode-generator',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/barcodeGenerator/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('barcodeGenerator')],
   templateUrl: './barcode-generator.component.html',

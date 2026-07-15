@@ -10,13 +10,14 @@ import {
 } from '../../services/payroll.service';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 type Tab = 'employees' | 'salary' | 'attendance' | 'payroll' | 'bonus' | 'advance';
 
 @Component({
   selector: 'app-payroll',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/payroll/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('payroll')],
   templateUrl: './payroll.component.html',

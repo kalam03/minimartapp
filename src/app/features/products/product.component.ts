@@ -6,11 +6,12 @@ import { ProductService } from '../../services/product.service';
 import { AlertService } from '../../shared/alert.service';
 import { UnitTypeService } from '../../services/unit-type.service';
 import { CategoryService } from '../../services/category.service';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/products/{en,bn}.json only when this route is hit —
   // see Multilingual_Localization_Architecture.md Section 5.1.
   providers: [provideTranslocoScope('products')],

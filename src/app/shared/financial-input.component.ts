@@ -1,6 +1,8 @@
 // financial-input.component.ts
-import { Component, forwardRef, Input } from '@angular/core';
+import { Component, forwardRef, Input, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { LanguageService } from '../services/language.service';
+import { bnToEn, enToBn } from './bn-numerals';
 
 @Component({
   selector: 'app-financial-input',
@@ -8,7 +10,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   template: `
     <input
       type="text"
-      [value]="displayValue"
+      inputmode="decimal"
+      [value]="renderedValue"
       (input)="onInput($event)"
       (focus)="onFocus()"
       (blur)="onBlur()"
@@ -35,12 +38,27 @@ export class FinancialInputComponent implements ControlValueAccessor {
   @Input() minValue: number = 0;
   @Input() decimalPlaces: number = 2;
 
+  private readonly languageService = inject(LanguageService);
+
+  /** Always English digits internally — only rendering (below) localizes them. */
   displayValue: string = '0.00';
   private value: number = 0;
   /** True while the user has this field focused/actively typing. */
   private focused = false;
   private onChange: any = () => {};
   private onTouched: any = () => {};
+
+  private isBangla(): boolean {
+    return this.languageService.currentLanguage() === 'bn';
+  }
+
+  /** What the native input actually shows — Bangla digits when the app is in Bangla.
+   *  Reads the language signal, so this re-evaluates automatically (and the
+   *  [value] binding above re-renders) the instant the user switches language,
+   *  even while this field isn't focused. */
+  get renderedValue(): string {
+    return this.isBangla() ? enToBn(this.displayValue) : this.displayValue;
+  }
 
   writeValue(value: number): void {
     this.value = value || 0;
@@ -76,14 +94,17 @@ export class FinancialInputComponent implements ControlValueAccessor {
       return;
     }
 
-    // Prevent non-numeric characters
-    if (!allowedKeys.includes(event.key) && !event.key.match(/[0-9]/)) {
+    // Prevent non-numeric characters (English digits, or Bangla digits typed
+    // directly via a Bangla keyboard layout, are both allowed through).
+    const isEnglishDigit = /^[0-9]$/.test(event.key);
+    const isBanglaDigit = /^[০-৯]$/.test(event.key);
+    if (!allowedKeys.includes(event.key) && !isEnglishDigit && !isBanglaDigit) {
       event.preventDefault();
     }
 
     // Prevent multiple decimal points
     if (event.key === '.' || event.key === 'Decimal') {
-      const currentValue = (event.target as HTMLInputElement).value;
+      const currentValue = bnToEn((event.target as HTMLInputElement).value);
       if (currentValue.includes('.')) {
         event.preventDefault();
       }
@@ -91,7 +112,12 @@ export class FinancialInputComponent implements ControlValueAccessor {
   }
 
   onInput(event: any): void {
-    let rawValue = event.target.value;
+    const target = event.target as HTMLInputElement;
+    const cursorPos = target.selectionStart ?? target.value.length;
+
+    // Normalize any Bangla digits the user just typed/pasted back to English
+    // before running the existing (unchanged) sanitization logic below.
+    let rawValue = bnToEn(target.value);
 
     // Allow empty string — actually clear the field AND tell the parent the
     // value is now 0 (previously this returned without calling onChange, so
@@ -150,6 +176,19 @@ export class FinancialInputComponent implements ControlValueAccessor {
     }
 
     this.value = numValue;
+
+    // Re-render immediately in the active script and restore the caret —
+    // without this, Angular's [value] binding wouldn't reformat until the
+    // next change-detection tick, and even then would jump the cursor to
+    // the end (digit-glyph swap looks like "new text" to the browser).
+    const rendered = this.isBangla() ? enToBn(this.displayValue) : this.displayValue;
+    if (target.value !== rendered) {
+      const shift = target.value.length - rendered.length;
+      target.value = rendered;
+      const newPos = Math.max(0, cursorPos - shift);
+      target.setSelectionRange(newPos, newPos);
+    }
+
     this.onChange(numValue);
   }
 

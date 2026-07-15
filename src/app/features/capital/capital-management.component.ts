@@ -8,11 +8,12 @@ import { SupplierService } from '../../services/supplier.service';
 import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 @Component({
   selector: 'app-capital-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/capital/{en,bn}.json only when this route is hit.
   // Note: txnTypes/txnModes names and the auto-generated narration text (saved
   // as ledger data) are intentionally left in English — they are persisted

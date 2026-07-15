@@ -5,11 +5,12 @@ import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsver
 import { InvestorService, Investor } from '../../services/investor.service';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 @Component({
   selector: 'app-investor',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/investors/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('investors')],
   templateUrl: './investor.component.html',

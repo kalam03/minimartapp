@@ -9,6 +9,7 @@ import { AlertService } from '../../shared/alert.service';
 import { SupplierService } from '../../services/supplier.service';
 import { PurchaseService } from '../../services/purchase.service';
 import { Supplier } from '../../models/Supplier';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 export interface PurchaseCartItem {
   productId: number;
@@ -32,7 +33,7 @@ export interface PurchaseOrder {
 @Component({
   selector: 'app-purchase',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule],
+  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/purchases/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('purchases')],
   templateUrl: './purchase.component.html',

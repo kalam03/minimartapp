@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { SupplierService } from '../../services/supplier.service';
 import { AlertService } from '../../shared/alert.service';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 @Component({
   selector: 'app-supplier',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/suppliers/{en,bn}.json only when this route is hit —
   // see Multilingual_Localization_Architecture.md Section 5.1. Scope name
   // deliberately has no hyphen (a hyphenated scope name caused all lookups

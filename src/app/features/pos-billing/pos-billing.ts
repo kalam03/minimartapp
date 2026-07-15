@@ -11,6 +11,7 @@ import { Customer, CustomerFilter, CustomerService } from '../../services/custom
 import { SaleService, StockConflictError } from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
 import { OrderService } from '../../services/order.service';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 
 export interface CartItem {
@@ -33,7 +34,7 @@ export interface Invoice {
 @Component({
   selector: 'app-pos-billing',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule],
+  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective],
   // Note: ActivatedRoute + Router are injected but not imported here (they're provided by the router module)
   // Loads assets/i18n/posBilling/{en,bn}.json only when this route is hit —
   // see Multilingual_Localization_Architecture.md Section 5.1.

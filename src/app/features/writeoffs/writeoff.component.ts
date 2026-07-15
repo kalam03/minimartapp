@@ -7,11 +7,12 @@ import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
 import { toLocalDateString } from '../../shared/date-utils';
+import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 
 @Component({
   selector: 'app-writeoff',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule],
+  imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
   // Loads assets/i18n/writeoffs/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('writeoffs')],
   templateUrl: './writeoff.component.html',
