@@ -374,10 +374,11 @@ export class PurchaseComponent implements OnInit {
     this.selectedProductIndex = -1;
 
     setTimeout(() => {
-      const quantityInput = document.querySelector('input[type="number"]') as HTMLInputElement;
-      if (quantityInput) {
-        quantityInput.focus();
-      }
+      // Was `document.querySelector('input[type="number"]')` — broke once
+      // BnNumberAccessorDirective started rewriting this input's type to
+      // "text" at runtime (needed to display Bangla digits). The #quantityInput
+      // template ref is stable regardless of the input's current type attribute.
+      this.quantityInput?.nativeElement?.focus();
     }, 0);
   }
 

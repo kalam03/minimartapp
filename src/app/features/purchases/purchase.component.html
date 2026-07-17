@@ -63,7 +63,7 @@
               <div class="flex items-center gap-1">
                 <button (click)="productQuantity = Math.max(1, productQuantity - 1)"
                   class="w-6 h-6 rounded text-sm font-bold border border-gray-300 hover:bg-gray-100">-</button>
-                <input type="number"
+                <input #quantityInput type="number"
                   [ngModel]="productQuantity"
                   (ngModelChange)="onProductQuantityChange($event)"
                   (keydown)="onQuantityKeydown($event)"
