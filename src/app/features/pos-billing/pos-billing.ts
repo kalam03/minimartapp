@@ -13,6 +13,7 @@ import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt
 import { OrderService } from '../../services/order.service';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
+import { AppConfigService } from '../../services/app-config.service';
 
 
 export interface CartItem {
@@ -55,9 +56,16 @@ export class PosBillingComponent implements OnInit {
     private orderService: OrderService,
     private route: ActivatedRoute,
     private router: Router,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
+    private appConfigService: AppConfigService
   ) {
     this.receiptData = this.receiptService.getReceiptData();
+  }
+
+  /** Whether the "Price" field below is user-editable — set via config.json
+   *  (isSellingEditable), no rebuild needed to toggle it. */
+  get isSellingEditable(): boolean {
+    return this.appConfigService.isSellingEditable;
   }
 
   /** Shorthand for the 'posBilling' scope — see provideTranslocoScope above. */
@@ -106,6 +114,13 @@ export class PosBillingComponent implements OnInit {
 
   // Quantities
   productQuantity: number = 1;
+
+  // Sale price for the product currently being added — defaults to the
+  // catalog salePrice, editable only when isSellingEditable is true (see
+  // the "Price" field in the template). addToCart() always uses this value
+  // (not product.salePrice directly), so when it's read-only it's simply
+  // never changed from the catalog price anyway.
+  productPrice: number = 0;
 
   // Payment Info
   subtotal: number = 0;
@@ -519,6 +534,7 @@ export class PosBillingComponent implements OnInit {
     this.selectedProduct = product;
     this.selectedProductId = product.productId;
     this.searchProductTerm = product.productName;
+    this.productPrice = product.salePrice || 0;
     this.showProductDropdown = false;
     this.selectedProductIndex = -1;
 
@@ -547,6 +563,7 @@ export class PosBillingComponent implements OnInit {
     this.selectedProductId = null;
     this.searchProductTerm = '';
     this.productQuantity = 1;
+    this.productPrice = 0;
     this.showProductDropdown = false;
     this.selectedProductIndex = -1;
   }
@@ -658,6 +675,12 @@ export class PosBillingComponent implements OnInit {
     this.productQuantity = isNaN(numValue) ? min : Math.max(min, numValue);
   }
 
+  /** Only reachable when isSellingEditable is true — the field is [readonly] otherwise. */
+  onProductPriceChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.productPrice = isNaN(numValue) ? 0 : Math.max(0, numValue);
+  }
+
   /** True when selected product is sold by weight/volume (KG, G, L, ML) */
   get isWeightProduct(): boolean {
     const wt = ['KG', 'G', 'L', 'ML'];
@@ -712,14 +735,14 @@ export class PosBillingComponent implements OnInit {
         return;
       }
       existingItem.quantity = newQuantity;
-      existingItem.subtotal = existingItem.quantity * product.salePrice;
+      existingItem.subtotal = existingItem.quantity * this.productPrice;
     } else {
       this.cartItems.push({
         productId: product.productId,
         product: product,
         quantity: this.productQuantity,
-        unitPrice: product.salePrice,
-        subtotal: this.productQuantity * product.salePrice,
+        unitPrice: this.productPrice,
+        subtotal: this.productQuantity * this.productPrice,
       });
     }
 

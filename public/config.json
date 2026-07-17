@@ -1,3 +1,5 @@
 {
-  "apiBaseUrl": "http://localhost:5187/api"
+  "apiBaseUrl": "http://localhost:5187/api",
+  "isSellingEditable": false,
+  "isBuyingEditable": true
 }

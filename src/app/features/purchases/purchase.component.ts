@@ -11,6 +11,7 @@ import { PurchaseService } from '../../services/purchase.service';
 import { Supplier } from '../../models/Supplier';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
+import { AppConfigService } from '../../services/app-config.service';
 
 export interface PurchaseCartItem {
   productId: number;
@@ -47,8 +48,15 @@ export class PurchaseComponent implements OnInit {
     private alertService: AlertService,
     private purchaseService: PurchaseService,
     private transloco: TranslocoService,
+    private appConfigService: AppConfigService,
   ) {}
   Math = Math;
+
+  /** Whether the "Cost Price" field below is user-editable — set via
+   *  config.json (isBuyingEditable), no rebuild needed to toggle it. */
+  get isBuyingEditable(): boolean {
+    return this.appConfigService.isBuyingEditable;
+  }
 
   /** Shorthand for the 'purchases' scope — see provideTranslocoScope above. */
   private t(key: string, params?: Record<string, unknown>): string {
@@ -86,6 +94,13 @@ export class PurchaseComponent implements OnInit {
 
   // Quantities
   productQuantity: number = 1;
+
+  // Cost price for the product currently being added — defaults to the
+  // catalog purchasePrice, editable only when isBuyingEditable is true
+  // (see the "Cost Price" field in the template). addToCart() always uses
+  // this value (not product.purchasePrice directly), so when it's
+  // read-only it's simply never changed from the catalog price anyway.
+  productPrice: number = 0;
 
   // Payment Info
   subtotal: number = 0;
@@ -370,6 +385,7 @@ export class PurchaseComponent implements OnInit {
     this.selectedProduct = product;
     this.selectedProductId = product.productId;
     this.searchProductTerm = product.productName;
+    this.productPrice = product.purchasePrice || 0;
     this.showProductDropdown = false;
     this.selectedProductIndex = -1;
 
@@ -396,6 +412,7 @@ export class PurchaseComponent implements OnInit {
     this.selectedProductId = null;
     this.searchProductTerm = '';
     this.productQuantity = 1;
+    this.productPrice = 0;
     this.showProductDropdown = false;
     this.selectedProductIndex = -1;
   }
@@ -471,6 +488,12 @@ export class PurchaseComponent implements OnInit {
     this.productQuantity = isNaN(numValue) ? 1 : Math.max(1, numValue);
   }
 
+  /** Only reachable when isBuyingEditable is true — the field is [readonly] otherwise. */
+  onProductPriceChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    this.productPrice = isNaN(numValue) ? 0 : Math.max(0, numValue);
+  }
+
   onDiscountPercentChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     this.discountPercent = isNaN(numValue) ? 0 : Math.max(0, Math.min(100, numValue));
@@ -502,14 +525,14 @@ export class PurchaseComponent implements OnInit {
 
     if (existingItem) {
       existingItem.quantity += this.productQuantity;
-      existingItem.subtotal = existingItem.quantity * product.purchasePrice;
+      existingItem.subtotal = existingItem.quantity * this.productPrice;
     } else {
       this.cartItems.push({
         productId: product.productId,
         product: product,
         quantity: this.productQuantity,
-        unitPrice: product.purchasePrice,
-        subtotal: this.productQuantity * product.purchasePrice,
+        unitPrice: this.productPrice,
+        subtotal: this.productQuantity * this.productPrice,
       });
     }
 

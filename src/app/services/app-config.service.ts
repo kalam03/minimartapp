@@ -29,6 +29,15 @@ import { environment } from '../../environments/environment';
  */
 @Injectable({ providedIn: 'root' })
 export class AppConfigService {
+  // Same runtime-toggle idea as apiBaseUrl above: whether the "Price" field
+  // on Counter/POS Billing (isSellingEditable) and the "Cost Price" field on
+  // Purchases (isBuyingEditable) are user-editable, or locked read-only to
+  // the product's catalog price. Toggle in config.json on the server — no
+  // rebuild/redeploy needed. Default true so the app behaves the same as
+  // before this existed if config.json is ever missing/outdated.
+  isSellingEditable = true;
+  isBuyingEditable  = true;
+
   async load(): Promise<void> {
     try {
       // Cache-bust with both a query param and cache: 'no-store' — we can't
@@ -42,9 +51,15 @@ export class AppConfigService {
       if (config?.apiBaseUrl) {
         environment.baseUrl = config.apiBaseUrl;
       }
+      if (typeof config?.isSellingEditable === 'boolean') {
+        this.isSellingEditable = config.isSellingEditable;
+      }
+      if (typeof config?.isBuyingEditable === 'boolean') {
+        this.isBuyingEditable = config.isBuyingEditable;
+      }
     } catch {
       // config.json missing/unreachable — silently keep whatever
-      // environment.ts already has as the fallback.
+      // defaults are already set above.
     }
   }
 }
