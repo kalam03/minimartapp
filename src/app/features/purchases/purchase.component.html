@@ -79,7 +79,7 @@
             <div>
               <label class="text-xs font-semibold" style="color:var(--theme-primary)">{{ 'purchases.form.total' | transloco }}</label>
               <input type="text"
-                [value]="((productPrice || 0) * productQuantity).toFixed(2)" readonly
+                [value]="((productPrice || 0) * productQuantity).toFixed(2) | bnDigits" readonly
                 class="w-full px-2 py-1 text-sm border rounded-lg font-semibold"
                 style="background:#eef0fc;color:var(--theme-primary)" />
             </div>

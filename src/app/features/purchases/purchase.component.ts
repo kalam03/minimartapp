@@ -12,6 +12,7 @@ import { Supplier } from '../../models/Supplier';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
 import { AppConfigService } from '../../services/app-config.service';
+import { BnDigitsPipe } from '../../shared/bn-digits.pipe';
 
 export interface PurchaseCartItem {
   productId: number;
@@ -35,7 +36,7 @@ export interface PurchaseOrder {
 @Component({
   selector: 'app-purchase',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective],
+  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective, BnDigitsPipe],
   // Loads assets/i18n/purchases/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('purchases')],
   templateUrl: './purchase.component.html',

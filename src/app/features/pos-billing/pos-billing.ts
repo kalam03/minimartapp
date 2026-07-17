@@ -14,6 +14,7 @@ import { OrderService } from '../../services/order.service';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
 import { AppConfigService } from '../../services/app-config.service';
+import { BnDigitsPipe } from '../../shared/bn-digits.pipe';
 
 
 export interface CartItem {
@@ -36,7 +37,7 @@ export interface Invoice {
 @Component({
   selector: 'app-pos-billing',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective],
+  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective, BnDigitsPipe],
   // Note: ActivatedRoute + Router are injected but not imported here (they're provided by the router module)
   // Loads assets/i18n/posBilling/{en,bn}.json only when this route is hit —
   // see Multilingual_Localization_Architecture.md Section 5.1.

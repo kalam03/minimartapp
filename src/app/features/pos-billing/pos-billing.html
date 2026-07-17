@@ -141,7 +141,7 @@
               <label class="text-xs text-gray-500">{{ 'posBilling.product.total' | transloco }}</label>
               <input
                 type="text"
-                [value]="((productPrice || 0) * productQuantity).toFixed(2)"
+                [value]="((productPrice || 0) * productQuantity).toFixed(2) | bnDigits"
                 readonly
                 class="w-full px-2 py-1 text-sm border rounded-lg bg-green-50 text-green-700 font-semibold"
               />
@@ -444,7 +444,7 @@
               <label class="text-xs text-gray-500">{{ 'posBilling.bill.return' | transloco }}</label>
               <input
                 type="text"
-                [value]="returnCash.toFixed(2)"
+                [value]="returnCash.toFixed(2) | bnDigits"
                 readonly
                 class="w-full px-2 py-1 text-sm border rounded-lg bg-green-50 text-green-700"
               />
@@ -456,7 +456,7 @@
             <label class="text-xs text-gray-500">{{ 'posBilling.bill.due' | transloco }}</label>
             <input
               type="text"
-              [value]="dueAmount.toFixed(2)"
+              [value]="dueAmount.toFixed(2) | bnDigits"
               readonly
               [class]="'w-full px-2 py-1 text-sm border rounded-lg ' + (dueAmount > 0 ? 'bg-red-50 text-red-700 font-semibold' : 'bg-gray-50 text-gray-500')"
             />
