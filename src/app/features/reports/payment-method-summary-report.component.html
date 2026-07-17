@@ -1,0 +1,115 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- ── Date Filter Bar ─────────────────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
+      <div class="px-3 py-2 flex flex-wrap items-end gap-2">
+        <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 9V7a4 4 0 00-8 0v2M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span class="text-xs font-semibold whitespace-nowrap">{{ 'reports.paymentMethodSummary.label' | transloco }}</span>
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.from' | transloco }}</label>
+          <input type="date" [(ngModel)]="fromDate"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 mb-0.5">{{ 'reports.filter.to' | transloco }}</label>
+          <input type="date" [(ngModel)]="toDate"
+            class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none w-36">
+        </div>
+        <button (click)="applyFilter()" class="px-3 py-1.5 text-xs text-white rounded-lg font-semibold" style="background:var(--theme-primary)">
+          {{ 'reports.filter.apply' | transloco }}
+        </button>
+
+        <!-- Divider -->
+        <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
+
+        <button (click)="resetFilter()"
+          class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
+          [style]="activeQuick==='allTime'
+            ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+            : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+          {{ 'reports.paymentMethodSummary.allTime' | transloco }}
+        </button>
+
+        <div class="flex-1"></div>
+
+        <button (click)="exportPdf()" [disabled]="isExporting" class="px-3 py-1.5 text-xs rounded-lg font-semibold border flex items-center gap-1.5 disabled:opacity-50" style="border-color:var(--theme-primary);color:var(--theme-primary)">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H8a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          {{ (isExporting ? 'reports.filter.generating' : 'reports.filter.exportPdf') | transloco }}
+        </button>
+      </div>
+      <div class="px-3 pb-2 text-xs text-gray-400" *ngIf="!fromDate && !toDate">
+        {{ 'reports.paymentMethodSummary.allTimeHint' | transloco }}
+      </div>
+    </div>
+
+    <!-- ── Error ───────────────────────────────────────────────────────── -->
+    <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs">
+      {{ errorMsg }}
+    </div>
+
+    <!-- ── Balance Cards — one per payment method ─────────────────────── -->
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-3">
+      <div *ngFor="let r of rows" class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
+        <div class="px-3 py-2 border-b border-white border-opacity-10">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ methodLabelKey(r.paymentMethod) | transloco }}</p>
+        </div>
+        <div class="px-3 py-2">
+          <p class="text-xl font-bold text-white">৳{{ r.balance | number:'1.2-2' }}</p>
+          <p class="text-xs mt-1" style="color:var(--theme-accent)">{{ 'reports.paymentMethodSummary.balanceLabel' | transloco }}</p>
+        </div>
+      </div>
+      <div *ngIf="!isLoading && rows.length === 0" class="col-span-2 lg:col-span-5 text-center py-6 text-gray-400 text-sm bg-white rounded-xl border">
+        {{ 'reports.paymentMethodSummary.noData' | transloco }}
+      </div>
+    </div>
+
+    <!-- ── Detail Table — In / Out / Balance per method ───────────────── -->
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h3 class="text-white font-semibold text-sm">{{ 'reports.paymentMethodSummary.tableTitle' | transloco }}</h3>
+        <span *ngIf="isLoading" class="text-xs" style="color:var(--theme-accent)">{{ 'reports.paymentMethodSummary.loading' | transloco }}</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left">{{ 'reports.paymentMethodSummary.columns.method' | transloco }}</th>
+              <th class="px-3 py-2 text-right">{{ 'reports.paymentMethodSummary.columns.totalIn' | transloco }}</th>
+              <th class="px-3 py-2 text-right">{{ 'reports.paymentMethodSummary.columns.totalOut' | transloco }}</th>
+              <th class="px-3 py-2 text-right">{{ 'reports.paymentMethodSummary.columns.balance' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let r of rows" class="hover:bg-gray-50 transition">
+              <td class="px-3 py-2 font-medium text-gray-800">{{ methodLabelKey(r.paymentMethod) | transloco }}</td>
+              <td class="px-3 py-2 text-right text-green-600">৳{{ r.totalIn | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-right text-red-600">৳{{ r.totalOut | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-right font-semibold" style="color:var(--theme-primary)">৳{{ r.balance | number:'1.2-2' }}</td>
+            </tr>
+            <tr *ngIf="rows.length === 0">
+              <td colspan="4" class="px-3 py-4 text-center text-gray-400">{{ 'reports.paymentMethodSummary.noData' | transloco }}</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="rows.length > 0">
+            <tr class="border-t-2 font-semibold" style="border-color:var(--theme-primary)">
+              <td class="px-3 py-2">{{ 'reports.paymentMethodSummary.totalRow' | transloco }}</td>
+              <td class="px-3 py-2 text-right text-green-700">৳{{ totalIn | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-right text-red-700">৳{{ totalOut | number:'1.2-2' }}</td>
+              <td class="px-3 py-2 text-right" style="color:var(--theme-primary)">৳{{ totalBalance | number:'1.2-2' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -111,6 +111,23 @@ export interface InvoiceReportResponse {
   data: InvoiceReportDto[];
 }
 
+// One row per canonical payment method ('cash'/'bkash'/'nagad'/'rocket'/
+// 'bank account', plus 'other' for any unrecognized legacy value). Balance
+// = TotalIn - TotalOut = how much is currently "in" that payment method.
+export interface PaymentMethodSummaryDto {
+  paymentMethod: string;
+  totalIn: number;
+  totalOut: number;
+  balance: number;
+}
+
+export interface PaymentMethodSummaryResponse {
+  success: boolean;
+  fromDate: string | null;
+  toDate: string | null;
+  data: PaymentMethodSummaryDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private baseUrl = environment.baseUrl;
@@ -152,6 +169,15 @@ export class ReportsService {
     );
   }
 
+  // fromDate/toDate are OPTIONAL — omit both for the all-time running
+  // balance ("how much is in X right now"); supply a range to see net
+  // movement within just that period instead.
+  getPaymentMethodSummary(fromDate?: string | null, toDate?: string | null): Observable<PaymentMethodSummaryResponse> {
+    return this.http.get<PaymentMethodSummaryResponse>(
+      `${this.baseUrl}/reports/payment-method-summary${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
   // ── PDF exports — generated server-side (QuestPDF); these just fetch the
   // finished file as a Blob for the browser to download. ────────────────
   getSalesSummaryPdf(fromDate: string, toDate: string): Observable<Blob> {
@@ -178,6 +204,13 @@ export class ReportsService {
   getProfitByDatePdf(fromDate: string, toDate: string): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/reports/profit-by-date/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  getPaymentMethodSummaryPdf(fromDate?: string | null, toDate?: string | null): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/payment-method-summary/pdf${this.buildQuery({ fromDate, toDate })}`,
       { responseType: 'blob' }
     );
   }

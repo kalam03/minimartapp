@@ -5,7 +5,8 @@
       "salesSummary": "Sales Summary",
       "salesDetails": "Sales Details",
       "invoiceReport": "Invoice Report",
-      "profitReport": "Profit Report"
+      "profitReport": "Profit Report",
+      "paymentMethodSummary": "Payment Method Summary"
     }
   },
   "filter": {
@@ -143,6 +144,26 @@
     },
     "errors": {
       "load": "Failed to load profit report",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "paymentMethodSummary": {
+    "label": "Payment Method Summary",
+    "allTime": "All Time",
+    "allTimeHint": "Showing the all-time running balance. Pick a date range above to see net movement within just that period instead.",
+    "balanceLabel": "Current Balance",
+    "tableTitle": "Cash / bKash / Nagad / Rocket / Bank Account",
+    "totalRow": "Total",
+    "columns": {
+      "method": "Payment Method",
+      "totalIn": "Total In",
+      "totalOut": "Total Out",
+      "balance": "Balance"
+    },
+    "noData": "No transactions recorded yet",
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load payment method summary",
       "pdf": "Failed to generate PDF"
     }
   }

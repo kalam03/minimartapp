@@ -1,0 +1,4 @@
+/* Uses Tailwind utility classes from the global stylesheet — no
+   component-scoped overrides needed today. Kept as a placeholder so this
+   component follows the same file layout (ts/html/css) as the rest of
+   the app's feature pages. */
