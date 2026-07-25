@@ -11,6 +11,8 @@ import { Customer, CustomerFilter, CustomerService } from '../../services/custom
 import { SaleService, StockConflictError } from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
 import { OrderService } from '../../services/order.service';
+import { PayrollService, Employee } from '../../services/payroll.service';
+import { AuthService } from '../../services/auth.service';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
 import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
 import { AppConfigService } from '../../services/app-config.service';
@@ -55,6 +57,8 @@ export class PosBillingComponent implements OnInit {
     private saleService: SaleService,
     private receiptService: ReceiptService,
     private orderService: OrderService,
+    private payrollService: PayrollService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,
     private transloco: TranslocoService,
@@ -90,10 +94,12 @@ export class PosBillingComponent implements OnInit {
   // UI State
   showProductDropdown: boolean = false;
   showCustomerDropdown: boolean = false;
+  showDeliveryDropdown: boolean = false;
 
   // Keyboard navigation indices
   selectedProductIndex: number = -1;
   selectedCustomerIndex: number = -1;
+  selectedDeliveryIndex: number = -1;
 
   // Products Data
   products: Product[] = [];
@@ -103,6 +109,18 @@ export class PosBillingComponent implements OnInit {
 
   // Customers Data
   customers: Customer[] = [];
+
+  // Employees (used as the delivery-man list) — loaded once, filtered client-side
+  employees: Employee[] = [];
+
+  // Transport detail — exactly one of these is meaningful, depending on transportType:
+  //  - delivery: selectedDeliveryManId (picked from the searchable list, mandatory)
+  //  - courier:  courierInfo (free text)
+  //  - pickup:   pickupByName (auto-filled from the logged-in counter user)
+  selectedDeliveryManId: number | null = null;
+  searchDeliveryTerm: string = '';
+  courierInfo: string = '';
+  pickupByName: string = '';
 
   // Cart Items
   cartItems: CartItem[] = [];
@@ -154,6 +172,7 @@ export class PosBillingComponent implements OnInit {
   ngOnInit(): void {
     this.loadProducts();
     this.loadCustomers();
+    this.loadEmployees();
     this.loadSampleInvoices();
 
     // Check if opened from Order Management
@@ -279,6 +298,20 @@ export class PosBillingComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error loading customers:', err);
+      },
+    });
+  }
+
+  loadEmployees(): void {
+    this.payrollService.getEmployees(true).subscribe({
+      next: (res: any) => {
+        // API may return a paginated wrapper object instead of a plain array
+        this.employees = Array.isArray(res)
+          ? res
+          : (res?.data ?? res?.items ?? res?.employees ?? []);
+      },
+      error: (err: any) => {
+        console.error('Error loading employees:', err);
       },
     });
   }
@@ -471,6 +504,110 @@ export class PosBillingComponent implements OnInit {
     }, 0);
   }
 
+  // --- Delivery-man searchable dropdown (mirrors the customer/product ones above) ---
+
+  onDeliverySearch(term: string): void {
+    this.searchDeliveryTerm = term;
+    this.showDeliveryDropdown = true;
+    this.selectedDeliveryIndex = -1;
+
+    // Typing over an already-picked name invalidates that selection until
+    // they pick again — keeps the "mandatory for delivery" check honest.
+    if (this.selectedDeliveryManId) {
+      const current = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
+      if (!current || current.fullName !== term) {
+        this.selectedDeliveryManId = null;
+      }
+    }
+
+    if (term.length > 0 && this.filteredDeliveryEmployees.length > 0) {
+      const exactMatch = this.filteredDeliveryEmployees.find(
+        (e) => e.fullName?.toLowerCase() === term.toLowerCase(),
+      );
+      if (exactMatch) {
+        this.selectDeliveryMan(exactMatch);
+      }
+    }
+  }
+
+  onDeliveryKeydown(event: KeyboardEvent): void {
+    if (!this.showDeliveryDropdown || this.filteredDeliveryEmployees.length === 0) {
+      if (event.key === 'Enter' && this.searchDeliveryTerm.length > 0) {
+        event.preventDefault();
+        this.selectBestMatchDeliveryMan();
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedDeliveryIndex = Math.min(
+          this.selectedDeliveryIndex + 1,
+          this.filteredDeliveryEmployees.length - 1,
+        );
+        this.scrollToSelectedDelivery();
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedDeliveryIndex = Math.max(this.selectedDeliveryIndex - 1, -1);
+        this.scrollToSelectedDelivery();
+        break;
+
+      case 'Enter':
+        event.preventDefault();
+        if (
+          this.selectedDeliveryIndex >= 0 &&
+          this.selectedDeliveryIndex < this.filteredDeliveryEmployees.length
+        ) {
+          this.selectDeliveryMan(this.filteredDeliveryEmployees[this.selectedDeliveryIndex]);
+        } else if (this.filteredDeliveryEmployees.length > 0) {
+          this.selectDeliveryMan(this.filteredDeliveryEmployees[0]);
+        }
+        break;
+
+      case 'Escape':
+        event.preventDefault();
+        this.showDeliveryDropdown = false;
+        this.selectedDeliveryIndex = -1;
+        break;
+    }
+  }
+
+  scrollToSelectedDelivery(): void {
+    setTimeout(() => {
+      const selectedElement = document.querySelector('.delivery-dropdown-item.selected');
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }, 0);
+  }
+
+  selectBestMatchDeliveryMan(): void {
+    if (this.searchDeliveryTerm.length === 0) return;
+    const term = this.searchDeliveryTerm.toLowerCase();
+
+    let bestMatch = this.employees.find((e) => e.fullName?.toLowerCase() === term);
+
+    if (!bestMatch) {
+      bestMatch = this.employees.find((e) => e.fullName?.toLowerCase().startsWith(term));
+    }
+    if (!bestMatch) {
+      bestMatch = this.employees.find((e) => e.fullName?.toLowerCase().includes(term));
+    }
+    if (bestMatch) {
+      this.selectDeliveryMan(bestMatch);
+    }
+  }
+
+  selectDeliveryMan(employee: Employee): void {
+    this.selectedDeliveryManId = employee.employeeId;
+    this.searchDeliveryTerm = employee.fullName;
+    this.showDeliveryDropdown = false;
+    this.selectedDeliveryIndex = -1;
+  }
+
   selectBestMatchProduct(): void {
     if (this.searchProductTerm.length === 0) return;
 
@@ -587,6 +724,11 @@ export class PosBillingComponent implements OnInit {
     this.discountPercent = 0;
     this.transportCost = 0;
     this.transportType = '';
+    this.selectedDeliveryManId = null;
+    this.searchDeliveryTerm = '';
+    this.showDeliveryDropdown = false;
+    this.courierInfo = '';
+    this.pickupByName = '';
     this.selectedPaymentMethod = DEFAULT_PAYMENT_METHOD;
     this.paymentCash = 0;
     this.calculateTotals();
@@ -602,15 +744,29 @@ export class PosBillingComponent implements OnInit {
   // Handle transport type changes
   onTransportTypeChange(value: string): void {
     this.transportType = value;
+
+    // Clear the type-specific fields whenever the transport type changes so
+    // stale data from a previous selection can't leak onto the receipt.
+    this.selectedDeliveryManId = null;
+    this.searchDeliveryTerm = '';
+    this.showDeliveryDropdown = false;
+    this.courierInfo = '';
+    this.pickupByName = '';
+
     // Optional: Set predefined transport costs based on type
     switch (value) {
       case 'delivery':
+        // Delivery man must be picked from the searchable list — mandatory,
+        // enforced in submitBill().
         // this.transportCost = 50; // Uncomment to set default delivery charge
         break;
       case 'courier':
+        // Free-text courier reference, entered below.
         // this.transportCost = 30; // Uncomment to set default courier charge
         break;
       case 'pickup':
+        // Defaults to whoever is logged in at this counter.
+        this.pickupByName = this.authService.getUser()?.userName || '';
         // this.transportCost = 0; // Uncomment to set zero for pickup
         break;
     }
@@ -627,6 +783,10 @@ export class PosBillingComponent implements OnInit {
     if (!target.closest('.customer-search-container')) {
       this.showCustomerDropdown = false;
       this.selectedCustomerIndex = -1;
+    }
+    if (!target.closest('.delivery-search-container')) {
+      this.showDeliveryDropdown = false;
+      this.selectedDeliveryIndex = -1;
     }
   }
 
@@ -662,6 +822,39 @@ export class PosBillingComponent implements OnInit {
   get selectedCustomer(): Customer | undefined {
     if (!Array.isArray(this.customers)) return undefined;
     return this.customers.find((c) => c.customerId === this.selectedCustomerId);
+  }
+
+  // Filtered delivery-man list — unlike products/customers, shows the full
+  // (short) employee list even with an empty search term so it works as a
+  // simple picker, not just a type-ahead.
+  get filteredDeliveryEmployees(): Employee[] {
+    if (!Array.isArray(this.employees)) return [];
+    const term = this.searchDeliveryTerm.trim().toLowerCase();
+    const list = term
+      ? this.employees.filter(
+          (e) =>
+            e.fullName?.toLowerCase().includes(term) ||
+            e.employeeCode?.toLowerCase().includes(term) ||
+            (e.mobile || '').includes(this.searchDeliveryTerm),
+        )
+      : this.employees;
+    return list.slice(0, 10);
+  }
+
+  /** Resolves the right "assigned to" display value for the current transport type. */
+  get transportDetail(): string {
+    switch (this.transportType) {
+      case 'delivery': {
+        const emp = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
+        return emp?.fullName || '';
+      }
+      case 'courier':
+        return this.courierInfo;
+      case 'pickup':
+        return this.pickupByName;
+      default:
+        return '';
+    }
   }
 
   /** Previous balance: positive = customer owes (due), negative = customer has credit */
@@ -819,6 +1012,10 @@ export class PosBillingComponent implements OnInit {
       await this.alertService.warning(this.t('messages.cartEmptyWarning'));
       return;
     }
+    if (this.transportType === 'delivery' && !this.selectedDeliveryManId) {
+      await this.alertService.warning(this.t('messages.deliveryManRequiredWarning'));
+      return;
+    }
     console.log("customer ",this.selectedCustomer)
     console.log("customerq2 ",this.customers)
     // if (!this.selectedCustomerId) {
@@ -872,6 +1069,8 @@ export class PosBillingComponent implements OnInit {
         discountPercent: this.discountPercent,
         transportCost: this.transportCost,
         transport: this.transportType,
+        transportDetail: this.transportDetail,
+        deliveryManId: this.transportType === 'delivery' ? this.selectedDeliveryManId : null,
         previousDue: this.previousDue,
         previousBalance: snapPreviousDue,
         netAmount: this.grossAmount,
@@ -1060,6 +1259,11 @@ buildReceiptFromCurrentSale(receipt: any): string {
   const discountPercent = receipt.discountPercent || 0;
   const transportCost = receipt.transportCost || 0;
   const transport = receipt.transport || 'N/A';
+  const transportDetail = receipt.transportDetail || '';
+  const transportDetailLabel =
+    receipt.transport === 'delivery' ? 'Delivery Man' :
+    receipt.transport === 'courier' ? 'Courier' :
+    receipt.transport === 'pickup' ? 'Picked Up By' : 'Assigned To';
   const prevDue = receipt.previousDue || 0;
   const netAmount = receipt.netAmount || (subtotal - discount + transportCost + prevDue);
   const paidAmount = receipt.paidAmount || 0;
@@ -1293,6 +1497,12 @@ Item               Price Qty    Amount
             <div class="total-line">
               <span>Transport (${escapeHtml(transport)}):</span>
               <span>${formatTk(transportCost)}</span>
+            </div>
+            ` : ''}
+            ${transportDetail ? `
+            <div class="total-line">
+              <span>${transportDetailLabel}:</span>
+              <span>${escapeHtml(transportDetail)}</span>
             </div>
             ` : ''}
             ${prevDue > 0 ? `

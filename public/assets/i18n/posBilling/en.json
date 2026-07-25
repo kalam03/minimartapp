@@ -44,7 +44,14 @@
     "transportSelect": "Select",
     "transportPickup": "Pickup",
     "transportDelivery": "Delivery",
-    "transportCourier": "Courier"
+    "transportCourier": "Courier",
+    "deliveryMan": "Delivery Man",
+    "deliveryManSearchPlaceholder": "Search delivery man...",
+    "noEmployeesFound": "No employees found",
+    "deliveryManRequired": "Please select a delivery man",
+    "courierInfo": "Courier",
+    "courierInfoPlaceholder": "Enter courier name / tracking info",
+    "pickedUpBy": "Picked Up By"
   },
   "messages": {
     "orderLoadedTitle": "Order Loaded",
@@ -54,6 +61,7 @@
     "noProductSelectedBody": "Please select a product to add to the cart.",
     "stockAvailable": "Only {{qty}} items available in stock",
     "cartEmptyWarning": "Cart is empty. Please add items to continue.",
+    "deliveryManRequiredWarning": "Please select a delivery man before submitting the bill.",
     "confirmSubmitTitle": "Confirm Bill Submission",
     "confirmSubmitBody": "Are you sure you want to submit the bill? Total: ৳{{amount}}",
     "orderCompleteTitle": "Order Done",

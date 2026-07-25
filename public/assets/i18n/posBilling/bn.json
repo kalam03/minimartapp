@@ -44,7 +44,14 @@
     "transportSelect": "নির্বাচন করুন",
     "transportPickup": "পিকআপ",
     "transportDelivery": "ডেলিভারি",
-    "transportCourier": "কুরিয়ার"
+    "transportCourier": "কুরিয়ার",
+    "deliveryMan": "ডেলিভারি ম্যান",
+    "deliveryManSearchPlaceholder": "ডেলিভারি ম্যান খুঁজুন...",
+    "noEmployeesFound": "কোনো কর্মী পাওয়া যায়নি",
+    "deliveryManRequired": "একজন ডেলিভারি ম্যান নির্বাচন করুন",
+    "courierInfo": "কুরিয়ার",
+    "courierInfoPlaceholder": "কুরিয়ারের নাম / ট্র্যাকিং তথ্য লিখুন",
+    "pickedUpBy": "যিনি নিয়েছেন"
   },
   "messages": {
     "orderLoadedTitle": "অর্ডার লোড হয়েছে",
@@ -54,6 +61,7 @@
     "noProductSelectedBody": "কার্টে যুক্ত করতে একটি পণ্য নির্বাচন করুন।",
     "stockAvailable": "স্টকে মাত্র {{qty}}টি আইটেম আছে",
     "cartEmptyWarning": "কার্ট খালি। চালিয়ে যেতে আইটেম যুক্ত করুন।",
+    "deliveryManRequiredWarning": "বিল জমা দেওয়ার আগে একজন ডেলিভারি ম্যান নির্বাচন করুন।",
     "confirmSubmitTitle": "বিল জমাদান নিশ্চিত করুন",
     "confirmSubmitBody": "আপনি কি নিশ্চিত বিল জমা দিতে চান? মোট: ৳{{amount}}",
     "orderCompleteTitle": "অর্ডার সম্পন্ন",
