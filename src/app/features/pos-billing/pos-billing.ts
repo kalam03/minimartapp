@@ -884,13 +884,13 @@ export class PosBillingComponent implements OnInit {
 
       const receiptHtml = this.buildReceiptFromCurrentSale(receipt);
 
-  // Open in new window for printing
-  const printWindow = window.open('', '_blank', 'width=400,height=600');
-  if (printWindow) {
-    printWindow.document.write(receiptHtml);
-    printWindow.document.close();
-  }
-
+      // Auto-print straight to the 58mm thermal printer — no preview window
+      // and no manual "Print" button. Runs silently via a hidden iframe.
+      // Note: the browser's native print dialog will still appear on submit
+      // unless the browser is launched with a silent-print flag (e.g. Chrome's
+      // --kiosk-printing), which skips the dialog and prints to the default
+      // printer automatically.
+      this.printReceiptSilently(receiptHtml);
 
     console.log('Submitting receipt:', receipt);
       this.saleService.createSale(receipt).subscribe({
@@ -1103,48 +1103,31 @@ buildReceiptFromCurrentSale(receipt: any): string {
 
           body {
             font-family: 'Courier New', 'Monaco', monospace;
-            background: #f0f0f0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
           }
 
           .receipt {
-            max-width: 350px;
-            width: 100%;
-            margin: 0 auto;
-            background: white;
-            padding: 16px 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 58mm;
+            margin: 0;
+            background: #fff;
+            color: #000;
+            padding: 2mm;
           }
 
-          /* Thermal printer optimized */
+          /* Thermal printer optimized: 58mm roll, solid black text prints
+             far darker/cleaner on thermal paper than grays. */
           @media print {
             body {
-              background: white;
-              padding: 0;
+              background: #fff;
               margin: 0;
+              padding: 0;
             }
             .receipt {
-              box-shadow: none;
-              padding: 8px;
-              max-width: 100%;
-            }
-            .no-print {
-              display: none;
-            }
-          }
-
-          /* Mobile responsive */
-          @media (max-width: 480px) {
-            .receipt {
-              max-width: 100%;
-              padding: 12px 8px;
-            }
-            body {
-              padding: 10px;
+              padding: 2mm;
+              width: 58mm;
             }
           }
 
@@ -1168,7 +1151,8 @@ buildReceiptFromCurrentSale(receipt: any): string {
 
           .shop-address {
             font-size: 9px;
-            color: #555;
+            color: #000;
+            font-weight: 600;
             margin-top: 4px;
           }
 
@@ -1182,9 +1166,11 @@ buildReceiptFromCurrentSale(receipt: any): string {
             margin: 8px 0;
           }
 
-          .item-pre {
+          .item-pre, .item {
             font-family: 'Courier New', monospace;
             font-size: 10px;
+            font-weight: 600;
+            color: #000;
             margin: 2px 0;
             white-space: pre;
             letter-spacing: 0.5px;
@@ -1195,6 +1181,8 @@ buildReceiptFromCurrentSale(receipt: any): string {
             justify-content: space-between;
             margin: 4px 0;
             font-size: 11px;
+            font-weight: 600;
+            color: #000;
           }
 
           .total-line-bold {
@@ -1213,11 +1201,14 @@ buildReceiptFromCurrentSale(receipt: any): string {
             margin-top: 12px;
             text-align: center;
             font-size: 9px;
-            color: #666;
+            color: #000;
+            font-weight: 600;
           }
 
           .invoice-info {
             font-size: 9px;
+            font-weight: 600;
+            color: #000;
             margin: 6px 0;
             display: flex;
             justify-content: space-between;
@@ -1228,7 +1219,8 @@ buildReceiptFromCurrentSale(receipt: any): string {
           .payment-method {
             display: inline-block;
             padding: 2px 6px;
-            background: #f0f0f0;
+            background: #eee;
+            color: #000;
             font-weight: bold;
           }
 
@@ -1241,7 +1233,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
           }
 
           @page {
-            size: auto;
+            size: 58mm auto;
             margin: 0mm;
           }
         </style>
@@ -1304,13 +1296,13 @@ Item               Price Qty    Amount
             </div>
             ` : ''}
             ${prevDue > 0 ? `
-            <div class="total-line" style="color:#e74c3c; font-weight:bold">
+            <div class="total-line" style="color:#000; font-weight:bold">
               <span>Previous Due:</span>
               <span>+${formatTk(prevDue)}</span>
             </div>
             ` : ''}
             ${prevDue < 0 ? `
-            <div class="total-line" style="color:#27ae60; font-weight:bold">
+            <div class="total-line" style="color:#000; font-weight:bold">
               <span>Advance Credit:</span>
               <span>-${formatTk(Math.abs(prevDue))}</span>
             </div>
@@ -1348,8 +1340,8 @@ Item               Price Qty    Amount
           ${dueAmount > 0 ? `
           <div class="due-line">
             <div class="total-line total-line-bold">
-              <span>DUE AMOUNT:</span>
-              <span style="color: #e74c3c;">${formatTk(dueAmount)}</span>
+              <span>*** DUE AMOUNT ***:</span>
+              <span style="color: #000;">${formatTk(dueAmount)}</span>
             </div>
           </div>
           ` : ''}
@@ -1378,16 +1370,60 @@ Item               Price Qty    Amount
             <div style="margin-top: 4px;">Have a great day!</div>
           </div>
 
-          <!-- Print Button (only visible on screen) -->
-          <div class="no-print" style="text-align: center; margin-top: 20px;">
-            <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; cursor: pointer; background: #2ecc71; color: white; border: none; border-radius: 4px;">
-              Print Receipt
-            </button>
-          </div>
         </div>
       </body>
     </html>
   `;
+}
+
+// Silently print the receipt to the thermal printer via a hidden iframe —
+// nothing is shown to the cashier and no click is required.
+private printReceiptSilently(receiptHtml: string): void {
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(iframe);
+
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
+    // Small delay so the print job has actually been handed off before we
+    // tear down the iframe it's printing from.
+    setTimeout(() => {
+      if (iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
+    }, 1000);
+  };
+
+  const doc = iframe.contentWindow?.document;
+  if (!doc) {
+    cleanup();
+    return;
+  }
+
+  doc.open();
+  doc.write(receiptHtml);
+  doc.close();
+
+  iframe.onload = () => {
+    const win = iframe.contentWindow;
+    if (!win) {
+      cleanup();
+      return;
+    }
+    win.addEventListener('afterprint', cleanup, { once: true });
+    win.focus();
+    win.print();
+    // Fallback in case 'afterprint' never fires in some browser/driver setups.
+    cleanup();
+  };
 }
 
 // Open print preview window
