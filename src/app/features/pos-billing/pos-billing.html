@@ -393,9 +393,9 @@
                   [class.bg-green-50]="selectedDeliveryIndex === i"
                   class="delivery-dropdown-item p-2 cursor-pointer border-b text-xs transition-colors hover:bg-indigo-50"
                 >
-                  <div class="font-semibold text-sm">{{ emp.fullName }}</div>
+                  <div class="font-semibold text-sm">{{ emp.fullName }}-{{ emp.employeeCode }}</div>
                   <div class="text-xs text-gray-500">
-                    {{ emp.designationName || emp.employeeCode }}<span *ngIf="emp.mobile"> · {{ emp.mobile }}</span>
+                    {{ emp.designationName }}<span *ngIf="emp.mobile"> · {{ emp.mobile }}</span>
                   </div>
                 </div>
                 <div *ngIf="filteredDeliveryEmployees.length === 0" class="p-2 text-center text-gray-500 text-sm">

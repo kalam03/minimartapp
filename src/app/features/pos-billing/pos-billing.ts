@@ -506,6 +506,12 @@ export class PosBillingComponent implements OnInit {
 
   // --- Delivery-man searchable dropdown (mirrors the customer/product ones above) ---
 
+  /** "Full Name-EMP001" — shown in the dropdown and filled into the search
+   *  box once picked, so two employees with the same first name stay distinguishable. */
+  deliveryManLabel(employee: Employee): string {
+    return `${employee.fullName}-${employee.employeeCode}`;
+  }
+
   onDeliverySearch(term: string): void {
     this.searchDeliveryTerm = term;
     this.showDeliveryDropdown = true;
@@ -515,14 +521,16 @@ export class PosBillingComponent implements OnInit {
     // they pick again — keeps the "mandatory for delivery" check honest.
     if (this.selectedDeliveryManId) {
       const current = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
-      if (!current || current.fullName !== term) {
+      if (!current || this.deliveryManLabel(current) !== term) {
         this.selectedDeliveryManId = null;
       }
     }
 
     if (term.length > 0 && this.filteredDeliveryEmployees.length > 0) {
       const exactMatch = this.filteredDeliveryEmployees.find(
-        (e) => e.fullName?.toLowerCase() === term.toLowerCase(),
+        (e) =>
+          this.deliveryManLabel(e).toLowerCase() === term.toLowerCase() ||
+          e.fullName?.toLowerCase() === term.toLowerCase(),
       );
       if (exactMatch) {
         this.selectDeliveryMan(exactMatch);
@@ -588,7 +596,9 @@ export class PosBillingComponent implements OnInit {
     if (this.searchDeliveryTerm.length === 0) return;
     const term = this.searchDeliveryTerm.toLowerCase();
 
-    let bestMatch = this.employees.find((e) => e.fullName?.toLowerCase() === term);
+    let bestMatch = this.employees.find(
+      (e) => this.deliveryManLabel(e).toLowerCase() === term || e.fullName?.toLowerCase() === term,
+    );
 
     if (!bestMatch) {
       bestMatch = this.employees.find((e) => e.fullName?.toLowerCase().startsWith(term));
@@ -603,7 +613,7 @@ export class PosBillingComponent implements OnInit {
 
   selectDeliveryMan(employee: Employee): void {
     this.selectedDeliveryManId = employee.employeeId;
-    this.searchDeliveryTerm = employee.fullName;
+    this.searchDeliveryTerm = this.deliveryManLabel(employee);
     this.showDeliveryDropdown = false;
     this.selectedDeliveryIndex = -1;
   }
@@ -841,6 +851,13 @@ export class PosBillingComponent implements OnInit {
     return list.slice(0, 10);
   }
 
+  /** EmployeeCode of the selected delivery man — this is what actually gets
+   *  stored on the Sales row (Sales.DeliveryManCode is varchar, not a numeric FK). */
+  get selectedDeliveryManCode(): string | null {
+    const emp = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
+    return emp?.employeeCode || null;
+  }
+
   /** Resolves the right "assigned to" display value for the current transport type. */
   get transportDetail(): string {
     switch (this.transportType) {
@@ -1070,7 +1087,9 @@ export class PosBillingComponent implements OnInit {
         transportCost: this.transportCost,
         transport: this.transportType,
         transportDetail: this.transportDetail,
-        deliveryManId: this.transportType === 'delivery' ? this.selectedDeliveryManId : null,
+        // Only the EmployeeCode is persisted (Sales.DeliveryManCode, varchar) —
+        // no numeric FK column exists for this on Sales.
+        deliveryManCode: this.transportType === 'delivery' ? this.selectedDeliveryManCode : null,
         previousDue: this.previousDue,
         previousBalance: snapPreviousDue,
         netAmount: this.grossAmount,
