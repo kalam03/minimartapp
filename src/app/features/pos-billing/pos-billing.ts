@@ -147,7 +147,7 @@ export class PosBillingComponent implements OnInit {
   discountAmount: number = 0;
   discountPercent: number = 0;
   transportCost: number = 0;
-  transportType: string = '';
+  transportType: string = 'delivery';
   selectedPaymentMethod: string = DEFAULT_PAYMENT_METHOD;
   /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
   readonly paymentMethods = PAYMENT_METHODS;
@@ -734,7 +734,7 @@ export class PosBillingComponent implements OnInit {
     this.discountAmount = 0;
     this.discountPercent = 0;
     this.transportCost = 0;
-    this.transportType = '';
+    this.transportType = 'delivery';
     this.selectedDeliveryManId = null;
     this.searchDeliveryTerm = '';
     this.showDeliveryDropdown = false;
