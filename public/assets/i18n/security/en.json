@@ -67,7 +67,9 @@
       "passwordPlaceholder": "Enter password",
       "defaultRole": "Default Role",
       "active": "Active",
-      "role": "Role"
+      "role": "Role",
+      "employee": "Employee *",
+      "employeeSelectPlaceholder": "-- Select employee --"
     },
     "buttons": {
       "save": "Save User",
@@ -139,6 +141,8 @@
       "passwordSuccess": "Password changed successfully.",
       "passwordError": "Failed to change password.",
       "selectRoleWarning": "Please select a role.",
+      "employeeRequired": "Please select an employee.",
+      "employeeRequiredWarning": "Please select an employee before creating the user.",
       "roleAssignedSuccess": "Role assigned.",
       "roleAssignError": "Failed to assign role.",
       "removeRoleConfirm": "Remove this role from the user?",

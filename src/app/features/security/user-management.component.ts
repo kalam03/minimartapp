@@ -12,6 +12,7 @@ import {
   UserRoleResponse,
   AssignRoleRequest
 } from '../../services/user.service';
+import { PayrollService, Employee } from '../../services/payroll.service';
 import { AlertService } from '../../shared/alert.service';
 
 @Component({
@@ -43,13 +44,16 @@ export class UserManagementComponent implements OnInit {
 
   selectedUser: UserResponse | null = null;
 
-  createForm: CreateUserRequest = { userName: '', password: '', role: 'Cashier' };
+  createForm: CreateUserRequest = { userName: '', password: '', role: 'Cashier', employeeId: 0 };
   editForm: UpdateUserRequest   = { userName: '', role: '', isActive: true };
   passwordForm: ChangePasswordRequest = { oldPassword: '', newPassword: '' };
   isAdminReset = false;
 
   assignRoleId = 0;
   roleOptions = ['Admin', 'Manager', 'Cashier', 'Viewer'];
+
+  // Employee picker (plain select, mandatory on Create User).
+  employees: Employee[] = [];
 
   // Pagination & sorting
   pageSize    = 10;
@@ -64,6 +68,7 @@ export class UserManagementComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private payrollService: PayrollService,
     private alertService: AlertService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService
@@ -77,6 +82,7 @@ export class UserManagementComponent implements OnInit {
   ngOnInit(): void {
     this.loadUsers();
     this.loadRoles();
+    this.loadEmployees();
   }
 
   // ── Load ───────────────────────────────────────────────────────────────────
@@ -93,6 +99,13 @@ export class UserManagementComponent implements OnInit {
     this.userService.getRoles(true).subscribe({
       next: (data) => { this.allRoles = data; },
       error: () => {}
+    });
+  }
+
+  loadEmployees(): void {
+    this.payrollService.getEmployees(true).subscribe({
+      next: (res) => { this.employees = res?.data || []; },
+      error: () => { this.employees = []; }
     });
   }
 
@@ -132,7 +145,7 @@ export class UserManagementComponent implements OnInit {
   // ── Create User ────────────────────────────────────────────────────────────
 
   openCreateForm(): void {
-    this.createForm  = { userName: '', password: '', role: 'Cashier' };
+    this.createForm  = { userName: '', password: '', role: 'Cashier', employeeId: 0 };
     this.createErrors = { userName: '', password: '' };
     this.showCreateForm = true;
   }
@@ -141,6 +154,11 @@ export class UserManagementComponent implements OnInit {
     this.validateCreateField('userName');
     this.validateCreateField('password');
     if (this.isCreateInvalid('userName') || this.isCreateInvalid('password')) return;
+
+    if (!this.createForm.employeeId) {
+      this.alertService.warning(this.t('users.messages.employeeRequiredWarning'), this.t('users.messages.validation'));
+      return;
+    }
 
     this.alertService.confirm(this.t('users.messages.createConfirm', { name: this.createForm.userName })).then((ok: boolean) => {
       if (!ok) return;

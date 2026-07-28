@@ -8,6 +8,9 @@ export interface UserResponse {
   tenantId: number;
   userName: string;
   role: string;
+  employeeId?: number;
+  employeeCode?: string;
+  employeeName?: string;
   isActive: boolean;
   createdAt: string;
   roleNames: string;
@@ -17,6 +20,7 @@ export interface CreateUserRequest {
   userName: string;
   password: string;
   role: string;
+  employeeId: number;
 }
 
 export interface UpdateUserRequest {
