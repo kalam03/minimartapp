@@ -39,6 +39,12 @@ export interface LoginResponse {
     role:      string;
     roleNames: string;
     preferredLanguage?: string;
+    // Employee this login is linked to (Users.EmployeeId) — used e.g. by
+    // pos-billing's "Pickup" transport type to auto-fill who's at the counter
+    // instead of asking them to pick themselves from a dropdown.
+    employeeId?: number;
+    employeeCode?: string;
+    employeeName?: string;
   };
 }
 

@@ -51,7 +51,11 @@
     "deliveryManRequired": "একজন ডেলিভারি ম্যান নির্বাচন করুন",
     "courierInfo": "কুরিয়ার",
     "courierInfoPlaceholder": "কুরিয়ারের নাম / ট্র্যাকিং তথ্য লিখুন",
-    "pickedUpBy": "যিনি নিয়েছেন"
+    "pickedUpBy": "যিনি নিয়েছেন",
+    "assignedEmployee": "নির্ধারিত কর্মচারী",
+    "assignedEmployeeSearchPlaceholder": "নাম/কোড/মোবাইল দিয়ে কর্মচারী খুঁজুন…",
+    "assignedEmployeeRequired": "একজন কর্মচারী নির্বাচন করুন।",
+    "pickupEmployeeRequired": "আপনার একাউন্ট কোনো কর্মচারীর সাথে যুক্ত নয় — অ্যাডমিনের সাথে যোগাযোগ করুন।"
   },
   "messages": {
     "orderLoadedTitle": "অর্ডার লোড হয়েছে",
@@ -62,6 +66,7 @@
     "stockAvailable": "স্টকে মাত্র {{qty}}টি আইটেম আছে",
     "cartEmptyWarning": "কার্ট খালি। চালিয়ে যেতে আইটেম যুক্ত করুন।",
     "deliveryManRequiredWarning": "বিল জমা দেওয়ার আগে একজন ডেলিভারি ম্যান নির্বাচন করুন।",
+    "pickupEmployeeRequiredWarning": "আপনার একাউন্ট কোনো কর্মচারীর সাথে যুক্ত নয়। পিকআপ বিক্রয় সম্পন্ন করার আগে অ্যাডমিনের সাথে যোগাযোগ করুন।",
     "confirmSubmitTitle": "বিল জমাদান নিশ্চিত করুন",
     "confirmSubmitBody": "আপনি কি নিশ্চিত বিল জমা দিতে চান? মোট: ৳{{amount}}",
     "orderCompleteTitle": "অর্ডার সম্পন্ন",

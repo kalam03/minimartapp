@@ -44,7 +44,13 @@
     "transportSelect": "নির্বাচন করুন",
     "transportPickup": "পিকআপ",
     "transportDelivery": "ডেলিভারি",
-    "transportCourier": "কুরিয়ার"
+    "transportCourier": "কুরিয়ার",
+    "assignedEmployee": "নির্ধারিত কর্মচারী",
+    "assignedEmployeeSearchPlaceholder": "নাম/কোড/মোবাইল দিয়ে কর্মচারী খুঁজুন…",
+    "assignedEmployeeRequired": "একজন কর্মচারী নির্বাচন করুন।",
+    "noEmployeesFound": "কোনো কর্মচারী পাওয়া যায়নি",
+    "pickedUpBy": "গ্রহণ করেছেন",
+    "pickupEmployeeRequired": "আপনার একাউন্ট কোনো কর্মচারীর সাথে যুক্ত নয় — অ্যাডমিনের সাথে যোগাযোগ করুন।"
   },
   "messages": {
     "orderLoadedTitle": "অর্ডার লোড হয়েছে",
@@ -61,6 +67,8 @@
     "billSubmittedSuccess": "বিল সফলভাবে জমা হয়েছে!\nইনভয়েস: {{invoiceNo}}",
     "stockConflictTitle": "স্টক দ্বন্দ্ব — বিক্রয় সম্পন্ন করা যায়নি",
     "stockConflictBody": "\"{{productName}}\" স্টকে নেই।\nউপলব্ধ: {{available}} একক · প্রয়োজন: {{required}} একক।\nআরেকটি কাউন্টার এই আইটেমের জন্য একটি বিক্রয় সম্পন্ন করেছে।\nআইটেমটি মুছুন বা কমান এবং আবার চেষ্টা করুন।",
+    "deliveryManRequiredWarning": "জমা দেওয়ার আগে একজন কর্মচারী নির্বাচন করুন।",
+    "pickupEmployeeRequiredWarning": "আপনার একাউন্ট কোনো কর্মচারীর সাথে যুক্ত নয়। পিকআপ বিক্রয় সম্পন্ন করার আগে অ্যাডমিনের সাথে যোগাযোগ করুন।",
     "submitBillErrorTitle": "বিল জমা দিতে সমস্যা হয়েছে",
     "invoiceDetails": "ইনভয়েস বিবরণ:\nনম্বর: {{number}}\nক্রেতা: {{customer}}\nমোট: ৳{{total}}\nছাড়: ৳{{discount}}\nসর্বমোট: ৳{{gross}}\nতারিখ: {{date}}",
     "allowPopups": "রসিদ প্রিভিউ দেখতে পপ-আপ অনুমতি দিন"

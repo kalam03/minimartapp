@@ -44,7 +44,13 @@
     "transportSelect": "Select",
     "transportPickup": "Pickup",
     "transportDelivery": "Delivery",
-    "transportCourier": "Courier"
+    "transportCourier": "Courier",
+    "assignedEmployee": "Assigned Employee",
+    "assignedEmployeeSearchPlaceholder": "Search employee by name/code/mobile…",
+    "assignedEmployeeRequired": "Please select an employee.",
+    "noEmployeesFound": "No employees found",
+    "pickedUpBy": "Picked Up By",
+    "pickupEmployeeRequired": "Your account isn't linked to an employee — contact an admin."
   },
   "messages": {
     "orderLoadedTitle": "Order Loaded",
@@ -61,6 +67,8 @@
     "billSubmittedSuccess": "Bill Submitted Successfully!\nInvoice: {{invoiceNo}}",
     "stockConflictTitle": "Stock Conflict — Sale Cannot Complete",
     "stockConflictBody": "\"{{productName}}\" is out of stock.\nAvailable: {{available}} unit(s) · Requested: {{required}} unit(s).\nAnother counter completed a sale for this item just now.\nPlease remove or reduce the item and try again.",
+    "deliveryManRequiredWarning": "Please select an employee before submitting.",
+    "pickupEmployeeRequiredWarning": "Your account isn't linked to an employee. Please contact an admin before completing a pickup sale.",
     "submitBillErrorTitle": "Error submitting bill",
     "invoiceDetails": "Invoice Details:\nNumber: {{number}}\nCustomer: {{customer}}\nTotal: ৳{{total}}\nDiscount: ৳{{discount}}\nGross: ৳{{gross}}\nDate: {{date}}",
     "allowPopups": "Please allow pop-ups to view receipt preview"

@@ -115,13 +115,14 @@ export class PosBillingComponent implements OnInit {
   employees: Employee[] = [];
 
   // Transport detail — exactly one of these is meaningful, depending on transportType:
-  //  - delivery: selectedDeliveryManId (picked from the searchable list, mandatory)
-  //  - courier:  courierInfo (free text)
-  //  - pickup:   pickupByName (auto-filled from the logged-in counter user)
+  //  - delivery: selectedDeliveryManId (picked from the searchable employee list, mandatory)
+  //  - courier:  selectedDeliveryManId (same searchable employee list, mandatory)
+  //  - pickup:   pickupEmployeeCode (auto-filled from the logged-in counter user's
+  //              linked employee — session-derived, not a manual pick)
   selectedDeliveryManId: number | null = null;
   searchDeliveryTerm: string = '';
-  courierInfo: string = '';
   pickupByName: string = '';
+  pickupEmployeeCode: string | null = null;
 
   // Cart Items
   cartItems: CartItem[] = [];
@@ -738,8 +739,8 @@ export class PosBillingComponent implements OnInit {
     this.selectedDeliveryManId = null;
     this.searchDeliveryTerm = '';
     this.showDeliveryDropdown = false;
-    this.courierInfo = '';
     this.pickupByName = '';
+    this.pickupEmployeeCode = null;
     this.selectedPaymentMethod = DEFAULT_PAYMENT_METHOD;
     this.paymentCash = 0;
     this.calculateTotals();
@@ -761,25 +762,32 @@ export class PosBillingComponent implements OnInit {
     this.selectedDeliveryManId = null;
     this.searchDeliveryTerm = '';
     this.showDeliveryDropdown = false;
-    this.courierInfo = '';
     this.pickupByName = '';
+    this.pickupEmployeeCode = null;
 
     // Optional: Set predefined transport costs based on type
     switch (value) {
       case 'delivery':
-        // Delivery man must be picked from the searchable list — mandatory,
-        // enforced in submitBill().
-        // this.transportCost = 50; // Uncomment to set default delivery charge
-        break;
       case 'courier':
-        // Free-text courier reference, entered below.
-        // this.transportCost = 30; // Uncomment to set default courier charge
+        // Employee must be picked from the searchable list — mandatory,
+        // enforced in submitBill(). Delivery and Courier share the exact
+        // same picker (both need to know which staff member is handling it).
+        // this.transportCost = 50; // Uncomment to set a default charge
         break;
-      case 'pickup':
-        // Defaults to whoever is logged in at this counter.
-        this.pickupByName = this.authService.getUser()?.userName || '';
+      case 'pickup': {
+        // Auto-selected from whoever is logged in at this counter — pulled
+        // from their session (Users.EmployeeId → Employee.EmployeeCode),
+        // never a manual pick. The field is readonly in the template.
+        const sessionUser = this.authService.getUser();
+        this.pickupEmployeeCode = sessionUser?.employeeCode || null;
+        this.pickupByName = this.pickupEmployeeCode
+          ? (sessionUser?.employeeName
+              ? `${sessionUser.employeeName}-${this.pickupEmployeeCode}`
+              : this.pickupEmployeeCode)
+          : (sessionUser?.userName || '');
         // this.transportCost = 0; // Uncomment to set zero for pickup
         break;
+      }
     }
     this.calculateTotals();
   }
@@ -862,12 +870,11 @@ export class PosBillingComponent implements OnInit {
   /** Resolves the right "assigned to" display value for the current transport type. */
   get transportDetail(): string {
     switch (this.transportType) {
-      case 'delivery': {
+      case 'delivery':
+      case 'courier': {
         const emp = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
         return emp?.fullName || '';
       }
-      case 'courier':
-        return this.courierInfo;
       case 'pickup':
         return this.pickupByName;
       default:
@@ -1030,8 +1037,12 @@ export class PosBillingComponent implements OnInit {
       await this.alertService.warning(this.t('messages.cartEmptyWarning'));
       return;
     }
-    if (this.transportType === 'delivery' && !this.selectedDeliveryManId) {
+    if ((this.transportType === 'delivery' || this.transportType === 'courier') && !this.selectedDeliveryManId) {
       await this.alertService.warning(this.t('messages.deliveryManRequiredWarning'));
+      return;
+    }
+    if (this.transportType === 'pickup' && !this.pickupEmployeeCode) {
+      await this.alertService.warning(this.t('messages.pickupEmployeeRequiredWarning'));
       return;
     }
     console.log("customer ",this.selectedCustomer)
@@ -1089,8 +1100,13 @@ export class PosBillingComponent implements OnInit {
         transport: this.transportType,
         transportDetail: this.transportDetail,
         // Only the EmployeeCode is persisted (Sales.DeliveryManCode, varchar) —
-        // no numeric FK column exists for this on Sales.
-        deliveryManCode: this.transportType === 'delivery' ? this.selectedDeliveryManCode : null,
+        // no numeric FK column exists for this on Sales. Delivery/Courier use
+        // whichever employee was picked from the dropdown; Pickup uses the
+        // counter user's own linked employee code from session.
+        deliveryManCode:
+          (this.transportType === 'delivery' || this.transportType === 'courier')
+            ? this.selectedDeliveryManCode
+            : (this.transportType === 'pickup' ? this.pickupEmployeeCode : null),
         previousDue: this.previousDue,
         previousBalance: snapPreviousDue,
         netAmount: this.grossAmount,

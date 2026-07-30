@@ -51,7 +51,11 @@
     "deliveryManRequired": "Please select a delivery man",
     "courierInfo": "Courier",
     "courierInfoPlaceholder": "Enter courier name / tracking info",
-    "pickedUpBy": "Picked Up By"
+    "pickedUpBy": "Picked Up By",
+    "assignedEmployee": "Assigned Employee",
+    "assignedEmployeeSearchPlaceholder": "Search employee by name/code/mobile…",
+    "assignedEmployeeRequired": "Please select an employee.",
+    "pickupEmployeeRequired": "Your account isn't linked to an employee — contact an admin."
   },
   "messages": {
     "orderLoadedTitle": "Order Loaded",
@@ -62,6 +66,7 @@
     "stockAvailable": "Only {{qty}} items available in stock",
     "cartEmptyWarning": "Cart is empty. Please add items to continue.",
     "deliveryManRequiredWarning": "Please select a delivery man before submitting the bill.",
+    "pickupEmployeeRequiredWarning": "Your account isn't linked to an employee. Please contact an admin before completing a pickup sale.",
     "confirmSubmitTitle": "Confirm Bill Submission",
     "confirmSubmitBody": "Are you sure you want to submit the bill? Total: ৳{{amount}}",
     "orderCompleteTitle": "Order Done",
