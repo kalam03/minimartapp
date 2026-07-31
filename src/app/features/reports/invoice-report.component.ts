@@ -25,6 +25,10 @@ export class InvoiceReportComponent implements OnInit {
   activeQuick: string = 'today';
   customerFilter: number | '' = '';
 
+  // Client-side search — filters the rows already loaded for the current
+  // date range/customer (invoice no, customer, delivery man), no reload.
+  searchText = '';
+
   customers: Customer[] = [];
   rows: InvoiceReportDto[] = [];
 
@@ -78,16 +82,28 @@ export class InvoiceReportComponent implements OnInit {
     });
   }
 
+  /** Rows matching the search box — everything if the box is empty. */
+  get filteredRows(): InvoiceReportDto[] {
+    const q = this.searchText.trim().toLowerCase();
+    if (!q) return this.rows;
+    return this.rows.filter(r =>
+      (r.invoiceNo       || '').toLowerCase().includes(q) ||
+      (r.customerName    || '').toLowerCase().includes(q) ||
+      (r.deliveryManName || '').toLowerCase().includes(q) ||
+      (r.deliveryManCode || '').toLowerCase().includes(q)
+    );
+  }
+
   get totalNetAmount(): number {
-    return this.rows.reduce((sum, r) => sum + (r.netAmount || 0), 0);
+    return this.filteredRows.reduce((sum, r) => sum + (r.netAmount || 0), 0);
   }
 
   get totalPaid(): number {
-    return this.rows.reduce((sum, r) => sum + (r.paidAmount || 0), 0);
+    return this.filteredRows.reduce((sum, r) => sum + (r.paidAmount || 0), 0);
   }
 
   get totalDue(): number {
-    return this.rows.reduce((sum, r) => sum + (r.dueAmount || 0), 0);
+    return this.filteredRows.reduce((sum, r) => sum + (r.dueAmount || 0), 0);
   }
 
   applyFilter(): void {
@@ -97,6 +113,7 @@ export class InvoiceReportComponent implements OnInit {
 
   resetFilter(): void {
     this.customerFilter = '';
+    this.searchText     = '';
     this.applyQuick('today');
   }
 

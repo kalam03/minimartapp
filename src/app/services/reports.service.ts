@@ -102,6 +102,8 @@ export interface InvoiceReportDto {
   dueAmount: number;
   returnAmount: number;
   paymentType: string;
+  deliveryManCode?: string | null;
+  deliveryManName?: string | null;
 }
 
 export interface InvoiceReportResponse {

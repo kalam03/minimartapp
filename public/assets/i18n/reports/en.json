@@ -71,6 +71,7 @@
       "invoiceNo": "Invoice No",
       "date": "Date",
       "customer": "Customer",
+      "deliveryMan": "Delivery Man",
       "total": "Total",
       "discount": "Discount",
       "netAmount": "Net Amount",
@@ -78,7 +79,9 @@
       "due": "Due",
       "payment": "Payment"
     },
+    "searchPlaceholder": "Search invoice, customer, delivery man…",
     "noData": "No invoices found for this range",
+    "noMatch": "No invoices match \"{{search}}\"",
     "loading": "Loading…",
     "errors": {
       "load": "Failed to load invoice report",
