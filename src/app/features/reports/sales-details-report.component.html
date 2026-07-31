@@ -72,8 +72,21 @@
   <div class="bg-white rounded-xl shadow-md overflow-hidden border">
     <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
       <h2 class="text-white font-semibold text-sm">{{ 'reports.salesDetails.tableTitle' | transloco }}</h2>
-      <span class="text-xs" style="color:var(--theme-accent)">{{ 'reports.salesDetails.summary' | transloco: { count: rows.length, qty: totalQty, amount: (totalAmount | number:'1.2-2') } }}</span>
+      <span class="text-xs" style="color:var(--theme-accent)">{{ 'reports.salesDetails.summary' | transloco: { count: filteredRows.length, qty: totalQty, amount: (totalAmount | number:'1.2-2') } }}</span>
     </div>
+
+    <!-- Search-by-product — filters the already-loaded rows above, no reload -->
+    <div class="px-3 py-2 border-b" style="background:#f8f9fd">
+      <div class="relative max-w-xs">
+        <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+        </svg>
+        <input type="text" [(ngModel)]="productSearch"
+          [placeholder]="'reports.salesDetails.searchProduct' | transloco"
+          class="w-full pl-8 pr-2 py-1.5 text-xs border border-gray-300 rounded-lg outline-none">
+      </div>
+    </div>
+
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
         <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
@@ -89,7 +102,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of rows" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+          <tr *ngFor="let row of filteredRows" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
             <td class="px-3 py-2 text-gray-500">{{ row.invoiceNo }}</td>
             <td class="px-3 py-2 text-gray-600">{{ row.saleDate | date:'dd MMM yyyy' }}</td>
             <td class="px-3 py-2 text-gray-600">{{ row.customerName }}</td>
@@ -101,6 +114,9 @@
           </tr>
           <tr *ngIf="!isLoading && rows.length === 0">
             <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.salesDetails.noData' | transloco }}</td>
+          </tr>
+          <tr *ngIf="!isLoading && rows.length > 0 && filteredRows.length === 0">
+            <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.salesDetails.noMatch' | transloco: { search: productSearch } }}</td>
           </tr>
           <tr *ngIf="isLoading">
             <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.salesDetails.loading' | transloco }}</td>

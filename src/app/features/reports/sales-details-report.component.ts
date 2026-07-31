@@ -25,6 +25,11 @@ export class SalesDetailsReportComponent implements OnInit {
   activeQuick: string = 'today';
   customerFilter: number | '' = '';
 
+  // Product search is client-side — it filters the rows already loaded for
+  // the current date range/customer instead of round-tripping to the API,
+  // since productId/productName are already present on every row.
+  productSearch = '';
+
   customers: Customer[] = [];
   rows: SalesDetailDto[] = [];
 
@@ -78,12 +83,19 @@ export class SalesDetailsReportComponent implements OnInit {
     });
   }
 
+  /** Rows matching the product search box — everything if the box is empty. */
+  get filteredRows(): SalesDetailDto[] {
+    const q = this.productSearch.trim().toLowerCase();
+    if (!q) return this.rows;
+    return this.rows.filter(r => (r.productName || '').toLowerCase().includes(q));
+  }
+
   get totalQty(): number {
-    return this.rows.reduce((sum, r) => sum + (r.quantity || 0), 0);
+    return this.filteredRows.reduce((sum, r) => sum + (r.quantity || 0), 0);
   }
 
   get totalAmount(): number {
-    return this.rows.reduce((sum, r) => sum + (r.total || 0), 0);
+    return this.filteredRows.reduce((sum, r) => sum + (r.total || 0), 0);
   }
 
   applyFilter(): void {
@@ -93,6 +105,7 @@ export class SalesDetailsReportComponent implements OnInit {
 
   resetFilter(): void {
     this.customerFilter = '';
+    this.productSearch  = '';
     this.applyQuick('today');
   }
 

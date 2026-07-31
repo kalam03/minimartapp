@@ -54,7 +54,9 @@
       "unitPrice": "Unit Price",
       "total": "Total"
     },
+    "searchProduct": "Search by product…",
     "noData": "No sales found for this range",
+    "noMatch": "No lines match \"{{search}}\"",
     "loading": "Loading…",
     "errors": {
       "load": "Failed to load sales details",
