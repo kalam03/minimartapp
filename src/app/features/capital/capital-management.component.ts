@@ -38,19 +38,37 @@ export class CapitalManagementComponent implements OnInit {
   }
 
   // ── Transaction list ──────────────────────────────────────────────────
-  txnList:       any[]  = [];
+  // Pagination is client-side: one API call fetches every row matching the
+  // current filters (search/date/type/D-C), then paging just re-slices the
+  // already-loaded array in the browser — no extra HTTP request per page
+  // click, and no dependence on the server getting OFFSET/FETCH exactly
+  // right for what's currently on screen.
+  private readonly fetchAllPageSize = 100000;
+
+  allTxnList:    any[]  = [];   // full filtered dataset from the server
   txnTotal              = 0;
   txnPage               = 1;
-  txnPageSize           = 20;
+  txnPageSize           = 20;   // rows per page, client-side only
   txnSearch             = '';
   txnTypeFilter         = 0;
   txnDrCrFilter         = '';
-  txnFromDate           = '';
-  txnToDate             = '';
+  // Default to the current month, same as the Period Report below, instead
+  // of unbounded history — avoids surprising users with an apparently
+  // "empty" grid while a full history fetch is still loading, and keeps
+  // the two sections of the page showing the same window by default.
+  txnFromDate           = toLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  txnToDate             = toLocalDateString();
   txnTotalDebit         = 0;
   txnTotalCredit        = 0;
   isLoading             = false;
+  loadError             = false;
   Math                  = Math;
+
+  /** The slice of allTxnList to render for the current page — recomputed locally, no network call. */
+  get txnList(): any[] {
+    const start = (this.txnPage - 1) * this.txnPageSize;
+    return this.allTxnList.slice(start, start + this.txnPageSize);
+  }
 
   get txnTotalPages(): number { return Math.ceil(this.txnTotal / this.txnPageSize) || 1; }
   get netCapital():    number { return this.txnTotalCredit - this.txnTotalDebit; }
@@ -146,23 +164,33 @@ export class CapitalManagementComponent implements OnInit {
   }
 
   // ── Grid ──────────────────────────────────────────────────────────────
+  // Fetches every row matching the current filters in one call (server-side
+  // filtering, client-side paging). Only filter changes re-hit the API;
+  // changing page or page size just re-slices allTxnList (see txnList getter).
   loadTransactions(): void {
     this.isLoading = true;
+    this.loadError  = false;
     this.capitalService.getTransactions(
       this.txnSearch, this.txnDrCrFilter, this.txnTypeFilter,
-      this.txnFromDate, this.txnToDate, this.txnPage, this.txnPageSize
+      this.txnFromDate, this.txnToDate, 1, this.fetchAllPageSize
     ).subscribe({
       next: (res) => {
         if (res.success) {
-          this.txnList        = res.data;
-          this.txnTotal       = res.totalCount;
-          this.txnTotalDebit  = res.totalDebit;
-          this.txnTotalCredit = res.totalCredit;
+          this.allTxnList      = res.data || [];
+          this.txnTotal        = res.totalCount ?? this.allTxnList.length;
+          this.txnTotalDebit   = res.totalDebit  ?? 0;
+          this.txnTotalCredit  = res.totalCredit ?? 0;
+        } else {
+          this.loadError = true;
         }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: () => { this.isLoading = false; }
+      error: () => {
+        this.isLoading = false;
+        this.loadError = true;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -172,10 +200,20 @@ export class CapitalManagementComponent implements OnInit {
     this.txnSearch     = '';
     this.txnDrCrFilter = '';
     this.txnTypeFilter = 0;
-    this.txnFromDate   = '';
-    this.txnToDate     = '';
+    this.txnFromDate   = toLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+    this.txnToDate     = toLocalDateString();
     this.txnPage       = 1;
     this.loadTransactions();
+  }
+
+  /** Page nav — no HTTP call, just re-slices the already-loaded dataset. */
+  goToPage(page: number): void {
+    if (page < 1 || page > this.txnTotalPages) return;
+    this.txnPage = page;
+  }
+
+  onPageSizeChange(): void {
+    this.txnPage = 1;
   }
 
   getTxnTypeName(id: number): string {

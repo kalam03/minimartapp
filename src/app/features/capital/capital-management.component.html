@@ -138,7 +138,13 @@
             <tr *ngIf="isLoading">
               <td colspan="12" class="px-3 py-6 text-center text-gray-400">{{ 'capital.grid.loading' | transloco }}</td>
             </tr>
-            <tr *ngIf="!isLoading && txnList.length === 0">
+            <tr *ngIf="!isLoading && loadError">
+              <td colspan="12" class="px-3 py-6 text-center text-red-500">
+                Could not load transactions.
+                <button (click)="loadTransactions()" class="ml-2 underline hover:no-underline">Retry</button>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && !loadError && txnList.length === 0">
               <td colspan="12" class="px-3 py-6 text-center text-gray-400">{{ 'capital.grid.noTransactions' | transloco }}</td>
             </tr>
             <tr *ngFor="let t of txnList; let i = index" class="hover:bg-gray-50 transition">
@@ -186,15 +192,16 @@
           {{ 'capital.grid.showingSummary' | transloco: { from: (txnList.length > 0 ? (txnPage-1)*txnPageSize + 1 : 0), to: Math.min(txnPage*txnPageSize, txnTotal), total: txnTotal } }}
         </span>
         <div class="flex gap-1">
-          <button (click)="txnPage=txnPage-1; loadTransactions()" [disabled]="txnPage===1"
+          <button (click)="goToPage(txnPage-1)" [disabled]="txnPage===1"
             class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">←</button>
-          <select [(ngModel)]="txnPageSize" (change)="txnPage=1; loadTransactions()"
+          <select [(ngModel)]="txnPageSize" (change)="onPageSizeChange()"
             class="px-1 py-1 border rounded text-xs">
             <option [value]="10">10</option>
             <option [value]="20">20</option>
             <option [value]="50">50</option>
+            <option [value]="100">100</option>
           </select>
-          <button (click)="txnPage=txnPage+1; loadTransactions()" [disabled]="txnPage>=txnTotalPages"
+          <button (click)="goToPage(txnPage+1)" [disabled]="txnPage>=txnTotalPages"
             class="px-2 py-1 border rounded disabled:opacity-40 hover:bg-gray-100">→</button>
         </div>
       </div>
