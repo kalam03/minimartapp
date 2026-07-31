@@ -143,6 +143,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'capital-transaction',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/capital-transaction/capital-transaction.component').then(
+            (m) => m.CapitalTransactionComponent
+          ),
+      },
+      {
         path: 'writeoffs',
         canActivate: [PermissionGuard],
         loadComponent: () =>

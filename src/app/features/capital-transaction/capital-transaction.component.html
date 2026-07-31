@@ -1,0 +1,306 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- ── Header + current balance + link back to the ledger ─────────── -->
+    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <div>
+        <h1 class="text-base font-bold" style="color:var(--theme-primary)">{{ 'capital.form.title' | transloco }}</h1>
+        <a routerLink="/capital" class="text-xs text-gray-500 hover:underline flex items-center gap-1 mt-0.5">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          {{ 'capital.grid.title' | transloco }}
+        </a>
+      </div>
+      <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
+        <div class="px-3 py-2 border-b border-white border-opacity-10">
+          <p class="text-xs font-semibold" style="color:var(--theme-accent)">{{ 'capital.summary.netCapital' | transloco }}</p>
+        </div>
+        <div class="px-3 py-2">
+          <p class="text-xl font-bold"
+            [class.text-green-400]="netCapital >= 0"
+            [class.text-red-400]="netCapital < 0">
+            {{ isBalanceLoading ? '…' : '৳' + (netCapital | number:'1.2-2') }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Create Transaction Form ─────────────────────────────────────── -->
+    <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          {{ 'capital.form.title' | transloco }}
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+
+          <!-- TXN Date -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.txnDate"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <!-- TXN Type -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnType' | transloco }}</label>
+            <select [(ngModel)]="form.txnTypeId" (ngModelChange)="onTxnTypeChange()"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('txnTypeId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">{{ 'capital.form.selectType' | transloco }}</option>
+              <option *ngFor="let t of txnTypes" [value]="t.txnTypeId">{{ t.txnName }}</option>
+            </select>
+            <p *ngIf="isFieldInvalid('txnTypeId')" class="text-red-600 text-xs mt-1">{{ validationErrors['txnTypeId'] }}</p>
+          </div>
+
+          <!-- GL Account -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.account' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.glAccount" placeholder="CASH VAULT"
+              list="glAccountList"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('glAccount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <datalist id="glAccountList">
+              <option value="CASH VAULT">{{ 'capital.form.accountHint' | transloco }}</option>
+            </datalist>
+            <p class="text-gray-400 text-xs mt-1">{{ 'capital.form.accountNote' | transloco }}</p>
+            <p *ngIf="isFieldInvalid('glAccount')" class="text-red-600 text-xs mt-1">{{ validationErrors['glAccount'] }}</p>
+          </div>
+
+          <!-- Amount -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.amount' | transloco }}</label>
+            <input type="number" [(ngModel)]="form.amount" placeholder="0.00" step="0.01" min="0"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('amount') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('amount')" class="text-red-600 text-xs mt-1">{{ validationErrors['amount'] }}</p>
+          </div>
+
+          <!-- DR / CR -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.drCr' | transloco }}</label>
+            <div *ngIf="isDrCrFixed" class="flex items-center gap-2 mt-1">
+              <span class="px-3 py-1.5 rounded-lg text-sm font-semibold"
+                [class.bg-orange-100]="form.drCr==='D'" [class.text-orange-700]="form.drCr==='D'"
+                [class.bg-green-100]="form.drCr==='C'"  [class.text-green-700]="form.drCr==='C'">
+                {{ (form.drCr === 'D' ? 'capital.form.debitLabel' : 'capital.form.creditLabel') | transloco }}
+              </span>
+              <span class="text-xs text-gray-400">{{ 'capital.form.autoSetByType' | transloco }}</span>
+            </div>
+            <select *ngIf="!isDrCrFixed" [(ngModel)]="form.drCr"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('drCr') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option value="C">{{ 'capital.form.creditOption' | transloco }}</option>
+              <option value="D">{{ 'capital.form.debitOption' | transloco }}</option>
+            </select>
+            <p *ngIf="isFieldInvalid('drCr')" class="text-red-600 text-xs mt-1">{{ validationErrors['drCr'] }}</p>
+          </div>
+
+          <!-- Refund party-type toggle (REFUND only) -->
+          <div *ngIf="isRefundType">
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.refundToFrom' | transloco }}</label>
+            <div [class]="'flex gap-3 px-2 py-1.5 text-sm border rounded-lg ' + (isFieldInvalid('refundPartyType') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <label class="flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="refundPartyType" value="customer" [(ngModel)]="refundPartyType" />
+                <span class="text-xs">{{ 'capital.form.customer' | transloco }}</span>
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="refundPartyType" value="supplier" [(ngModel)]="refundPartyType" />
+                <span class="text-xs">{{ 'capital.form.supplier' | transloco }}</span>
+              </label>
+            </div>
+            <p *ngIf="isFieldInvalid('refundPartyType')" class="text-red-600 text-xs mt-1">{{ validationErrors['refundPartyType'] }}</p>
+          </div>
+
+          <!-- Customer dropdown (RECEIPT, or REFUND-to-customer) -->
+          <div *ngIf="needsCustomer">
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.customerField' | transloco }}</label>
+            <select [(ngModel)]="selectedCustomerId"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('customerId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">{{ 'capital.form.selectCustomer' | transloco }}</option>
+              <option *ngFor="let c of customers" [value]="c.customerId">
+                {{ c.customerName }} — {{ c.phone }}
+              </option>
+            </select>
+            <p *ngIf="isFieldInvalid('customerId')" class="text-red-600 text-xs mt-1">{{ validationErrors['customerId'] }}</p>
+          </div>
+
+          <!-- Supplier dropdown (PAYMENT, or REFUND-from-supplier) -->
+          <div *ngIf="needsSupplier">
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.supplierField' | transloco }}</label>
+            <select [(ngModel)]="selectedSupplierId"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('vendorId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">{{ 'capital.form.selectSupplier' | transloco }}</option>
+              <option *ngFor="let s of suppliers" [value]="s.supplierId">
+                {{ s.supplierName }} — {{ s.phone }}
+              </option>
+            </select>
+            <p *ngIf="isFieldInvalid('vendorId')" class="text-red-600 text-xs mt-1">{{ validationErrors['vendorId'] }}</p>
+          </div>
+
+          <!-- Salary is no longer entered here — it flows only through the
+               Payroll Management page (Process Payroll), which posts to this
+               same GL ledger automatically. -->
+          <div *ngIf="+form.txnTypeId === 14" class="md:col-span-2 lg:col-span-4">
+            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              {{ 'capital.form.salaryNotice' | transloco }}
+            </p>
+          </div>
+
+          <!-- Investor dropdown (INVESTMENT only) -->
+          <div *ngIf="needsInvestor">
+            <label class="block text-xs font-semibold mb-0.5 text-red-700">{{ 'capital.form.investorField' | transloco }}</label>
+            <select [(ngModel)]="selectedInvestorId"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('investorId') ? 'border-red-500 bg-red-50' : 'border-gray-400')">
+              <option [value]="0">{{ 'capital.form.selectInvestor' | transloco }}</option>
+              <option *ngFor="let i of investors" [value]="i.investorId">
+                {{ i.investorName }}
+              </option>
+            </select>
+            <p *ngIf="isFieldInvalid('investorId')" class="text-red-600 text-xs mt-1">{{ validationErrors['investorId'] }}</p>
+            <p *ngIf="selectedInvestor" class="text-gray-400 text-xs mt-1">{{ 'capital.form.investedToDate' | transloco: { amount: (selectedInvestor.currentBalance | number:'1.2-2') } }}</p>
+          </div>
+
+          <!-- TXN Mode -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.txnMode' | transloco }}</label>
+            <select [(ngModel)]="form.txnMode"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <option *ngFor="let pm of paymentMethods" [value]="pm.value">{{ pm.labelKey | transloco }}</option>
+            </select>
+          </div>
+
+          <!-- Reference No -->
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.referenceNo' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.referenceNo" [placeholder]="'capital.form.referenceNoPlaceholder' | transloco"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <!-- User note (appended to auto-narration) -->
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">
+              {{ (needsDescription ? 'capital.form.description' : 'capital.form.additionalNote') | transloco }}
+              <span *ngIf="!needsDescription" class="font-normal text-gray-400">{{ 'capital.form.optional' | transloco }}</span>
+            </label>
+            <input type="text" [(ngModel)]="userNarration" [placeholder]="'capital.form.narrationPlaceholder' | transloco"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('userNarration') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('userNarration')" class="text-red-600 text-xs mt-1">{{ validationErrors['userNarration'] }}</p>
+            <p *ngIf="needsDescription && !isFieldInvalid('userNarration')" class="text-gray-400 text-xs mt-1">{{ 'capital.form.expenseHint' | transloco }}</p>
+          </div>
+
+        </div>
+
+        <!-- Auto-generated narration preview -->
+        <div *ngIf="autoNarration" class="mt-3 px-3 py-2 rounded-lg border border-indigo-200 bg-indigo-50 text-xs text-indigo-900">
+          <p class="font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'capital.form.narrationPreviewTitle' | transloco }}</p>
+          <p class="italic">{{ autoNarration }}</p>
+        </div>
+
+        <!-- Warning: no capital at all -->
+        <div *ngIf="capitalDepleted"
+          class="mt-3 flex items-start gap-2 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-800 text-xs">
+          <svg class="w-4 h-4 mt-0.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <span>
+            <strong>{{ 'capital.warnings.noCapitalTitle' | transloco }}</strong>
+            {{ 'capital.warnings.noCapitalBody' | transloco: { amount: ('৳' + (netCapital | number:'1.2-2')) } }}
+          </span>
+        </div>
+
+        <!-- Warning: debit amount exceeds net capital -->
+        <div *ngIf="!capitalDepleted && debitExceedsCapital"
+          class="mt-3 flex items-start gap-2 px-3 py-2 rounded-lg border border-orange-300 bg-orange-50 text-orange-800 text-xs">
+          <svg class="w-4 h-4 mt-0.5 shrink-0 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <span>
+            <strong>{{ 'capital.warnings.exceedsTitle' | transloco }}</strong>
+            {{ 'capital.warnings.exceedsBody' | transloco: { entered: ('৳' + ((form.amount ?? 0) | number:'1.2-2')), available: ('৳' + (netCapital | number:'1.2-2')) } }}
+          </span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-2 mt-3 flex-wrap">
+          <button (click)="saveTransaction()"
+            [disabled]="capitalDepleted || debitExceedsCapital || isSaving"
+            class="text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            style="background:var(--theme-primary)" onmouseover="this.style.background='var(--theme-primary-light)'" onmouseout="this.style.background='var(--theme-primary)'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ 'capital.buttons.saveTransaction' | transloco }}
+          </button>
+          <button (click)="resetForm()"
+            class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+            {{ 'capital.buttons.reset' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Confirm Dialog Modal ─────────────────────────────────────────────── -->
+<div *ngIf="showConfirm"
+  class="fixed inset-0 z-50 flex items-center justify-center"
+  style="background:rgba(0,0,0,0.45)">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+
+    <!-- Modal header -->
+    <div class="px-5 py-3 flex items-center gap-3"
+      [style.background]="confirmType === 'warning' ? '#fff7ed' : '#f0f2ff'"
+      [style.border-bottom]="confirmType === 'warning' ? '1px solid #fdba74' : '1px solid #c7d2fe'">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+        [class.bg-orange-100]="confirmType === 'warning'"
+        [class.bg-indigo-100]="confirmType === 'normal'">
+        <!-- Warning icon for debit, checkmark icon for credit -->
+        <svg *ngIf="confirmType === 'warning'" class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+        <svg *ngIf="confirmType === 'normal'" class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h3 class="font-bold text-sm"
+        [class.text-orange-800]="confirmType === 'warning'"
+        [class.text-indigo-900]="confirmType === 'normal'">
+        {{ confirmTitle }}
+      </h3>
+    </div>
+
+    <!-- Modal body -->
+    <div class="px-5 py-4 text-sm text-gray-700 leading-relaxed"
+      [innerHTML]="confirmMessage">
+    </div>
+
+    <!-- After-balance line (debit only) -->
+    <div *ngIf="confirmType === 'warning'"
+      class="mx-5 mb-3 px-3 py-2 rounded-lg bg-orange-50 border border-orange-200 text-xs text-orange-800 flex justify-between">
+      <span>{{ 'capital.confirmModal.balanceAfterDebit' | transloco }}</span>
+      <strong>৳{{ (netCapital - (form.amount ?? 0)) | number:'1.2-2' }}</strong>
+    </div>
+
+    <!-- Modal footer -->
+    <div class="px-5 py-3 bg-gray-50 border-t flex justify-end gap-2">
+      <button (click)="cancelConfirm()"
+        class="px-4 py-1.5 text-xs font-semibold bg-white border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 transition">
+        {{ 'capital.buttons.cancel' | transloco }}
+      </button>
+      <button (click)="confirmSubmit()"
+        class="px-4 py-1.5 text-xs font-semibold text-white rounded-lg transition"
+        [class.bg-orange-500]="confirmType === 'warning'"
+        [class.hover:bg-orange-600]="confirmType === 'warning'"
+        [style.background]="confirmType === 'normal' ? 'var(--theme-primary)' : null">
+        {{ 'capital.buttons.yesSaveTransaction' | transloco }}
+      </button>
+    </div>
+
+  </div>
+</div>

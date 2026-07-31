@@ -14,6 +14,7 @@
     "roles": "Roles",
     "permissions": "Permissions",
     "capital": "Capital",
+    "capitalTransaction": "Capital Transaction",
     "writeoffs": "Write-Offs",
     "payroll": "Payroll",
     "investors": "Investors",
