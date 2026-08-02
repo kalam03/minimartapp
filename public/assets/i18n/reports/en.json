@@ -68,6 +68,7 @@
     "tableTitle": "Invoices",
     "summary": "{{count}} invoice(s) · Net ৳{{net}} · Paid ৳{{paid}} · Due ৳{{due}}",
     "columns": {
+      "actions": "Actions",
       "invoiceNo": "Invoice No",
       "date": "Date",
       "customer": "Customer",

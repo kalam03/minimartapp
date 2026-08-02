@@ -68,6 +68,7 @@
     "tableTitle": "ইনভয়েস",
     "summary": "{{count}}টি ইনভয়েস · নেট ৳{{net}} · পরিশোধিত ৳{{paid}} · বাকি ৳{{due}}",
     "columns": {
+      "actions": "কার্যক্রম",
       "invoiceNo": "ইনভয়েস নং",
       "date": "তারিখ",
       "customer": "ক্রেতা",
