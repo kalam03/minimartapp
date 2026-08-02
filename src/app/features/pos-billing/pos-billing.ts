@@ -1070,6 +1070,13 @@ export class PosBillingComponent implements OnInit {
       this.t('messages.confirmSubmitTitle'),
     );
     if (confirmed) {
+      // Pre-open a blank tab now, still inside the click→confirm gesture
+      // chain — browsers are far more likely to block a window.open() that
+      // happens later, after the createSale HTTP round trip finishes. We
+      // just navigate this same tab to the invoice PDF URL once we know the
+      // new saleId — see openInvoicePdf().
+      const invoiceTab = window.open('', '_blank');
+
       const newInvoice: Invoice = {
         invoiceNo: 'INV-' + Date.now(),
         customerName: this.selectedCustomer?.customerName || '',
@@ -1134,12 +1141,21 @@ export class PosBillingComponent implements OnInit {
       this.saleService.createSale(receipt).subscribe({
         next: async (response: any) => {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
+          const saleId = response.data?.saleId ?? response.saleId ?? null;
 
           // Balance update handled by sp_AddSale (@PreviousBalance param) — no separate call needed
 
+          // Auto-generate the invoice PDF and show it in the tab opened
+          // above — doesn't navigate away from the Counter page, and the
+          // cashier can print/save straight from the browser's PDF viewer.
+          if (saleId) {
+            this.openInvoicePdf(saleId, invoiceTab);
+          } else if (invoiceTab) {
+            invoiceTab.close();
+          }
+
           // If this session was opened from an Order, mark it Completed
           if (this.activeOrderId) {
-            const saleId = response.data?.saleId ?? response.saleId ?? null;
             this.orderService.updateOrderStatus(this.activeOrderId, {
               status: 'Completed',
               completedSaleId: saleId ?? undefined
@@ -1160,6 +1176,12 @@ export class PosBillingComponent implements OnInit {
           this.loadCustomers();
         },
         error: (error) => {
+          // Sale never got created — nothing to show, close the blank tab
+          // opened pre-emptively above rather than leaving it stranded.
+          if (invoiceTab && !invoiceTab.closed) {
+            invoiceTab.close();
+          }
+
           // Stock sold out by another counter between cart add and finalization
           if (SaleService.isStockConflict(error)) {
             const c: StockConflictError = error.error;
@@ -1662,6 +1684,32 @@ Item               Price Qty    Amount
       </body>
     </html>
   `;
+}
+
+// Points `preOpenedTab` (opened via window.open('', '_blank') right when the
+// cashier confirmed the sale, so it isn't treated as an unsolicited popup) at
+// the invoice PDF's real URL — a plain top-level navigation, not a blob:
+// fetch. Two earlier approaches were tried and both failed in current
+// Chrome/Firefox: (1) creating a blob: URL here and assigning it to the
+// other tab's location — blob: URLs are partitioned per top-level browsing
+// context, so a tab that didn't create one itself silently fails to load
+// it; (2) postMessage-ing the Blob to a loader page in that tab — worked in
+// principle but left the tab stuck on "Loading invoice…" (message never
+// got through reliably). Navigating straight to the real API URL sidesteps
+// both: the browser's native PDF viewer just requests and renders it like
+// any other link, no JS handoff required. The JWT can't ride an
+// Authorization header on a plain navigation, so it's passed as
+// ?access_token= instead — see SaleService.getInvoicePdfUrl().
+private openInvoicePdf(saleId: number, preOpenedTab: Window | null): void {
+  const token = this.authService.getToken();
+  const url = this.saleService.getInvoicePdfUrl(saleId, token);
+
+  if (preOpenedTab && !preOpenedTab.closed) {
+    preOpenedTab.location.href = url;
+  } else {
+    // Pre-opened tab was blocked or already closed — best effort direct open.
+    window.open(url, '_blank');
+  }
 }
 
 // Silently print the receipt to the thermal printer via a hidden iframe —

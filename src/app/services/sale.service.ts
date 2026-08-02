@@ -41,6 +41,21 @@ export class SaleService {
     return this.http.post(this.baseUrl + '/sales', payload);
   }
 
+  /**
+   * URL for one sale's printable A4 invoice PDF — opened directly in a new
+   * tab (window.open/tab.location, NOT an HttpClient blob fetch). A plain
+   * top-level navigation can't carry the Authorization header the auth
+   * interceptor normally attaches, so the token rides along as
+   * ?access_token= instead; the backend only accepts that fallback on this
+   * one route (see Program.cs JwtBearerEvents.OnMessageReceived and
+   * SalesController.GetInvoicePdf). Used by both the Counter page (auto-open
+   * after checkout) and the Invoice Report grid's per-row print button.
+   */
+  getInvoicePdfUrl(saleId: number, token: string | null): string {
+    const tokenParam = token ? `?access_token=${encodeURIComponent(token)}` : '';
+    return `${this.baseUrl}/sales/${saleId}/invoice-pdf${tokenParam}`;
+  }
+
   /** Type-guard: returns true if the HTTP error is a stock conflict (409) */
   static isStockConflict(err: any): err is { error: StockConflictError } {
     return err?.status === 409 && err?.error?.errorCode === 'STOCK_INSUFFICIENT';

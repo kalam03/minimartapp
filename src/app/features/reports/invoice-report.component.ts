@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ReportsService, InvoiceReportDto } from '../../services/reports.service';
 import { CustomerService, Customer } from '../../services/customer.service';
+import { SaleService } from '../../services/sale.service';
+import { AuthService } from '../../services/auth.service';
 import { toLocalDateString } from '../../shared/date-utils';
 import { downloadBlob } from '../../shared/pdf-export.util';
 
@@ -39,6 +41,8 @@ export class InvoiceReportComponent implements OnInit {
   constructor(
     private reportsService: ReportsService,
     private customerService: CustomerService,
+    private saleService: SaleService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService
   ) {}
@@ -149,6 +153,23 @@ export class InvoiceReportComponent implements OnInit {
 
     this.activeQuick = period;
     this.loadReport();
+  }
+
+  /**
+   * Opens ONE row's printable A4 invoice PDF in a new tab — same
+   * single-sale endpoint (GET /api/sales/{saleId}/invoice-pdf, backed by
+   * SaleService.GetSaleInvoiceAsync + PdfReportService.GenerateInvoicePdf)
+   * used by the Counter page's auto-opened receipt, not a new one-off here.
+   * A plain window.open(url) — no blob fetch — called synchronously inside
+   * this click handler, so it's a real top-level navigation the browser's
+   * own PDF viewer renders directly, and it can't be popup-blocked since
+   * there's no async gap between the click and the open() call. The token
+   * rides along as ?access_token= (see SaleService.getInvoicePdfUrl) since
+   * a plain navigation can't carry an Authorization header.
+   */
+  printInvoice(row: InvoiceReportDto): void {
+    const url = this.saleService.getInvoicePdfUrl(row.saleId, this.authService.getToken());
+    window.open(url, '_blank');
   }
 
   exportPdf(): void {

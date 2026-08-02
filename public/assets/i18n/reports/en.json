@@ -84,6 +84,8 @@
     "noData": "No invoices found for this range",
     "noMatch": "No invoices match \"{{search}}\"",
     "loading": "Loading…",
+    "print": "Print",
+    "printTooltip": "Open this invoice as a PDF in a new tab to print or download",
     "errors": {
       "load": "Failed to load invoice report",
       "pdf": "Failed to generate PDF"
