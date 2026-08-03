@@ -68,8 +68,36 @@
 
         <div *ngIf="!form.appliesToAll" class="mb-3">
           <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.products' | transloco }}</label>
-          <app-product-picker [products]="products" [selectedIds]="form.productIds" (selectedIdsChange)="onSelectedIdsChange($event)"></app-product-picker>
+
+          <!-- Picking a product adds it to the grid below immediately —
+               no separate Add button, no checkbox multi-select. -->
+          <select [ngModel]="selectedProductToAdd" (ngModelChange)="onProductPicked($event)"
+            class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+            <option [ngValue]="null">{{ 'promotionDiscounts.form.selectProduct' | transloco }}</option>
+            <option *ngFor="let p of availableProductsToAdd" [ngValue]="p.productId">{{ p.productName }}</option>
+          </select>
           <p *ngIf="isFieldInvalid('productIds')" class="text-red-600 text-xs mt-1">{{ validationErrors['productIds'] }}</p>
+
+          <!-- Grid of products already added to this discount -->
+          <div class="mt-2 border rounded-lg overflow-hidden" *ngIf="form.productIds.length > 0">
+            <table class="w-full text-xs">
+              <thead style="background:var(--theme-primary);color:var(--theme-text)">
+                <tr>
+                  <th class="px-2 py-1.5 text-left">{{ 'promotionDiscounts.form.productGridName' | transloco }}</th>
+                  <th class="px-2 py-1.5 text-center w-16">{{ 'promotionDiscounts.form.productGridRemove' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let id of form.productIds" class="border-b">
+                  <td class="px-2 py-1.5">{{ productName(id) }}</td>
+                  <td class="px-2 py-1.5 text-center">
+                    <button type="button" (click)="removeProductFromDiscount(id)" class="text-red-600 font-bold">&times;</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p *ngIf="form.productIds.length === 0" class="text-xs text-gray-400 mt-2">{{ 'promotionDiscounts.form.noProductsAdded' | transloco }}</p>
         </div>
 
         <div class="flex gap-2">
@@ -111,7 +139,7 @@
             <tr *ngFor="let p of filteredPromotions" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
               <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ p.promotionName }}</td>
               <td class="px-3 py-2 whitespace-nowrap">{{ p.discountValue }}{{ p.discountType === 'Percentage' ? '%' : '' }}</td>
-              <td class="px-3 py-2 whitespace-nowrap">{{ p.appliesToAll ? ('promotionDiscounts.table.allProducts' | transloco) : (p.productIds.length + ' ' + ('promotionDiscounts.table.products' | transloco)) }}</td>
+              <td class="px-3 py-2 max-w-xs" [title]="p.appliesToAll ? '' : productNames(p.productIds)">{{ p.appliesToAll ? ('promotionDiscounts.table.allProducts' | transloco) : productNames(p.productIds) }}</td>
               <td class="px-3 py-2 whitespace-nowrap text-gray-500">{{ p.startDate | date:'d MMM y' }} – {{ p.endDate | date:'d MMM y' }}</td>
               <td class="px-3 py-2 text-center">{{ p.priority }}</td>
               <td class="px-3 py-2 text-center">

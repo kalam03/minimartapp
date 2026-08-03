@@ -6,12 +6,11 @@ import { PromotionDiscountService, PromotionMaster } from '../../services/promot
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
-import { ProductPickerComponent } from '../../shared/product-picker.component';
 
 @Component({
   selector: 'app-promotion-discount',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslocoModule, ProductPickerComponent],
+  imports: [CommonModule, FormsModule, TranslocoModule],
   providers: [provideTranslocoScope('promotionDiscounts')],
   templateUrl: './promotion-discount.component.html',
 })
@@ -36,6 +35,14 @@ export class PromotionDiscountComponent implements OnInit {
   form = { ...this.emptyForm, productIds: [] as number[] };
   validationErrors: Record<string, string> = {};
   editingId: number | null = null;
+
+  /** Product picked in the "add one product at a time" dropdown, below the grid of already-added products. */
+  selectedProductToAdd: number | null = null;
+
+  /** Products not yet added to this discount — what the add-dropdown offers. */
+  get availableProductsToAdd(): Product[] {
+    return this.products.filter(p => !this.form.productIds.includes(p.productId));
+  }
 
   get filteredPromotions(): PromotionMaster[] {
     const q = this.searchText.trim().toLowerCase();
@@ -100,8 +107,27 @@ export class PromotionDiscountComponent implements OnInit {
     return !!this.validationErrors[field];
   }
 
-  onSelectedIdsChange(ids: number[]): void {
-    this.form.productIds = ids;
+  /** Selecting an option in the product dropdown adds it straight to the grid — no separate Add button. */
+  onProductPicked(productId: number | null): void {
+    if (productId == null) return;
+    if (!this.form.productIds.includes(productId)) {
+      this.form.productIds = [...this.form.productIds, productId];
+    }
+    // Reset back to the placeholder option so the dropdown is ready for the next pick.
+    this.selectedProductToAdd = null;
+  }
+
+  removeProductFromDiscount(productId: number): void {
+    this.form.productIds = this.form.productIds.filter(id => id !== productId);
+  }
+
+  productName(id: number): string {
+    return this.products.find(p => p.productId === id)?.productName || `#${id}`;
+  }
+
+  /** Comma-joined product names for a discount's "Scope" column in the list table. */
+  productNames(ids: number[]): string {
+    return ids.map(id => this.productName(id)).join(', ');
   }
 
   save(): void {
@@ -157,6 +183,7 @@ export class PromotionDiscountComponent implements OnInit {
   resetForm(): void {
     this.editingId = null;
     this.form = { ...this.emptyForm, productIds: [] };
+    this.selectedProductToAdd = null;
     this.validationErrors = {};
   }
 }

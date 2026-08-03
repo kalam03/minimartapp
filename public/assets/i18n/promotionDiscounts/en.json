@@ -15,7 +15,11 @@
     "priority": "Priority",
     "appliesToAll": "Applies to all products",
     "active": "Active",
-    "products": "Applicable Products"
+    "products": "Applicable Products",
+    "selectProduct": "Select a product…",
+    "productGridName": "Product",
+    "productGridRemove": "Remove",
+    "noProductsAdded": "No products added yet — pick one above and click Add."
   },
   "buttons": {
     "add": "Add Discount",
@@ -24,7 +28,8 @@
     "reset": "Reset",
     "cancel": "Cancel",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "addProduct": "Add"
   },
   "table": {
     "name": "Name",

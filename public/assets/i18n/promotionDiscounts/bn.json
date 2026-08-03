@@ -15,7 +15,11 @@
     "priority": "অগ্রাধিকার",
     "appliesToAll": "সব পণ্যের জন্য প্রযোজ্য",
     "active": "সক্রিয়",
-    "products": "প্রযোজ্য পণ্য"
+    "products": "প্রযোজ্য পণ্য",
+    "selectProduct": "একটি পণ্য নির্বাচন করুন…",
+    "productGridName": "পণ্য",
+    "productGridRemove": "মুছুন",
+    "noProductsAdded": "এখনও কোনো পণ্য যোগ করা হয়নি — উপরে একটি নির্বাচন করে যোগ করুন ক্লিক করুন।"
   },
   "buttons": {
     "add": "ছাড় যোগ করুন",
@@ -24,7 +28,8 @@
     "reset": "রিসেট",
     "cancel": "বাতিল",
     "edit": "সম্পাদনা",
-    "delete": "মুছুন"
+    "delete": "মুছুন",
+    "addProduct": "যোগ করুন"
   },
   "table": {
     "name": "নাম",
