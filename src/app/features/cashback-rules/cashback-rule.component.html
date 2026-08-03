@@ -1,0 +1,127 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Add / Edit Form -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">
+          {{ (editingId ? 'cashbackRules.title.edit' : 'cashbackRules.title.addNew') | transloco }}
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.name' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.configName"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('configName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('configName')" class="text-red-600 text-xs mt-1">{{ validationErrors['configName'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.cashbackType' | transloco }}</label>
+            <select [(ngModel)]="form.cashbackType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <option value="Percentage">{{ 'cashbackRules.form.percentage' | transloco }}</option>
+              <option value="Fixed">{{ 'cashbackRules.form.fixed' | transloco }}</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.cashbackValue' | transloco }}</label>
+            <input type="number" min="0" [(ngModel)]="form.cashbackValue"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('cashbackValue') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('cashbackValue')" class="text-red-600 text-xs mt-1">{{ validationErrors['cashbackValue'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.minPurchaseAmount' | transloco }}</label>
+            <input type="number" min="0" [(ngModel)]="form.minPurchaseAmount" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.maxCashbackAmount' | transloco }}</label>
+            <input type="number" min="0" [(ngModel)]="form.maxCashbackAmount" [placeholder]="'cashbackRules.form.noCap' | transloco"
+              class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.startDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.startDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.endDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.endDate"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('endDate') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('endDate')" class="text-red-600 text-xs mt-1">{{ validationErrors['endDate'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'cashbackRules.form.priority' | transloco }}</label>
+            <input type="number" [(ngModel)]="form.priority" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div class="flex items-center gap-2 mt-5">
+            <input type="checkbox" id="cashbackActive" [(ngModel)]="form.isActive" />
+            <label for="cashbackActive" class="text-xs font-semibold">{{ 'cashbackRules.form.active' | transloco }}</label>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button (click)="save()" [disabled]="isSaving"
+            class="px-4 py-1.5 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+            {{ (isSaving ? 'cashbackRules.buttons.saving' : (editingId ? 'cashbackRules.buttons.update' : 'cashbackRules.buttons.add')) | transloco }}
+          </button>
+          <button (click)="resetForm()" class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+            {{ (editingId ? 'cashbackRules.buttons.cancel' : 'cashbackRules.buttons.reset') | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">{{ 'cashbackRules.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredConfigs.length }} / {{ configs.length }}</span>
+      </div>
+      <div class="px-3 py-2 border-b">
+        <input type="text" [(ngModel)]="searchText" [placeholder]="'cashbackRules.search.placeholder' | transloco"
+          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'cashbackRules.table.name' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'cashbackRules.table.cashback' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'cashbackRules.table.minPurchase' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'cashbackRules.table.dates' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'cashbackRules.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'cashbackRules.table.actions' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of filteredConfigs" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ c.configName }}</td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ c.cashbackValue }}{{ c.cashbackType === 'Percentage' ? '%' : '' }}<span *ngIf="c.maxCashbackAmount"> ({{ 'cashbackRules.table.capAt' | transloco }} {{ c.maxCashbackAmount }})</span></td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ c.minPurchaseAmount }}</td>
+              <td class="px-3 py-2 whitespace-nowrap text-gray-500">{{ c.startDate | date:'d MMM y' }} – {{ c.endDate | date:'d MMM y' }}</td>
+              <td class="px-3 py-2 text-center">
+                <span [class]="c.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                  {{ (c.isActive ? 'cashbackRules.table.active' : 'cashbackRules.table.inactive') | transloco }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-center whitespace-nowrap">
+                <button (click)="edit(c)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'cashbackRules.buttons.edit' | transloco }}</button>
+                <button (click)="remove(c)" class="text-xs font-semibold text-red-600">{{ 'cashbackRules.buttons.delete' | transloco }}</button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredConfigs.length === 0">
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'cashbackRules.table.empty' | transloco }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

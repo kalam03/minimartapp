@@ -18,6 +18,8 @@ import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.direc
 import { PAYMENT_METHODS, DEFAULT_PAYMENT_METHOD } from '../../shared/payment-methods';
 import { AppConfigService } from '../../services/app-config.service';
 import { BnDigitsPipe } from '../../shared/bn-digits.pipe';
+import { CashbackService } from '../../services/cashback.service';
+import { RewardPointService } from '../../services/reward-point.service';
 
 
 export interface CartItem {
@@ -63,7 +65,9 @@ export class PosBillingComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private transloco: TranslocoService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private cashbackService: CashbackService,
+    private rewardPointService: RewardPointService
   ) {
     this.receiptData = this.receiptService.getReceiptData();
   }
@@ -156,6 +160,17 @@ export class PosBillingComponent implements OnInit {
   returnCash: number = 0;
   dueAmount: number = 0;
   grossAmount: number = 0;
+
+  // ── Promotion & Loyalty (redemption at checkout) ─────────────────────
+  // Balances are informational only — the actual discount/redemption math
+  // (product discounts, combos, cashback, points) all happens server-side
+  // in PromotionEngineService, so nothing here is computed client-side.
+  // These just tell the cashier what's redeemable and carry the cashier's
+  // requested redemption amount along with the sale.
+  customerRewardPointBalance: number = 0;
+  customerCashbackBalance: number = 0;
+  redeemPointsInput: number | null = null;
+  redeemCashbackInput: number | null = null;
 
   // UI State
   searchProductTerm: string = '';
@@ -424,6 +439,10 @@ export class PosBillingComponent implements OnInit {
     if (!term) {
       this.selectedCustomerId = null;
       this.customerPhone = '';
+      this.customerRewardPointBalance = 0;
+      this.customerCashbackBalance = 0;
+      this.redeemPointsInput = null;
+      this.redeemCashbackInput = null;
       this.calculateTotals();
     }
 
@@ -706,6 +725,43 @@ export class PosBillingComponent implements OnInit {
     this.discountAmount = 0;
     this.discountPercent = 0;
     this.calculateTotals();
+    this.loadLoyaltyBalances(customer.customerId);
+  }
+
+  /** Reward point / cashback balance for the currently selected customer — display-only. */
+  loadLoyaltyBalances(customerId: number): void {
+    this.customerRewardPointBalance = 0;
+    this.customerCashbackBalance = 0;
+    this.redeemPointsInput = null;
+    this.redeemCashbackInput = null;
+
+    this.rewardPointService.getCustomerSummary(customerId).subscribe({
+      next: (res) => (this.customerRewardPointBalance = res.data?.rewardPointBalance || 0),
+      error: () => {} // module may not be configured for this tenant yet — fail silently
+    });
+    this.cashbackService.getCustomerSummary(customerId).subscribe({
+      next: (res) => (this.customerCashbackBalance = res.data?.cashbackBalance || 0),
+      error: () => {}
+    });
+  }
+
+  /**
+   * Short "what got auto-applied" line built from SaleResponseDto's
+   * promotion breakdown fields (PromotionDiscountAmount, CashbackEarned,
+   * RewardPointsEarned, etc. — see SaleService.CreateSale on the backend).
+   * Returns '' when nothing promotion-related happened on this sale.
+   */
+  buildPromotionSummaryLine(sale: any): string {
+    const parts: string[] = [];
+    if (sale?.promotionDiscountAmount > 0) parts.push(`৳${(+sale.promotionDiscountAmount).toFixed(2)} auto-discount`);
+    if (sale?.cashbackEarned > 0) parts.push(`+৳${(+sale.cashbackEarned).toFixed(2)} cashback`);
+    if (sale?.cashbackRedeemed > 0) parts.push(`−৳${(+sale.cashbackRedeemed).toFixed(2)} cashback redeemed`);
+    if (sale?.rewardPointsEarned > 0) parts.push(`+${sale.rewardPointsEarned} pts`);
+    if (sale?.rewardPointsRedeemed > 0) parts.push(`−${sale.rewardPointsRedeemed} pts redeemed`);
+    if (Array.isArray(sale?.promotionWarnings) && sale.promotionWarnings.length > 0) {
+      parts.push(...sale.promotionWarnings);
+    }
+    return parts.length ? `(${parts.join(' · ')})` : '';
   }
 
   resetProduct(): void {
@@ -743,6 +799,10 @@ export class PosBillingComponent implements OnInit {
     this.pickupEmployeeCode = null;
     this.selectedPaymentMethod = DEFAULT_PAYMENT_METHOD;
     this.paymentCash = 0;
+    this.customerRewardPointBalance = 0;
+    this.customerCashbackBalance = 0;
+    this.redeemPointsInput = null;
+    this.redeemCashbackInput = null;
     this.calculateTotals();
   }
 
@@ -1125,6 +1185,12 @@ export class PosBillingComponent implements OnInit {
         // Who was logged in at this counter when the bill was made — printed
         // at the bottom of the receipt, not persisted anywhere new.
         generatedBy: this.authService.getUser()?.userName || '',
+        // Promotion & Loyalty redemption — validated/capped server-side
+        // against the customer's actual balance and the active
+        // REWARD_POINT_CONFIG (see PromotionEngineService.EvaluateAsync).
+        // null/0 here just means "no redemption requested".
+        redeemPoints: this.redeemPointsInput || null,
+        redeemCashback: this.redeemCashbackInput || null,
       };
 
       const receiptHtml = this.buildReceiptFromCurrentSale(receipt);
@@ -1169,7 +1235,10 @@ export class PosBillingComponent implements OnInit {
             return;
           }
 
-          await this.alertService.success(this.t('messages.billSubmittedSuccess', { invoiceNo }));
+          const promoSummary = this.buildPromotionSummaryLine(response.data ?? response);
+          await this.alertService.success(
+            this.t('messages.billSubmittedSuccess', { invoiceNo }) + (promoSummary ? ` ${promoSummary}` : '')
+          );
           this.resetForm();
           // Reload products (updated stock) and customers (updated balance)
           this.loadProducts();

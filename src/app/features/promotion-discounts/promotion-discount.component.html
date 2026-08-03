@@ -1,0 +1,129 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Add / Edit Form -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">
+          {{ (editingId ? 'promotionDiscounts.title.edit' : 'promotionDiscounts.title.addNew') | transloco }}
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.name' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.promotionName"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('promotionName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('promotionName')" class="text-red-600 text-xs mt-1">{{ validationErrors['promotionName'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.discountType' | transloco }}</label>
+            <select [(ngModel)]="form.discountType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <option value="Percentage">{{ 'promotionDiscounts.form.percentage' | transloco }}</option>
+              <option value="Fixed">{{ 'promotionDiscounts.form.fixed' | transloco }}</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.discountValue' | transloco }}</label>
+            <input type="number" min="0" [(ngModel)]="form.discountValue"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('discountValue') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('discountValue')" class="text-red-600 text-xs mt-1">{{ validationErrors['discountValue'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.startDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.startDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.endDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.endDate"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('endDate') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('endDate')" class="text-red-600 text-xs mt-1">{{ validationErrors['endDate'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.priority' | transloco }}</label>
+            <input type="number" [(ngModel)]="form.priority" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div class="flex items-center gap-2 mt-5">
+            <input type="checkbox" id="appliesToAll" [(ngModel)]="form.appliesToAll" />
+            <label for="appliesToAll" class="text-xs font-semibold">{{ 'promotionDiscounts.form.appliesToAll' | transloco }}</label>
+          </div>
+
+          <div class="flex items-center gap-2 mt-5">
+            <input type="checkbox" id="isActive" [(ngModel)]="form.isActive" />
+            <label for="isActive" class="text-xs font-semibold">{{ 'promotionDiscounts.form.active' | transloco }}</label>
+          </div>
+        </div>
+
+        <div *ngIf="!form.appliesToAll" class="mb-3">
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'promotionDiscounts.form.products' | transloco }}</label>
+          <app-product-picker [products]="products" [selectedIds]="form.productIds" (selectedIdsChange)="onSelectedIdsChange($event)"></app-product-picker>
+          <p *ngIf="isFieldInvalid('productIds')" class="text-red-600 text-xs mt-1">{{ validationErrors['productIds'] }}</p>
+        </div>
+
+        <div class="flex gap-2">
+          <button (click)="save()" [disabled]="isSaving"
+            class="px-4 py-1.5 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+            {{ (isSaving ? 'promotionDiscounts.buttons.saving' : (editingId ? 'promotionDiscounts.buttons.update' : 'promotionDiscounts.buttons.add')) | transloco }}
+          </button>
+          <button (click)="resetForm()" class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+            {{ (editingId ? 'promotionDiscounts.buttons.cancel' : 'promotionDiscounts.buttons.reset') | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">{{ 'promotionDiscounts.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredPromotions.length }} / {{ promotions.length }}</span>
+      </div>
+      <div class="px-3 py-2 border-b">
+        <input type="text" [(ngModel)]="searchText" [placeholder]="'promotionDiscounts.search.placeholder' | transloco"
+          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'promotionDiscounts.table.name' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'promotionDiscounts.table.discount' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'promotionDiscounts.table.scope' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'promotionDiscounts.table.dates' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'promotionDiscounts.table.priority' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'promotionDiscounts.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'promotionDiscounts.table.actions' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredPromotions" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ p.promotionName }}</td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ p.discountValue }}{{ p.discountType === 'Percentage' ? '%' : '' }}</td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ p.appliesToAll ? ('promotionDiscounts.table.allProducts' | transloco) : (p.productIds.length + ' ' + ('promotionDiscounts.table.products' | transloco)) }}</td>
+              <td class="px-3 py-2 whitespace-nowrap text-gray-500">{{ p.startDate | date:'d MMM y' }} – {{ p.endDate | date:'d MMM y' }}</td>
+              <td class="px-3 py-2 text-center">{{ p.priority }}</td>
+              <td class="px-3 py-2 text-center">
+                <span [class]="p.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                  {{ (p.isActive ? 'promotionDiscounts.table.active' : 'promotionDiscounts.table.inactive') | transloco }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-center whitespace-nowrap">
+                <button (click)="edit(p)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'promotionDiscounts.buttons.edit' | transloco }}</button>
+                <button (click)="remove(p)" class="text-xs font-semibold text-red-600">{{ 'promotionDiscounts.buttons.delete' | transloco }}</button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredPromotions.length === 0">
+              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'promotionDiscounts.table.empty' | transloco }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

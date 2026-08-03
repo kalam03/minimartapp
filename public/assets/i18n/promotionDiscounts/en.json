@@ -1,0 +1,63 @@
+{
+  "title": {
+    "addNew": "Add Product Discount",
+    "edit": "Edit Product Discount",
+    "list": "Product Discounts"
+  },
+  "form": {
+    "name": "Discount Name *",
+    "discountType": "Discount Type",
+    "percentage": "Percentage",
+    "fixed": "Fixed Amount",
+    "discountValue": "Discount Value *",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "priority": "Priority",
+    "appliesToAll": "Applies to all products",
+    "active": "Active",
+    "products": "Applicable Products"
+  },
+  "buttons": {
+    "add": "Add Discount",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "table": {
+    "name": "Name",
+    "discount": "Discount",
+    "scope": "Scope",
+    "dates": "Valid Period",
+    "priority": "Priority",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "allProducts": "All Products",
+    "products": "product(s)",
+    "empty": "No product discounts found"
+  },
+  "search": {
+    "placeholder": "Search by name…"
+  },
+  "validation": {
+    "nameRequired": "Discount name is required",
+    "valueRequired": "Discount value must be greater than 0",
+    "percentTooHigh": "Percentage discount cannot exceed 100",
+    "endBeforeStart": "End date must be on or after start date",
+    "productsRequired": "Select at least one product, or check \"Applies to all products\""
+  },
+  "messages": {
+    "loadError": "Failed to load discounts: {{error}}",
+    "createSuccess": "Discount created successfully!",
+    "updateSuccess": "Discount updated successfully!",
+    "saveError": "Failed to save discount: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteTitle": "Delete Discount",
+    "deleteSuccess": "Discount deleted.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}

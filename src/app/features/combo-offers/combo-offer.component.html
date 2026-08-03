@@ -1,0 +1,155 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Add / Edit Form -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">
+          {{ (editingId ? 'comboOffers.title.edit' : 'comboOffers.title.addNew') | transloco }}
+        </h2>
+      </div>
+      <div class="p-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <div class="lg:col-span-2">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.name' | transloco }}</label>
+            <input type="text" [(ngModel)]="form.comboName"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('comboName') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('comboName')" class="text-red-600 text-xs mt-1">{{ validationErrors['comboName'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.comboType' | transloco }}</label>
+            <select [(ngModel)]="form.comboType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
+              <option value="FixedDiscount">{{ 'comboOffers.form.fixedDiscount' | transloco }}</option>
+              <option value="PercentageDiscount">{{ 'comboOffers.form.percentageDiscount' | transloco }}</option>
+              <option value="FixedPrice">{{ 'comboOffers.form.fixedPrice' | transloco }}</option>
+            </select>
+          </div>
+
+          <div *ngIf="form.comboType !== 'FixedPrice'">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.discountValue' | transloco }}</label>
+            <input type="number" min="0" [(ngModel)]="form.discountValue"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('discountValue') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('discountValue')" class="text-red-600 text-xs mt-1">{{ validationErrors['discountValue'] }}</p>
+          </div>
+
+          <div *ngIf="form.comboType === 'FixedPrice'">
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.fixedComboPrice' | transloco }}</label>
+            <input type="number" min="0" [(ngModel)]="form.fixedComboPrice"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('fixedComboPrice') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('fixedComboPrice')" class="text-red-600 text-xs mt-1">{{ validationErrors['fixedComboPrice'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.startDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.startDate" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.endDate' | transloco }}</label>
+            <input type="date" [(ngModel)]="form.endDate"
+              [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('endDate') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+            <p *ngIf="isFieldInvalid('endDate')" class="text-red-600 text-xs mt-1">{{ validationErrors['endDate'] }}</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.priority' | transloco }}</label>
+            <input type="number" [(ngModel)]="form.priority" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+          </div>
+
+          <div class="flex items-center gap-2 mt-5">
+            <input type="checkbox" id="comboActive" [(ngModel)]="form.isActive" />
+            <label for="comboActive" class="text-xs font-semibold">{{ 'comboOffers.form.active' | transloco }}</label>
+          </div>
+        </div>
+
+        <!-- Combo line items -->
+        <div class="mb-3">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold" style="color:var(--theme-primary)">{{ 'comboOffers.form.items' | transloco }}</label>
+            <button type="button" (click)="addLine()" class="text-xs font-semibold" style="color:var(--theme-primary)">+ {{ 'comboOffers.buttons.addLine' | transloco }}</button>
+          </div>
+          <p *ngIf="isFieldInvalid('items')" class="text-red-600 text-xs mb-1">{{ validationErrors['items'] }}</p>
+
+          <div *ngFor="let item of items; let i = index" class="grid grid-cols-12 gap-2 items-center mb-1.5">
+            <select [(ngModel)]="item.productId" class="col-span-6 px-2 py-1 text-xs border border-gray-400 rounded-lg outline-none">
+              <option *ngFor="let p of products" [value]="p.productId">{{ p.productName }}</option>
+            </select>
+            <input type="number" min="0.01" step="0.01" [(ngModel)]="item.requiredQty"
+              [placeholder]="'comboOffers.form.qty' | transloco"
+              class="col-span-3 px-2 py-1 text-xs border border-gray-400 rounded-lg outline-none" />
+            <label class="col-span-2 flex items-center gap-1 text-xs">
+              <input type="checkbox" [(ngModel)]="item.isFreeItem" /> {{ 'comboOffers.form.freeItem' | transloco }}
+            </label>
+            <button type="button" (click)="removeLine(i)" class="col-span-1 text-red-600 text-xs font-semibold">&times;</button>
+          </div>
+          <p *ngIf="items.length === 0" class="text-xs text-gray-400">{{ 'comboOffers.form.noLines' | transloco }}</p>
+        </div>
+
+        <div class="flex gap-2">
+          <button (click)="save()" [disabled]="isSaving"
+            class="px-4 py-1.5 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+            {{ (isSaving ? 'comboOffers.buttons.saving' : (editingId ? 'comboOffers.buttons.update' : 'comboOffers.buttons.add')) | transloco }}
+          </button>
+          <button (click)="resetForm()" class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+            {{ (editingId ? 'comboOffers.buttons.cancel' : 'comboOffers.buttons.reset') | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">{{ 'comboOffers.title.list' | transloco }}</h2>
+        <span class="text-xs" style="color:var(--theme-accent)">{{ filteredCombos.length }} / {{ combos.length }}</span>
+      </div>
+      <div class="px-3 py-2 border-b">
+        <input type="text" [(ngModel)]="searchText" [placeholder]="'comboOffers.search.placeholder' | transloco"
+          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.name' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.items' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.offer' | transloco }}</th>
+              <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.dates' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'comboOffers.table.status' | transloco }}</th>
+              <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'comboOffers.table.actions' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of filteredCombos" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ c.comboName }}</td>
+              <td class="px-3 py-2">
+                <span *ngFor="let i of c.items; let last = last">{{ i.requiredQty }}× {{ i.productName }}{{ i.isFreeItem ? ' (free)' : '' }}{{ last ? '' : ', ' }}</span>
+              </td>
+              <td class="px-3 py-2 whitespace-nowrap">
+                <ng-container [ngSwitch]="c.comboType">
+                  <span *ngSwitchCase="'FixedDiscount'">−{{ c.discountValue }}</span>
+                  <span *ngSwitchCase="'PercentageDiscount'">−{{ c.discountValue }}%</span>
+                  <span *ngSwitchCase="'FixedPrice'">{{ c.fixedComboPrice }} flat</span>
+                </ng-container>
+              </td>
+              <td class="px-3 py-2 whitespace-nowrap text-gray-500">{{ c.startDate | date:'d MMM y' }} – {{ c.endDate | date:'d MMM y' }}</td>
+              <td class="px-3 py-2 text-center">
+                <span [class]="c.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                  {{ (c.isActive ? 'comboOffers.table.active' : 'comboOffers.table.inactive') | transloco }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-center whitespace-nowrap">
+                <button (click)="edit(c)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'comboOffers.buttons.edit' | transloco }}</button>
+                <button (click)="remove(c)" class="text-xs font-semibold text-red-600">{{ 'comboOffers.buttons.delete' | transloco }}</button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredCombos.length === 0">
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'comboOffers.table.empty' | transloco }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

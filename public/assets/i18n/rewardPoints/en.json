@@ -1,0 +1,58 @@
+{
+  "title": {
+    "addNew": "Add Reward Point Configuration",
+    "edit": "Edit Reward Point Configuration",
+    "list": "Reward Point Configurations"
+  },
+  "intro": "Controls how customers earn and redeem loyalty points storewide — nothing here is hardcoded, so you can change the ratio at any time.",
+  "form": {
+    "earnAmountPerPoint": "Spend Amount per Point *",
+    "earnAmountHint": "Every {{amount}} spent earns 1 point.",
+    "redeemValuePerPoint": "Redeem Value per Point *",
+    "redeemValueHint": "1 point is worth {{amount}} when redeemed.",
+    "minPointsToRedeem": "Minimum Points to Redeem",
+    "maxRedeemAmountPerSale": "Max Redeem Amount / Sale",
+    "maxRedeemPercentPerSale": "Max Redeem % of Sale",
+    "noCap": "No cap",
+    "effectiveFrom": "Effective From",
+    "effectiveTo": "Effective To",
+    "active": "Active"
+  },
+  "buttons": {
+    "add": "Add Configuration",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "table": {
+    "earnRatio": "Earn Ratio",
+    "redeemRatio": "Redeem Ratio",
+    "minToRedeem": "Min. to Redeem",
+    "effective": "Effective Period",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "empty": "No reward point configuration found"
+  },
+  "validation": {
+    "earnAmountRequired": "Spend amount per point must be greater than 0",
+    "redeemValueRequired": "Redeem value per point must be greater than 0",
+    "minPointsInvalid": "Minimum points to redeem cannot be negative",
+    "percentRange": "Percentage must be between 0 and 100",
+    "endBeforeStart": "Effective To must be on or after Effective From"
+  },
+  "messages": {
+    "loadError": "Failed to load reward point configuration: {{error}}",
+    "createSuccess": "Configuration created successfully!",
+    "updateSuccess": "Configuration updated successfully!",
+    "saveError": "Failed to save configuration: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete this configuration?",
+    "deleteTitle": "Delete Configuration",
+    "deleteSuccess": "Configuration deleted.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}

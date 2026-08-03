@@ -109,6 +109,39 @@ export const routes: Routes = [
             (m) => m.BarcodeGeneratorComponent
           ),
       },
+      // ── Promotion & Loyalty module ────────────────────────────────────────
+      {
+        path: 'promotion-discounts',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/promotion-discounts/promotion-discount.component').then(
+            (m) => m.PromotionDiscountComponent
+          ),
+      },
+      {
+        path: 'combo-offers',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/combo-offers/combo-offer.component').then(
+            (m) => m.ComboOfferComponent
+          ),
+      },
+      {
+        path: 'cashback-rules',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/cashback-rules/cashback-rule.component').then(
+            (m) => m.CashbackRuleComponent
+          ),
+      },
+      {
+        path: 'reward-points',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/reward-points/reward-point.component').then(
+            (m) => m.RewardPointComponent
+          ),
+      },
       // ── Security Module ──────────────────────────────────────────────────
       {
         path: 'security/users',

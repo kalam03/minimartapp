@@ -1,0 +1,66 @@
+{
+  "title": {
+    "addNew": "কম্বো অফার যোগ করুন",
+    "edit": "কম্বো অফার সম্পাদনা করুন",
+    "list": "কম্বো অফারসমূহ"
+  },
+  "form": {
+    "name": "কম্বোর নাম *",
+    "comboType": "কম্বোর ধরন",
+    "fixedDiscount": "নির্দিষ্ট ছাড়",
+    "percentageDiscount": "শতাংশ ছাড়",
+    "fixedPrice": "নির্দিষ্ট বান্ডেল মূল্য",
+    "discountValue": "ছাড়ের মান *",
+    "fixedComboPrice": "বান্ডেল মূল্য *",
+    "startDate": "শুরুর তারিখ",
+    "endDate": "শেষ তারিখ",
+    "priority": "অগ্রাধিকার",
+    "active": "সক্রিয়",
+    "items": "কম্বো আইটেম *",
+    "qty": "পরিমাণ",
+    "freeItem": "ফ্রি",
+    "noLines": "এখনও কোনো আইটেম যোগ করা হয়নি — শুরু করতে \"লাইন যোগ করুন\" ক্লিক করুন।"
+  },
+  "buttons": {
+    "add": "কম্বো যোগ করুন",
+    "update": "আপডেট করুন",
+    "saving": "সংরক্ষণ হচ্ছে...",
+    "reset": "রিসেট",
+    "cancel": "বাতিল",
+    "edit": "সম্পাদনা",
+    "delete": "মুছুন",
+    "addLine": "লাইন যোগ করুন"
+  },
+  "table": {
+    "name": "নাম",
+    "items": "আইটেম",
+    "offer": "অফার",
+    "dates": "কার্যকর সময়কাল",
+    "status": "অবস্থা",
+    "actions": "কার্যক্রম",
+    "active": "সক্রিয়",
+    "inactive": "নিষ্ক্রিয়",
+    "empty": "কোনো কম্বো অফার পাওয়া যায়নি"
+  },
+  "search": {
+    "placeholder": "নাম দিয়ে খুঁজুন…"
+  },
+  "validation": {
+    "nameRequired": "কম্বোর নাম আবশ্যক",
+    "needTwoLines": "একটি কম্বোতে কমপক্ষে দুটি পণ্য লাইন থাকতে হবে",
+    "endBeforeStart": "শেষ তারিখ শুরুর তারিখের পরে হতে হবে",
+    "fixedPriceRequired": "বান্ডেল মূল্য ০ এর বেশি হতে হবে",
+    "discountValueRequired": "ছাড়ের মান ০ এর বেশি হতে হবে",
+    "percentTooHigh": "শতাংশ ছাড় ১০০ এর বেশি হতে পারবে না"
+  },
+  "messages": {
+    "loadError": "কম্বো লোড করতে ব্যর্থ: {{error}}",
+    "createSuccess": "কম্বো সফলভাবে তৈরি হয়েছে!",
+    "updateSuccess": "কম্বো সফলভাবে আপডেট হয়েছে!",
+    "saveError": "কম্বো সংরক্ষণ করতে ব্যর্থ: {{error}}",
+    "deleteConfirm": "আপনি কি নিশ্চিত \"{{name}}\" মুছে ফেলতে চান?",
+    "deleteTitle": "কম্বো মুছুন",
+    "deleteSuccess": "কম্বো মুছে ফেলা হয়েছে।",
+    "actionFailed": "ব্যর্থ: {{error}}"
+  }
+}

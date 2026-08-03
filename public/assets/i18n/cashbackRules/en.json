@@ -1,0 +1,61 @@
+{
+  "title": {
+    "addNew": "Add Cashback Rule",
+    "edit": "Edit Cashback Rule",
+    "list": "Cashback Rules"
+  },
+  "form": {
+    "name": "Rule Name *",
+    "cashbackType": "Cashback Type",
+    "percentage": "Percentage",
+    "fixed": "Fixed Amount",
+    "cashbackValue": "Cashback Value *",
+    "minPurchaseAmount": "Minimum Purchase Amount",
+    "maxCashbackAmount": "Maximum Cashback Cap",
+    "noCap": "No cap",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "priority": "Priority",
+    "active": "Active"
+  },
+  "buttons": {
+    "add": "Add Rule",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "table": {
+    "name": "Name",
+    "cashback": "Cashback",
+    "minPurchase": "Min. Purchase",
+    "dates": "Valid Period",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "capAt": "capped at",
+    "empty": "No cashback rules found"
+  },
+  "search": {
+    "placeholder": "Search by name…"
+  },
+  "validation": {
+    "nameRequired": "Rule name is required",
+    "valueRequired": "Cashback value must be greater than 0",
+    "percentTooHigh": "Percentage cashback cannot exceed 100",
+    "endBeforeStart": "End date must be on or after start date"
+  },
+  "messages": {
+    "loadError": "Failed to load cashback rules: {{error}}",
+    "createSuccess": "Cashback rule created successfully!",
+    "updateSuccess": "Cashback rule updated successfully!",
+    "saveError": "Failed to save cashback rule: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteTitle": "Delete Cashback Rule",
+    "deleteSuccess": "Cashback rule deleted.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}

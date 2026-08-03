@@ -1,0 +1,66 @@
+{
+  "title": {
+    "addNew": "Add Combo Offer",
+    "edit": "Edit Combo Offer",
+    "list": "Combo Offers"
+  },
+  "form": {
+    "name": "Combo Name *",
+    "comboType": "Combo Type",
+    "fixedDiscount": "Fixed Discount",
+    "percentageDiscount": "Percentage Discount",
+    "fixedPrice": "Fixed Bundle Price",
+    "discountValue": "Discount Value *",
+    "fixedComboPrice": "Bundle Price *",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "priority": "Priority",
+    "active": "Active",
+    "items": "Combo Items *",
+    "qty": "Qty",
+    "freeItem": "Free",
+    "noLines": "No items added yet — click \"Add line\" to start."
+  },
+  "buttons": {
+    "add": "Add Combo",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "addLine": "Add line"
+  },
+  "table": {
+    "name": "Name",
+    "items": "Items",
+    "offer": "Offer",
+    "dates": "Valid Period",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive",
+    "empty": "No combo offers found"
+  },
+  "search": {
+    "placeholder": "Search by name…"
+  },
+  "validation": {
+    "nameRequired": "Combo name is required",
+    "needTwoLines": "A combo needs at least two product lines",
+    "endBeforeStart": "End date must be on or after start date",
+    "fixedPriceRequired": "Bundle price must be greater than 0",
+    "discountValueRequired": "Discount value must be greater than 0",
+    "percentTooHigh": "Percentage discount cannot exceed 100"
+  },
+  "messages": {
+    "loadError": "Failed to load combos: {{error}}",
+    "createSuccess": "Combo created successfully!",
+    "updateSuccess": "Combo updated successfully!",
+    "saveError": "Failed to save combo: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteTitle": "Delete Combo",
+    "deleteSuccess": "Combo deleted.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}
