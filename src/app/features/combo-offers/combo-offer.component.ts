@@ -59,8 +59,10 @@ export class ComboOfferComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    // See PromotionDiscountComponent for why this unwraps { success, data }
+    // instead of trusting ProductService's (incorrect) Product[] return type.
     this.productService.getAllProducts({ isActive: true }).subscribe({
-      next: (products) => (this.products = products || []),
+      next: (response: any) => (this.products = Array.isArray(response) ? response : response?.data || []),
       error: () => {}
     });
   }

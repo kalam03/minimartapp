@@ -60,8 +60,14 @@ export class PromotionDiscountComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    // ProductService.getAllProducts()'s declared return type (Product[]) is
+    // wrong — the API actually responds { success, data }, same as every
+    // other wrapped endpoint (confirmed against product.component.ts's own
+    // Array.isArray(...) ? ... : response.data fallback). Without unwrapping
+    // this here, `products` silently became a non-array object and the
+    // picker/dropdown rendered nothing.
     this.productService.getAllProducts({ isActive: true }).subscribe({
-      next: (products) => (this.products = products || []),
+      next: (response: any) => (this.products = Array.isArray(response) ? response : response?.data || []),
       error: () => {}
     });
   }
