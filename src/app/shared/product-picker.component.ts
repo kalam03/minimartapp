@@ -22,7 +22,7 @@ import { Product } from '../models/product';
         placeholder="Search products to select…"
         class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
 
-      <div *ngIf="open" class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-56 overflow-y-auto">
+      <div *ngIf="open" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-56 overflow-y-auto">
         <div *ngFor="let p of filteredProducts" (click)="toggle(p.productId)"
           class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-50 cursor-pointer">
           <input type="checkbox" [checked]="isSelected(p.productId)" (click)="$event.stopPropagation(); toggle(p.productId)" />

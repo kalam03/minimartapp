@@ -18,8 +18,11 @@
     <!-- FIRST ROW: Product Selection + Cart Items -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
       <!-- LEFT: Product Selection - Compact -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2" style="background:var(--theme-primary)">
+      <!-- overflow-hidden omitted (was clipping the product search dropdown
+           below at the card edge) — rounded-t-xl on the header keeps the
+           corner rounding overflow-hidden used to provide. -->
+      <div class="bg-white rounded-xl shadow-md border">
+        <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -61,7 +64,7 @@
               <!-- Product Dropdown -->
               <div
                 *ngIf="showProductDropdown"
-                class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
               >
                 <div
                   *ngFor="let product of filteredProducts; let i = index"
@@ -231,8 +234,10 @@
     <!-- SECOND ROW: Customer + Bill Information - Compact -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <!-- LEFT: Customer Information - Compact -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
-        <div class="px-3 py-2" style="background:var(--theme-primary)">
+      <!-- overflow-hidden omitted (was clipping the customer search and
+           delivery-man dropdowns below at the card edge). -->
+      <div class="bg-white rounded-xl shadow-md border">
+        <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -272,7 +277,7 @@
             <!-- Customer Dropdown -->
             <div
               *ngIf="showCustomerDropdown"
-              class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
+              class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
             >
               <div
                 *ngFor="let customer of filteredCustomers; let i = index"
@@ -400,7 +405,7 @@
               />
               <div
                 *ngIf="showDeliveryDropdown"
-                class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
               >
                 <div
                   *ngFor="let emp of filteredDeliveryEmployees; let i = index"

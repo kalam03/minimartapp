@@ -2,8 +2,10 @@
   <div class="max-w-8xl mx-auto">
 
     <!-- Add / Edit Form -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
-      <div class="px-3 py-2" style="background:var(--theme-primary)">
+    <!-- overflow-hidden omitted here for consistency with the other
+         Promotion & Loyalty forms (see Product Discounts for why). -->
+    <div class="bg-white rounded-xl shadow-md border mb-3">
+      <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
           {{ (editingId ? 'cashbackRules.title.edit' : 'cashbackRules.title.addNew') | transloco }}
         </h2>
