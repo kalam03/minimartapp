@@ -19,6 +19,7 @@
     "clearAll": "Clear All",
     "outOfStock": "Out of stock",
     "empty": "Cart is empty",
+    "discountApplied": "-৳{{amount}} discount applied",
     "table": {
       "product": "Product",
       "qty": "Qty",
@@ -87,6 +88,7 @@
     "total": "Total:",
     "transport": "Transport:",
     "discount": "Discount:",
+    "promoDiscount": "Promo Discount:",
     "previousDue": "Previous Due:",
     "advanceCredit": "Advance Credit:",
     "gross": "Gross:",

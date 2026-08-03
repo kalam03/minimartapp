@@ -30,6 +30,46 @@ export interface StockConflictError {
   message:     string;
 }
 
+export interface PromotionQuoteItem {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface PromotionQuoteRequest {
+  customerId: number;
+  items: PromotionQuoteItem[];
+  manualDiscount: number;
+  transportCost: number;
+  redeemPoints?: number | null;
+  redeemCashback?: number | null;
+}
+
+export interface AppliedPromotion {
+  promotionType: string;
+  referenceId: number;
+  description: string;
+  discountAmount: number;
+  saleDetailProductId: number | null;
+}
+
+/** Mirrors PromotionEngineResult — response of POST /sales/quote (and part of SaleResponseDto). */
+export interface PromotionQuoteResult {
+  autoDiscountAmount: number;
+  appliedPromotions: AppliedPromotion[];
+  /** Keys arrive as numeric strings — Dictionary<int,decimal> serializes to a JSON object, whose keys are always strings. */
+  lineDiscountByProductId: Record<string, number>;
+  cashbackEarned: number;
+  cashbackConfigId: number | null;
+  rewardPointsEarned: number;
+  rewardPointConfigId: number | null;
+  rewardPointsRedeemed: number;
+  rewardPointsRedeemedValue: number;
+  cashbackRedeemed: number;
+  redemptionWarnings: string[];
+  combinedDiscountForSale: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SaleService {
 
@@ -39,6 +79,16 @@ export class SaleService {
 
   createSale(payload: any): Observable<any> {
     return this.http.post(this.baseUrl + '/sales', payload);
+  }
+
+  /**
+   * Read-only preview of product-discount/combo/cashback/points math for the
+   * current cart — same calc engine as CreateSale, but never writes anything.
+   * Called (debounced) from pos-billing.ts as the cart/customer/discount
+   * change, so the cashier sees the promo discount before finalising the sale.
+   */
+  getPromotionQuote(payload: PromotionQuoteRequest): Observable<{ success: boolean; data: PromotionQuoteResult }> {
+    return this.http.post<{ success: boolean; data: PromotionQuoteResult }>(this.baseUrl + '/sales/quote', payload);
   }
 
   /**

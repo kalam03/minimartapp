@@ -8,7 +8,7 @@ import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
 import { AlertService } from '../../shared/alert.service';
 import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
-import { SaleService, StockConflictError } from '../../services/sale.service';
+import { SaleService, StockConflictError, PromotionQuoteRequest, PromotionQuoteResult } from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
 import { OrderService } from '../../services/order.service';
 import { PayrollService, Employee } from '../../services/payroll.service';
@@ -171,6 +171,17 @@ export class PosBillingComponent implements OnInit {
   customerCashbackBalance: number = 0;
   redeemPointsInput: number | null = null;
   redeemCashbackInput: number | null = null;
+
+  // ── Live promotion quote (product discount preview) ──────────────────
+  // Unlike the redemption balances above, product-wise discounts DO need to
+  // be calculated and shown live as the cashier builds the cart — this is
+  // the read-only preview from POST /sales/quote (PromotionEngineService.
+  // GetQuoteAsync), refreshed (debounced) on every cart/customer/discount/
+  // transport change. Kept as the single source of truth for the auto
+  // discount amount so calculateTotals() never re-implements the money math.
+  promotionQuote: PromotionQuoteResult | null = null;
+  quoteLoading = false;
+  private quoteDebounceHandle: any = null;
 
   // UI State
   searchProductTerm: string = '';
@@ -803,6 +814,7 @@ export class PosBillingComponent implements OnInit {
     this.customerCashbackBalance = 0;
     this.redeemPointsInput = null;
     this.redeemCashbackInput = null;
+    this.promotionQuote = null;
     this.calculateTotals();
   }
 
@@ -1050,12 +1062,32 @@ export class PosBillingComponent implements OnInit {
       this.cartItems = [];
       this.discountAmount = 0;
       this.discountPercent = 0;
+      this.promotionQuote = null;
       this.calculateTotals();
     }
   }
 
+  /** Auto product-discount total from the live quote — 0 while no quote has come back yet. */
+  get promoDiscountAmount(): number {
+    return this.promotionQuote?.autoDiscountAmount || 0;
+  }
+
+  /** Per-product auto-discount amount from the live quote — feeds the cart line badge. */
+  lineDiscount(productId: number): number {
+    return this.promotionQuote?.lineDiscountByProductId?.[String(productId)] ?? 0;
+  }
+
   // Calculate Totals
   calculateTotals(): void {
+    this.applyLocalTotals();
+    // Cart/customer/discount/transport changed — refresh the live promo
+    // preview (debounced). Its callback only calls applyLocalTotals(), never
+    // calculateTotals() again, so this doesn't loop.
+    this.refreshPromotionQuote();
+  }
+
+  /** Local (synchronous) total math — reuses whatever promo quote is already cached. */
+  private applyLocalTotals(): void {
     // Calculate subtotal
     this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
 
@@ -1066,8 +1098,11 @@ export class PosBillingComponent implements OnInit {
       ? +((this.discountAmount / this.subtotal) * 100).toFixed(2)
       : 0;
 
-    // Sale net = items - discount + transport (before adding previous customer balance)
-    const saleNet = this.subtotal - this.discountAmount + this.transportCost;
+    // Sale net = items - manual discount - auto (product) discount + transport
+    // (before adding previous customer balance). The auto discount mirrors
+    // exactly what PromotionEngineService will apply server-side at checkout
+    // (same engine, read-only preview) — see refreshPromotionQuote().
+    const saleNet = this.subtotal - this.discountAmount - this.promoDiscountAmount + this.transportCost;
 
     // Gross = saleNet + previousDue (positive due adds, negative credit deducts)
     this.grossAmount = saleNet + this.previousDue;
@@ -1079,6 +1114,59 @@ export class PosBillingComponent implements OnInit {
 
     // Calculate return and due
     this.calculateReturnAndDue();
+  }
+
+  /**
+   * Debounced live preview of product-wise discounts for the current cart —
+   * calls POST /sales/quote (PromotionEngineService.GetQuoteAsync, the exact
+   * same calc engine CreateSale uses, just without a transaction/writes) so
+   * the cashier sees the discount before finalising the sale. Only updates
+   * `promotionQuote` + re-applies local totals; never re-triggers itself.
+   */
+  refreshPromotionQuote(): void {
+    if (this.quoteDebounceHandle) {
+      clearTimeout(this.quoteDebounceHandle);
+      this.quoteDebounceHandle = null;
+    }
+
+    if (this.cartItems.length === 0) {
+      if (this.promotionQuote) {
+        this.promotionQuote = null;
+        this.applyLocalTotals();
+      }
+      return;
+    }
+
+    this.quoteDebounceHandle = setTimeout(() => {
+      const payload: PromotionQuoteRequest = {
+        customerId: this.selectedCustomerId || 0,
+        items: this.cartItems.map(i => ({
+          productId: i.productId,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice
+        })),
+        manualDiscount: this.discountAmount,
+        transportCost: this.transportCost,
+        redeemPoints: this.redeemPointsInput,
+        redeemCashback: this.redeemCashbackInput
+      };
+
+      this.quoteLoading = true;
+      this.saleService.getPromotionQuote(payload).subscribe({
+        next: (res) => {
+          this.quoteLoading = false;
+          this.promotionQuote = res.data;
+          this.applyLocalTotals();
+        },
+        error: () => {
+          // Quote preview is best-effort — a failed preview must never block
+          // billing, it just means no live discount is shown this round.
+          this.quoteLoading = false;
+          this.promotionQuote = null;
+          this.applyLocalTotals();
+        }
+      });
+    }, 350);
   }
 
   calculateReturnAndDue(): void {

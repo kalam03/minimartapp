@@ -19,6 +19,7 @@
     "clearAll": "সব পরিষ্কার করুন",
     "outOfStock": "স্টক নেই",
     "empty": "কার্ট খালি",
+    "discountApplied": "-৳{{amount}} ছাড় প্রযোজ্য হয়েছে",
     "table": {
       "product": "পণ্য",
       "qty": "পরিমাণ",
@@ -87,6 +88,7 @@
     "total": "মোট:",
     "transport": "পরিবহন:",
     "discount": "ছাড়:",
+    "promoDiscount": "প্রোমো ছাড়:",
     "previousDue": "পূর্বের বাকি:",
     "advanceCredit": "অগ্রিম ক্রেডিট:",
     "gross": "সর্বমোট:",
