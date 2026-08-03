@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -67,7 +67,8 @@ export class PosBillingComponent implements OnInit {
     private transloco: TranslocoService,
     private appConfigService: AppConfigService,
     private cashbackService: CashbackService,
-    private rewardPointService: RewardPointService
+    private rewardPointService: RewardPointService,
+    private cdr: ChangeDetectorRef
   ) {
     this.receiptData = this.receiptService.getReceiptData();
   }
@@ -275,8 +276,8 @@ export class PosBillingComponent implements OnInit {
           // Discount is stored/handled as an amount; percentage is derived in calculateTotals()
           this.discountAmount = order.discount || 0;
 
-          // Recalculate all totals from the loaded cart
-          this.calculateTotals();
+          // Recalculate all totals from the loaded cart — bulk one-shot load, show discount immediately.
+          this.calculateTotals(true);
 
           // Pre-fill customer name and phone from order
           if (order.customerName) {
@@ -735,7 +736,7 @@ export class PosBillingComponent implements OnInit {
     this.selectedCustomerIndex = -1;
     this.discountAmount = 0;
     this.discountPercent = 0;
-    this.calculateTotals();
+    this.calculateTotals(true);
     this.loadLoyaltyBalances(customer.customerId);
   }
 
@@ -1037,7 +1038,9 @@ export class PosBillingComponent implements OnInit {
       });
     }
 
-    this.calculateTotals();
+    // Discrete "just added a product" action — fetch the promo quote right
+    // now, not after the debounce, so the discount shows immediately.
+    this.calculateTotals(true);
     this.resetProduct();
 
     setTimeout(() => {
@@ -1052,7 +1055,7 @@ export class PosBillingComponent implements OnInit {
     const index = this.cartItems.indexOf(item);
     if (index > -1) {
       this.cartItems.splice(index, 1);
-      this.calculateTotals();
+      this.calculateTotals(true);
     }
   }
 
@@ -1078,12 +1081,20 @@ export class PosBillingComponent implements OnInit {
   }
 
   // Calculate Totals
-  calculateTotals(): void {
+  /**
+   * @param immediate Skip the debounce and fetch the promo quote right away.
+   * Pass true for discrete one-shot actions (add/remove cart line, pick a
+   * customer, load an order) so the discount appears at that instant instead
+   * of waiting ~350ms. Leave false (default) for continuous-typing fields
+   * (manual discount / transport cost amount boxes) so we don't fire one
+   * request per keystroke.
+   */
+  calculateTotals(immediate: boolean = false): void {
     this.applyLocalTotals();
     // Cart/customer/discount/transport changed — refresh the live promo
-    // preview (debounced). Its callback only calls applyLocalTotals(), never
+    // preview. Its callback only calls applyLocalTotals(), never
     // calculateTotals() again, so this doesn't loop.
-    this.refreshPromotionQuote();
+    this.refreshPromotionQuote(immediate);
   }
 
   /** Local (synchronous) total math — reuses whatever promo quote is already cached. */
@@ -1117,13 +1128,19 @@ export class PosBillingComponent implements OnInit {
   }
 
   /**
-   * Debounced live preview of product-wise discounts for the current cart —
-   * calls POST /sales/quote (PromotionEngineService.GetQuoteAsync, the exact
-   * same calc engine CreateSale uses, just without a transaction/writes) so
-   * the cashier sees the discount before finalising the sale. Only updates
+   * Live preview of product-wise discounts for the current cart — calls
+   * POST /sales/quote (PromotionEngineService.GetQuoteAsync, the exact same
+   * calc engine CreateSale uses, just without a transaction/writes) so the
+   * cashier sees the discount before finalising the sale. Only updates
    * `promotionQuote` + re-applies local totals; never re-triggers itself.
+   *
+   * @param immediate Fire the request right now instead of after the debounce
+   * delay — used for discrete cart-add/remove/customer-pick actions so the
+   * discount shows up the instant the product hits the cart, not on the next
+   * unrelated click. Continuous-typing fields (discount amount / transport
+   * cost) still go through the debounce so we don't fire one request per keystroke.
    */
-  refreshPromotionQuote(): void {
+  refreshPromotionQuote(immediate: boolean = false): void {
     if (this.quoteDebounceHandle) {
       clearTimeout(this.quoteDebounceHandle);
       this.quoteDebounceHandle = null;
@@ -1137,7 +1154,7 @@ export class PosBillingComponent implements OnInit {
       return;
     }
 
-    this.quoteDebounceHandle = setTimeout(() => {
+    const fetchQuote = () => {
       const payload: PromotionQuoteRequest = {
         customerId: this.selectedCustomerId || 0,
         items: this.cartItems.map(i => ({
@@ -1157,6 +1174,11 @@ export class PosBillingComponent implements OnInit {
           this.quoteLoading = false;
           this.promotionQuote = res.data;
           this.applyLocalTotals();
+          // Same pattern used elsewhere in this app (e.g. customer.component.ts)
+          // after an async response updates state that a template *ngIf reads —
+          // without this the discount badge/line only painted on the NEXT
+          // unrelated click (any other DOM event), not the moment the quote arrived.
+          this.cdr.detectChanges();
         },
         error: () => {
           // Quote preview is best-effort — a failed preview must never block
@@ -1164,9 +1186,16 @@ export class PosBillingComponent implements OnInit {
           this.quoteLoading = false;
           this.promotionQuote = null;
           this.applyLocalTotals();
+          this.cdr.detectChanges();
         }
       });
-    }, 350);
+    };
+
+    if (immediate) {
+      fetchQuote();
+    } else {
+      this.quoteDebounceHandle = setTimeout(fetchQuote, 350);
+    }
   }
 
   calculateReturnAndDue(): void {
