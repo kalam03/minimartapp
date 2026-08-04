@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import JsBarcode from 'jsbarcode';
@@ -23,7 +23,17 @@ interface BarcodeLabel {
   // Loads assets/i18n/barcodeGenerator/{en,bn}.json only when this route is hit.
   providers: [provideTranslocoScope('barcodeGenerator')],
   templateUrl: './barcode-generator.component.html',
-  styleUrls: ['./barcode-generator.component.css']
+  styleUrls: ['./barcode-generator.component.css'],
+  // Default (Emulated) encapsulation scopes this component's CSS so it only
+  // ever applies to elements inside ITS OWN template — including the
+  // `body * { visibility: hidden }` print rule below, which needs to hide
+  // the sidebar/topbar too, but those are rendered by a completely
+  // different (layout) component and were never actually being touched by
+  // that rule. Turning encapsulation off makes this component's styles
+  // truly global so the print rule can reach the whole page. Safe here
+  // because .print-area/.no-print/.label-card/.label-grid are class names
+  // used only on this page (verified — nothing else in the app uses them).
+  encapsulation: ViewEncapsulation.None
 })
 export class BarcodeGeneratorComponent implements OnInit {
   Math = Math;
