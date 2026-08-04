@@ -1242,24 +1242,7 @@ export class PosBillingComponent implements OnInit {
     //   );
     //   return;
     // }
-    // Pre-open a blank tab RIGHT NOW, as the very next synchronous statement
-    // after the "Submit Bill" click — before the `await` below. Browsers only
-    // honor window.open() as user-initiated while "user activation" is still
-    // live; awaiting the confirm dialog (which resolves via a click inside an
-    // Angular/zone.js-rendered modal) was enough of a gap in some browsers for
-    // that activation to be consumed/expired by the time we got past the
-    // `await`. The result: window.open() silently degrades to a
-    // script-initiated popup that opens but is never allowed to navigate,
-    // so it just sits on about:blank forever. Opening it here, before any
-    // `await`, guarantees it's still a direct response to the original click.
    
-    // Browsers switch the active tab to whatever window.open() just created —
-    // which yanked the cashier away from the confirm dialog they still needed
-    // to click. Immediately reclaiming focus keeps them on THIS tab; the new
-    // tab stays open in the background and only gets its real content once
-    // the sale succeeds (see openInvoicePdf() below), same as a "background
-    // tab" middle-click would behave.
-    //window.focus();
 
     const confirmed = await this.alertService.confirm(
       this.t('messages.confirmSubmitBody', { amount: this.grossAmount.toFixed(2) }),
@@ -1344,17 +1327,10 @@ export class PosBillingComponent implements OnInit {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
           const saleId = response.data?.saleId ?? response.saleId ?? null;
 
-          // Balance update handled by sp_AddSale (@PreviousBalance param) — no separate call needed
-
-          // Auto-generate the invoice PDF and show it in the tab opened
-          // above — doesn't navigate away from the Counter page, and the
-          // cashier can print/save straight from the browser's PDF viewer.
-          const invoiceTab = window.open('', 'InvoiceWindow');
+         // const invoiceTab = window.open('', 'InvoiceWindow');
           if (saleId) {
-            this.openInvoicePdf(saleId);
-          } else if (invoiceTab) {
-            invoiceTab.close();
-          }
+            //this.openInvoicePdf(saleId);
+          } 
 
           // If this session was opened from an Order, mark it Completed
           if (this.activeOrderId) {
