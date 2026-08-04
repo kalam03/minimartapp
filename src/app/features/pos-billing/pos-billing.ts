@@ -1281,6 +1281,14 @@ export class PosBillingComponent implements OnInit {
         totalAmount: this.subtotal,
         discount: this.discountAmount,
         discountPercent: this.discountPercent,
+        // Auto product-wise/combo discount from the live quote (see
+        // promotionQuote/promoDiscountAmount) — already folded into
+        // netAmount below same as the manual discount, but wasn't otherwise
+        // shown anywhere on the printed receipt, so combo discounts applied
+        // to a sale were invisible to the customer. buildReceiptFromCurrentSale
+        // prints one line per applied promotion using this list.
+        promoDiscount: this.promoDiscountAmount,
+        appliedPromotions: this.promotionQuote?.appliedPromotions || [],
         transportCost: this.transportCost,
         transport: this.transportType,
         transportDetail: this.transportDetail,
@@ -1532,6 +1540,9 @@ buildReceiptFromCurrentSale(receipt: any): string {
   const subtotal = receipt.totalAmount || 0;
   const discount = receipt.discount || 0;
   const discountPercent = receipt.discountPercent || 0;
+  const promoDiscount = receipt.promoDiscount || 0;
+  const appliedPromotions: Array<{ promotionType: string; description: string; discountAmount: number }> =
+    receipt.appliedPromotions || [];
   const transportCost = receipt.transportCost || 0;
   const transport = receipt.transport || 'N/A';
   const transportDetail = receipt.transportDetail || '';
@@ -1540,7 +1551,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
     receipt.transport === 'courier' ? 'Courier' :
     receipt.transport === 'pickup' ? 'Picked Up By' : 'Assigned To';
   const prevDue = receipt.previousDue || 0;
-  const netAmount = receipt.netAmount || (subtotal - discount + transportCost + prevDue);
+  const netAmount = receipt.netAmount || (subtotal - discount - promoDiscount + transportCost + prevDue);
   const paidAmount = receipt.paidAmount || 0;
   const returnAmount = receipt.returnAmount || 0;
   const dueAmount = receipt.dueAmount || (netAmount - paidAmount);
@@ -1802,6 +1813,24 @@ buildReceiptFromCurrentSale(receipt: any): string {
               <span>-${formatTk(discount)}</span>
             </div>
             ` : ''}
+
+            <!-- Auto product-wise/combo discounts (PromotionEngineService) —
+                 one line per applied promotion so a combo discount is named
+                 and visible, not just silently folded into Net Total. Falls
+                 back to a single lump "Promo Discount" line if the list is
+                 empty but a total is present, in case an older/partial
+                 receipt payload doesn't carry the itemized list. -->
+            ${appliedPromotions.length > 0 ? appliedPromotions.map(p => `
+            <div class="total-line">
+              <span>${p.promotionType === 'Combo' ? 'Combo' : 'Discount'}: ${escapeHtml(p.description || '')}</span>
+              <span>-${formatTk(p.discountAmount || 0)}</span>
+            </div>
+            `).join('') : (promoDiscount > 0 ? `
+            <div class="total-line">
+              <span>Promo Discount:</span>
+              <span>-${formatTk(promoDiscount)}</span>
+            </div>
+            ` : '')}
 
             ${transportCost > 0 ? `
             <div class="total-line">
