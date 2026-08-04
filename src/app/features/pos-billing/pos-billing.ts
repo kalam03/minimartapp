@@ -1498,23 +1498,33 @@ buildReceiptFromCurrentSale(receipt: any): string {
   //   });
   // }
 
-  const formatLine = (name: string, price: number, qty: number, total: number) => {
-    const col1 = name.padEnd(16).substring(0, 16);
-    const col2 = price.toFixed(0).padStart(6);
-    const col3 = qty.toString().padStart(4);
-    const col4 = total.toFixed(0).padStart(8);
-    return `${col1}${col2}${col3}${col4}`;
-  };
+  // Item table — a flexbox row (fixed-px numeric columns + flex:1 name),
+  // NOT monospace text padded to a character count. Character-padding
+  // (the previous approach) only lines up if every browser/printer driver
+  // measures "1 monospace char" as exactly the same pixel width, which in
+  // practice varies enough to either clip text past 58mm's ~204px printable
+  // width or leave columns misaligned between the header and item rows.
+  // Flexbox with explicit pixel widths lines up exactly, by construction,
+  // regardless of font metrics — the same technique already used for
+  // .total-line/.invoice-info elsewhere in this receipt.
+  const itemRow = (name: string, price: string, qty: string, amount: string, bold = false): string => `
+    <div class="item-row"${bold ? ' style="font-weight:700"' : ''}>
+      <span class="item-col-name">${escapeHtml(name)}</span>
+      <span class="item-col-price">${escapeHtml(price)}</span>
+      <span class="item-col-qty">${escapeHtml(qty)}</span>
+      <span class="item-col-amount">${escapeHtml(amount)}</span>
+    </div>`;
+
+  const itemsHeaderLine = itemRow('Item', 'Price', 'Qty', 'Amount', true);
 
   // Items
   receipt.items.forEach((item: any) => {
-    const line = formatLine(
+    itemsHtml += itemRow(
       item.product.productName,
-      item.unitPrice,
-      item.quantity,
-      item.subtotal
+      item.unitPrice.toFixed(0),
+      item.quantity.toString(),
+      item.subtotal.toFixed(0)
     );
-    itemsHtml += `<pre class="item">${escapeHtml(line)}</pre>`;
   });
 
 
@@ -1635,15 +1645,39 @@ buildReceiptFromCurrentSale(receipt: any): string {
             margin: 8px 0;
           }
 
-          .item-pre, .item {
+          /* Item table — flexbox row with fixed-px numeric columns, not
+             monospace text padded to a character count. This is what makes
+             the header and every item row line up EXACTLY: CSS box widths
+             are precise regardless of font/browser/printer-driver metrics,
+             where counting "monospace characters" is only ever an estimate.
+             .receipt is 58mm with 2mm padding each side (~204px printable at
+             96dpi) — 34+22+40=96px of fixed numeric columns leaves
+             flex:1 / ~100px+ for the name, comfortably within budget. */
+          .item-row {
+            display: flex;
+            align-items: baseline;
             font-family: 'Courier New', monospace;
             font-size: 10px;
             font-weight: 600;
             color: #000;
             margin: 2px 0;
-            white-space: pre;
-            letter-spacing: 0.5px;
           }
+          .item-col-name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 2px;
+          }
+          .item-col-price, .item-col-qty, .item-col-amount {
+            flex: none;
+            text-align: right;
+            white-space: nowrap;
+          }
+          .item-col-price  { width: 34px; }
+          .item-col-qty    { width: 22px; }
+          .item-col-amount { width: 40px; }
 
           .total-line {
             display: flex;
@@ -1745,11 +1779,12 @@ buildReceiptFromCurrentSale(receipt: any): string {
 
           <div class="separator"></div>
 
-          <!-- Items Header -->
+          <!-- Items table — header + rows are both built by itemRow() above,
+               a flexbox row, so the columns are pixel-aligned by CSS layout
+               rather than by counting monospace characters. -->
           <div>
-            <pre class="item-pre" style="font-weight: bold;">
-Item               Price Qty    Amount
---------------------------------------</pre>
+            ${itemsHeaderLine}
+            <div class="separator" style="margin-top: 2px;"></div>
             ${itemsHtml}
             <div class="separator"></div>
           </div>
