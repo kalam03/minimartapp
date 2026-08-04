@@ -14,7 +14,10 @@
     "salePrice": "Sale Price (৳) *",
     "salePricePlaceholder": "Enter selling price",
     "unitType": "Unit Type *",
-    "unitTypeHint": "PCS = count by piece; KG/G/L/ML = sold by weight/volume"
+    "unitTypeHint": "PCS = count by piece; KG/G/L/ML = sold by weight/volume",
+    "barcode": "Barcode",
+    "barcodePlaceholder": "Leave blank to auto-generate",
+    "barcodeHint": "Optional — leave blank and one is generated automatically after saving."
   },
   "buttons": {
     "save": "Save Product",
