@@ -1,4 +1,3 @@
-// services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -13,9 +12,7 @@ import { of } from 'rxjs';
 export interface LoginRequest {
   userName: string;
   password: string;
-  // Optional — the backend resolves the tenant by matching the password
-  // hash against every account with this username (see UserService.ValidateLogin).
-  // Only needed if you want to force login against one specific tenant.
+  // Optional; backend otherwise resolves tenant by matching password hash across accounts with this username (see UserService.ValidateLogin)
   tenantId?: number;
 }
 
@@ -39,9 +36,7 @@ export interface LoginResponse {
     role:      string;
     roleNames: string;
     preferredLanguage?: string;
-    // Employee this login is linked to (Users.EmployeeId) — used e.g. by
-    // pos-billing's "Pickup" transport type to auto-fill who's at the counter
-    // instead of asking them to pick themselves from a dropdown.
+    // Users.EmployeeId link; used by pos-billing's "Pickup" transport type to auto-fill the counter employee
     employeeId?: number;
     employeeCode?: string;
     employeeName?: string;
@@ -77,8 +72,7 @@ export class AuthService {
     );
   }
 
-  // Public self-service signup — creates the tenant + first admin user, then
-  // logs the caller straight in (same session setup + redirect as login()).
+  // Creates the tenant + first admin user, then logs the caller straight in (same as login())
   registerTenant(payload: RegisterTenantRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/register-tenant`, payload).pipe(
       tap(response => {
@@ -89,12 +83,7 @@ export class AuthService {
     );
   }
 
-  // Shared by login() and registerTenant(): loads the sidebar/permission
-  // cache, then checks the tenant's subscription status. A tenant whose
-  // subscription has lapsed (computedStatus === 'Expired') is sent to the
-  // self-service renewal page instead of the dashboard — they can still log
-  // in (unlike a Suspended tenant, which is blocked server-side at /login),
-  // but can't use the app until they renew or pick a plan.
+  // Expired tenants land on the renewal page instead of dashboard; Suspended tenants are already blocked server-side at /login
   private finishLoginAndRedirect(response: LoginResponse): Observable<LoginResponse> {
     return this.permSvc.loadMyMenus().pipe(
       catchError(() => of(null)),                    // don't block login if API fails
@@ -124,9 +113,7 @@ export class AuthService {
     sessionStorage.setItem(this.userKey,   JSON.stringify(authResult.user));
     sessionStorage.setItem(this.tenantKey, authResult.user.tenantId.toString());
 
-    // Reconcile with whatever language this user last saved to their
-    // profile (possibly from a different browser/device) — localStorage/
-    // cookie only ever reflect THIS browser's last choice.
+    // Reconciles with the profile's saved language, which may differ from this browser's localStorage/cookie value
     this.languageSvc.syncFromUserProfile(authResult.user.preferredLanguage);
   }
 
@@ -137,8 +124,7 @@ export class AuthService {
     sessionStorage.removeItem(this.subStatusKey);
   }
 
-  // Called by SubscriptionRenewComponent after a successful renew/change-plan
-  // so the SubscriptionGuard stops redirecting them back to the renew page.
+  // Called after a successful renew/change-plan so SubscriptionGuard stops redirecting to the renew page
   markSubscriptionActive(): void {
     sessionStorage.setItem(this.subStatusKey, 'Active');
   }

@@ -1,4 +1,3 @@
-// interceptors/auth.interceptor.ts
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -14,10 +13,8 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Get token from session storage
     const token = sessionStorage.getItem('access_token');
-    
-    // Clone the request and add authorization header
+
     let authReq = req;
     if (token) {
       authReq = req.clone({
@@ -30,7 +27,6 @@ export class AuthInterceptor implements HttpInterceptor {
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          // Token expired or unauthorized
           this.handleUnauthorized();
         }
         return throwError(() => error);
@@ -39,9 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
   }
   
   private handleUnauthorized(): void {
-    // Clear session storage
     sessionStorage.clear();
-    // Redirect to login page
     this.router.navigate(['/login']);
     this.alertService.warning('Session expired. Please login again.', 'Unauthorized');
   }

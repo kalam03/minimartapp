@@ -19,7 +19,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- Header -->
     <div class="bg-white rounded-xl shadow-md border mb-3 overflow-hidden">
       <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
            style="background:var(--theme-primary)">
@@ -44,10 +43,8 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
         </button>
       </div>
 
-      <!-- Filter bar -->
       <div class="px-4 py-2.5 flex flex-wrap items-center gap-3 border-t" style="border-color:#f0f2fb">
 
-        <!-- Status pills -->
         <div class="flex flex-wrap gap-1.5">
           <button *ngFor="let s of statusOptions"
             (click)="setStatus(s.value)"
@@ -63,7 +60,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
           </button>
         </div>
 
-        <!-- Date range + Search -->
         <div class="flex items-center gap-1.5 ml-auto flex-wrap">
           <span class="text-xs text-gray-400">{{ 'orders.list.from' | transloco }}</span>
           <input type="date" [(ngModel)]="fromDate"
@@ -76,7 +72,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
             style="border-color:#d1d5f0;min-width:115px"
             onfocus="this.style.borderColor='var(--theme-primary)'" onblur="this.style.borderColor='#d1d5f0'"/>
 
-          <!-- Search button -->
           <button (click)="load()"
             class="flex items-center gap-1.5 px-3 py-1 text-xs rounded-md font-semibold text-white transition"
             style="background:var(--theme-primary)"
@@ -102,13 +97,11 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
       </div>
     </div>
 
-    <!-- Loading -->
     <div *ngIf="loading" class="flex items-center justify-center py-16">
       <div class="animate-spin rounded-full h-8 w-8 border-4 border-indigo-200 border-t-indigo-600"></div>
       <span class="ml-3 text-sm text-gray-500">{{ 'orders.list.loading' | transloco }}</span>
     </div>
 
-    <!-- Idle (not yet searched) -->
     <div *ngIf="!loading && !loaded"
          class="bg-white rounded-xl border shadow-sm p-12 text-center text-gray-400">
       <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +112,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
       <p class="text-xs text-gray-400 mt-1">{{ 'orders.list.idleSubtitle' | transloco }}</p>
     </div>
 
-    <!-- Empty (searched but no results) -->
     <div *ngIf="!loading && loaded && filteredOrders.length === 0"
          class="bg-white rounded-xl border shadow-sm p-12 text-center text-gray-400">
       <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +126,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
       </button>
     </div>
 
-    <!-- Orders Table -->
     <div *ngIf="!loading && loaded && filteredOrders.length > 0"
          class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="overflow-x-auto">
@@ -155,13 +146,11 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                 [class]="i % 2 === 0 ? 'bg-white hover:bg-indigo-50' : 'bg-gray-50 hover:bg-indigo-50'"
                 class="border-b transition-colors">
 
-              <!-- Order # -->
               <td class="px-3 py-2">
                 <span class="font-mono font-semibold" style="color:var(--theme-primary)">#{{ o.orderId }}</span>
                 <div class="text-gray-400 text-xs">{{ o.createdBy }}</div>
               </td>
 
-              <!-- Customer -->
               <td class="px-3 py-2">
                 <div class="font-medium text-gray-800">{{ o.customerName || ('orders.list.walkIn' | transloco) }}</div>
                 <div class="text-gray-400 flex items-center gap-1" *ngIf="o.customerPhone">
@@ -176,13 +165,11 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                 </div>
               </td>
 
-              <!-- Date -->
               <td class="px-3 py-2 text-center text-gray-600">
                 {{ o.orderDate | date:'dd MMM yy' }}
                 <div class="text-gray-400">{{ o.createdAt | date:'HH:mm' }}</div>
               </td>
 
-              <!-- Items count -->
               <td class="px-3 py-2 text-center">
                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                       style="background:var(--theme-text);color:var(--theme-primary)">
@@ -190,13 +177,11 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                 </span>
               </td>
 
-              <!-- Amount -->
               <td class="px-3 py-2 text-right">
                 <div class="font-bold" style="color:var(--theme-primary)">&#2547;{{ o.grossAmount | number:'1.2-2' }}</div>
                 <div class="text-gray-400" *ngIf="o.discount > 0">-&#2547;{{ o.discount | number:'1.2-2' }}</div>
               </td>
 
-              <!-- Status badge -->
               <td class="px-3 py-2 text-center">
                 <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                       [style]="statusStyle(o.status)">
@@ -204,7 +189,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                 </span>
               </td>
 
-              <!-- Action -->
               <td class="px-3 py-2 text-center">
                 <div *ngIf="o.status === 'New' || o.status === 'Processing'"
                      class="flex items-center justify-center gap-1.5">
@@ -253,7 +237,6 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
         </table>
       </div>
 
-      <!-- Footer count -->
       <div class="px-4 py-2 text-xs text-gray-400 border-t" style="border-color:#f0f2fb">
         {{ 'orders.list.footerSummary' | transloco: { filtered: filteredOrders.length, total: allOrders.length } }}
       </div>
@@ -290,12 +273,12 @@ export class OrderListComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'orders' scope — see provideTranslocoScope above. */
+  // Shorthand for the 'orders' scope (see provideTranslocoScope above)
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`orders.${key}`, params);
   }
 
-  /** Maps a raw status value (English, from the backend) to its translation key. */
+  // Maps a raw status value (English, from the backend) to its translation key
   statusLabelKey(status: string): string {
     const map: Record<string, string> = {
       '':           'orders.list.statusAll',
@@ -340,7 +323,7 @@ export class OrderListComponent implements OnInit {
 
   setStatus(status: string): void {
     this.filterStatus = status;
-    this.load();   // re-fetch from server with new status filter
+    this.load();
   }
 
   applyStatusFilter(): void {

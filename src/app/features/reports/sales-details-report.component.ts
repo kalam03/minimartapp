@@ -11,9 +11,7 @@ import { downloadBlob } from '../../shared/pdf-export.util';
   selector: 'app-sales-details-report',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule],
-  // Provided directly on this component too (in addition to the parent
-  // ReportsHubComponent) so it loads correctly whether this component is
-  // used standalone or nested — same pattern as Dashboard/Products/POS-Billing.
+  //Provided here too so it works whether used standalone or nested (same pattern as Dashboard/Products/POS-Billing)
   providers: [provideTranslocoScope('reports')],
   templateUrl: './sales-details-report.component.html',
   styleUrls: ['./sales-details-report.component.css']
@@ -25,9 +23,7 @@ export class SalesDetailsReportComponent implements OnInit {
   activeQuick: string = 'today';
   customerFilter: number | '' = '';
 
-  // Product search is client-side — it filters the rows already loaded for
-  // the current date range/customer instead of round-tripping to the API,
-  // since productId/productName are already present on every row.
+  //Product search is client-side — filters rows already loaded for the current date range/customer instead of round-tripping to the API
   productSearch = '';
 
   customers: Customer[] = [];
@@ -44,7 +40,7 @@ export class SalesDetailsReportComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  //Shorthand for the 'reports' scope, provided by ReportsHubComponent
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`reports.${key}`, params);
   }
@@ -83,7 +79,6 @@ export class SalesDetailsReportComponent implements OnInit {
     });
   }
 
-  /** Rows matching the product search box — everything if the box is empty. */
   get filteredRows(): SalesDetailDto[] {
     const q = this.productSearch.trim().toLowerCase();
     if (!q) return this.rows;

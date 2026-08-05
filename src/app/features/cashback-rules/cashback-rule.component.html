@@ -1,9 +1,7 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- Add / Edit Form -->
-    <!-- overflow-hidden omitted here for consistency with the other
-         Promotion & Loyalty forms (see Product Discounts for why). -->
+    <!-- overflow-hidden omitted here for consistency with the other Promotion & Loyalty forms (see Product Discounts for why) -->
     <div class="bg-white rounded-xl shadow-md border mb-3">
       <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
@@ -80,7 +78,6 @@
       </div>
     </div>
 
-    <!-- List -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">{{ 'cashbackRules.title.list' | transloco }}</h2>
@@ -132,7 +129,6 @@
         </table>
       </div>
 
-      <!-- Pagination Controls -->
       <div *ngIf="filteredConfigs.length > 0" class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
           {{ 'cashbackRules.table.showingSummary' | transloco: {

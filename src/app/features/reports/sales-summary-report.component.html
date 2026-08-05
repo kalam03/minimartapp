@@ -1,5 +1,4 @@
 <div class="px-1">
-  <!-- ── Date Filter Bar ─────────────────────────────────────────────── -->
   <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
     <div class="px-3 py-2 flex flex-wrap items-end gap-2">
       <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
@@ -54,12 +53,10 @@
     </div>
   </div>
 
-  <!-- ── Error ───────────────────────────────────────────────────────── -->
   <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs">
     {{ errorMsg }}
   </div>
 
-  <!-- ── Summary Cards ───────────────────────────────────────────────── -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
     <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
       <div class="px-3 py-2 border-b border-white border-opacity-10">

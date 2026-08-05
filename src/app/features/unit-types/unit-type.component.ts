@@ -29,7 +29,7 @@ export class UnitTypeComponent implements OnInit {
   form = { ...this.emptyForm };
   validationErrors: Record<string, string> = {};
 
-  /** Set while editing an existing row; null while adding a new one */
+  //Set while editing an existing row; null while adding a new one
   editingId: number | null = null;
 
   get filteredUnitTypes(): UnitType[] {
@@ -47,7 +47,7 @@ export class UnitTypeComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'unitTypes' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'unitTypes' transloco scope
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`unitTypes.${key}`, params);
   }

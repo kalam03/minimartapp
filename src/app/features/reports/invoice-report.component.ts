@@ -13,9 +13,7 @@ import { downloadBlob } from '../../shared/pdf-export.util';
   selector: 'app-invoice-report',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule],
-  // Provided directly on this component too (in addition to the parent
-  // ReportsHubComponent) so it loads correctly whether this component is
-  // used standalone or nested — same pattern as Dashboard/Products/POS-Billing.
+  //Provided here too so it works whether used standalone or nested (same pattern as Dashboard/Products/POS-Billing)
   providers: [provideTranslocoScope('reports')],
   templateUrl: './invoice-report.component.html',
   styleUrls: ['./invoice-report.component.css']
@@ -27,8 +25,7 @@ export class InvoiceReportComponent implements OnInit {
   activeQuick: string = 'today';
   customerFilter: number | '' = '';
 
-  // Client-side search — filters the rows already loaded for the current
-  // date range/customer (invoice no, customer, delivery man), no reload.
+  //Client-side search — filters rows already loaded for the current date range/customer, no reload
   searchText = '';
 
   customers: Customer[] = [];
@@ -47,7 +44,7 @@ export class InvoiceReportComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  //Shorthand for the 'reports' scope, provided by ReportsHubComponent
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`reports.${key}`, params);
   }
@@ -86,7 +83,6 @@ export class InvoiceReportComponent implements OnInit {
     });
   }
 
-  /** Rows matching the search box — everything if the box is empty. */
   get filteredRows(): InvoiceReportDto[] {
     const q = this.searchText.trim().toLowerCase();
     if (!q) return this.rows;
@@ -155,18 +151,7 @@ export class InvoiceReportComponent implements OnInit {
     this.loadReport();
   }
 
-  /**
-   * Opens ONE row's printable A4 invoice PDF in a new tab — same
-   * single-sale endpoint (GET /api/sales/{saleId}/invoice-pdf, backed by
-   * SaleService.GetSaleInvoiceAsync + PdfReportService.GenerateInvoicePdf)
-   * used by the Counter page's auto-opened receipt, not a new one-off here.
-   * A plain window.open(url) — no blob fetch — called synchronously inside
-   * this click handler, so it's a real top-level navigation the browser's
-   * own PDF viewer renders directly, and it can't be popup-blocked since
-   * there's no async gap between the click and the open() call. The token
-   * rides along as ?access_token= (see SaleService.getInvoicePdfUrl) since
-   * a plain navigation can't carry an Authorization header.
-   */
+  //Plain window.open called synchronously (no blob fetch) so it's a real top-level navigation that can't be popup-blocked; token rides as ?access_token= since navigation can't carry an Authorization header
   printInvoice(row: InvoiceReportDto): void {
     const url = this.saleService.getInvoicePdfUrl(row.saleId, this.authService.getToken());
     window.open(url, '_blank');

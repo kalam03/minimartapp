@@ -18,10 +18,10 @@ export class CashbackRuleComponent implements OnInit {
   searchText = '';
   Math = Math;
 
-  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  //Client-side pagination, list is small enough not to need a server round trip per page
   pageSize = 10;
   currentPage = 1;
-  /** Client-side Active/Inactive filter, applied on top of the search text. */
+  //Client-side Active/Inactive filter, applied on top of the search text
   statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
@@ -51,7 +51,7 @@ export class CashbackRuleComponent implements OnInit {
     });
   }
 
-  /** Current page slice of filteredConfigs — what the table actually renders. */
+  //Current page slice of filteredConfigs, what the table actually renders
   get pagedConfigs(): CashbackConfig[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredConfigs.slice(start, start + this.pageSize);
@@ -97,9 +97,7 @@ export class CashbackRuleComponent implements OnInit {
       next: (res) => {
         this.configs = res.data || [];
         this.currentPage = 1;
-        // Same pattern as suppliers/products/customers — without this the
-        // grid only painted after some unrelated click/DOM event, not the
-        // moment the list actually arrived (this app's manual-CD convention).
+        //Manual change detection so the grid paints as soon as the list arrives (app-wide convention)
         this.cdr.detectChanges();
       },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))

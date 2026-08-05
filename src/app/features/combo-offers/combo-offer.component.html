@@ -1,10 +1,7 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- Add / Edit Form -->
-    <!-- overflow-hidden omitted here, same reason as the Product Discounts
-         form — keeps any dropdown/select content from being clipped by the
-         card edge. rounded-t-xl on the header preserves the corner look. -->
+    <!-- overflow-hidden intentionally omitted so dropdown/select content isn't clipped by the card edge -->
     <div class="bg-white rounded-xl shadow-md border mb-3">
       <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
@@ -70,7 +67,6 @@
           </div>
         </div>
 
-        <!-- Combo line items -->
         <div class="mb-3">
           <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-semibold" style="color:var(--theme-primary)">{{ 'comboOffers.form.items' | transloco }}</label>
@@ -105,7 +101,6 @@
       </div>
     </div>
 
-    <!-- List -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">{{ 'comboOffers.title.list' | transloco }}</h2>
@@ -168,7 +163,6 @@
         </table>
       </div>
 
-      <!-- Pagination Controls -->
       <div *ngIf="filteredCombos.length > 0" class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
           {{ 'comboOffers.table.showingSummary' | transloco: {

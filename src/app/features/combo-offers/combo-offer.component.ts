@@ -21,10 +21,10 @@ export class ComboOfferComponent implements OnInit {
   searchText = '';
   Math = Math;
 
-  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  //Client-side pagination, list is small enough not to need a server round trip per page
   pageSize = 10;
   currentPage = 1;
-  /** Client-side Active/Inactive filter, applied on top of the search text. */
+  //Client-side Active/Inactive filter, applied on top of the search text
   statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
@@ -54,7 +54,7 @@ export class ComboOfferComponent implements OnInit {
     });
   }
 
-  /** Current page slice of filteredCombos — what the table actually renders. */
+  //Current page slice of filteredCombos, what the table actually renders
   get pagedCombos(): ComboOffer[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredCombos.slice(start, start + this.pageSize);
@@ -76,12 +76,7 @@ export class ComboOfferComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 
-  /**
-   * True once any line is marked "Free" — a "Buy X, get Y free" combo. The
-   * discount for this combo is calculated purely from the free line(s)' own
-   * value (see PromotionEngineService), so Combo Type / Discount Value /
-   * Bundle Price become irrelevant and are hidden + no longer required.
-   */
+  //"Buy X, get Y free" combos are discounted purely by the free line's own value, so Combo Type/Discount Value/Bundle Price become irrelevant
   get anyFreeItem(): boolean {
     return this.items.some(i => i.isFreeItem);
   }
@@ -108,8 +103,7 @@ export class ComboOfferComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    // See PromotionDiscountComponent for why this unwraps { success, data }
-    // instead of trusting ProductService's (incorrect) Product[] return type.
+    //Unwraps { success, data } — ProductService's Product[] return type is incorrect (see PromotionDiscountComponent)
     this.productService.getAllProducts({ isActive: true }).subscribe({
       next: (response: any) => (this.products = Array.isArray(response) ? response : response?.data || []),
       error: () => {}
@@ -121,9 +115,7 @@ export class ComboOfferComponent implements OnInit {
       next: (res) => {
         this.combos = res.data || [];
         this.currentPage = 1;
-        // Same pattern as suppliers/products/customers — without this the
-        // grid only painted after some unrelated click/DOM event, not the
-        // moment the list actually arrived (this app's manual-CD convention).
+        //Manual change detection so the grid paints as soon as the list arrives (app-wide convention)
         this.cdr.detectChanges();
       },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))
@@ -152,9 +144,7 @@ export class ComboOfferComponent implements OnInit {
     if (new Date(this.form.endDate) < new Date(this.form.startDate))
       this.validationErrors['endDate'] = this.t('validation.endBeforeStart');
 
-    // A "Buy X, get Y free" combo (any line marked Free) is discounted purely
-    // by the free line(s)' own value — Combo Type / Discount Value / Bundle
-    // Price are hidden and irrelevant for it, so skip their validation here.
+    //Free-item combos skip Combo Type/Discount Value/Bundle Price validation (irrelevant for them)
     if (!this.anyFreeItem) {
       if (this.form.comboType === 'FixedPrice' && (!this.form.fixedComboPrice || this.form.fixedComboPrice <= 0))
         this.validationErrors['fixedComboPrice'] = this.t('validation.fixedPriceRequired');

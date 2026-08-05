@@ -1,7 +1,6 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- ── Date Filter Bar ─────────────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
       <div class="px-3 py-2 flex flex-wrap items-end gap-2">
         <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
@@ -26,10 +25,8 @@
           {{ 'reports.filter.apply' | transloco }}
         </button>
 
-        <!-- Divider -->
         <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
 
-        <!-- Quick filter pill buttons -->
         <div class="flex flex-wrap gap-1">
           <button (click)="applyQuick('today')"
             class="px-2 py-1 text-xs rounded-full font-medium transition-all border"
@@ -72,12 +69,10 @@
       </div>
     </div>
 
-    <!-- ── Error ───────────────────────────────────────────────────────── -->
     <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs">
       {{ errorMsg }}
     </div>
 
-    <!-- ── Summary Cards ───────────────────────────────────────────────── -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
 
       <div class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
@@ -128,7 +123,6 @@
 
     </div>
 
-    <!-- ── Top Selling / Most In-Demand Products ─────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
@@ -185,7 +179,6 @@
       </div>
     </div>
 
-    <!-- ── Daily Profit Summary ──────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">{{ 'reports.profitReport.dailySummary.title' | transloco }}</h2>
@@ -228,7 +221,6 @@
       </div>
     </div>
 
-    <!-- ── Per-Product Breakdown (optionally filtered to selected day) ─── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">

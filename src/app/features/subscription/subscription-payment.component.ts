@@ -13,17 +13,7 @@ interface MethodOption {
   kind: 'wallet' | 'card';
 }
 
-/**
- * Payment method page — reached from subscription-renew.component's
- * "Renew Now" (no planId, keeps current plan) or "Choose This Plan"
- * (?planId=X) buttons. Shows method tiles (bKash/Nagad/Rocket/Card);
- * picking one swaps in the matching form. No real payment gateway is
- * wired up (see SubscriptionService.Checkout on the backend) — this
- * collects just enough to look and feel real, then activates the plan
- * immediately. Card payments only ever keep the last 4 digits in memory
- * long enough to send to the backend; the full number/CVV are never
- * transmitted or stored.
- */
+//No real payment gateway is wired up (see SubscriptionService.Checkout) - this collects enough to look real then activates the plan; card number/CVV are never transmitted or stored, only the last 4 digits
 @Component({
   selector: 'app-subscription-payment',
   standalone: true,
@@ -44,10 +34,8 @@ export class SubscriptionPaymentComponent implements OnInit {
   planId: number | null = null;
   targetPlan: SubscriptionPlan | null = null;
 
-  // Wallet form
   mobileNumber = '';
 
-  // Card form
   cardNumber = '';
   cardExpiry = '';
   cardCvv = '';
@@ -79,7 +67,7 @@ export class SubscriptionPaymentComponent implements OnInit {
           this.isLoading = false;
           this.cdr.detectChanges();
         } else {
-          // Renewing the current plan — match it by planCode from /subscription/my.
+          //Renewing the current plan - match it by planCode from /subscription/my
           this.subscriptionService.getMySubscription().subscribe({
             next: (subRes) => {
               const code = subRes.success ? subRes.data.planCode : null;
@@ -146,8 +134,7 @@ export class SubscriptionPaymentComponent implements OnInit {
       cardLast4: digitsOnly.slice(-4)
     });
 
-    // Clear sensitive fields from memory immediately after building the
-    // request — they were never sent anywhere beyond the last-4 digits.
+    //Clear sensitive fields from memory immediately after building the request
     this.cardNumber = '';
     this.cardCvv = '';
   }

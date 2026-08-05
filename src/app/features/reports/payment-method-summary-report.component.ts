@@ -10,17 +10,14 @@ import { downloadBlob } from '../../shared/pdf-export.util';
   selector: 'app-payment-method-summary-report',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule],
-  // Provided directly on this component too (in addition to the parent
-  // ReportsHubComponent) — same pattern as the other 4 report tabs.
+  //Provided here too, same pattern as the other 4 report tabs
   providers: [provideTranslocoScope('reports')],
   templateUrl: './payment-method-summary-report.component.html',
   styleUrls: ['./payment-method-summary-report.component.css']
 })
 export class PaymentMethodSummaryReportComponent implements OnInit {
 
-  // ── Optional date range — unlike the other reports, blank means "all
-  // time" (a running balance, not a period total), so nothing defaults
-  // to today here. ─────────────────────────────────────────────────────
+  //Optional date range — unlike other reports, blank means "all time" (running balance, not a period total), so nothing defaults to today
   fromDate: string | null = null;
   toDate: string | null = null;
   activeQuick: string = 'allTime';
@@ -48,14 +45,12 @@ export class PaymentMethodSummaryReportComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  //Shorthand for the 'reports' scope, provided by ReportsHubComponent
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`reports.${key}`, params);
   }
 
-  /** Reuses the same canonical label mapping every other payment-method
-   *  dropdown uses (see shared/payment-methods.ts) — cash/bkash/nagad/
-   *  rocket/bank account share one translation everywhere in the app. */
+  //Reuses the same canonical label mapping every payment-method dropdown uses (see shared/payment-methods.ts)
   methodLabelKey(method: string): string {
     return paymentMethodLabelKey(method) || method;
   }

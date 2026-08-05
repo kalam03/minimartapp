@@ -1,13 +1,10 @@
 <div class="min-h-screen flex" style="background:#f0f2fb">
 
-  <!-- ── Left decorative panel (desktop only) ── -->
   <div class="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-12 relative overflow-hidden"
        style="background: linear-gradient(160deg, var(--theme-primary) 0%, var(--theme-primary-light) 60%, #1e2057 100%)">
-    <!-- Decorative circles -->
     <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-10" style="background:var(--theme-accent)"></div>
     <div class="absolute bottom-8 -right-20 w-64 h-64 rounded-full opacity-10" style="background:var(--theme-accent)"></div>
 
-    <!-- Brand -->
     <div class="relative z-10 text-center">
       <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 shadow-2xl"
            style="background:linear-gradient(135deg,var(--theme-accent) 0%,#7b83d4 100%)">
@@ -19,7 +16,6 @@
       <h1 class="text-4xl font-extrabold text-white mb-2 tracking-wide">Lucky Shop</h1>
       <p class="text-sm font-medium mb-10" style="color:var(--theme-accent)">Point of Sale Management System</p>
 
-      <!-- Feature list -->
       <div class="space-y-4 text-left max-w-xs mx-auto">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -69,11 +65,9 @@
     </p>
   </div>
 
-  <!-- ── Right login panel ── -->
   <div class="flex-1 flex items-center justify-center p-6 lg:p-12">
     <div class="w-full max-w-sm">
 
-      <!-- Mobile brand header -->
       <div class="lg:hidden text-center mb-7">
         <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl mb-3 shadow-lg"
              style="background:linear-gradient(135deg,var(--theme-primary),var(--theme-primary-light))">
@@ -86,7 +80,6 @@
         <p class="text-sm text-gray-500 mt-1">POS Management System</p>
       </div>
 
-      <!-- Login / Register toggle -->
       <div class="flex rounded-lg overflow-hidden mb-4 border" style="border-color:var(--theme-text)">
         <a routerLink="/login"
           class="flex-1 text-center text-xs font-semibold py-2 text-white transition-colors"
@@ -99,10 +92,8 @@
         </a>
       </div>
 
-      <!-- Card -->
       <div class="bg-white rounded-2xl shadow-xl overflow-hidden" style="border:1px solid var(--theme-text)">
 
-        <!-- Card top stripe -->
         <div class="px-8 pt-7 pb-5" style="border-bottom:2px solid #f0f2fb">
           <h2 class="text-lg font-bold" style="color:var(--theme-primary)">Welcome back</h2>
           <p class="text-xs text-gray-500 mt-0.5">Sign in to access your Lucky Shop dashboard</p>
@@ -111,7 +102,6 @@
         <div class="px-8 py-7">
           <form (ngSubmit)="onSubmit()">
 
-            <!-- Username -->
             <div class="mb-4">
               <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">Username</label>
               <div class="relative">
@@ -131,7 +121,6 @@
               </div>
             </div>
 
-            <!-- Password -->
             <div class="mb-4">
               <label class="block text-xs font-semibold mb-1.5" style="color:var(--theme-primary)">Password</label>
               <div class="relative">
@@ -151,7 +140,6 @@
               </div>
             </div>
 
-            <!-- Submit -->
             <button type="submit" [disabled]="isLoading"
               class="w-full py-2.5 rounded-lg text-sm font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style="background:var(--theme-primary)"
@@ -171,7 +159,6 @@
           </form>
         </div>
 
-        <!-- Demo credentials hint -->
         <div class="px-8 pb-6">
           <div class="rounded-lg p-3 text-xs" style="background:#f0f2fb; border:1px solid var(--theme-text)">
             <p class="font-semibold mb-2" style="color:var(--theme-primary)">Demo credentials</p>

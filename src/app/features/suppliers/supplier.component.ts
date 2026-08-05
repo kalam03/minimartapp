@@ -10,10 +10,7 @@ import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.direc
   selector: 'app-supplier',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
-  // Loads assets/i18n/suppliers/{en,bn}.json only when this route is hit —
-  // see Multilingual_Localization_Architecture.md Section 5.1. Scope name
-  // deliberately has no hyphen (a hyphenated scope name caused all lookups
-  // to silently miss — see pos-billing's rename to 'posBilling').
+  //Scope name deliberately has no hyphen — a hyphenated scope name caused all Transloco lookups to silently miss (see pos-billing's rename to 'posBilling')
   providers: [provideTranslocoScope('suppliers')],
   templateUrl: './supplier.component.html',
   styleUrls: ['./supplier.component.css']
@@ -56,7 +53,7 @@ export class SupplierComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'suppliers' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'suppliers' scope — see provideTranslocoScope above
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`suppliers.${key}`, params);
   }

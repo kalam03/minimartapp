@@ -53,75 +53,58 @@ export class PurchaseComponent implements OnInit {
   ) {}
   Math = Math;
 
-  /** Whether the "Cost Price" field below is user-editable — set via
-   *  config.json (isBuyingEditable), no rebuild needed to toggle it. */
+  //Cost Price field is user-editable only when set via config.json (isBuyingEditable)
   get isBuyingEditable(): boolean {
     return this.appConfigService.isBuyingEditable;
   }
 
-  /** Shorthand for the 'purchases' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'purchases' transloco scope
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`purchases.${key}`, params);
   }
 
-  // ViewChild references for input elements
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('supplierSearchInput') supplierSearchInput!: ElementRef;
   @ViewChild('quantityInput') quantityInput!: ElementRef;
 
-  // UI State
   showProductDropdown: boolean = false;
   showSupplierDropdown: boolean = false;
 
-  // Keyboard navigation indices
   selectedProductIndex: number = -1;
   selectedSupplierIndex: number = -1;
 
-  // Products Data
   products: Product[] = [];
 
-  // Selected Product
   selectedProduct: Product | null = null;
 
-  // Suppliers Data
   suppliers: Supplier[] = [];
 
-  // Cart Items
   cartItems: PurchaseCartItem[] = [];
 
-  // Selected IDs
   selectedProductId: number | null = null;
   selectedSupplierId: number | null = null;
 
-  // Quantities
   productQuantity: number = 1;
 
-  // Cost price for the product currently being added — defaults to the
-  // catalog purchasePrice, editable only when isBuyingEditable is true
-  // (see the "Cost Price" field in the template). addToCart() always uses
-  // this value (not product.purchasePrice directly), so when it's
-  // read-only it's simply never changed from the catalog price anyway.
+  //addToCart() always uses productPrice (not product.purchasePrice directly), so when read-only it stays at the catalog price
   productPrice: number = 0;
 
-  // Payment Info
   subtotal: number = 0;
   discountAmount: number = 0;
   discountPercent: number = 0;
   transportCost: number = 0;
   transportType: string = '';
   selectedPaymentMethod: string = DEFAULT_PAYMENT_METHOD;
-  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  //Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital)
   readonly paymentMethods = PAYMENT_METHODS;
   paymentAmount: number = 0;
   returnAmount: number = 0;
   dueAmount: number = 0;
   grossAmount: number = 0;
 
-  // UI State
   searchProductTerm: string = '';
   searchSupplierTerm: string = '';
 
-  // Purchase Order History
   purchaseOrders: PurchaseOrder[] = [];
 
   filters: ProductFilter = {
@@ -165,7 +148,6 @@ export class PurchaseComponent implements OnInit {
   }
 
   loadSamplePurchaseOrders(): void {
-    // Sample purchase order data
     this.purchaseOrders = [
       {
         purchaseOrderNo: 'PO-001',
@@ -391,10 +373,7 @@ export class PurchaseComponent implements OnInit {
     this.selectedProductIndex = -1;
 
     setTimeout(() => {
-      // Was `document.querySelector('input[type="number"]')` — broke once
-      // BnNumberAccessorDirective started rewriting this input's type to
-      // "text" at runtime (needed to display Bangla digits). The #quantityInput
-      // template ref is stable regardless of the input's current type attribute.
+      //#quantityInput ref used instead of a type selector since BnNumberAccessorDirective rewrites this input's type at runtime
       this.quantityInput?.nativeElement?.focus();
     }, 0);
   }
@@ -489,7 +468,7 @@ export class PurchaseComponent implements OnInit {
     this.productQuantity = isNaN(numValue) ? 1 : Math.max(1, numValue);
   }
 
-  /** Only reachable when isBuyingEditable is true — the field is [readonly] otherwise. */
+  //Only reachable when isBuyingEditable is true — the field is [readonly] otherwise
   onProductPriceChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     this.productPrice = isNaN(numValue) ? 0 : Math.max(0, numValue);

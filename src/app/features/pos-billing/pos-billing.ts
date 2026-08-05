@@ -43,11 +43,7 @@ export interface Invoice {
   selector: 'app-pos-billing',
   standalone: true,
   imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective, BnDigitsPipe],
-  // Note: ActivatedRoute + Router are injected but not imported here (they're provided by the router module)
-  // Loads assets/i18n/posBilling/{en,bn}.json only when this route is hit —
-  // see Multilingual_Localization_Architecture.md Section 5.1.
-  // Scope name deliberately has no hyphen (unlike the folder's old name) —
-  // a hyphenated scope name caused all lookups to silently miss.
+  // scope name intentionally has no hyphen — a hyphenated name broke i18n lookups silently
   providers: [provideTranslocoScope('posBilling')],
   templateUrl: './pos-billing.html',
   styleUrls: ['./pos-billing.css'],
@@ -73,18 +69,16 @@ export class PosBillingComponent implements OnInit {
     this.receiptData = this.receiptService.getReceiptData();
   }
 
-  /** Whether the "Price" field below is user-editable — set via config.json
-   *  (isSellingEditable), no rebuild needed to toggle it. */
+  // Price field editability comes from config.json (isSellingEditable), no rebuild needed to toggle
   get isSellingEditable(): boolean {
     return this.appConfigService.isSellingEditable;
   }
 
-  /** Shorthand for the 'posBilling' scope — see provideTranslocoScope above. */
+  // shorthand for the 'posBilling' transloco scope
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`posBilling.${key}`, params);
   }
 
-  /** When opened from Order List, this holds the active order id */
   activeOrderId: number | null = null;
   orderLoading = false;
   Math = Math;
@@ -92,104 +86,73 @@ export class PosBillingComponent implements OnInit {
 
   receiptData: ReceiptData;
   receiptHTML: string = '';
-  // ViewChild references for input elements
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('customerSearchInput') customerSearchInput!: ElementRef;
   @ViewChild('quantityInput') quantityInput!: ElementRef;
 
-  // UI State
   showProductDropdown: boolean = false;
   showCustomerDropdown: boolean = false;
   showDeliveryDropdown: boolean = false;
 
-  // Keyboard navigation indices
   selectedProductIndex: number = -1;
   selectedCustomerIndex: number = -1;
   selectedDeliveryIndex: number = -1;
 
-  // Products Data
   products: Product[] = [];
 
-  // Selected Product
   selectedProduct: Product | null = null;
 
-  // Customers Data
   customers: Customer[] = [];
 
-  // Employees (used as the delivery-man list) — loaded once, filtered client-side
+  // employees list doubles as the delivery-man list, loaded once and filtered client-side
   employees: Employee[] = [];
 
-  // Transport detail — exactly one of these is meaningful, depending on transportType:
-  //  - delivery: selectedDeliveryManId (picked from the searchable employee list, mandatory)
-  //  - courier:  selectedDeliveryManId (same searchable employee list, mandatory)
-  //  - pickup:   pickupEmployeeCode (auto-filled from the logged-in counter user's
-  //              linked employee — session-derived, not a manual pick)
+  // transport detail: delivery/courier use selectedDeliveryManId (manual pick), pickup uses pickupEmployeeCode (auto session-derived)
   selectedDeliveryManId: number | null = null;
   searchDeliveryTerm: string = '';
   pickupByName: string = '';
   pickupEmployeeCode: string | null = null;
 
-  // Cart Items
   cartItems: CartItem[] = [];
-  /** Product IDs that failed with a stock conflict on the last finalization attempt */
+  // product IDs that failed with a stock conflict on the last finalization attempt
   conflictProductIds = new Set<number>();
 
-  // Selected IDs
   selectedProductId: number | null = null;
   selectedCustomerId: number | null = null;
 
-  // Quantities
   productQuantity: number = 1;
 
-  // Sale price for the product currently being added — defaults to the
-  // catalog salePrice, editable only when isSellingEditable is true (see
-  // the "Price" field in the template). addToCart() always uses this value
-  // (not product.salePrice directly), so when it's read-only it's simply
-  // never changed from the catalog price anyway.
+  // defaults to catalog salePrice; addToCart() always uses this field (not product.salePrice), editable only when isSellingEditable
   productPrice: number = 0;
 
-  // Payment Info
   subtotal: number = 0;
   discountAmount: number = 0;
   discountPercent: number = 0;
   transportCost: number = 0;
   transportType: string = 'delivery';
   selectedPaymentMethod: string = DEFAULT_PAYMENT_METHOD;
-  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  // canonical payment-method list, shared across Payroll/Counter/Purchases/Capital
   readonly paymentMethods = PAYMENT_METHODS;
   paymentCash: number = 0;
   returnCash: number = 0;
   dueAmount: number = 0;
   grossAmount: number = 0;
 
-  // ── Promotion & Loyalty (redemption at checkout) ─────────────────────
-  // Balances are informational only — the actual discount/redemption math
-  // (product discounts, combos, cashback, points) all happens server-side
-  // in PromotionEngineService, so nothing here is computed client-side.
-  // These just tell the cashier what's redeemable and carry the cashier's
-  // requested redemption amount along with the sale.
+  // balances are informational only; all discount/redemption math happens server-side in PromotionEngineService
   customerRewardPointBalance: number = 0;
   customerCashbackBalance: number = 0;
   redeemPointsInput: number | null = null;
   redeemCashbackInput: number | null = null;
 
-  // ── Live promotion quote (product discount preview) ──────────────────
-  // Unlike the redemption balances above, product-wise discounts DO need to
-  // be calculated and shown live as the cashier builds the cart — this is
-  // the read-only preview from POST /sales/quote (PromotionEngineService.
-  // GetQuoteAsync), refreshed (debounced) on every cart/customer/discount/
-  // transport change. Kept as the single source of truth for the auto
-  // discount amount so calculateTotals() never re-implements the money math.
+  // live read-only preview from POST /sales/quote (PromotionEngineService.GetQuoteAsync), debounced; single source of truth so calculateTotals() doesn't reimplement the math
   promotionQuote: PromotionQuoteResult | null = null;
   quoteLoading = false;
   private quoteDebounceHandle: any = null;
 
-  // UI State
   searchProductTerm: string = '';
   searchCustomerTerm: string = '';
   customerPhone: string = '';
 
-  // Invoice History
   invoices: Invoice[] = [];
 
   filters: ProductFilter = {
@@ -204,7 +167,6 @@ export class PosBillingComponent implements OnInit {
     this.loadEmployees();
     this.loadSampleInvoices();
 
-    // Check if opened from Order Management
     this.route.queryParams.subscribe(params => {
       const orderId = params['orderId'];
       if (orderId) {
@@ -214,7 +176,6 @@ export class PosBillingComponent implements OnInit {
     });
   }
 
-  /** Load a saved order's items into the POS cart */
   loadOrderIntoCart(orderId: number): void {
     this.orderLoading = true;
     // Mark order as Processing so it's visible on the list
@@ -270,19 +231,16 @@ export class PosBillingComponent implements OnInit {
             }
           });
 
-          // Pre-fill transport from order
           this.transportCost = order.transport || 0;
 
-          // Discount is stored/handled as an amount; percentage is derived in calculateTotals()
+          // discount is stored/handled as an amount; percentage is derived in calculateTotals()
           this.discountAmount = order.discount || 0;
 
-          // Recalculate all totals from the loaded cart — bulk one-shot load, show discount immediately.
+          // bulk one-shot load, show discount immediately
           this.calculateTotals(true);
 
-          // Pre-fill customer name and phone from order
           if (order.customerName) {
             this.searchCustomerTerm = order.customerName;
-            // Try to match against loaded customers list
             const match = this.customers.find(
               c => c.customerName?.toLowerCase() === order.customerName?.toLowerCase()
                 || (order.customerPhone && c.phone === order.customerPhone)
@@ -360,7 +318,6 @@ export class PosBillingComponent implements OnInit {
   }
 
   loadSampleInvoices(): void {
-    // Sample invoice data
     this.invoices = [
       {
         invoiceNo: 'INV-001',
@@ -388,10 +345,7 @@ export class PosBillingComponent implements OnInit {
 
     if (term.length > 0 && this.filteredProducts.length > 0) {
       const lower = term.toLowerCase();
-      // A barcode scanner types the code and (usually) sends it character by
-      // character just like a keyboard, so this fires on every keystroke same
-      // as manual typing — checked first since a scanned code is always meant
-      // to be an exact, unambiguous match, never a partial name.
+      // barcode scanners send keystrokes like typing, so check for an exact barcode/name match first (scanned codes are never partial)
       const exactMatch =
         this.filteredProducts.find((product) => product.barcode?.toLowerCase() === lower) ||
         this.filteredProducts.find((product) => product.productName?.toLowerCase() === lower);
@@ -475,7 +429,6 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  // Update the onCustomerKeydown method
   onCustomerKeydown(event: KeyboardEvent): void {
     console.log(
       'Key pressed:',
@@ -532,7 +485,6 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  // Add the scrollToSelectedCustomer method
   scrollToSelectedCustomer(): void {
     setTimeout(() => {
       const selectedElement = document.querySelector('.customer-dropdown-item.selected');
@@ -542,10 +494,8 @@ export class PosBillingComponent implements OnInit {
     }, 0);
   }
 
-  // --- Delivery-man searchable dropdown (mirrors the customer/product ones above) ---
-
-  /** "Full Name-EMP001" — shown in the dropdown and filled into the search
-   *  box once picked, so two employees with the same first name stay distinguishable. */
+  // delivery-man searchable dropdown mirrors the customer/product ones above
+  // "Full Name-EMP001" format keeps employees with the same first name distinguishable
   deliveryManLabel(employee: Employee): string {
     return `${employee.fullName}-${employee.employeeCode}`;
   }
@@ -555,8 +505,7 @@ export class PosBillingComponent implements OnInit {
     this.showDeliveryDropdown = true;
     this.selectedDeliveryIndex = -1;
 
-    // Typing over an already-picked name invalidates that selection until
-    // they pick again — keeps the "mandatory for delivery" check honest.
+    // typing over an already-picked name invalidates that selection until they pick again
     if (this.selectedDeliveryManId) {
       const current = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
       if (!current || this.deliveryManLabel(current) !== term) {
@@ -661,10 +610,7 @@ export class PosBillingComponent implements OnInit {
 
     const term = this.searchProductTerm.toLowerCase();
 
-    // Barcode scanners sometimes fire their trailing Enter fast enough that
-    // onProductSearch's per-keystroke exact-match check above never gets a
-    // chance to run before this Enter-triggered fallback fires — so barcode
-    // is checked here too, ahead of the name-based matching.
+    // scanners can fire Enter before onProductSearch's exact-match check runs, so recheck barcode here first
     let bestMatch = this.products.find((product) => product.barcode?.toLowerCase() === term);
 
     if (!bestMatch) {
@@ -733,10 +679,7 @@ export class PosBillingComponent implements OnInit {
     this.selectedProductIndex = -1;
 
     setTimeout(() => {
-      // Was `document.querySelector('input[type="number"]')` — broke once
-      // BnNumberAccessorDirective started rewriting this input's type to
-      // "text" at runtime (needed to display Bangla digits). The #quantityInput
-      // template ref is stable regardless of the input's current type attribute.
+      // uses #quantityInput ref (not a type="number" selector) since BnNumberAccessorDirective rewrites the input's type to "text" for Bangla digits
       this.quantityInput?.nativeElement?.focus();
     }, 0);
   }
@@ -753,7 +696,7 @@ export class PosBillingComponent implements OnInit {
     this.loadLoyaltyBalances(customer.customerId);
   }
 
-  /** Reward point / cashback balance for the currently selected customer — display-only. */
+  // reward point / cashback balance for the currently selected customer — display-only
   loadLoyaltyBalances(customerId: number): void {
     this.customerRewardPointBalance = 0;
     this.customerCashbackBalance = 0;
@@ -770,12 +713,7 @@ export class PosBillingComponent implements OnInit {
     });
   }
 
-  /**
-   * Short "what got auto-applied" line built from SaleResponseDto's
-   * promotion breakdown fields (PromotionDiscountAmount, CashbackEarned,
-   * RewardPointsEarned, etc. — see SaleService.CreateSale on the backend).
-   * Returns '' when nothing promotion-related happened on this sale.
-   */
+  // builds a "what got auto-applied" line from SaleResponseDto's promotion breakdown fields (see SaleService.CreateSale on the backend)
   buildPromotionSummaryLine(sale: any): string {
     const parts: string[] = [];
     if (sale?.promotionDiscountAmount > 0) parts.push(`৳${(+sale.promotionDiscountAmount).toFixed(2)} auto-discount`);
@@ -799,7 +737,7 @@ export class PosBillingComponent implements OnInit {
     this.selectedProductIndex = -1;
   }
 
-  /** Highlights the conflicting cart item in red and auto-clears after 8 s */
+  // highlights the conflicting cart item in red and auto-clears after 8s
   markConflictItem(productId: number): void {
     this.conflictProductIds.add(productId);
     setTimeout(() => {
@@ -832,14 +770,12 @@ export class PosBillingComponent implements OnInit {
     this.calculateTotals();
   }
 
-  // Handle transport cost changes
   onTransportCostChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     this.transportCost = isNaN(numValue) ? 0 : Math.max(0, numValue);
     this.calculateTotals();
   }
 
-  // Handle transport type changes
   onTransportTypeChange(value: string): void {
     this.transportType = value;
 
@@ -861,9 +797,7 @@ export class PosBillingComponent implements OnInit {
         // this.transportCost = 50; // Uncomment to set a default charge
         break;
       case 'pickup': {
-        // Auto-selected from whoever is logged in at this counter — pulled
-        // from their session (Users.EmployeeId → Employee.EmployeeCode),
-        // never a manual pick. The field is readonly in the template.
+        // auto-selected from the logged-in counter user's session (Users.EmployeeId -> Employee.EmployeeCode), never a manual pick
         const sessionUser = this.authService.getUser();
         this.pickupEmployeeCode = sessionUser?.employeeCode || null;
         this.pickupByName = this.pickupEmployeeCode
@@ -871,7 +805,6 @@ export class PosBillingComponent implements OnInit {
               ? `${sessionUser.employeeName}-${this.pickupEmployeeCode}`
               : this.pickupEmployeeCode)
           : (sessionUser?.userName || '');
-        // this.transportCost = 0; // Uncomment to set zero for pickup
         break;
       }
     }
@@ -895,7 +828,6 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  // Filtered Products
   get filteredProducts(): Product[] {
     if (!this.searchProductTerm || !Array.isArray(this.products)) return [];
     const term = this.searchProductTerm.toLowerCase();
@@ -909,7 +841,6 @@ export class PosBillingComponent implements OnInit {
       .slice(0, 10);
   }
 
-  // Filtered Customers
   get filteredCustomers(): Customer[] {
     if (!this.searchCustomerTerm || !Array.isArray(this.customers)) return [];
     const term = this.searchCustomerTerm.toLowerCase();
@@ -923,15 +854,12 @@ export class PosBillingComponent implements OnInit {
       .slice(0, 10);
   }
 
-  // Get Selected Customer
   get selectedCustomer(): Customer | undefined {
     if (!Array.isArray(this.customers)) return undefined;
     return this.customers.find((c) => c.customerId === this.selectedCustomerId);
   }
 
-  // Filtered delivery-man list — unlike products/customers, shows the full
-  // (short) employee list even with an empty search term so it works as a
-  // simple picker, not just a type-ahead.
+  // unlike products/customers, shows the full employee list on an empty search term so it works as a simple picker, not just a type-ahead
   get filteredDeliveryEmployees(): Employee[] {
     if (!Array.isArray(this.employees)) return [];
     const term = this.searchDeliveryTerm.trim().toLowerCase();
@@ -946,14 +874,12 @@ export class PosBillingComponent implements OnInit {
     return list.slice(0, 10);
   }
 
-  /** EmployeeCode of the selected delivery man — this is what actually gets
-   *  stored on the Sales row (Sales.DeliveryManCode is varchar, not a numeric FK). */
+  // this is what gets stored on Sales.DeliveryManCode (varchar, not a numeric FK)
   get selectedDeliveryManCode(): string | null {
     const emp = this.employees.find((e) => e.employeeId === this.selectedDeliveryManId);
     return emp?.employeeCode || null;
   }
 
-  /** Resolves the right "assigned to" display value for the current transport type. */
   get transportDetail(): string {
     switch (this.transportType) {
       case 'delivery':
@@ -968,49 +894,44 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  /** Previous balance: positive = customer owes (due), negative = customer has credit */
+  // positive = customer owes (due), negative = customer has credit
   get previousDue(): number {
     return this.selectedCustomer?.currentBalance || 0;
   }
 
-  // Helper method for product quantity
   onProductQuantityChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     const min = this.isWeightProduct ? 0.001 : 1;
     this.productQuantity = isNaN(numValue) ? min : Math.max(min, numValue);
   }
 
-  /** Only reachable when isSellingEditable is true — the field is [readonly] otherwise. */
+  // only reachable when isSellingEditable is true — the field is [readonly] otherwise
   onProductPriceChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     this.productPrice = isNaN(numValue) ? 0 : Math.max(0, numValue);
   }
 
-  /** True when selected product is sold by weight/volume (KG, G, L, ML) */
   get isWeightProduct(): boolean {
     const wt = ['KG', 'G', 'L', 'ML'];
     return !!this.selectedProduct && wt.includes((this.selectedProduct.unitType || '').toUpperCase());
   }
 
-  /** Input step and display unit for the quantity field */
   get qtyStep(): string { return this.isWeightProduct ? '0.001' : '1'; }
   get qtyUnit(): string { return this.selectedProduct?.unitType || 'PCS'; }
 
-  // Helper method for discount entered as an AMOUNT (percentage is derived).
+  // discount is entered as an amount; percentage is derived
   onDiscountAmountChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     this.discountAmount = isNaN(numValue) ? 0 : Math.max(0, numValue);
     this.calculateTotals();
   }
 
-  // Helper method for payment cash
   onPaymentCashChange(value: string | number): void {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
     this.paymentCash = isNaN(numValue) ? 0 : Math.max(0, numValue);
     this.calculateReturnAndDue();
   }
 
-  // Add Product to Cart
   async addToCart() {
     if (!this.selectedProduct) {
       this.alertService.info(this.t('messages.noProductSelectedBody'), this.t('messages.noProductSelectedTitle'));
@@ -1051,8 +972,7 @@ export class PosBillingComponent implements OnInit {
       });
     }
 
-    // Discrete "just added a product" action — fetch the promo quote right
-    // now, not after the debounce, so the discount shows immediately.
+    // discrete add-to-cart action: fetch the promo quote now, not after the debounce, so the discount shows immediately
     this.calculateTotals(true);
     this.resetProduct();
 
@@ -1063,7 +983,6 @@ export class PosBillingComponent implements OnInit {
     }, 0);
   }
 
-  // Remove from Cart
   removeFromCart(item: CartItem): void {
     const index = this.cartItems.indexOf(item);
     if (index > -1) {
@@ -1072,7 +991,6 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  // Clear Cart
   clearCart(): void {
     if (confirm('Are you sure you want to clear the cart?')) {
       this.cartItems = [];
@@ -1083,24 +1001,16 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  /** Auto product-discount total from the live quote — 0 while no quote has come back yet. */
+  // 0 while no quote has come back yet
   get promoDiscountAmount(): number {
     return this.promotionQuote?.autoDiscountAmount || 0;
   }
 
-  /** Per-product auto-discount amount from the live quote — feeds the cart line badge. */
   lineDiscount(productId: number): number {
     return this.promotionQuote?.lineDiscountByProductId?.[String(productId)] ?? 0;
   }
 
-  /**
-   * Itemized "Buy X, get Y free" lines from the live quote — one entry per
-   * qualifying combo, each listing the product(s) that went free (name
-   * resolved from the already-loaded product catalog, since the backend only
-   * knows ProductId) and the value made free. Feeds the small breakdown shown
-   * under "Promo Discount" so the cashier can see WHICH item is free, not
-   * just the lump total. Empty unless a free-item combo is currently applied.
-   */
+  // itemized "Buy X, get Y free" lines from the live quote; product names are resolved client-side since the backend quote only carries ProductId
   get freeItemPromotions(): Array<{ description: string; lines: Array<{ name: string; qty: number; value: number }> }> {
     return (this.promotionQuote?.appliedPromotions || [])
       .filter(p => p.freeItems && p.freeItems.length > 0)
@@ -1114,66 +1024,37 @@ export class PosBillingComponent implements OnInit {
       }));
   }
 
-  // Calculate Totals
-  /**
-   * @param immediate Skip the debounce and fetch the promo quote right away.
-   * Pass true for discrete one-shot actions (add/remove cart line, pick a
-   * customer, load an order) so the discount appears at that instant instead
-   * of waiting ~350ms. Leave false (default) for continuous-typing fields
-   * (manual discount / transport cost amount boxes) so we don't fire one
-   * request per keystroke.
-   */
+  // immediate=true skips the debounce for discrete one-shot actions (add/remove line, pick customer, load order); false (default) is for continuous-typing fields
   calculateTotals(immediate: boolean = false): void {
     this.applyLocalTotals();
-    // Cart/customer/discount/transport changed — refresh the live promo
-    // preview. Its callback only calls applyLocalTotals(), never
-    // calculateTotals() again, so this doesn't loop.
+    // refreshPromotionQuote's callback only calls applyLocalTotals(), never calculateTotals() again, so this doesn't loop
     this.refreshPromotionQuote(immediate);
   }
 
-  /** Local (synchronous) total math — reuses whatever promo quote is already cached. */
+  // reuses whatever promo quote is already cached
   private applyLocalTotals(): void {
-    // Calculate subtotal
     this.subtotal = this.cartItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-    // Discount is entered as an amount; clamp it and derive the percentage.
     if (this.discountAmount < 0) this.discountAmount = 0;
     if (this.discountAmount > this.subtotal) this.discountAmount = this.subtotal;
     this.discountPercent = this.subtotal > 0
       ? +((this.discountAmount / this.subtotal) * 100).toFixed(2)
       : 0;
 
-    // Sale net = items - manual discount - auto (product) discount + transport
-    // (before adding previous customer balance). The auto discount mirrors
-    // exactly what PromotionEngineService will apply server-side at checkout
-    // (same engine, read-only preview) — see refreshPromotionQuote().
+    // auto (product) discount mirrors exactly what PromotionEngineService applies server-side at checkout — see refreshPromotionQuote()
     const saleNet = this.subtotal - this.discountAmount - this.promoDiscountAmount + this.transportCost;
 
-    // Gross = saleNet + previousDue (positive due adds, negative credit deducts)
+    // positive due adds, negative credit deducts
     this.grossAmount = saleNet + this.previousDue;
 
-    // Ensure gross amount is not negative
     if (this.grossAmount < 0) {
       this.grossAmount = 0;
     }
 
-    // Calculate return and due
     this.calculateReturnAndDue();
   }
 
-  /**
-   * Live preview of product-wise discounts for the current cart — calls
-   * POST /sales/quote (PromotionEngineService.GetQuoteAsync, the exact same
-   * calc engine CreateSale uses, just without a transaction/writes) so the
-   * cashier sees the discount before finalising the sale. Only updates
-   * `promotionQuote` + re-applies local totals; never re-triggers itself.
-   *
-   * @param immediate Fire the request right now instead of after the debounce
-   * delay — used for discrete cart-add/remove/customer-pick actions so the
-   * discount shows up the instant the product hits the cart, not on the next
-   * unrelated click. Continuous-typing fields (discount amount / transport
-   * cost) still go through the debounce so we don't fire one request per keystroke.
-   */
+  // calls POST /sales/quote (PromotionEngineService.GetQuoteAsync, same engine CreateSale uses, no transaction/writes); immediate=true skips the debounce for discrete cart actions
   refreshPromotionQuote(immediate: boolean = false): void {
     if (this.quoteDebounceHandle) {
       clearTimeout(this.quoteDebounceHandle);
@@ -1208,15 +1089,11 @@ export class PosBillingComponent implements OnInit {
           this.quoteLoading = false;
           this.promotionQuote = res.data;
           this.applyLocalTotals();
-          // Same pattern used elsewhere in this app (e.g. customer.component.ts)
-          // after an async response updates state that a template *ngIf reads —
-          // without this the discount badge/line only painted on the NEXT
-          // unrelated click (any other DOM event), not the moment the quote arrived.
+          // forces the *ngIf-bound discount badge to paint immediately instead of on the next unrelated DOM event (same pattern as customer.component.ts)
           this.cdr.detectChanges();
         },
         error: () => {
-          // Quote preview is best-effort — a failed preview must never block
-          // billing, it just means no live discount is shown this round.
+          // quote preview is best-effort — a failed preview must never block billing
           this.quoteLoading = false;
           this.promotionQuote = null;
           this.applyLocalTotals();
@@ -1242,7 +1119,6 @@ export class PosBillingComponent implements OnInit {
     }
   }
 
-  // Submit Bill
   async submitBill() {
     if (this.cartItems.length === 0) {
       await this.alertService.warning(this.t('messages.cartEmptyWarning'));
@@ -1258,36 +1134,15 @@ export class PosBillingComponent implements OnInit {
     }
     console.log("customer ",this.selectedCustomer)
     console.log("customerq2 ",this.customers)
-    // if (!this.selectedCustomerId) {
-    //   await this.alertService.warning('Please select a customer.');
-    //   return;
-    // }
-
-    // if (this.dueAmount > 0) {
-    //   await this.alertService.warning(
-    //     `Warning: There is an outstanding due of $${this.dueAmount.toFixed(2)}. Please collect full payment.`,
-    //   );
-    //   return;
-    // }
-
-    // if (this.paymentCash < this.grossAmount) {
-    //   await this.alertService.warning(
-    //     `Insufficient payment. Please pay $${this.grossAmount.toFixed(2)} or more.`,
-    //   );
-    //   return;
-    // }
-   
 
     const confirmed = await this.alertService.confirm(
       this.t('messages.confirmSubmitBody', { amount: this.grossAmount.toFixed(2) }),
       this.t('messages.confirmSubmitTitle'),
     );
     if (!confirmed) {
-      // Cashier backed out — nothing to show, don't leave a blank tab stranded.
-      //if (invoiceTab && !invoiceTab.closed) invoiceTab.close();
       return;
     }
-     
+
     {
       const newInvoice: Invoice = {
         invoiceNo: 'INV-' + Date.now(),
@@ -1301,7 +1156,7 @@ export class PosBillingComponent implements OnInit {
 
       const saleNet = this.subtotal - this.discountAmount + this.transportCost;
 
-      // Capture before resetForm() clears them
+      // capture before resetForm() clears them
       const snapCustomerId  = this.selectedCustomerId;
       const snapDueAmount   = this.dueAmount;
       const snapPreviousDue = this.previousDue;
@@ -1315,21 +1170,13 @@ export class PosBillingComponent implements OnInit {
         totalAmount: this.subtotal,
         discount: this.discountAmount,
         discountPercent: this.discountPercent,
-        // Auto product-wise/combo discount from the live quote (see
-        // promotionQuote/promoDiscountAmount) — already folded into
-        // netAmount below same as the manual discount, but wasn't otherwise
-        // shown anywhere on the printed receipt, so combo discounts applied
-        // to a sale were invisible to the customer. buildReceiptFromCurrentSale
-        // prints one line per applied promotion using this list.
+        // already folded into netAmount below like the manual discount; buildReceiptFromCurrentSale prints one line per entry so combo discounts aren't invisible on the printed receipt
         promoDiscount: this.promoDiscountAmount,
         appliedPromotions: this.promotionQuote?.appliedPromotions || [],
         transportCost: this.transportCost,
         transport: this.transportType,
         transportDetail: this.transportDetail,
-        // Only the EmployeeCode is persisted (Sales.DeliveryManCode, varchar) —
-        // no numeric FK column exists for this on Sales. Delivery/Courier use
-        // whichever employee was picked from the dropdown; Pickup uses the
-        // counter user's own linked employee code from session.
+        // only EmployeeCode is persisted (Sales.DeliveryManCode, varchar, no numeric FK); delivery/courier use the picked employee, pickup uses the session's own employee code
         deliveryManCode:
           (this.transportType === 'delivery' || this.transportType === 'courier')
             ? this.selectedDeliveryManCode
@@ -1342,25 +1189,16 @@ export class PosBillingComponent implements OnInit {
         returnAmount: this.returnCash,
         dueAmount: this.dueAmount,
         items: this.cartItems,
-        // Who was logged in at this counter when the bill was made — printed
-        // at the bottom of the receipt, not persisted anywhere new.
+        // printed at the bottom of the receipt, not persisted anywhere new
         generatedBy: this.authService.getUser()?.userName || '',
-        // Promotion & Loyalty redemption — validated/capped server-side
-        // against the customer's actual balance and the active
-        // REWARD_POINT_CONFIG (see PromotionEngineService.EvaluateAsync).
-        // null/0 here just means "no redemption requested".
+        // validated/capped server-side against the customer's balance and REWARD_POINT_CONFIG (see PromotionEngineService.EvaluateAsync); null/0 means "no redemption requested"
         redeemPoints: this.redeemPointsInput || null,
         redeemCashback: this.redeemCashbackInput || null,
       };
 
       const receiptHtml = this.buildReceiptFromCurrentSale(receipt);
 
-      // Auto-print straight to the 58mm thermal printer — no preview window
-      // and no manual "Print" button. Runs silently via a hidden iframe.
-      // Note: the browser's native print dialog will still appear on submit
-      // unless the browser is launched with a silent-print flag (e.g. Chrome's
-      // --kiosk-printing), which skips the dialog and prints to the default
-      // printer automatically.
+      // auto-prints to the 58mm thermal printer via a hidden iframe (no preview/button); the native print dialog still appears unless the browser runs with a silent-print flag (e.g. Chrome's --kiosk-printing)
       this.printReceiptSilently(receiptHtml);
 
     console.log('Submitting receipt:', receipt);
@@ -1369,12 +1207,10 @@ export class PosBillingComponent implements OnInit {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
           const saleId = response.data?.saleId ?? response.saleId ?? null;
 
-         // const invoiceTab = window.open('', 'InvoiceWindow');
           if (saleId) {
-            //this.openInvoicePdf(saleId);
-          } 
+          }
 
-          // If this session was opened from an Order, mark it Completed
+          // if this session was opened from an Order, mark it Completed
           if (this.activeOrderId) {
             this.orderService.updateOrderStatus(this.activeOrderId, {
               status: 'Completed',
@@ -1394,18 +1230,12 @@ export class PosBillingComponent implements OnInit {
             this.t('messages.billSubmittedSuccess', { invoiceNo }) + (promoSummary ? ` ${promoSummary}` : '')
           );
           this.resetForm();
-          // Reload products (updated stock) and customers (updated balance)
+          // reload products (updated stock) and customers (updated balance)
           this.loadProducts();
           this.loadCustomers();
         },
         error: (error) => {
-          // Sale never got created — nothing to show, close the blank tab
-          // opened pre-emptively above rather than leaving it stranded.
-          // if (invoiceTab && !invoiceTab.closed) {
-          //   invoiceTab.close();
-          // }
-
-          // Stock sold out by another counter between cart add and finalization
+          // stock sold out by another counter between cart add and finalization
           if (SaleService.isStockConflict(error)) {
             const c: StockConflictError = error.error;
             this.alertService.error(
@@ -1416,13 +1246,10 @@ export class PosBillingComponent implements OnInit {
                 required: c.required
               })
             );
-            // Highlight the conflicting item in the cart so the cashier can act
             this.markConflictItem(c.productId);
           } else {
             console.error('Error recording sale:', error);
-            // NOTE: args here are (message, title) per AlertService.error's signature —
-            // that's already reversed from what you'd expect (pre-existing, not
-            // introduced by this change); only the literal title string is localized.
+            // args are (message, title) — reversed from what you'd expect, pre-existing AlertService.error signature; only the title is localized
             this.alertService.error(this.t('messages.submitBillErrorTitle'), error.error?.message || error.message || 'An error occurred while submitting the bill.');
           }
         }
@@ -1430,14 +1257,12 @@ export class PosBillingComponent implements OnInit {
 
     }
   }
-  // Add this method to handle Tab key on quantity input
   onQuantityKeydown(event: KeyboardEvent): void {
     if (event.key === 'Tab') {
-      event.preventDefault(); // Prevent default tab behavior
-      this.addToCart(); // Call add to cart function
+      event.preventDefault();
+      this.addToCart();
     }
   }
-  // View invoice details
   async viewInvoice(invoice: Invoice): Promise<void> {
     await this.alertService.info(
       this.t('messages.invoiceDetails', {
@@ -1451,21 +1276,11 @@ export class PosBillingComponent implements OnInit {
     );
   }
 
-  // Print invoice
-printInvoice(): void {
+  printInvoice(): void {
   console.log('Printing invoice...');
-
-  // Build receipt from current cart data instead of static data
-  //const receiptHTML = this.buildReceiptFromCurrentSale();
-
-  // Open print preview window
- // this.openPrintPreview(receiptHTML);
 }
 
-// Renders a CODE128 barcode of the given value to a standalone SVG string —
-// generated here (in the app's own document, where JsBarcode is bundled)
-// and dropped into the receipt HTML as static markup, so the print iframe
-// needs no script execution or network access to show it.
+// renders a CODE128 barcode to a standalone SVG string, dropped into the receipt HTML as static markup so the print iframe needs no script execution or network access
 private generateBarcodeSvg(value: string): string {
   try {
     const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1479,20 +1294,16 @@ private generateBarcodeSvg(value: string): string {
     });
     return new XMLSerializer().serializeToString(svgEl);
   } catch {
-    // Shouldn't happen (invoiceNo is always "INV-<number>", valid CODE128) —
-    // fall back to plain text rather than losing the invoice number entirely.
+    // shouldn't happen (invoiceNo is always "INV-<number>", valid CODE128); fall back to plain text
     return `<div style="font-size:9px;">${value}</div>`;
   }
 }
 
-// Build receipt HTML from current cart items
 buildReceiptFromCurrentSale(receipt: any): string {
-  // Helper function to format currency
   const formatTk = (amount: number): string => {
     return `৳ ${amount.toFixed(2)}`;
   };
 
-  // Escape HTML special characters
   const escapeHtml = (str: string): string => {
     if (!str) return '';
     return str
@@ -1503,7 +1314,6 @@ buildReceiptFromCurrentSale(receipt: any): string {
       .replace(/'/g, '&#39;');
   };
 
-  // Format date
   const formatDate = (date: Date): string => {
     const d = new Date(date);
     const day = d.getDate().toString().padStart(2, '0');

@@ -25,36 +25,24 @@ interface BarcodeLabel {
   providers: [provideTranslocoScope('barcodeGenerator')],
   templateUrl: './barcode-generator.component.html',
   styleUrls: ['./barcode-generator.component.css'],
-  // Default (Emulated) encapsulation scopes this component's CSS so it only
-  // ever applies to elements inside ITS OWN template — including the
-  // `body * { visibility: hidden }` print rule below, which needs to hide
-  // the sidebar/topbar too, but those are rendered by a completely
-  // different (layout) component and were never actually being touched by
-  // that rule. Turning encapsulation off makes this component's styles
-  // truly global so the print rule can reach the whole page. Safe here
-  // because .print-area/.no-print/.label-card/.label-grid are class names
-  // used only on this page (verified — nothing else in the app uses them).
+  // Encapsulation off so the print rule below can hide the sidebar/topbar too (scoped CSS can't reach outside this component)
   encapsulation: ViewEncapsulation.None
 })
 export class BarcodeGeneratorComponent implements OnInit {
   Math = Math;
 
-  // ── Data ──────────────────────────────────────────────────────────────
   products: Product[] = [];
   categories: { id: number; name: string }[] = [];
   isLoading = false;
   errorMsg = '';
 
-  // ── Filters — default to today ────────────────────────────────────────
   fromDate = toLocalDateString();
   toDate   = toLocalDateString();
   categoryFilter: number | '' = '';
   searchText = '';
 
-  // ── Selection ─────────────────────────────────────────────────────────
   selectedIds = new Set<number>();
 
-  // ── Barcode label settings ───────────────────────────────────────────
   barcodeWidth = 2;     // px per bar module (jsbarcode "width")
   barcodeHeight = 60;   // px bar height (jsbarcode "height")
   copies = 1;           // labels printed per selected product
@@ -73,7 +61,7 @@ export class BarcodeGeneratorComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'barcodeGenerator' scope — see provideTranslocoScope above. */
+  // Shorthand for the 'barcodeGenerator' scope (see provideTranslocoScope above)
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`barcodeGenerator.${key}`, params);
   }
@@ -88,7 +76,7 @@ export class BarcodeGeneratorComponent implements OnInit {
       next: (res) => {
         this.categories = (res.data || []).map(c => ({ id: c.categoryId, name: c.categoryName }));
       },
-      error: () => { /* filter dropdown just stays empty on failure */ }
+      error: () => { /* filter dropdown stays empty on failure */ }
     });
   }
 
@@ -143,7 +131,6 @@ export class BarcodeGeneratorComponent implements OnInit {
     );
   }
 
-  // ── Row selection ─────────────────────────────────────────────────────
   isSelected(productId: number): boolean {
     return this.selectedIds.has(productId);
   }
@@ -178,15 +165,14 @@ export class BarcodeGeneratorComponent implements OnInit {
     return this.products.filter(p => this.selectedIds.has(p.productId));
   }
 
-  // ── Barcode value handling ────────────────────────────────────────────
-  /** Products saved before this feature existed may have no Barcode value yet. */
+  // Products saved before this feature existed may have no barcode value yet
   private buildBarcodeValue(product: Product): string {
     return product.barcode && product.barcode.trim()
       ? product.barcode.trim()
       : 'PRD' + product.productId.toString().padStart(8, '0');
   }
 
-  /** Persist an auto-generated barcode back onto the product so future prints reuse the same code. */
+  // Persist an auto-generated barcode back onto the product so future prints reuse the same code
   private persistBarcode(product: Product, barcodeValue: string): void {
     const payload = {
       tenantId: product.tenantId || 1,
@@ -201,11 +187,10 @@ export class BarcodeGeneratorComponent implements OnInit {
     };
     this.productService.updateProduct(product.productId, payload).subscribe({
       next: () => { product.barcode = barcodeValue; },
-      error: () => { /* label still prints; will just retry generating a code next time */ }
+      error: () => { /* label still prints; will retry generating a code next time */ }
     });
   }
 
-  // ── Generate + render ─────────────────────────────────────────────────
   generate(): void {
     if (this.selectedProducts.length === 0) {
       this.alertService.error(this.t('messages.selectAtLeastOne'));
@@ -271,13 +256,7 @@ export class BarcodeGeneratorComponent implements OnInit {
     window.print();
   }
 
-  // ── Download as ZIP ─────────────────────────────────────────────────────
-  /**
-   * Bundles every generated label as its own PNG (product name + barcode +
-   * price, same content as the on-screen/printed card — not just the raw
-   * bars) into a single .zip the cashier can save or hand off to a print
-   * shop, instead of only being able to print straight from the browser.
-   */
+  // Bundles each label as a PNG (name+barcode+price) into a .zip for saving/printing outside the browser
   async downloadZip(): Promise<void> {
     if (this.generatedLabels.length === 0) {
       this.alertService.error(this.t('messages.selectAtLeastOne'));
@@ -307,8 +286,7 @@ export class BarcodeGeneratorComponent implements OnInit {
       document.body.appendChild(a);
       a.click();
       a.remove();
-      // Give the browser a moment to actually start the download before
-      // revoking the object URL out from under it.
+      // Give the browser a moment to start the download before revoking the object URL
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch {
       this.alertService.error(this.t('messages.zipFailed'));
@@ -318,7 +296,7 @@ export class BarcodeGeneratorComponent implements OnInit {
     }
   }
 
-  /** "ProductName-BARCODE.png", de-duplicated (multiple copies of the same product) with a -2, -3, ... suffix. */
+  // "ProductName-BARCODE.png", de-duplicated with a -2, -3, ... suffix for repeat copies
   private uniqueFileName(label: BarcodeLabel, usedNames: Set<string>): string {
     const safeName = (label.product.productName || 'product')
       .replace(/[^a-zA-Z0-9\- _]/g, '')
@@ -336,14 +314,7 @@ export class BarcodeGeneratorComponent implements OnInit {
     return candidate;
   }
 
-  /**
-   * Redraws one label (name/barcode/price) onto a plain, off-screen 2D
-   * canvas — same visual content as the .label-card in the template — and
-   * resolves it as a PNG Blob. Built independently of the on-screen
-   * `<canvas>` (which JsBarcode owns and only draws the bars onto) rather
-   * than screenshotting the live DOM, so no extra screenshot library
-   * (html2canvas etc.) is needed for something this simple.
-   */
+  // Redraws the label onto an off-screen canvas (independent of JsBarcode's own <canvas>) so no html2canvas dependency is needed for the PNG export
   private buildLabelImageBlob(label: BarcodeLabel): Promise<Blob | null> {
     return new Promise((resolve) => {
       const barcodeCanvas = document.getElementById(label.canvasId) as HTMLCanvasElement | null;

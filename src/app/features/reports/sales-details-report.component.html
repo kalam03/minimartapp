@@ -1,5 +1,4 @@
 <div class="px-1">
-  <!-- ── Filter Bar ──────────────────────────────────────────────────── -->
   <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
     <div class="px-3 py-2 flex flex-wrap items-end gap-2">
       <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
@@ -63,19 +62,17 @@
     </div>
   </div>
 
-  <!-- ── Error ───────────────────────────────────────────────────────── -->
   <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs">
     {{ errorMsg }}
   </div>
 
-  <!-- ── Table ───────────────────────────────────────────────────────── -->
   <div class="bg-white rounded-xl shadow-md overflow-hidden border">
     <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
       <h2 class="text-white font-semibold text-sm">{{ 'reports.salesDetails.tableTitle' | transloco }}</h2>
       <span class="text-xs" style="color:var(--theme-accent)">{{ 'reports.salesDetails.summary' | transloco: { count: filteredRows.length, qty: totalQty, amount: (totalAmount | number:'1.2-2') } }}</span>
     </div>
 
-    <!-- Search-by-product — filters the already-loaded rows above, no reload -->
+    <!--Search-by-product filters the already-loaded rows above, no reload-->
     <div class="px-3 py-2 border-b" style="background:#f8f9fd">
       <div class="relative max-w-xs">
         <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -26,7 +26,6 @@ import { AlertService } from '../../shared/alert.service';
 })
 export class UserManagementComponent implements OnInit {
 
-  // ── State ──────────────────────────────────────────────────────────────────
   users: UserResponse[]         = [];
   allRoles: RoleResponse[]      = [];
   userRoles: UserRoleResponse[] = [];
@@ -36,7 +35,6 @@ export class UserManagementComponent implements OnInit {
   searchTerm     = '';
   filterActive?: boolean = undefined;
 
-  // Forms
   showCreateForm    = false;
   showEditForm      = false;
   showPasswordForm  = false;
@@ -55,13 +53,11 @@ export class UserManagementComponent implements OnInit {
   // Employee picker (plain select, mandatory on Create User).
   employees: Employee[] = [];
 
-  // Pagination & sorting
   pageSize    = 10;
   currentPage = 1;
   sortBy      = 'userName';
   sortOrder: 'asc' | 'desc' = 'asc';
 
-  // Validation
   createErrors = { userName: '', password: '' };
   editErrors   = { userName: '' };
   passwordErrors = { oldPassword: '', newPassword: '' };
@@ -74,7 +70,7 @@ export class UserManagementComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'security' scope — see provideTranslocoScope above. */
+  // Shorthand for the 'security' scope — see provideTranslocoScope above.
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`security.${key}`, params);
   }
@@ -84,8 +80,6 @@ export class UserManagementComponent implements OnInit {
     this.loadRoles();
     this.loadEmployees();
   }
-
-  // ── Load ───────────────────────────────────────────────────────────────────
 
   loadUsers(): void {
     this.isLoading = true;
@@ -116,8 +110,6 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  // ── Validation ─────────────────────────────────────────────────────────────
-
   validateCreateField(field: string): void {
     const val = (this.createForm as any)[field]?.toString().trim() || '';
     (this.createErrors as any)[field] = '';
@@ -141,8 +133,6 @@ export class UserManagementComponent implements OnInit {
   isCreateInvalid(f: string): boolean { return !!(this.createErrors as any)[f]; }
   isEditInvalid(f: string): boolean   { return !!(this.editErrors as any)[f]; }
   isPasswordInvalid(f: string): boolean { return !!(this.passwordErrors as any)[f]; }
-
-  // ── Create User ────────────────────────────────────────────────────────────
 
   openCreateForm(): void {
     this.createForm  = { userName: '', password: '', role: 'Cashier', employeeId: 0 };
@@ -175,8 +165,6 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  // ── Edit User ──────────────────────────────────────────────────────────────
-
   openEditForm(user: UserResponse): void {
     this.selectedUser = user;
     this.editForm     = { userName: user.userName, role: user.role, isActive: user.isActive };
@@ -203,8 +191,6 @@ export class UserManagementComponent implements OnInit {
       });
     });
   }
-
-  // ── Change Password ────────────────────────────────────────────────────────
 
   openPasswordForm(user: UserResponse, adminReset = false): void {
     this.selectedUser    = user;
@@ -237,8 +223,6 @@ export class UserManagementComponent implements OnInit {
       });
     });
   }
-
-  // ── Role Assignment ────────────────────────────────────────────────────────
 
   openRoleModal(user: UserResponse): void {
     this.selectedUser  = user;
@@ -280,8 +264,6 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  // ── Grid helpers ───────────────────────────────────────────────────────────
-
   setSortColumn(col: string): void {
     if (this.sortBy === col) {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
@@ -319,8 +301,6 @@ export class UserManagementComponent implements OnInit {
   nextPage(): void { if (this.currentPage < this.totalPages) this.currentPage++; }
   prevPage(): void { if (this.currentPage > 1) this.currentPage--; }
   goToPage(p: number): void { if (p >= 1 && p <= this.totalPages) this.currentPage = p; }
-
-  // ── Misc ───────────────────────────────────────────────────────────────────
 
   onSearch(): void { this.loadUsers(); }
   onFilterChange(): void { this.loadUsers(); }

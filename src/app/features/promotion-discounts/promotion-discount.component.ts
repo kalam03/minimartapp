@@ -21,10 +21,10 @@ export class PromotionDiscountComponent implements OnInit {
   searchText = '';
   Math = Math;
 
-  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  //Client-side pagination, list is small enough not to need a server round trip per page
   pageSize = 10;
   currentPage = 1;
-  /** Client-side Active/Inactive filter, applied on top of the search text. */
+  //Client-side Active/Inactive filter, applied on top of the search text
   statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
@@ -43,10 +43,10 @@ export class PromotionDiscountComponent implements OnInit {
   validationErrors: Record<string, string> = {};
   editingId: number | null = null;
 
-  /** Product picked in the "add one product at a time" dropdown, below the grid of already-added products. */
+  //Product picked in the "add one product at a time" dropdown, below the grid of already-added products
   selectedProductToAdd: number | null = null;
 
-  /** Products not yet added to this discount — what the add-dropdown offers. */
+  //Products not yet added to this discount, what the add-dropdown offers
   get availableProductsToAdd(): Product[] {
     return this.products.filter(p => !this.form.productIds.includes(p.productId));
   }
@@ -62,7 +62,7 @@ export class PromotionDiscountComponent implements OnInit {
     });
   }
 
-  /** Current page slice of filteredPromotions — what the table actually renders. */
+  //Current page slice of filteredPromotions, what the table actually renders
   get pagedPromotions(): PromotionMaster[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredPromotions.slice(start, start + this.pageSize);
@@ -102,12 +102,7 @@ export class PromotionDiscountComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    // ProductService.getAllProducts()'s declared return type (Product[]) is
-    // wrong — the API actually responds { success, data }, same as every
-    // other wrapped endpoint (confirmed against product.component.ts's own
-    // Array.isArray(...) ? ... : response.data fallback). Without unwrapping
-    // this here, `products` silently became a non-array object and the
-    // picker/dropdown rendered nothing.
+    //ProductService.getAllProducts()'s declared return type (Product[]) is wrong — API actually responds { success, data }, so unwrap it here or products silently becomes a non-array
     this.productService.getAllProducts({ isActive: true }).subscribe({
       next: (response: any) => (this.products = Array.isArray(response) ? response : response?.data || []),
       error: () => {}
@@ -119,9 +114,7 @@ export class PromotionDiscountComponent implements OnInit {
       next: (res) => {
         this.promotions = res.data || [];
         this.currentPage = 1;
-        // Same pattern as suppliers/products/customers — without this the
-        // grid only painted after some unrelated click/DOM event, not the
-        // moment the list actually arrived (this app's manual-CD convention).
+        //Manual change detection so the grid paints as soon as the list arrives (app-wide convention)
         this.cdr.detectChanges();
       },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))
@@ -149,13 +142,12 @@ export class PromotionDiscountComponent implements OnInit {
     return !!this.validationErrors[field];
   }
 
-  /** Selecting an option in the product dropdown adds it straight to the grid — no separate Add button. */
+  //Selecting an option in the product dropdown adds it straight to the grid, no separate Add button
   onProductPicked(productId: number | null): void {
     if (productId == null) return;
     if (!this.form.productIds.includes(productId)) {
       this.form.productIds = [...this.form.productIds, productId];
     }
-    // Reset back to the placeholder option so the dropdown is ready for the next pick.
     this.selectedProductToAdd = null;
   }
 
@@ -167,7 +159,7 @@ export class PromotionDiscountComponent implements OnInit {
     return this.products.find(p => p.productId === id)?.productName || `#${id}`;
   }
 
-  /** Comma-joined product names for a discount's "Scope" column in the list table. */
+  //Comma-joined product names for a discount's "Scope" column in the list table
   productNames(ids: number[]): string {
     return ids.map(id => this.productName(id)).join(', ');
   }

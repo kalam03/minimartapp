@@ -37,15 +37,13 @@ export class LoginComponent {
       password: this.password
     }).subscribe({
       next: () => {
-        // AuthService handles the redirect to dashboard
+        //AuthService handles the redirect to dashboard
       },
       error: (err) => {
         this.isLoading = false;
         this.cdr.detectChanges();  // flush the false state before alert renders
         const msg = err?.error?.message || 'Invalid username or password';
-        // 403 = correct credentials but the tenant is suspended (see
-        // TenantSuspendedException on the backend) — distinct from a
-        // plain 401 wrong-password case, so the title reflects that.
+        //403 = tenant suspended (TenantSuspendedException), not a plain wrong-password 401
         const title = err?.status === 403 ? 'Account Suspended' : 'Login Failed';
         this.alertService.error(msg, title);
       }

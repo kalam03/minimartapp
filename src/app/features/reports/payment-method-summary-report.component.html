@@ -1,7 +1,6 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- ── Date Filter Bar ─────────────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-sm border mb-3" style="border-color:var(--theme-text)">
       <div class="px-3 py-2 flex flex-wrap items-end gap-2">
         <div class="flex items-center gap-1.5 mr-1" style="color:var(--theme-primary)">
@@ -26,7 +25,6 @@
           {{ 'reports.filter.apply' | transloco }}
         </button>
 
-        <!-- Divider -->
         <div class="w-px h-5 mx-0.5 hidden sm:block" style="background:var(--theme-text)"></div>
 
         <button (click)="resetFilter()"
@@ -51,12 +49,10 @@
       </div>
     </div>
 
-    <!-- ── Error ───────────────────────────────────────────────────────── -->
     <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs">
       {{ errorMsg }}
     </div>
 
-    <!-- ── Balance Cards — one per payment method ─────────────────────── -->
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-3">
       <div *ngFor="let r of rows" class="rounded-xl border overflow-hidden" style="background:var(--theme-primary)">
         <div class="px-3 py-2 border-b border-white border-opacity-10">
@@ -72,7 +68,6 @@
       </div>
     </div>
 
-    <!-- ── Detail Table — In / Out / Balance per method ───────────────── -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden mb-3">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h3 class="text-white font-semibold text-sm">{{ 'reports.paymentMethodSummary.tableTitle' | transloco }}</h3>

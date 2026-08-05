@@ -1,7 +1,6 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- ── Filter Bar ──────────────────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-sm border mb-3 no-print" style="border-color:var(--theme-text)">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
@@ -46,14 +45,12 @@
       </div>
     </div>
 
-    <!-- ── Error ───────────────────────────────────────────────────────── -->
     <div *ngIf="errorMsg" class="mb-3 px-3 py-2 rounded-lg border border-red-300 bg-red-50 text-red-700 text-xs no-print">
       {{ errorMsg }}
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-3 no-print">
 
-      <!-- ── Product Grid ────────────────────────────────────────────── -->
       <div class="xl:col-span-2 bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="overflow-x-auto" style="max-height: 480px; overflow-y: auto;">
           <table class="w-full text-sm">
@@ -93,7 +90,6 @@
         </div>
       </div>
 
-      <!-- ── Barcode Settings ─────────────────────────────────────────── -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border h-fit">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">{{ 'barcodeGenerator.title.settings' | transloco }}</h2>
@@ -132,7 +128,6 @@
       </div>
     </div>
 
-    <!-- ── Generated Labels Preview / Print Area ───────────────────────── -->
     <div *ngIf="generatedLabels.length > 0" class="bg-white rounded-xl shadow-md overflow-hidden border mt-3 print-area">
       <div class="px-3 py-2 flex items-center justify-between no-print" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">{{ 'barcodeGenerator.title.preview' | transloco: { count: generatedLabels.length } }}</h2>

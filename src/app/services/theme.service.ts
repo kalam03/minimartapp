@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 export interface AppTheme {
   id: string;
   name: string;
-  /** Swatch color shown in the theme picker (matches --theme-accent for that theme) */
+  // Matches --theme-accent for this theme; shown in the theme picker.
   swatch: string;
 }
 
@@ -37,7 +37,7 @@ export class ThemeService {
     try {
       localStorage.setItem(STORAGE_KEY, id);
     } catch {
-      /* localStorage unavailable — ignore */
+      // localStorage unavailable — ignore
     }
   }
 
@@ -54,7 +54,7 @@ export class ThemeService {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved && this.themes.some(t => t.id === saved)) return saved;
     } catch {
-      /* localStorage unavailable — ignore */
+      // localStorage unavailable — ignore
     }
     return 'indigo';
   }

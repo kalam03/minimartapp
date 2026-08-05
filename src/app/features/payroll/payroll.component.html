@@ -1,7 +1,6 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- Tab Nav -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
       <div class="px-3 py-2 flex flex-wrap gap-1" style="background:var(--theme-primary)">
         <button *ngFor="let t of tabs" (click)="setTab(t.id)"
@@ -12,10 +11,8 @@
       </div>
     </div>
 
-    <!-- ═══════════════════ EMPLOYEES TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'employees'">
 
-      <!-- Quick add Department / Designation -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <div class="bg-white rounded-xl shadow-md overflow-hidden border">
           <div class="px-3 py-2" style="background:var(--theme-primary)">
@@ -45,7 +42,6 @@
         </div>
       </div>
 
-      <!-- Add/Edit Employee Form -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">{{ (editingEmployeeId ? 'payroll.employees.editTitle' : 'payroll.employees.addTitle') | transloco }}</h2>
@@ -148,7 +144,6 @@
         </div>
       </div>
 
-      <!-- Employee List -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">{{ 'payroll.employees.listTitle' | transloco }}</h2>
@@ -201,7 +196,6 @@
       </div>
     </ng-container>
 
-    <!-- ═══════════════════ SALARY STRUCTURE TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'salary'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
@@ -265,7 +259,6 @@
       </div>
     </ng-container>
 
-    <!-- ═══════════════════ ATTENDANCE TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'attendance'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
@@ -352,7 +345,6 @@
       </div>
     </ng-container>
 
-    <!-- ═══════════════════ PROCESS PAYROLL TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'payroll'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
@@ -411,8 +403,7 @@
             </div>
           </div>
 
-          <!-- Due-advance warning — shown as soon as an employee with an
-               outstanding advance is selected, before payment is processed -->
+          <!-- Shown as soon as an employee with an outstanding advance is selected -->
           <div *ngIf="payForm.employeeId && payDueAdvanceTotal > 0" class="mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
             {{ 'payroll.payroll.dueAdvanceWarning' | transloco: { amount: ('৳' + (payDueAdvanceTotal | number:'1.2-2')) } }}
           </div>
@@ -439,7 +430,6 @@
         </div>
       </div>
 
-      <!-- Salary Payment History -->
       <div class="bg-white rounded-xl shadow-md overflow-hidden border">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
           <h2 class="text-white font-semibold text-sm">{{ 'payroll.payroll.historyTitle' | transloco }}</h2>
@@ -474,7 +464,6 @@
       </div>
     </ng-container>
 
-    <!-- ═══════════════════ BONUS TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'bonus'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">
@@ -558,7 +547,6 @@
       </div>
     </ng-container>
 
-    <!-- ═══════════════════ ADVANCE TAB ═══════════════════ -->
     <ng-container *ngIf="activeTab === 'advance'">
       <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
         <div class="px-3 py-2" style="background:var(--theme-primary)">

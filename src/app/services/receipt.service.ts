@@ -1,4 +1,3 @@
-// services/receipt.service.ts
 import { Injectable } from '@angular/core';
 
 export interface ReceiptData {
@@ -33,8 +32,7 @@ export interface ReceiptItem {
   providedIn: 'root'
 })
 export class ReceiptService {
-  
-  // Static data as per your requirements
+
   private staticReceiptData: ReceiptData = {
     shopName: "Lucky Shop",
     shopAddressLine1: "আড়াইহাজার বাজার, ব্যাটারী গলির দক্ষিণ পাশে, বাঁশ পট্টি নতুন রাস্তার মোড়",
@@ -66,26 +64,21 @@ export class ReceiptService {
 
   updateReceiptData(data: Partial<ReceiptData>): void {
     this.staticReceiptData = { ...this.staticReceiptData, ...data };
-    // Recalculate totals if needed
     this.recalculateTotals();
   }
 
   private recalculateTotals(): void {
-    // Recalculate subtotal from items
     this.staticReceiptData.subtotal = this.staticReceiptData.itemsDetailed.reduce(
       (sum, item) => sum + item.total, 0
     );
-    
-    // Recalculate total before discount
-    this.staticReceiptData.totalBeforeDiscount = 
+
+    this.staticReceiptData.totalBeforeDiscount =
       this.staticReceiptData.subtotal + this.staticReceiptData.transportCost;
-    
-    // Recalculate gross amount
-    this.staticReceiptData.grossAmount = 
+
+    this.staticReceiptData.grossAmount =
       this.staticReceiptData.totalBeforeDiscount - this.staticReceiptData.discount;
-    
-    // Recalculate due
-    this.staticReceiptData.due = 
+
+    this.staticReceiptData.due =
       this.staticReceiptData.grossAmount - this.staticReceiptData.paid;
   }
 

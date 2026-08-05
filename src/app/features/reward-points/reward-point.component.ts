@@ -17,10 +17,10 @@ export class RewardPointComponent implements OnInit {
   isSaving = false;
   Math = Math;
 
-  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  //Client-side pagination, list is small enough not to need a server round trip per page
   pageSize = 10;
   currentPage = 1;
-  /** Client-side Active/Inactive filter. */
+  //Client-side Active/Inactive filter
   statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
@@ -43,7 +43,7 @@ export class RewardPointComponent implements OnInit {
     return this.configs.filter(c => this.statusFilter === 'active' ? c.isActive : !c.isActive);
   }
 
-  /** Current page slice of filteredConfigs — what the table actually renders. */
+  //Current page slice of filteredConfigs, what the table actually renders
   get pagedConfigs(): RewardPointConfig[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredConfigs.slice(start, start + this.pageSize);
@@ -89,9 +89,7 @@ export class RewardPointComponent implements OnInit {
       next: (res) => {
         this.configs = res.data || [];
         this.currentPage = 1;
-        // Same pattern as suppliers/products/customers — without this the
-        // grid only painted after some unrelated click/DOM event, not the
-        // moment the list actually arrived (this app's manual-CD convention).
+        //Manual change detection so the grid paints as soon as the list arrives (app-wide convention)
         this.cdr.detectChanges();
       },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))

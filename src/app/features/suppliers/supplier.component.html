@@ -1,13 +1,5 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
-    <!-- Page Title -->
-    <!-- <div class="rounded-xl overflow-hidden border mb-3" style="background:var(--theme-primary)">
-      <div class="px-3 py-2">
-        <h1 class="text-white font-semibold text-sm">Supplier Management</h1>
-      </div>
-    </div> -->
-
-    <!-- Supplier Form Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
@@ -24,7 +16,6 @@
       </div>
       <div class="p-3">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Supplier Name -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.supplierName' | transloco }}</label>
             <input
@@ -39,7 +30,6 @@
             </p>
           </div>
 
-          <!-- Phone -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.phone' | transloco }}</label>
             <input
@@ -56,7 +46,6 @@
             </p>
           </div>
 
-          <!-- Email -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.email' | transloco }}</label>
             <input
@@ -71,7 +60,6 @@
             </p>
           </div>
 
-          <!-- Address -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.address' | transloco }}</label>
             <input
@@ -86,7 +74,6 @@
             </p>
           </div>
 
-          <!-- Contact Person -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.contactPerson' | transloco }}</label>
             <input
@@ -101,7 +88,6 @@
             </p>
           </div>
 
-          <!-- Contact Person Phone -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.contactPersonPhone' | transloco }}</label>
             <input
@@ -118,7 +104,6 @@
             </p>
           </div>
 
-          <!-- Opening Balance -->
           <div>
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'suppliers.form.openingBalance' | transloco }}</label>
             <input
@@ -134,7 +119,6 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex gap-2 mt-2 flex-wrap">
           <button
             (click)="saveSupplier()"
@@ -167,7 +151,6 @@
       </div>
     </div>
 
-    <!-- Suppliers Table Section -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border">
       <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">{{ 'suppliers.title.list' | transloco }}</h2>
@@ -181,7 +164,6 @@
           class="px-2 py-1 text-xs border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600">{{ 'suppliers.buttons.clear' | transloco }}</button>
       </div>
 
-      <!-- Table -->
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
@@ -263,7 +245,6 @@
         </table>
       </div>
 
-      <!-- Pagination Controls -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
         <div class="text-gray-600">
           {{ 'suppliers.table.showingSummary' | transloco: { from: (paginatedSuppliers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0), to: Math.min(currentPage * pageSize, filteredSuppliers.length), total: filteredSuppliers.length } }}<span *ngIf="filteredSuppliers.length !== suppliers.length" class="text-gray-400"> {{ 'suppliers.table.filteredFrom' | transloco: { total: suppliers.length } }}</span>

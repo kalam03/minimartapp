@@ -15,7 +15,6 @@
 
       <div *ngIf="errorMsg" class="px-5 pt-4 text-xs text-red-700 bg-red-50 rounded-lg mx-5 mt-4 py-2">{{ errorMsg }}</div>
 
-      <!-- ── Step 1: choose a payment method ── -->
       <div *ngIf="!selectedMethod" class="p-5">
         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Select a payment method</p>
         <div class="grid grid-cols-2 gap-3">
@@ -31,7 +30,6 @@
         </div>
       </div>
 
-      <!-- ── Step 2a: mobile wallet form (bKash / Nagad / Rocket) ── -->
       <div *ngIf="selectedMethod && selectedMethod.kind === 'wallet'">
         <div class="px-5 py-3 flex items-center gap-2" [style.background]="selectedMethod.color">
           <span class="text-white font-bold text-sm">{{ selectedMethod.label }}</span>
@@ -57,7 +55,6 @@
         </div>
       </div>
 
-      <!-- ── Step 2b: card form ── -->
       <div *ngIf="selectedMethod && selectedMethod.kind === 'card'">
         <div class="px-5 py-3" [style.background]="selectedMethod.color">
           <span class="text-white font-bold text-sm">Visa / Card</span>

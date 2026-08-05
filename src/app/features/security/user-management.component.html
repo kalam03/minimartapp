@@ -1,13 +1,5 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
-    <!-- Page Title -->
-    <!-- <div class="rounded-xl overflow-hidden border mb-3" style="background:var(--theme-primary)">
-      <div class="px-3 py-2">
-        <h1 class="text-white font-semibold text-sm">User Management</h1>
-      </div>
-    </div> -->
-
-    <!-- Create User Form -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
@@ -64,7 +56,6 @@
       </div>
     </div>
 
-    <!-- Edit User Form -->
     <div *ngIf="showEditForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
       <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">{{ 'security.users.editTitle' | transloco: { name: selectedUser?.userName } }}</h2>
@@ -106,7 +97,6 @@
       </div>
     </div>
 
-    <!-- Change Password Form -->
     <div *ngIf="showPasswordForm" class="bg-white rounded-xl shadow-md border mb-2 overflow-hidden">
       <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm">
@@ -145,7 +135,6 @@
       </div>
     </div>
 
-    <!-- Role Assignment Modal -->
     <div *ngIf="showRoleModal" class="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
         <div class="px-3 py-2 flex justify-between items-center" style="background:var(--theme-primary)">
@@ -184,7 +173,6 @@
       </div>
     </div>
 
-    <!-- Search Toolbar -->
     <div class="bg-white rounded-xl shadow-md border mb-3 p-3">
       <div class="flex flex-col md:flex-row gap-3 items-end">
         <div class="flex-1">
@@ -209,7 +197,6 @@
       </div>
     </div>
 
-    <!-- Users Table -->
     <div class="bg-white rounded-xl shadow-md border overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -289,7 +276,6 @@
         </table>
       </div>
 
-      <!-- Pagination -->
       <div class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs">
         <div class="text-gray-600">
           {{ 'security.users.table.showingSummary' | transloco: { from: (paginatedUsers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0), to: Math.min(currentPage * pageSize, users.length), total: users.length } }}

@@ -47,7 +47,7 @@ export class CustomerComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'customers' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'customers' scope — see provideTranslocoScope above
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`customers.${key}`, params);
   }

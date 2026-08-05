@@ -27,7 +27,7 @@ export class CategoryComponent implements OnInit {
   form = { ...this.emptyForm };
   validationErrors: Record<string, string> = {};
 
-  /** Set while editing an existing row; null while adding a new one */
+  //Set while editing an existing row; null while adding a new one
   editingId: number | null = null;
 
   get filteredCategories(): Category[] {
@@ -42,7 +42,7 @@ export class CategoryComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'categories' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'categories' transloco scope
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`categories.${key}`, params);
   }

@@ -5,13 +5,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../shared/alert.service';
 
-/**
- * Public self-service tenant signup — "Register Tenant" link on the login
- * page lands here. Creates a brand-new tenant + its first ("Admin") user
- * via POST /api/auth/register-tenant (no login required to reach this
- * endpoint), then auto-logs the new admin straight into the dashboard,
- * same as a normal login.
- */
+//Public self-service tenant signup: creates tenant + first admin user via POST /api/auth/register-tenant (no auth required), then auto-logs in
 @Component({
   selector: 'app-register-tenant',
   standalone: true,
@@ -65,7 +59,7 @@ export class RegisterTenantComponent {
       adminPassword: this.adminPassword
     }).subscribe({
       next: () => {
-        // AuthService handles the redirect to dashboard
+        //AuthService handles the redirect to dashboard
       },
       error: (err) => {
         this.isLoading = false;

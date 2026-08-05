@@ -21,7 +21,6 @@
 
     <div *ngIf="errorMsg" class="mb-4 px-4 py-2 text-sm text-red-700 bg-red-50 rounded-lg text-center">{{ errorMsg }}</div>
 
-    <!-- Quick renew -->
     <div *ngIf="canQuickRenew" class="bg-white rounded-2xl shadow-xl p-5 mb-5 flex items-center justify-between"
          style="border:1px solid var(--theme-text)">
       <div>
@@ -35,7 +34,6 @@
       </button>
     </div>
 
-    <!-- Plans -->
     <div class="text-center text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Or choose a different plan</div>
 
     <div *ngIf="isLoading" class="text-center text-sm text-gray-400 py-8">Loading plans…</div>

@@ -62,13 +62,12 @@ export interface SubscriptionPayment {
 export type PaymentMethod = 'bKash' | 'Nagad' | 'Rocket' | 'Card';
 
 export interface CheckoutRequest {
-  // Omit to renew the CURRENT plan as-is; set to switch to a different plan.
+  //Omit to renew the current plan as-is; set to switch to a different plan
   planId?: number;
   paymentMethod: PaymentMethod;
-  // Mobile banking (bKash/Nagad/Rocket) — the wallet number.
+  //Mobile banking (bKash/Nagad/Rocket) wallet number
   accountNumber?: string;
-  // Card — LAST 4 DIGITS ONLY. The full card number/CVV never leave the
-  // payment form component, let alone get sent to this API.
+  //Last 4 digits only — full card number/CVV never leaves the payment form component
   cardLast4?: string;
 }
 
@@ -80,10 +79,7 @@ export interface CheckoutResult {
   newEndDate: string;
 }
 
-/**
- * Tenant-facing subscription endpoints ("My Subscription" page, upgrade
- * page). For cross-tenant Super Admin operations, see super-admin.service.ts.
- */
+//Tenant-facing subscription endpoints; cross-tenant Super Admin ops live in super-admin.service.ts
 @Injectable({ providedIn: 'root' })
 export class SubscriptionService {
   private baseUrl = environment.baseUrl;
@@ -106,8 +102,7 @@ export class SubscriptionService {
     return this.http.get<any>(`${this.baseUrl}/subscription/plans`);
   }
 
-  // Self-service — renews/activates the CALLER's own tenant (tenantId comes
-  // from the JWT server-side, never from the request body).
+  //Self-service: tenantId comes from the JWT server-side, never from the request body
   renew(months = 1): Observable<{ success: boolean; message: string }> {
     return this.http.post<any>(`${this.baseUrl}/subscription/renew`, { months });
   }
@@ -116,8 +111,7 @@ export class SubscriptionService {
     return this.http.post<any>(`${this.baseUrl}/subscription/change-plan`, { newPlanId, keepEndDate });
   }
 
-  // Payment method page submits here — activates the plan and records the
-  // payment in one call (see SubscriptionService.Checkout on the backend).
+  //Activates the plan and records the payment in one call (see SubscriptionService.Checkout on the backend)
   checkout(payload: CheckoutRequest): Observable<{ success: boolean; message: string; data: CheckoutResult }> {
     return this.http.post<any>(`${this.baseUrl}/subscription/checkout`, payload);
   }

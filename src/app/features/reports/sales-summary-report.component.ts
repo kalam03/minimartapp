@@ -10,9 +10,7 @@ import { downloadBlob } from '../../shared/pdf-export.util';
   selector: 'app-sales-summary-report',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule],
-  // Provided directly on this component too (in addition to the parent
-  // ReportsHubComponent) so it loads correctly whether this component is
-  // used standalone or nested — same pattern as Dashboard/Products/POS-Billing.
+  //Provided here too so it works whether used standalone or nested (same pattern as Dashboard/Products/POS-Billing)
   providers: [provideTranslocoScope('reports')],
   templateUrl: './sales-summary-report.component.html',
   styleUrls: ['./sales-summary-report.component.css']
@@ -43,7 +41,7 @@ export class SalesSummaryReportComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  //Shorthand for the 'reports' scope, provided by ReportsHubComponent
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`reports.${key}`, params);
   }

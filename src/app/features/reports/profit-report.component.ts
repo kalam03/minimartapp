@@ -15,20 +15,16 @@ import { downloadBlob } from '../../shared/pdf-export.util';
   selector: 'app-profit-report',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule],
-  // Provided directly on this component too (in addition to the parent
-  // ReportsHubComponent) so it loads correctly whether this component is
-  // used standalone or nested — same pattern as Dashboard/Products/POS-Billing.
+  //Provided here too so it works whether used standalone or nested (same pattern as Dashboard/Products/POS-Billing)
   providers: [provideTranslocoScope('reports')],
   templateUrl: './profit-report.component.html',
   styleUrls: ['./profit-report.component.css']
 })
 export class ProfitReportComponent implements OnInit {
 
-  // ── Date range filter — defaults to today ─────────────────────────────
   fromDate = toLocalDateString();
   toDate   = toLocalDateString();
 
-  // ── Report data ───────────────────────────────────────────────────────
   totalSales   = 0;
   totalCost    = 0;
   totalProfit  = 0;
@@ -42,11 +38,9 @@ export class ProfitReportComponent implements OnInit {
   isExporting = false;
   errorMsg    = '';
 
-  // ── Quick-filter pill state ───────────────────────────────────────────
   activeQuick: string = 'today';
 
-  // Product-daily table is filterable by a specific day once you've
-  // picked one from the daily summary above ("drill in" on a date).
+  //Product-daily table is filterable to a specific day picked from the daily summary above ("drill in" on a date)
   selectedDay: string | null = null;
 
   get overallMarginPct(): number {
@@ -64,7 +58,7 @@ export class ProfitReportComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'reports' scope — provided by ReportsHubComponent. */
+  //Shorthand for the 'reports' scope, provided by ReportsHubComponent
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`reports.${key}`, params);
   }
@@ -108,7 +102,6 @@ export class ProfitReportComponent implements OnInit {
     this.applyQuick('today');
   }
 
-  /** Called by the quick-filter pill buttons. */
   applyQuick(period: string): void {
     const today    = new Date();
     const todayStr = toLocalDateString(today);

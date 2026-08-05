@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// ── DTOs ──────────────────────────────────────────────────────────────
 export interface OrderItemDto {
   orderItemId: number;
   orderId:     number;
@@ -56,7 +55,6 @@ export interface UpdateOrderStatusRequest {
   completedSaleId?: number;
 }
 
-// ── Service ───────────────────────────────────────────────────────────
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private base = `${environment.baseUrl}/order`;

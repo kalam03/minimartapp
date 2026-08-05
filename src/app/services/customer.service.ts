@@ -1,4 +1,3 @@
-// customer.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -65,7 +64,6 @@ export class CustomerService {
 
   constructor(private http: HttpClient) { }
 
-  // Get all customers with filters
   getAllCustomers(filter?: CustomerFilter): Observable<Customer[]> {
     let params = new HttpParams();
     
@@ -78,34 +76,28 @@ export class CustomerService {
     return this.http.get<Customer[]>(this.baseUrl + '/customers/all', { params });
   }
 
-  // Get customer by ID
   getCustomerById(id: number): Observable<Customer> {
     return this.http.get<Customer>(`${this.baseUrl}/customers/${id}`);
   }
 
-  // Create customer
   createCustomer(request: CreateCustomerRequest): Observable<Customer> {
     return this.http.post<Customer>(this.baseUrl + '/customers/Create', request);
   }
 
-  // Update customer
   updateCustomer(id: number, request: UpdateCustomerRequest): Observable<Customer> {
     debugger;
     return this.http.put<Customer>(`${this.baseUrl}/customers/${id}`, request);
   }
 
-  // Delete customer (soft delete)
   deleteCustomer(id: number, tenantId: number): Observable<void> {
     let params = new HttpParams().set('tenantId', tenantId.toString());
     return this.http.delete<void>(`${this.baseUrl}/customers/${id}`, { params });
   }
 
-  // Update customer balance
   updateCustomerBalance(id: number, request: UpdateBalanceRequest): Observable<Customer> {
     return this.http.patch<Customer>(`${this.baseUrl}/customers/${id}/balance`, request);
   }
 
-  // Search customers (for dropdown/autocomplete)
   searchCustomers(tenantId: number, searchTerm: string, topCount: number = 10): Observable<Customer[]> {
     let params = new HttpParams()
       .set('tenantId', tenantId.toString())
@@ -115,13 +107,11 @@ export class CustomerService {
     return this.http.get<Customer[]>(`${this.baseUrl}/customers/search`, { params });
   }
 
-  // Get customer summary for dashboard
   getCustomerSummary(tenantId: number): Observable<CustomerSummary> {
     let params = new HttpParams().set('tenantId', tenantId.toString());
     return this.http.get<CustomerSummary>(`${this.baseUrl}/customers/summary`, { params });
   }
 
-  // Get high balance customers
   getHighBalanceCustomers(tenantId: number, minBalance: number = 1000, topCount: number = 10): Observable<Customer[]> {
     let params = new HttpParams()
       .set('tenantId', tenantId.toString())

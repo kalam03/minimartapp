@@ -4,15 +4,7 @@ import { Router } from '@angular/router';
 import { SubscriptionService, ActiveSubscription, SubscriptionPlan } from '../../services/subscription.service';
 import { AuthService } from '../../services/auth.service';
 
-/**
- * Gate page a tenant lands on when their subscription has expired —
- * SubscriptionGuard redirects here instead of the dashboard (see
- * app.routes.ts / subscription.guard.ts). They can renew their current
- * plan or pick a different one; either choice hands off to the payment
- * method page (bKash/Nagad/Rocket/Card — see subscription-payment.component)
- * which actually activates the tenant. They can also just log out from
- * here if they'd rather come back later.
- */
+//Gate page a tenant lands on when their subscription expires - SubscriptionGuard redirects here instead of the dashboard (see subscription.guard.ts)
 @Component({
   selector: 'app-subscription-renew',
   standalone: true,
@@ -54,9 +46,7 @@ export class SubscriptionRenewComponent implements OnInit {
     });
   }
 
-  // A tenant with no real TenantSubscriptions row yet (legacy fallback —
-  // see Subscription_Legacy_Fallback_Migration.sql) has nothing to "renew";
-  // they need to pick a plan instead, which creates a fresh row.
+  //A tenant with no real TenantSubscriptions row yet (legacy fallback) has nothing to "renew" - they must pick a plan, which creates a fresh row
   get canQuickRenew(): boolean {
     return !!this.mySubscription && this.mySubscription.subscriptionId > 0;
   }

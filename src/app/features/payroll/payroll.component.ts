@@ -19,7 +19,7 @@ type Tab = 'employees' | 'salary' | 'attendance' | 'payroll' | 'bonus' | 'advanc
   selector: 'app-payroll',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
-  // Loads assets/i18n/payroll/{en,bn}.json only when this route is hit.
+  //Loads assets/i18n/payroll/{en,bn}.json only when this route is hit
   providers: [provideTranslocoScope('payroll')],
   templateUrl: './payroll.component.html',
   styleUrls: ['./payroll.component.css']
@@ -27,8 +27,7 @@ type Tab = 'employees' | 'salary' | 'attendance' | 'payroll' | 'bonus' | 'advanc
 export class PayrollComponent implements OnInit {
 
   activeTab: Tab = 'employees';
-  // ids stay fixed (used for tab switching logic); displayed labels are
-  // looked up via tabLabelKey() below so the underlying id never changes.
+  //ids stay fixed for tab-switching logic; displayed labels come from tabLabelKey() below
   tabs: { id: Tab; label: string }[] = [
     { id: 'employees',  label: 'Employees' },
     { id: 'salary',     label: 'Salary Structure' },
@@ -49,13 +48,12 @@ export class PayrollComponent implements OnInit {
     { id: 10, name: 'October' },{ id: 11, name: 'November' },{ id: 12, name: 'December' },
   ];
 
-  // ── Shared master data ────────────────────────────────────────────
   departments: Department[] = [];
   designations: Designation[] = [];
   employees: Employee[] = [];
   isSaving = false;
 
-  /** Canonical payment-method options — same list on every page (Payroll/Counter/Purchases/Capital). */
+  //Canonical payment-method options - same list on every page (Payroll/Counter/Purchases/Capital)
   readonly paymentMethods = PAYMENT_METHODS;
 
   get activeEmployees(): Employee[] { return this.employees.filter(e => e.isActive); }
@@ -69,15 +67,12 @@ export class PayrollComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'payroll' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'payroll' scope - see provideTranslocoScope above
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`payroll.${key}`, params);
   }
 
-  // The maps below translate the *displayed* label of a fixed enum value
-  // without changing the underlying value that's stored/compared/sent to
-  // the backend (gender code, salary type, attendance status, payment
-  // method, bonus type all stay in English in the data model).
+  //These maps translate the displayed label only; the underlying value stays in English in the data model
   genderLabelKey(code: string): string {
     const map: Record<string, string> = { M: 'payroll.options.genderMale', F: 'payroll.options.genderFemale', O: 'payroll.options.genderOther' };
     return map[code] ?? code;
@@ -120,9 +115,6 @@ export class PayrollComponent implements OnInit {
     return this.employees.find(e => e.employeeId === +(id || 0))?.fullName || '-';
   }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Departments / Designations (quick-add)
-  // ══════════════════════════════════════════════════════════════════
   newDepartmentName = '';
   newDesignationName = '';
 
@@ -164,9 +156,6 @@ export class PayrollComponent implements OnInit {
     });
   }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Employees
-  // ══════════════════════════════════════════════════════════════════
   empSearch = '';
   empForm = {
     firstName: '', lastName: '', gender: '', mobile: '', email: '',
@@ -298,9 +287,6 @@ export class PayrollComponent implements OnInit {
 
   isEmpFieldInvalid(field: string): boolean { return !!this.empValidationErrors[field]; }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Salary Structure
-  // ══════════════════════════════════════════════════════════════════
   salaryEmployeeId: number | null = null;
   currentStructure: EmployeeSalary | null = null;
   salaryForm = {
@@ -373,9 +359,6 @@ export class PayrollComponent implements OnInit {
     });
   }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Attendance
-  // ══════════════════════════════════════════════════════════════════
   attEmployeeId: number | null = null;
   attFromDate = toLocalDateString(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   attToDate = toLocalDateString();
@@ -439,9 +422,6 @@ export class PayrollComponent implements OnInit {
     }
   }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Process Payroll
-  // ══════════════════════════════════════════════════════════════════
   payForm = {
     employeeId: null as number | null,
     salaryMonth: new Date().getMonth() + 1,
@@ -456,9 +436,7 @@ export class PayrollComponent implements OnInit {
 
   years: number[] = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - 3 + i);
 
-  // Due-advance warning: when an employee is selected for salary processing,
-  // check whether they still owe on any advance so the amount isn't paid out
-  // "blind" — the deduction still has to be entered manually, this just warns.
+  //Warns if the employee still owes on any advance before processing salary; deduction must still be entered manually
   payDueAdvanceTotal = 0;
   isCheckingDueAdvance = false;
 
@@ -531,12 +509,9 @@ export class PayrollComponent implements OnInit {
   }
 
   monthName(m: number): string { return this.months.find(x => x.id === m)?.name || String(m); }
-  /** Translation key for a month id — the id itself is what's stored, this is display-only. */
+  //Translation key for a month id - the id itself is what's stored, this is display-only
   monthLabelKey(m: number): string { return `payroll.months.month${m}`; }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Bonus
-  // ══════════════════════════════════════════════════════════════════
   bonusForm = {
     employeeId: null as number | null, bonusDate: toLocalDateString(),
     bonusType: 'Festival Bonus', amount: null as number | null,
@@ -580,9 +555,6 @@ export class PayrollComponent implements OnInit {
     });
   }
 
-  // ══════════════════════════════════════════════════════════════════
-  // Advance
-  // ══════════════════════════════════════════════════════════════════
   advanceForm = {
     employeeId: null as number | null, advanceDate: toLocalDateString(),
     amount: null as number | null, remarks: '', paymentMethod: DEFAULT_PAYMENT_METHOD

@@ -16,6 +16,5 @@ export const PermissionGuard: CanActivateFn = (
 
   if (permSvc.isRouteAllowed(state.url)) return true;
 
-  // No permission — redirect to the access-denied page
   return router.createUrlTree(['/no-access']);
 };

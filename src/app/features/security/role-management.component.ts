@@ -68,7 +68,7 @@ export class RoleManagementComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'security' scope — see provideTranslocoScope above. */
+  // Shorthand for the 'security' scope — see provideTranslocoScope above.
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`security.${key}`, params);
   }

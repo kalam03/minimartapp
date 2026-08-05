@@ -1,7 +1,6 @@
 <div class="px-3 py-2">
   <div class="max-w-8xl mx-auto">
 
-    <!-- ── Reports Tab Bar ─────────────────────────────────────────────── -->
     <div class="bg-white rounded-xl shadow-sm border mb-3 overflow-hidden" style="border-color:var(--theme-text)">
       <div class="px-3 py-2" style="background:var(--theme-primary)">
         <h2 class="text-white font-semibold text-sm flex items-center gap-2">
@@ -22,7 +21,6 @@
       </div>
     </div>
 
-    <!-- ── Active Report ───────────────────────────────────────────────── -->
     <app-sales-summary-report *ngIf="activeTab==='sales-summary'"></app-sales-summary-report>
     <app-sales-details-report *ngIf="activeTab==='sales-details'"></app-sales-details-report>
     <app-invoice-report *ngIf="activeTab==='invoice-report'"></app-invoice-report>

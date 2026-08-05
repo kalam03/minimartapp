@@ -21,10 +21,7 @@ type ReportTab = 'sales-summary' | 'sales-details' | 'invoice-report' | 'profit-
     ProfitReportComponent,
     PaymentMethodSummaryReportComponent
   ],
-  // Loads assets/i18n/reports/{en,bn}.json only when this route is hit —
-  // see Multilingual_Localization_Architecture.md Section 5.1. Also provided
-  // on each of the 4 sub-report components individually (belt-and-suspenders,
-  // matches the Dashboard/Products/POS-Billing pattern exactly).
+  //Loads assets/i18n/reports/{en,bn}.json only when this route is hit — see Multilingual_Localization_Architecture.md Section 5.1
   providers: [provideTranslocoScope('reports')],
   templateUrl: './reports-hub.component.html',
   styleUrls: ['./reports-hub.component.css']

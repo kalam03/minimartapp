@@ -12,8 +12,7 @@ import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.direc
   selector: 'app-product',
   standalone: true,
   imports: [CommonModule, FormsModule, TranslocoModule, BnNumberAccessorDirective],
-  // Loads assets/i18n/products/{en,bn}.json only when this route is hit —
-  // see Multilingual_Localization_Architecture.md Section 5.1.
+  //Loads assets/i18n/products/{en,bn}.json only when this route is hit — see Multilingual_Localization_Architecture.md Section 5.1
   providers: [provideTranslocoScope('products')],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
@@ -23,16 +22,8 @@ export class ProductComponent implements OnInit {
   editingId: number | null = null;
   Math = Math;
 
-  // Fallback shown until the Unit Types API responds (or if it fails) so the
-  // dropdown is never empty. Manage the real list from the Unit Types page.
+  //Fallback shown until the Unit Types API responds so the dropdown is never empty
   unitTypes: { code: string; label: string; isWeight: boolean }[] = [
-    // { code: 'PCS', label: 'Piece / Count',  isWeight: false },
-    // { code: 'KG',  label: 'Kilogram (kg)',  isWeight: true  },
-    // { code: 'G',   label: 'Gram (g)',       isWeight: true  },
-    // { code: 'L',   label: 'Litre (L)',      isWeight: true  },
-    // { code: 'ML',  label: 'Millilitre (mL)',isWeight: true  },
-    // { code: 'DOZ', label: 'Dozen',          isWeight: false },
-    // { code: 'BOX', label: 'Box',            isWeight: false },
   ];
 
   productForm = {
@@ -55,8 +46,7 @@ export class ProductComponent implements OnInit {
     barcode: ''
   };
 
-  // Populated from the real Categories table on load. Manage the list from
-  // the Categories page — this used to be a hardcoded, disconnected list.
+  //Populated from the real Categories table on load
   categories: { id: number; name: string }[] = [];
 
   pageSize = 10;
@@ -75,7 +65,7 @@ export class ProductComponent implements OnInit {
     private transloco: TranslocoService
   ) {}
 
-  /** Shorthand for the 'products' scope — see provideTranslocoScope above. */
+  //Shorthand for the 'products' scope — see provideTranslocoScope above
   private t(key: string, params?: Record<string, unknown>): string {
     return this.transloco.translate(`products.${key}`, params);
   }
@@ -86,7 +76,6 @@ export class ProductComponent implements OnInit {
     this.loadCategories();
   }
 
-  /** Pull the live category list from the Categories master table */
   loadCategories(): void {
     this.categoryService.getAllCategories(true).subscribe({
       next: (res) => {
@@ -101,7 +90,7 @@ export class ProductComponent implements OnInit {
     });
   }
 
-  /** Pull the live unit type list from the Unit Types master table (falls back to the built-in list on error) */
+  //Falls back to the built-in list on error
   loadUnitTypes(): void {
     this.unitTypeService.getAllUnitTypes(true).subscribe({
       next: (res) => {

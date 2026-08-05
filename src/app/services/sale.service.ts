@@ -45,7 +45,7 @@ export interface PromotionQuoteRequest {
   redeemCashback?: number | null;
 }
 
-/** One free line inside a "Buy X, get Y free" combo — see AppliedPromotion.freeItems. */
+// One free line inside a "Buy X, get Y free" combo
 export interface FreeItemLine {
   productId: number;
   qty: number;
@@ -58,15 +58,15 @@ export interface AppliedPromotion {
   description: string;
   discountAmount: number;
   saleDetailProductId: number | null;
-  /** Populated only for a free-item combo — which product(s) went free and their value. */
+  // Populated only for a free-item combo
   freeItems: FreeItemLine[] | null;
 }
 
-/** Mirrors PromotionEngineResult — response of POST /sales/quote (and part of SaleResponseDto). */
+// Mirrors PromotionEngineResult — response of POST /sales/quote (and part of SaleResponseDto)
 export interface PromotionQuoteResult {
   autoDiscountAmount: number;
   appliedPromotions: AppliedPromotion[];
-  /** Keys arrive as numeric strings — Dictionary<int,decimal> serializes to a JSON object, whose keys are always strings. */
+  // Keys arrive as numeric strings since Dictionary<int,decimal> serializes to a JSON object
   lineDiscountByProductId: Record<string, number>;
   cashbackEarned: number;
   cashbackConfigId: number | null;
@@ -90,32 +90,18 @@ export class SaleService {
     return this.http.post(this.baseUrl + '/sales', payload);
   }
 
-  /**
-   * Read-only preview of product-discount/combo/cashback/points math for the
-   * current cart — same calc engine as CreateSale, but never writes anything.
-   * Called (debounced) from pos-billing.ts as the cart/customer/discount
-   * change, so the cashier sees the promo discount before finalising the sale.
-   */
+  // Read-only preview using the same calc engine as CreateSale, but never writes anything; called debounced from pos-billing.ts
   getPromotionQuote(payload: PromotionQuoteRequest): Observable<{ success: boolean; data: PromotionQuoteResult }> {
     return this.http.post<{ success: boolean; data: PromotionQuoteResult }>(this.baseUrl + '/sales/quote', payload);
   }
 
-  /**
-   * URL for one sale's printable A4 invoice PDF — opened directly in a new
-   * tab (window.open/tab.location, NOT an HttpClient blob fetch). A plain
-   * top-level navigation can't carry the Authorization header the auth
-   * interceptor normally attaches, so the token rides along as
-   * ?access_token= instead; the backend only accepts that fallback on this
-   * one route (see Program.cs JwtBearerEvents.OnMessageReceived and
-   * SalesController.GetInvoicePdf). Used by both the Counter page (auto-open
-   * after checkout) and the Invoice Report grid's per-row print button.
-   */
+  // Opened as a top-level nav (not HttpClient), so it can't carry the auth interceptor's header — token rides as ?access_token= instead, accepted only on this route (see Program.cs JwtBearerEvents.OnMessageReceived / SalesController.GetInvoicePdf)
   getInvoicePdfUrl(saleId: number, token: string | null): string {
     const tokenParam = token ? `?access_token=${encodeURIComponent(token)}` : '';
     return `${this.baseUrl}/sales/${saleId}/invoice-pdf${tokenParam}`;
   }
 
-  /** Type-guard: returns true if the HTTP error is a stock conflict (409) */
+  // Type-guard for a 409 stock-conflict error response
   static isStockConflict(err: any): err is { error: StockConflictError } {
     return err?.status === 409 && err?.error?.errorCode === 'STOCK_INSUFFICIENT';
   }

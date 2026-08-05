@@ -46,11 +46,7 @@ export interface AuditLogEntry {
   createdAt: string;
 }
 
-/**
- * Cross-tenant management — Super Admin only. Every call requires a
- * "SuperAdmin" role on the logged-in user (enforced server-side by
- * SuperAdminController's [Authorize(Roles = "SuperAdmin")]).
- */
+//Cross-tenant management; server-side enforces SuperAdmin role via [Authorize(Roles = "SuperAdmin")]
 @Injectable({ providedIn: 'root' })
 export class SuperAdminService {
   private baseUrl = environment.baseUrl;

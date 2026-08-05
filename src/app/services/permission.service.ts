@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, of, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// ── DTOs ─────────────────────────────────────────────────────────────
 export interface AppResource {
   resourceId:   number;
   functionId:   string;
@@ -77,33 +76,28 @@ export interface SavePermissionsRequest {
   }>;
 }
 
-// ── Service ───────────────────────────────────────────────────────────
 @Injectable({ providedIn: 'root' })
 export class PermissionService {
 
-  private readonly ROUTES_KEY = 'permitted_routes';   // sessionStorage keys
+  private readonly ROUTES_KEY = 'permitted_routes';
   private readonly NAV_KEY    = 'nav_items';
 
   private _navItems$ = new BehaviorSubject<NavItem[]>([]);
-  /** Emits the sidebar nav items the current user is allowed to see. */
   navItems$ = this._navItems$.asObservable();
 
   private base = environment.baseUrl + '/userpermission';
 
   constructor(private http: HttpClient) {
-    // Restore cached nav on page refresh — token is still valid
+    // Restore cached nav on refresh; token is still valid
     this.restoreFromStorage();
   }
 
-  // ── Called once after login ────────────────────────────────────────
   loadMyMenus(): Observable<{ success: boolean; data: MyMenuItem[] }> {
     return this.http.get<{ success: boolean; data: MyMenuItem[] }>(`${this.base}/my-menus`).pipe(
       tap(res => {
         const menus: MyMenuItem[] = res?.data ?? [];
-        // Save permitted route paths for the guard
         const routes = menus.map(m => m.appRoute.toLowerCase());
         sessionStorage.setItem(this.ROUTES_KEY, JSON.stringify(routes));
-        // Save nav items for the sidebar
         const navItems: NavItem[] = menus
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(m => ({ path: m.appRoute, icon: m.icon, label: m.functionName }));
@@ -117,14 +111,8 @@ export class PermissionService {
     );
   }
 
-  // ── Used by PermissionGuard ────────────────────────────────────────
-  /**
-   * Returns true if the user has been granted AllowMaintView for a route.
-   * Dashboard and no-access are always allowed.
-   * Admin role bypasses the check — handled in the guard itself.
-   */
+  // Admin role bypass is handled in PermissionGuard, not here
   isRouteAllowed(url: string): boolean {
-    // Normalise: strip query params, leading slash, lowercase
     const norm = '/' + url.replace(/^\//, '').split('?')[0].split('#')[0].toLowerCase();
     if (norm === '/dashboard' || norm === '/no-access' || norm === '/') return true;
     // Orders sub-routes are implicitly allowed when /orders is permitted
@@ -140,7 +128,6 @@ export class PermissionService {
     });
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────
   getPermittedRoutes(): string[] {
     const stored = sessionStorage.getItem(this.ROUTES_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -149,7 +136,7 @@ export class PermissionService {
   private restoreFromStorage(): void {
     const nav = sessionStorage.getItem(this.NAV_KEY);
     if (nav) {
-      try { this._navItems$.next(JSON.parse(nav)); } catch { /* ignore */ }
+      try { this._navItems$.next(JSON.parse(nav)); } catch { }
     }
   }
 
@@ -159,7 +146,6 @@ export class PermissionService {
     this._navItems$.next([]);
   }
 
-  // ── Permission-page API calls ─────────────────────────────────────
   getUsers(): Observable<{ success: boolean; data: UserListItem[] }> {
     return this.http.get<any>(`${this.base}/users`);
   }

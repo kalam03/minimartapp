@@ -55,12 +55,12 @@ export class CapitalService {
     return this.http.get<any>(`${this.baseUrl}/capital/tenant-info`);
   }
 
-  /** Authoritative running balance, kept in sync by a DB trigger on every GL_TRANSACTION insert. */
+  // Kept in sync by a DB trigger on every GL_TRANSACTION insert
   getBalance(): Observable<{ success: boolean; data: { tenantId: number; balance: number } }> {
     return this.http.get<any>(`${this.baseUrl}/capital/balance`);
   }
 
-  /** Transaction-type dropdown, sourced from TXN_TYPE_MASTER instead of being hardcoded. */
+  // Sourced from TXN_TYPE_MASTER instead of being hardcoded
   getTxnTypes(): Observable<{ success: boolean; data: CapitalTxnType[] }> {
     return this.http.get<any>(`${this.baseUrl}/capital/txn-types`);
   }
@@ -123,7 +123,7 @@ export interface CapitalTxnType {
   txnTypeId: number;
   txnCode: string;
   txnName: string;
-  drCr?: string | null;   // 'C' | 'D' | null — null means direction is chosen at entry time
+  drCr?: string | null;   // null means direction is chosen at entry time
 }
 
 export interface CapitalCategoryTotal {

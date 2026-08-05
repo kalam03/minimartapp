@@ -1,10 +1,8 @@
-/* Custom styles for dropdown items */
 .product-dropdown-item.selected,
 .supplier-dropdown-item.selected {
   background-color: #f3f4f6;
 }
 
-/* Scrollbar styling */
 .max-h-60::-webkit-scrollbar {
   width: 8px;
 }
@@ -23,7 +21,6 @@
   background: #555;
 }
 
-/* Animation for loading */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -32,18 +29,15 @@
   animation: spin 1s linear infinite;
 }
 
-/* Input focus effects */
 input:focus, select:focus {
   outline: none;
 }
 
-/* Disabled button styles */
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Transition effects */
 button, input, select {
   transition: all 0.2s ease;
 }

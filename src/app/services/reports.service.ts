@@ -113,9 +113,7 @@ export interface InvoiceReportResponse {
   data: InvoiceReportDto[];
 }
 
-// One row per canonical payment method ('cash'/'bkash'/'nagad'/'rocket'/
-// 'bank account', plus 'other' for any unrecognized legacy value). Balance
-// = TotalIn - TotalOut = how much is currently "in" that payment method.
+// balance = totalIn - totalOut; paymentMethod is one of cash/bkash/nagad/rocket/bank account/other
 export interface PaymentMethodSummaryDto {
   paymentMethod: string;
   totalIn: number;
@@ -171,17 +169,14 @@ export class ReportsService {
     );
   }
 
-  // fromDate/toDate are OPTIONAL — omit both for the all-time running
-  // balance ("how much is in X right now"); supply a range to see net
-  // movement within just that period instead.
+  // omit fromDate/toDate for the all-time running balance; pass a range for net movement within it
   getPaymentMethodSummary(fromDate?: string | null, toDate?: string | null): Observable<PaymentMethodSummaryResponse> {
     return this.http.get<PaymentMethodSummaryResponse>(
       `${this.baseUrl}/reports/payment-method-summary${this.buildQuery({ fromDate, toDate })}`
     );
   }
 
-  // ── PDF exports — generated server-side (QuestPDF); these just fetch the
-  // finished file as a Blob for the browser to download. ────────────────
+  // PDFs are generated server-side (QuestPDF) and fetched here as a Blob
   getSalesSummaryPdf(fromDate: string, toDate: string): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/reports/sales-summary/pdf${this.buildQuery({ fromDate, toDate })}`,

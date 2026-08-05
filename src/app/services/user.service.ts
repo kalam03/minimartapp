@@ -79,8 +79,6 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  // ── Users ──────────────────────────────────────────────────────────────────
-
   getUsers(isActive?: boolean, searchTerm?: string): Observable<UserResponse[]> {
     let params = new HttpParams();
     if (isActive !== undefined) params = params.set('isActive', isActive.toString());
@@ -100,8 +98,6 @@ export class UserService {
     return this.http.put<any>(`${this.baseUrl}/${userId}/change-password`, dto);
   }
 
-  // ── Roles ──────────────────────────────────────────────────────────────────
-
   getRoles(isActive?: boolean): Observable<RoleResponse[]> {
     let params = new HttpParams();
     if (isActive !== undefined) params = params.set('isActive', isActive.toString());
@@ -115,8 +111,6 @@ export class UserService {
   updateRole(id: number, dto: UpdateRoleRequest): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/roles/${id}`, dto);
   }
-
-  // ── UserRoles ──────────────────────────────────────────────────────────────
 
   getUserRoles(userId: number): Observable<UserRoleResponse[]> {
     return this.http.get<UserRoleResponse[]>(`${this.baseUrl}/${userId}/roles`);
