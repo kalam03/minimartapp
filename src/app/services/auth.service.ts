@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, from } from 'rxjs';
 import { tap, switchMap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
@@ -60,14 +60,34 @@ export class AuthService {
     private languageSvc: LanguageService
   ) {}
 
+  // Password never leaves the browser as plaintext: fetch the server's public key, RSA-OAEP encrypt {password, ts} client-side, send only the ciphertext.
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.get<{ publicKey: string }>(`${this.apiUrl}/public-key`).pipe(
+      switchMap(res => from(this.encryptPassword(credentials.password, res.publicKey))),
+      switchMap(encryptedPassword => this.http.post<LoginResponse>(`${this.apiUrl}/login`, {
+        userName: credentials.userName,
+        tenantId: credentials.tenantId,
+        encryptedPassword
+      })),
       tap(response => {
         this.setSession(response);
         this.isAuthenticatedSubject.next(true);
       }),
       switchMap(response => this.finishLoginAndRedirect(response))
     );
+  }
+
+  // RSA-OAEP-SHA256 via Web Crypto API; the embedded timestamp lets the backend reject a replayed ciphertext after ~2 minutes.
+  private async encryptPassword(password: string, publicKeyBase64: string): Promise<string> {
+    const derBytes = Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0));
+    const cryptoKey = await crypto.subtle.importKey(
+      'spki', derBytes.buffer, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']
+    );
+    const payload = JSON.stringify({ password, ts: Date.now() });
+    const cipherBuffer = await crypto.subtle.encrypt(
+      { name: 'RSA-OAEP' }, cryptoKey, new TextEncoder().encode(payload)
+    );
+    return btoa(String.fromCharCode(...new Uint8Array(cipherBuffer)));
   }
 
   // Creates the tenant + first admin user, then logs the caller straight in (same as login())
