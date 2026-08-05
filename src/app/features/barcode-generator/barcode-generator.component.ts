@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ViewEncapsulation } from '@angula
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import JsBarcode from 'jsbarcode';
+import JSZip from 'jszip';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
@@ -62,6 +63,7 @@ export class BarcodeGeneratorComponent implements OnInit {
 
   generatedLabels: BarcodeLabel[] = [];
   isGenerating = false;
+  isZipping = false;
 
   constructor(
     private productService: ProductService,
@@ -267,5 +269,119 @@ export class BarcodeGeneratorComponent implements OnInit {
 
   print(): void {
     window.print();
+  }
+
+  // ── Download as ZIP ─────────────────────────────────────────────────────
+  /**
+   * Bundles every generated label as its own PNG (product name + barcode +
+   * price, same content as the on-screen/printed card — not just the raw
+   * bars) into a single .zip the cashier can save or hand off to a print
+   * shop, instead of only being able to print straight from the browser.
+   */
+  async downloadZip(): Promise<void> {
+    if (this.generatedLabels.length === 0) {
+      this.alertService.error(this.t('messages.selectAtLeastOne'));
+      return;
+    }
+
+    this.isZipping = true;
+    this.cdr.detectChanges();
+
+    try {
+      const zip = new JSZip();
+      const usedNames = new Set<string>();
+
+      for (const label of this.generatedLabels) {
+        const blob = await this.buildLabelImageBlob(label);
+        if (!blob) continue;
+
+        const fileName = this.uniqueFileName(label, usedNames);
+        zip.file(fileName, blob);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `barcodes-${toLocalDateString()}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Give the browser a moment to actually start the download before
+      // revoking the object URL out from under it.
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch {
+      this.alertService.error(this.t('messages.zipFailed'));
+    } finally {
+      this.isZipping = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  /** "ProductName-BARCODE.png", de-duplicated (multiple copies of the same product) with a -2, -3, ... suffix. */
+  private uniqueFileName(label: BarcodeLabel, usedNames: Set<string>): string {
+    const safeName = (label.product.productName || 'product')
+      .replace(/[^a-zA-Z0-9\- _]/g, '')
+      .trim()
+      .replace(/\s+/g, '_') || 'product';
+    const base = `${safeName}-${label.barcodeValue}`;
+
+    let candidate = `${base}.png`;
+    let n = 2;
+    while (usedNames.has(candidate)) {
+      candidate = `${base}-${n}.png`;
+      n++;
+    }
+    usedNames.add(candidate);
+    return candidate;
+  }
+
+  /**
+   * Redraws one label (name/barcode/price) onto a plain, off-screen 2D
+   * canvas — same visual content as the .label-card in the template — and
+   * resolves it as a PNG Blob. Built independently of the on-screen
+   * `<canvas>` (which JsBarcode owns and only draws the bars onto) rather
+   * than screenshotting the live DOM, so no extra screenshot library
+   * (html2canvas etc.) is needed for something this simple.
+   */
+  private buildLabelImageBlob(label: BarcodeLabel): Promise<Blob | null> {
+    return new Promise((resolve) => {
+      const barcodeCanvas = document.getElementById(label.canvasId) as HTMLCanvasElement | null;
+      if (!barcodeCanvas) { resolve(null); return; }
+
+      const padding = 12;
+      const nameHeight = this.showProductName ? 20 : 0;
+      const priceHeight = this.showPrice ? 20 : 0;
+      const width = Math.max(barcodeCanvas.width + padding * 2, 160);
+      const height = barcodeCanvas.height + nameHeight + priceHeight + padding * 2;
+
+      const out = document.createElement('canvas');
+      out.width = width;
+      out.height = height;
+      const ctx = out.getContext('2d');
+      if (!ctx) { resolve(null); return; }
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#1f2937';
+
+      let y = padding;
+      if (this.showProductName) {
+        ctx.font = 'bold 13px Arial, sans-serif';
+        ctx.fillText(label.product.productName || '', width / 2, y + 12, width - padding * 2);
+        y += nameHeight;
+      }
+
+      ctx.drawImage(barcodeCanvas, (width - barcodeCanvas.width) / 2, y);
+      y += barcodeCanvas.height;
+
+      if (this.showPrice) {
+        ctx.font = 'bold 13px Arial, sans-serif';
+        ctx.fillText(`৳ ${(label.product.salePrice || 0).toFixed(2)}`, width / 2, y + 15);
+      }
+
+      out.toBlob((blob) => resolve(blob), 'image/png');
+    });
   }
 }

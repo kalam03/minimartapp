@@ -35,11 +35,14 @@
   "buttons": {
     "generate": "Generate Barcodes ({{count}} selected)",
     "print": "Print",
+    "download": "Download ZIP",
+    "zipping": "Zipping...",
     "clear": "Clear"
   },
   "messages": {
     "selectAtLeastOne": "Select at least one product to generate barcodes for.",
     "sizeMustBePositive": "Barcode width and height must be greater than zero.",
-    "loadError": "Failed to load products"
+    "loadError": "Failed to load products",
+    "zipFailed": "Failed to build the ZIP file. Try again."
   }
 }

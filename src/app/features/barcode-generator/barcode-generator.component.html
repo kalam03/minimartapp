@@ -138,6 +138,10 @@
         <h2 class="text-white font-semibold text-sm">{{ 'barcodeGenerator.title.preview' | transloco: { count: generatedLabels.length } }}</h2>
         <div class="flex gap-2">
           <button (click)="print()" class="px-3 py-1 bg-white text-xs font-semibold rounded-lg" style="color:var(--theme-primary)">{{ 'barcodeGenerator.buttons.print' | transloco }}</button>
+          <button (click)="downloadZip()" [disabled]="isZipping"
+            class="px-3 py-1 bg-white text-xs font-semibold rounded-lg disabled:opacity-50" style="color:var(--theme-primary)">
+            {{ (isZipping ? 'barcodeGenerator.buttons.zipping' : 'barcodeGenerator.buttons.download') | transloco }}
+          </button>
           <button (click)="clearGenerated()" class="px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100">{{ 'barcodeGenerator.buttons.clear' | transloco }}</button>
         </div>
       </div>
@@ -145,7 +149,7 @@
         <div *ngFor="let label of generatedLabels" class="border rounded-lg px-2 py-2 flex flex-col items-center label-card" style="border-color:#d1d5db">
           <div *ngIf="showProductName" class="text-xs font-semibold text-gray-800 mb-1 text-center">{{ label.product.productName }}</div>
           <canvas [id]="label.canvasId"></canvas>
-          <div *ngIf="showPrice" class="text-xs font-semibold text-gray-700 mt-1">৳ {{ (label.product.salePrice || 0).toFixed(2) }}</div>
+          <div *ngIf="showPrice" class="text-xs font-semibold text-gray-700 mt-1">MRP:{{ (label.product.salePrice || 0).toFixed(2) }}</div>
         </div>
       </div>
     </div>
