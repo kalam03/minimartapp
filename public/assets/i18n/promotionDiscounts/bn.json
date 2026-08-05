@@ -43,10 +43,13 @@
     "inactive": "নিষ্ক্রিয়",
     "allProducts": "সব পণ্য",
     "products": "টি পণ্য",
-    "empty": "কোনো পণ্য ছাড় পাওয়া যায়নি"
+    "empty": "কোনো পণ্য ছাড় পাওয়া যায়নি",
+    "showingSummary": "{{total}} টি ছাড়ের মধ্যে {{from}} - {{to}} দেখানো হচ্ছে",
+    "pageSize": "পৃষ্ঠার আকার:"
   },
   "search": {
-    "placeholder": "নাম দিয়ে খুঁজুন…"
+    "placeholder": "নাম দিয়ে খুঁজুন…",
+    "allStatuses": "সব অবস্থা"
   },
   "validation": {
     "nameRequired": "ছাড়ের নাম আবশ্যক",

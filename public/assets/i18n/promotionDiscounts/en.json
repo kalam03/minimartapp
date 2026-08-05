@@ -43,10 +43,13 @@
     "inactive": "Inactive",
     "allProducts": "All Products",
     "products": "product(s)",
-    "empty": "No product discounts found"
+    "empty": "No product discounts found",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} discounts",
+    "pageSize": "Page size:"
   },
   "search": {
-    "placeholder": "Search by name…"
+    "placeholder": "Search by name…",
+    "allStatuses": "All Statuses"
   },
   "validation": {
     "nameRequired": "Discount name is required",

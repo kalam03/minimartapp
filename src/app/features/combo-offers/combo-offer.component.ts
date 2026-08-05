@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -19,6 +19,13 @@ export class ComboOfferComponent implements OnInit {
   products: Product[] = [];
   isSaving = false;
   searchText = '';
+  Math = Math;
+
+  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  pageSize = 10;
+  currentPage = 1;
+  /** Client-side Active/Inactive filter, applied on top of the search text. */
+  statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
     comboName: '',
@@ -38,8 +45,35 @@ export class ComboOfferComponent implements OnInit {
 
   get filteredCombos(): ComboOffer[] {
     const q = this.searchText.trim().toLowerCase();
-    if (!q) return this.combos;
-    return this.combos.filter(c => c.comboName.toLowerCase().includes(q));
+    return this.combos.filter(c => {
+      const matchesSearch = !q || c.comboName.toLowerCase().includes(q);
+      const matchesStatus =
+        !this.statusFilter ||
+        (this.statusFilter === 'active' ? c.isActive : !c.isActive);
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  /** Current page slice of filteredCombos — what the table actually renders. */
+  get pagedCombos(): ComboOffer[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredCombos.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredCombos.length / this.pageSize) || 1;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 
   /**
@@ -60,6 +94,7 @@ export class ComboOfferComponent implements OnInit {
     private service: ComboOfferService,
     private productService: ProductService,
     private alertService: AlertService,
+    private cdr: ChangeDetectorRef,
     private transloco: TranslocoService
   ) {}
 
@@ -83,7 +118,14 @@ export class ComboOfferComponent implements OnInit {
 
   load(): void {
     this.service.getAll().subscribe({
-      next: (res) => (this.combos = res.data || []),
+      next: (res) => {
+        this.combos = res.data || [];
+        this.currentPage = 1;
+        // Same pattern as suppliers/products/customers — without this the
+        // grid only painted after some unrelated click/DOM event, not the
+        // moment the list actually arrived (this app's manual-CD convention).
+        this.cdr.detectChanges();
+      },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))
     });
   }

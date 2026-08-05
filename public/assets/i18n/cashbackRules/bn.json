@@ -37,10 +37,13 @@
     "active": "সক্রিয়",
     "inactive": "নিষ্ক্রিয়",
     "capAt": "সীমা",
-    "empty": "কোনো ক্যাশব্যাক নিয়ম পাওয়া যায়নি"
+    "empty": "কোনো ক্যাশব্যাক নিয়ম পাওয়া যায়নি",
+    "showingSummary": "{{total}} টি নিয়মের মধ্যে {{from}} - {{to}} দেখানো হচ্ছে",
+    "pageSize": "পৃষ্ঠার আকার:"
   },
   "search": {
-    "placeholder": "নাম দিয়ে খুঁজুন…"
+    "placeholder": "নাম দিয়ে খুঁজুন…",
+    "allStatuses": "সব অবস্থা"
   },
   "validation": {
     "nameRequired": "নিয়মের নাম আবশ্যক",

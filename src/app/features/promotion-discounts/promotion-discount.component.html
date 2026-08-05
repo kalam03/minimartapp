@@ -118,9 +118,16 @@
         <h2 class="text-white font-semibold text-sm">{{ 'promotionDiscounts.title.list' | transloco }}</h2>
         <span class="text-xs" style="color:var(--theme-accent)">{{ filteredPromotions.length }} / {{ promotions.length }}</span>
       </div>
-      <div class="px-3 py-2 border-b">
-        <input type="text" [(ngModel)]="searchText" [placeholder]="'promotionDiscounts.search.placeholder' | transloco"
-          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      <div class="px-3 py-2 border-b flex flex-wrap gap-2">
+        <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
+          [placeholder]="'promotionDiscounts.search.placeholder' | transloco"
+          class="flex-1 min-w-[180px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        <select [(ngModel)]="statusFilter" (ngModelChange)="currentPage=1"
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+          <option value="">{{ 'promotionDiscounts.search.allStatuses' | transloco }}</option>
+          <option value="active">{{ 'promotionDiscounts.table.active' | transloco }}</option>
+          <option value="inactive">{{ 'promotionDiscounts.table.inactive' | transloco }}</option>
+        </select>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -136,7 +143,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let p of filteredPromotions" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+            <tr *ngFor="let p of pagedPromotions" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
               <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ p.promotionName }}</td>
               <td class="px-3 py-2 whitespace-nowrap">{{ p.discountValue }}{{ p.discountType === 'Percentage' ? '%' : '' }}</td>
               <td class="px-3 py-2 max-w-xs" [title]="p.appliesToAll ? '' : productNames(p.productIds)">{{ p.appliesToAll ? ('promotionDiscounts.table.allProducts' | transloco) : productNames(p.productIds) }}</td>
@@ -157,6 +164,41 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div *ngIf="filteredPromotions.length > 0" class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
+        <div class="text-gray-600">
+          {{ 'promotionDiscounts.table.showingSummary' | transloco: {
+               from: (currentPage - 1) * pageSize + 1,
+               to: Math.min(currentPage * pageSize, filteredPromotions.length),
+               total: filteredPromotions.length
+             } }}
+        </div>
+
+        <div class="flex items-center gap-2 justify-center md:justify-end">
+          <button (click)="prevPage()" [disabled]="currentPage === 1"
+            class="px-2 py-1 rounded border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition">←</button>
+
+          <div class="flex gap-1">
+            <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i + 1)"
+              [class]="'px-2 py-1 rounded transition text-xs ' + (currentPage === i + 1 ? 'text-white font-semibold' : 'border border-gray-200 text-gray-600 hover:bg-gray-50')"
+              [style.background]="currentPage === i + 1 ? 'var(--theme-primary)' : ''">{{ i + 1 }}</button>
+          </div>
+
+          <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="px-2 py-1 rounded border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition">→</button>
+        </div>
+
+        <div class="flex items-center gap-2 justify-center md:justify-end">
+          <label class="text-gray-600">{{ 'promotionDiscounts.table.pageSize' | transloco }}</label>
+          <select [(ngModel)]="pageSize" (change)="currentPage = 1" class="px-2 py-1 border border-gray-400 rounded">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>

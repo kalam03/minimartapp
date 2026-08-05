@@ -111,9 +111,16 @@
         <h2 class="text-white font-semibold text-sm">{{ 'comboOffers.title.list' | transloco }}</h2>
         <span class="text-xs" style="color:var(--theme-accent)">{{ filteredCombos.length }} / {{ combos.length }}</span>
       </div>
-      <div class="px-3 py-2 border-b">
-        <input type="text" [(ngModel)]="searchText" [placeholder]="'comboOffers.search.placeholder' | transloco"
-          class="w-full px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+      <div class="px-3 py-2 border-b flex flex-wrap gap-2">
+        <input type="text" [(ngModel)]="searchText" (ngModelChange)="currentPage=1"
+          [placeholder]="'comboOffers.search.placeholder' | transloco"
+          class="flex-1 min-w-[180px] px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+        <select [(ngModel)]="statusFilter" (ngModelChange)="currentPage=1"
+          class="px-2 py-1 text-xs border border-gray-300 rounded-lg outline-none">
+          <option value="">{{ 'comboOffers.search.allStatuses' | transloco }}</option>
+          <option value="active">{{ 'comboOffers.table.active' | transloco }}</option>
+          <option value="inactive">{{ 'comboOffers.table.inactive' | transloco }}</option>
+        </select>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -128,7 +135,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let c of filteredCombos" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+            <tr *ngFor="let c of pagedCombos" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
               <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ c.comboName }}</td>
               <td class="px-3 py-2">
                 <span *ngFor="let i of c.items; let last = last">{{ i.requiredQty }}× {{ i.productName }}{{ i.isFreeItem ? ' (free)' : '' }}{{ last ? '' : ', ' }}</span>
@@ -159,6 +166,41 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div *ngIf="filteredCombos.length > 0" class="px-3 py-1.5 bg-gray-50 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs md:text-sm">
+        <div class="text-gray-600">
+          {{ 'comboOffers.table.showingSummary' | transloco: {
+               from: (currentPage - 1) * pageSize + 1,
+               to: Math.min(currentPage * pageSize, filteredCombos.length),
+               total: filteredCombos.length
+             } }}
+        </div>
+
+        <div class="flex items-center gap-2 justify-center md:justify-end">
+          <button (click)="prevPage()" [disabled]="currentPage === 1"
+            class="px-2 py-1 rounded border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition">←</button>
+
+          <div class="flex gap-1">
+            <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i + 1)"
+              [class]="'px-2 py-1 rounded transition text-xs ' + (currentPage === i + 1 ? 'text-white font-semibold' : 'border border-gray-200 text-gray-600 hover:bg-gray-50')"
+              [style.background]="currentPage === i + 1 ? 'var(--theme-primary)' : ''">{{ i + 1 }}</button>
+          </div>
+
+          <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="px-2 py-1 rounded border border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition">→</button>
+        </div>
+
+        <div class="flex items-center gap-2 justify-center md:justify-end">
+          <label class="text-gray-600">{{ 'comboOffers.table.pageSize' | transloco }}</label>
+          <select [(ngModel)]="pageSize" (change)="currentPage = 1" class="px-2 py-1 border border-gray-400 rounded">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>

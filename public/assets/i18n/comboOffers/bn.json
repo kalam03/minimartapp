@@ -42,10 +42,13 @@
     "active": "সক্রিয়",
     "inactive": "নিষ্ক্রিয়",
     "empty": "কোনো কম্বো অফার পাওয়া যায়নি",
-    "freeItemBadge": "ফ্রি আইটেম"
+    "freeItemBadge": "ফ্রি আইটেম",
+    "showingSummary": "{{total}} টি কম্বোর মধ্যে {{from}} - {{to}} দেখানো হচ্ছে",
+    "pageSize": "পৃষ্ঠার আকার:"
   },
   "search": {
-    "placeholder": "নাম দিয়ে খুঁজুন…"
+    "placeholder": "নাম দিয়ে খুঁজুন…",
+    "allStatuses": "সব অবস্থা"
   },
   "validation": {
     "nameRequired": "কম্বোর নাম আবশ্যক",

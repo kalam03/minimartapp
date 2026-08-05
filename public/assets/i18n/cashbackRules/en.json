@@ -37,10 +37,13 @@
     "active": "Active",
     "inactive": "Inactive",
     "capAt": "capped at",
-    "empty": "No cashback rules found"
+    "empty": "No cashback rules found",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} rules",
+    "pageSize": "Page size:"
   },
   "search": {
-    "placeholder": "Search by name…"
+    "placeholder": "Search by name…",
+    "allStatuses": "All Statuses"
   },
   "validation": {
     "nameRequired": "Rule name is required",

@@ -42,10 +42,13 @@
     "active": "Active",
     "inactive": "Inactive",
     "empty": "No combo offers found",
-    "freeItemBadge": "Free item"
+    "freeItemBadge": "Free item",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} combos",
+    "pageSize": "Page size:"
   },
   "search": {
-    "placeholder": "Search by name…"
+    "placeholder": "Search by name…",
+    "allStatuses": "All Statuses"
   },
   "validation": {
     "nameRequired": "Combo name is required",

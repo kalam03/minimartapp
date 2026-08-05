@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -16,6 +16,13 @@ export class CashbackRuleComponent implements OnInit {
   configs: CashbackConfig[] = [];
   isSaving = false;
   searchText = '';
+  Math = Math;
+
+  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  pageSize = 10;
+  currentPage = 1;
+  /** Client-side Active/Inactive filter, applied on top of the search text. */
+  statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
     configName: '',
@@ -35,13 +42,41 @@ export class CashbackRuleComponent implements OnInit {
 
   get filteredConfigs(): CashbackConfig[] {
     const q = this.searchText.trim().toLowerCase();
-    if (!q) return this.configs;
-    return this.configs.filter(c => c.configName.toLowerCase().includes(q));
+    return this.configs.filter(c => {
+      const matchesSearch = !q || c.configName.toLowerCase().includes(q);
+      const matchesStatus =
+        !this.statusFilter ||
+        (this.statusFilter === 'active' ? c.isActive : !c.isActive);
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  /** Current page slice of filteredConfigs — what the table actually renders. */
+  get pagedConfigs(): CashbackConfig[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredConfigs.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredConfigs.length / this.pageSize) || 1;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 
   constructor(
     private service: CashbackService,
     private alertService: AlertService,
+    private cdr: ChangeDetectorRef,
     private transloco: TranslocoService
   ) {}
 
@@ -59,7 +94,14 @@ export class CashbackRuleComponent implements OnInit {
 
   load(): void {
     this.service.getAllConfigs().subscribe({
-      next: (res) => (this.configs = res.data || []),
+      next: (res) => {
+        this.configs = res.data || [];
+        this.currentPage = 1;
+        // Same pattern as suppliers/products/customers — without this the
+        // grid only painted after some unrelated click/DOM event, not the
+        // moment the list actually arrived (this app's manual-CD convention).
+        this.cdr.detectChanges();
+      },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))
     });
   }
