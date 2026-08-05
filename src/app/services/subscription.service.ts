@@ -57,26 +57,32 @@ export interface SubscriptionPayment {
   notes: string | null;
   createdBy: string | null;
   createdAt: string;
+  requestedPlanId: number | null;
+  senderAccountNumber: string | null;
+  verifiedBy: string | null;
+  verifiedAt: string | null;
 }
 
-export type PaymentMethod = 'bKash' | 'Nagad' | 'Rocket' | 'Card';
+//Admin-facing shape from GET /superadmin/payments/pending — same fields plus tenant/plan names
+export interface PendingPayment extends SubscriptionPayment {
+  tenantName: string;
+  requestedPlanName: string | null;
+}
 
-export interface CheckoutRequest {
+export type PaymentMethod = 'bKash' | 'Nagad' | 'Rocket' | 'Bank';
+
+export interface SubmitPaymentRequest {
   //Omit to renew the current plan as-is; set to switch to a different plan
   planId?: number;
   paymentMethod: PaymentMethod;
-  //Mobile banking (bKash/Nagad/Rocket) wallet number
-  accountNumber?: string;
-  //Last 4 digits only — full card number/CVV never leaves the payment form component
-  cardLast4?: string;
+  //The TrxID/reference number from the bKash/Nagad/Rocket SMS or bank transfer receipt
+  transactionId: string;
+  //The wallet number or bank account the tenant sent money FROM, so the admin can cross-check it
+  senderAccountNumber?: string;
 }
 
-export interface CheckoutResult {
+export interface SubmitPaymentResult {
   paymentId: number;
-  planName: string;
-  amount: number;
-  currency: string;
-  newEndDate: string;
 }
 
 //Tenant-facing subscription endpoints; cross-tenant Super Admin ops live in super-admin.service.ts
@@ -111,8 +117,8 @@ export class SubscriptionService {
     return this.http.post<any>(`${this.baseUrl}/subscription/change-plan`, { newPlanId, keepEndDate });
   }
 
-  //Activates the plan and records the payment in one call (see SubscriptionService.Checkout on the backend)
-  checkout(payload: CheckoutRequest): Observable<{ success: boolean; message: string; data: CheckoutResult }> {
-    return this.http.post<any>(`${this.baseUrl}/subscription/checkout`, payload);
+  //Records the tenant's claim that they sent money; nothing is activated until a SuperAdmin verifies it (see SubscriptionVerification page)
+  submitPaymentRequest(payload: SubmitPaymentRequest): Observable<{ success: boolean; message: string; data: SubmitPaymentResult }> {
+    return this.http.post<any>(`${this.baseUrl}/subscription/payment-request`, payload);
   }
 }

@@ -2,18 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SubscriptionService, SubscriptionPlan, PaymentMethod } from '../../services/subscription.service';
+import { SubscriptionService, SubscriptionPlan } from '../../services/subscription.service';
+import { AppConfigService, PaymentMethodConfig } from '../../services/app-config.service';
 import { AuthService } from '../../services/auth.service';
 import { AlertService } from '../../shared/alert.service';
 
-interface MethodOption {
-  id: PaymentMethod;
-  label: string;
-  color: string;
-  kind: 'wallet' | 'card';
-}
-
-//No real payment gateway is wired up (see SubscriptionService.Checkout) - this collects enough to look real then activates the plan; card number/CVV are never transmitted or stored, only the last 4 digits
+//No merchant account/gateway - the tenant sends money to a personal bKash/Nagad/Rocket/bank account (numbers + instructions come from config.json via AppConfigService) and reports the TrxID here. This only submits a Pending payment request; a SuperAdmin must verify it before the plan actually activates (see SubscriptionVerification page).
 @Component({
   selector: 'app-subscription-payment',
   standalone: true,
@@ -22,24 +16,14 @@ interface MethodOption {
   styleUrls: ['./subscription-payment.component.css']
 })
 export class SubscriptionPaymentComponent implements OnInit {
-  methods: MethodOption[] = [
-    { id: 'bKash',  label: 'bKash',  color: '#E2136E', kind: 'wallet' },
-    { id: 'Nagad',  label: 'Nagad',  color: '#F5821F', kind: 'wallet' },
-    { id: 'Rocket', label: 'Rocket', color: '#8C3494', kind: 'wallet' },
-    { id: 'Card',   label: 'Visa / Card', color: '#1A1F71', kind: 'card' },
-  ];
-
-  selectedMethod: MethodOption | null = null;
+  methods: PaymentMethodConfig[] = [];
+  selectedMethod: PaymentMethodConfig | null = null;
 
   planId: number | null = null;
   targetPlan: SubscriptionPlan | null = null;
 
-  mobileNumber = '';
-
-  cardNumber = '';
-  cardExpiry = '';
-  cardCvv = '';
-  cardName = '';
+  transactionId = '';
+  senderAccountNumber = '';
 
   isLoading = true;
   isSubmitting = false;
@@ -47,6 +31,7 @@ export class SubscriptionPaymentComponent implements OnInit {
 
   constructor(
     private subscriptionService: SubscriptionService,
+    private appConfig: AppConfigService,
     private authService: AuthService,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -55,6 +40,8 @@ export class SubscriptionPaymentComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.methods = this.appConfig.paymentMethods;
+
     const planIdParam = this.route.snapshot.queryParamMap.get('planId');
     this.planId = planIdParam ? Number(planIdParam) : null;
 
@@ -67,7 +54,6 @@ export class SubscriptionPaymentComponent implements OnInit {
           this.isLoading = false;
           this.cdr.detectChanges();
         } else {
-          //Renewing the current plan - match it by planCode from /subscription/my
           this.subscriptionService.getMySubscription().subscribe({
             next: (subRes) => {
               const code = subRes.success ? subRes.data.planCode : null;
@@ -87,75 +73,44 @@ export class SubscriptionPaymentComponent implements OnInit {
     });
   }
 
-  selectMethod(m: MethodOption): void {
+  selectMethod(m: PaymentMethodConfig): void {
     this.selectedMethod = m;
     this.errorMsg = '';
   }
 
   changeMethod(): void {
     this.selectedMethod = null;
+    this.transactionId = '';
+    this.senderAccountNumber = '';
     this.errorMsg = '';
   }
 
-  payWithWallet(): void {
-    if (!/^01[3-9]\d{8}$/.test(this.mobileNumber)) {
-      this.errorMsg = 'Enter a valid 11-digit mobile number (e.g. 01712345678).';
-      return;
-    }
-    this.submit({
-      planId: this.planId ?? undefined,
-      paymentMethod: this.selectedMethod!.id,
-      accountNumber: this.mobileNumber
-    });
-  }
-
-  payWithCard(): void {
-    const digitsOnly = this.cardNumber.replace(/\s+/g, '');
-    if (digitsOnly.length < 12 || digitsOnly.length > 19) {
-      this.errorMsg = 'Enter a valid card number.';
-      return;
-    }
-    if (!/^\d{2}\/\d{2}$/.test(this.cardExpiry)) {
-      this.errorMsg = 'Enter expiry as MM/YY.';
-      return;
-    }
-    if (!/^\d{3,4}$/.test(this.cardCvv)) {
-      this.errorMsg = 'Enter a valid CVV.';
-      return;
-    }
-    if (!this.cardName.trim()) {
-      this.errorMsg = 'Enter the name on the card.';
+  submit(): void {
+    if (!this.transactionId.trim()) {
+      this.errorMsg = 'Enter the Transaction ID from your payment confirmation.';
       return;
     }
 
-    this.submit({
-      planId: this.planId ?? undefined,
-      paymentMethod: 'Card',
-      cardLast4: digitsOnly.slice(-4)
-    });
-
-    //Clear sensitive fields from memory immediately after building the request
-    this.cardNumber = '';
-    this.cardCvv = '';
-  }
-
-  private submit(payload: Parameters<SubscriptionService['checkout']>[0]): void {
     this.isSubmitting = true;
     this.errorMsg = '';
-    this.subscriptionService.checkout(payload).subscribe({
-      next: (res) => {
+    this.subscriptionService.submitPaymentRequest({
+      planId: this.planId ?? undefined,
+      paymentMethod: this.selectedMethod!.id,
+      transactionId: this.transactionId.trim(),
+      senderAccountNumber: this.senderAccountNumber.trim() || undefined
+    }).subscribe({
+      next: () => {
         this.isSubmitting = false;
-        this.authService.markSubscriptionActive();
-        const d = res.data;
+        this.authService.markSubscriptionPending();
         this.alertService.success(
-          `Paid ${d.currency} ${d.amount} for ${d.planName}. Active until ${new Date(d.newEndDate).toLocaleDateString()}.`,
-          'Payment Successful'
+          "Payment submitted! We'll verify it and activate your subscription shortly.",
+          'Submitted for Verification'
         );
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/subscription/pending-verification']);
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.errorMsg = err?.error?.message || 'Payment failed. Please try again.';
+        this.errorMsg = err?.error?.message || 'Could not submit payment. Please try again.';
         this.cdr.detectChanges();
       }
     });

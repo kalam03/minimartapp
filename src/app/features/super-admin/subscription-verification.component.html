@@ -1,0 +1,67 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <div class="bg-white rounded-xl shadow-md overflow-hidden border mb-3">
+      <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+        <h2 class="text-white font-semibold text-sm">Super Admin — Subscription Verification</h2>
+        <div class="flex items-center gap-3">
+          <span class="text-xs" style="color:var(--theme-accent)">{{ payments.length }} pending</span>
+          <a routerLink="/superadmin/tenants" class="bg-white text-xs font-semibold px-2 py-1 rounded-lg hover:bg-gray-100" style="color:var(--theme-primary)">
+            Tenant Management &rarr;
+          </a>
+          <button (click)="load()" class="bg-white text-xs font-semibold px-2 py-1 rounded-lg hover:bg-gray-100" style="color:var(--theme-primary)">
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="errorMsg" class="px-3 py-2 text-red-700 bg-red-50 text-xs">{{ errorMsg }}</div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+            <tr>
+              <th class="px-3 py-2 text-left">Tenant</th>
+              <th class="px-3 py-2 text-left">Method</th>
+              <th class="px-3 py-2 text-left">Transaction ID</th>
+              <th class="px-3 py-2 text-left">Sender Number</th>
+              <th class="px-3 py-2 text-right">Amount</th>
+              <th class="px-3 py-2 text-left">Plan</th>
+              <th class="px-3 py-2 text-left">Submitted</th>
+              <th class="px-3 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of payments" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ p.tenantName }}</td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ p.paymentMethod }}</td>
+              <td class="px-3 py-2 font-mono whitespace-nowrap">{{ p.transactionRef }}</td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ p.senderAccountNumber || '—' }}</td>
+              <td class="px-3 py-2 text-right whitespace-nowrap">{{ p.currency }} {{ p.amount }}</td>
+              <td class="px-3 py-2 whitespace-nowrap">{{ p.requestedPlanName || 'Renewal (current plan)' }}</td>
+              <td class="px-3 py-2 whitespace-nowrap text-gray-500">{{ p.createdAt | date:'d MMM y, h:mm a' }}</td>
+              <td class="px-3 py-2 text-center whitespace-nowrap">
+                <div class="flex gap-1 justify-center flex-wrap">
+                  <button (click)="verify(p)" [disabled]="processingId === p.paymentId"
+                    class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition disabled:opacity-50">
+                    Verify
+                  </button>
+                  <button (click)="reject(p)" [disabled]="processingId === p.paymentId"
+                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition disabled:opacity-50">
+                    Reject
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && payments.length === 0">
+              <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">No payments awaiting verification</td>
+            </tr>
+            <tr *ngIf="isLoading">
+              <td colspan="8" class="px-4 py-8 text-center text-gray-400 text-sm">Loading…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

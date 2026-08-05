@@ -5,7 +5,6 @@ import { tap, switchMap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { PermissionService } from './permission.service';
-import { SubscriptionService } from './subscription.service';
 import { LanguageService } from './language.service';
 import { of } from 'rxjs';
 
@@ -58,7 +57,6 @@ export class AuthService {
     private http:        HttpClient,
     private router:      Router,
     private permSvc:     PermissionService,
-    private subSvc:      SubscriptionService,
     private languageSvc: LanguageService
   ) {}
 
@@ -83,19 +81,33 @@ export class AuthService {
     );
   }
 
-  // Expired tenants land on the renewal page instead of dashboard; Suspended tenants are already blocked server-side at /login
+  // Reads a claim straight out of the JWT payload (base64url, no verification needed client-side — the server already signed/validated it) so the redirect decision always matches exactly what SubscriptionValidationMiddleware will enforce server-side, instead of a second /subscription/my round trip that could drift out of sync.
+  private decodeJwtClaim(token: string, claim: string): string | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      return payload[claim] ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  // Expired/Suspended/Cancelled tenants land on the renewal page; PendingVerification tenants land on the "payment under review" page; Suspended tenants are already blocked server-side at /login
   private finishLoginAndRedirect(response: LoginResponse): Observable<LoginResponse> {
+    const status = this.decodeJwtClaim(response.accessToken, 'subscriptionStatus');
+    if (status) {
+      sessionStorage.setItem(this.subStatusKey, status);
+    } else {
+      sessionStorage.removeItem(this.subStatusKey);
+    }
+
     return this.permSvc.loadMyMenus().pipe(
       catchError(() => of(null)),                    // don't block login if API fails
-      switchMap(() => this.subSvc.getMySubscription().pipe(catchError(() => of(null)))),
-      tap((subRes: any) => {
-        const status: string | undefined = subRes?.data?.computedStatus;
-        if (status) {
-          sessionStorage.setItem(this.subStatusKey, status);
-        } else {
-          sessionStorage.removeItem(this.subStatusKey);
-        }
-        this.router.navigate([status === 'Expired' ? '/subscription/renew' : '/dashboard']);
+      tap(() => {
+        const dest =
+          status === 'PendingVerification' ? '/subscription/pending-verification' :
+          status === 'Expired' || status === 'Suspended' || status === 'Cancelled' ? '/subscription/renew' :
+          '/dashboard';
+        this.router.navigate([dest]);
       }),
       switchMap(() => of(response))    // restore original LoginResponse for subscribers
     );
@@ -127,6 +139,11 @@ export class AuthService {
   // Called after a successful renew/change-plan so SubscriptionGuard stops redirecting to the renew page
   markSubscriptionActive(): void {
     sessionStorage.setItem(this.subStatusKey, 'Active');
+  }
+
+  // Called right after a Send Money payment is submitted, so SubscriptionGuard immediately routes to the pending-verification page instead of the stale Expired/Trial status from login
+  markSubscriptionPending(): void {
+    sessionStorage.setItem(this.subStatusKey, 'PendingVerification');
   }
 
   getToken(): string | null {

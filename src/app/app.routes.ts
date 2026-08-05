@@ -37,13 +37,25 @@ export const routes: Routes = [
       ),
   },
   {
-    // Payment method page (bKash/Nagad/Rocket/Card) — reached from the
-    // renew page's "Renew Now" / "Choose This Plan" buttons.
+    // Send Money payment page (bKash/Nagad/Rocket/Bank) — reached from the
+    // renew page's "Renew Now" / "Choose This Plan" buttons. Submits a
+    // Pending payment request; nothing activates until a SuperAdmin verifies it.
     path: 'subscription/payment',
     canActivate: [AuthGuard],
     loadComponent: () =>
       import('./features/subscription/subscription-payment.component').then(
         (m) => m.SubscriptionPaymentComponent
+      ),
+  },
+  {
+    // Landing page while a submitted payment is awaiting SuperAdmin
+    // verification — same reasoning as subscription/renew above for why
+    // it's outside LayoutComponent/SubscriptionGuard.
+    path: 'subscription/pending-verification',
+    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('./features/subscription/subscription-pending.component').then(
+        (m) => m.SubscriptionPendingComponent
       ),
   },
   {
@@ -249,6 +261,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/super-admin/tenant-management.component').then(
             (m) => m.TenantManagementComponent
+          ),
+      },
+      {
+        path: 'superadmin/subscription-verification',
+        loadComponent: () =>
+          import('./features/super-admin/subscription-verification.component').then(
+            (m) => m.SubscriptionVerificationComponent
           ),
       },
     ],

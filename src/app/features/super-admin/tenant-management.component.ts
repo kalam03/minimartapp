@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { SuperAdminService, TenantWithSubscription, RegisterTenantRequest } from '../../services/super-admin.service';
 import { SubscriptionPlan } from '../../services/subscription.service';
 import { AlertService } from '../../shared/alert.service';
@@ -24,7 +25,7 @@ import { AlertService } from '../../shared/alert.service';
 @Component({
   selector: 'app-tenant-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './tenant-management.component.html',
   styleUrls: ['./tenant-management.component.css']
 })

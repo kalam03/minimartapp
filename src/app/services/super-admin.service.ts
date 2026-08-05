@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { SubscriptionPayment, SubscriptionPlan } from './subscription.service';
+import { PendingPayment, SubscriptionPayment, SubscriptionPlan } from './subscription.service';
 
 export interface TenantWithSubscription {
   tenantId: number;
@@ -84,6 +84,19 @@ export class SuperAdminService {
   getPayments(tenantId?: number): Observable<{ success: boolean; data: SubscriptionPayment[] }> {
     const query = tenantId ? `?tenantId=${tenantId}` : '';
     return this.http.get<any>(`${this.baseUrl}/superadmin/payments${query}`);
+  }
+
+  //Send Money submissions awaiting manual review — see SubscriptionVerification page
+  getPendingPayments(): Observable<{ success: boolean; data: PendingPayment[] }> {
+    return this.http.get<any>(`${this.baseUrl}/superadmin/payments/pending`);
+  }
+
+  verifyPayment(paymentId: number): Observable<{ success: boolean; message: string }> {
+    return this.http.post<any>(`${this.baseUrl}/superadmin/payments/${paymentId}/verify`, {});
+  }
+
+  rejectPayment(paymentId: number, reason: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<any>(`${this.baseUrl}/superadmin/payments/${paymentId}/reject`, { reason });
   }
 
   getAuditLogs(params: { tenantId?: number; entityName?: string; fromDate?: string; toDate?: string } = {}):

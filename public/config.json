@@ -1,5 +1,44 @@
 {
   "apiBaseUrl": "http://localhost:5187/api",
   "isSellingEditable": false,
-  "isBuyingEditable": true
+  "isBuyingEditable": true,
+  "payment": {
+    "methods": [
+      {
+        "id": "bKash",
+        "label": "bKash",
+        "color": "#E2136E",
+        "accountNumber": "01XXXXXXXXX",
+        "accountType": "Personal",
+        "instructions": "Open the bKash app, choose Send Money (not Payment), enter the number above, enter the amount, and confirm with your PIN. Copy the Transaction ID (TrxID) from the confirmation SMS and paste it below."
+      },
+      {
+        "id": "Nagad",
+        "label": "Nagad",
+        "color": "#F5821F",
+        "accountNumber": "01XXXXXXXXX",
+        "accountType": "Personal",
+        "instructions": "Open the Nagad app, choose Send Money, enter the number above, enter the amount, and confirm with your PIN. Copy the Transaction ID from the confirmation SMS and paste it below."
+      },
+      {
+        "id": "Rocket",
+        "label": "Rocket",
+        "color": "#8C3494",
+        "accountNumber": "01XXXXXXXXX-X",
+        "accountType": "Personal",
+        "instructions": "Dial *322# or open the Rocket app, choose Send Money, enter the number above, enter the amount, and confirm with your PIN. Copy the Transaction ID from the confirmation SMS and paste it below."
+      },
+      {
+        "id": "Bank",
+        "label": "Bank Transfer",
+        "color": "#1A1F71",
+        "bankName": "Your Bank Name",
+        "accountName": "Your Name",
+        "accountNumber": "XXXXXXXXXXXXX",
+        "branch": "Branch Name",
+        "routingNumber": "XXXXXXXXX",
+        "instructions": "Transfer the amount to the account above from your bank's app, NEFT/RTGS, or by visiting a branch. Enter the bank's transaction/reference number below."
+      }
+    ]
+  }
 }

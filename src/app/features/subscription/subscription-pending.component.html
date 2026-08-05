@@ -1,0 +1,67 @@
+<div class="min-h-screen flex items-center justify-center p-6" style="background:#f0f2fb">
+  <div class="w-full max-w-md">
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden text-center" style="border:1px solid var(--theme-text)">
+      <div class="px-5 py-6">
+
+        <div *ngIf="isLoading" class="text-sm text-gray-400 py-8">Loading…</div>
+
+        <ng-container *ngIf="!isLoading">
+          <ng-container [ngSwitch]="latestPayment?.status">
+
+            <ng-container *ngSwitchCase="'Rejected'">
+              <div class="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-2xl mb-3" style="background:#fee2e2;color:#dc2626">&times;</div>
+              <h1 class="text-lg font-extrabold text-red-700">Payment Not Verified</h1>
+              <p class="text-sm text-gray-500 mt-2" *ngIf="latestPayment?.notes">Reason: {{ latestPayment?.notes }}</p>
+              <p class="text-sm text-gray-500 mt-2" *ngIf="!latestPayment?.notes">We couldn't verify your last payment. Please double-check the Transaction ID and try again.</p>
+              <button (click)="submitAnotherPayment()"
+                class="w-full mt-5 py-2.5 rounded-lg text-sm font-semibold text-white"
+                style="background:var(--theme-primary)">
+                Submit Payment Again
+              </button>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'Verified'">
+              <div class="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-2xl mb-3" style="background:#dcfce7;color:#16a34a">&#10003;</div>
+              <h1 class="text-lg font-extrabold text-green-700">Payment Verified!</h1>
+              <p class="text-sm text-gray-500 mt-2">Your subscription is now active. Please log in again to continue.</p>
+              <button (click)="logout()"
+                class="w-full mt-5 py-2.5 rounded-lg text-sm font-semibold text-white"
+                style="background:var(--theme-primary)">
+                Log In Again
+              </button>
+            </ng-container>
+
+            <ng-container *ngSwitchDefault>
+              <div class="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-2xl mb-3" style="background:#fef3c7;color:#d97706">&#8987;</div>
+              <h1 class="text-lg font-extrabold" style="color:var(--theme-primary)">Payment Under Review</h1>
+              <p class="text-sm text-gray-500 mt-2">
+                We've received your payment details and are verifying them. This usually takes a few hours.
+              </p>
+
+              <div *ngIf="latestPayment" class="rounded-lg p-3 mt-4 text-left text-sm" style="background:#fafbff;border:1.5px solid #d1d5f0">
+                <div class="flex justify-between py-0.5"><span class="text-gray-500">Method</span><span class="font-semibold">{{ latestPayment.paymentMethod }}</span></div>
+                <div class="flex justify-between py-0.5"><span class="text-gray-500">Transaction ID</span><span class="font-semibold">{{ latestPayment.transactionRef }}</span></div>
+                <div class="flex justify-between py-0.5"><span class="text-gray-500">Amount</span><span class="font-semibold">{{ latestPayment.currency }} {{ latestPayment.amount }}</span></div>
+                <div class="flex justify-between py-0.5"><span class="text-gray-500">Submitted</span><span class="font-semibold">{{ latestPayment.createdAt | date:'d MMM y, h:mm a' }}</span></div>
+              </div>
+
+              <button (click)="refresh()" [disabled]="isRefreshing"
+                class="w-full mt-5 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-50"
+                style="background:var(--theme-primary)">
+                {{ isRefreshing ? 'Checking…' : 'Check Status' }}
+              </button>
+            </ng-container>
+
+          </ng-container>
+
+          <button (click)="logout()" class="w-full mt-2 py-2 text-xs text-gray-400 hover:text-gray-600">
+            Log Out
+          </button>
+        </ng-container>
+
+      </div>
+    </div>
+
+  </div>
+</div>
