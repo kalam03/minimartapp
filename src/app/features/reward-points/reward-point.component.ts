@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
@@ -15,6 +15,13 @@ import { AlertService } from '../../shared/alert.service';
 export class RewardPointComponent implements OnInit {
   configs: RewardPointConfig[] = [];
   isSaving = false;
+  Math = Math;
+
+  /** Client-side pagination — list is small enough not to need a server round trip per page. */
+  pageSize = 10;
+  currentPage = 1;
+  /** Client-side Active/Inactive filter. */
+  statusFilter: '' | 'active' | 'inactive' = '';
 
   readonly emptyForm = {
     earnAmountPerPoint: 100,
@@ -31,9 +38,37 @@ export class RewardPointComponent implements OnInit {
   validationErrors: Record<string, string> = {};
   editingId: number | null = null;
 
+  get filteredConfigs(): RewardPointConfig[] {
+    if (!this.statusFilter) return this.configs;
+    return this.configs.filter(c => this.statusFilter === 'active' ? c.isActive : !c.isActive);
+  }
+
+  /** Current page slice of filteredConfigs — what the table actually renders. */
+  get pagedConfigs(): RewardPointConfig[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredConfigs.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredConfigs.length / this.pageSize) || 1;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
+  }
+
   constructor(
     private service: RewardPointService,
     private alertService: AlertService,
+    private cdr: ChangeDetectorRef,
     private transloco: TranslocoService
   ) {}
 
@@ -51,7 +86,14 @@ export class RewardPointComponent implements OnInit {
 
   load(): void {
     this.service.getAllConfigs().subscribe({
-      next: (res) => (this.configs = res.data || []),
+      next: (res) => {
+        this.configs = res.data || [];
+        this.currentPage = 1;
+        // Same pattern as suppliers/products/customers — without this the
+        // grid only painted after some unrelated click/DOM event, not the
+        // moment the list actually arrived (this app's manual-CD convention).
+        this.cdr.detectChanges();
+      },
       error: (err: any) => this.alertService.error(this.t('messages.loadError', { error: err.error?.message || err.message }))
     });
   }

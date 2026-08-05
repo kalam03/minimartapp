@@ -36,7 +36,12 @@
     "actions": "Actions",
     "active": "Active",
     "inactive": "Inactive",
-    "empty": "No reward point configuration found"
+    "empty": "No reward point configuration found",
+    "showingSummary": "Showing {{from}} - {{to}} of {{total}} configurations",
+    "pageSize": "Page size:"
+  },
+  "search": {
+    "allStatuses": "All Statuses"
   },
   "validation": {
     "earnAmountRequired": "Spend amount per point must be greater than 0",
