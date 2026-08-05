@@ -42,6 +42,20 @@ export class ComboOfferComponent implements OnInit {
     return this.combos.filter(c => c.comboName.toLowerCase().includes(q));
   }
 
+  /**
+   * True once any line is marked "Free" — a "Buy X, get Y free" combo. The
+   * discount for this combo is calculated purely from the free line(s)' own
+   * value (see PromotionEngineService), so Combo Type / Discount Value /
+   * Bundle Price become irrelevant and are hidden + no longer required.
+   */
+  get anyFreeItem(): boolean {
+    return this.items.some(i => i.isFreeItem);
+  }
+
+  hasFreeItem(c: ComboOffer): boolean {
+    return c.items.some(i => i.isFreeItem);
+  }
+
   constructor(
     private service: ComboOfferService,
     private productService: ProductService,
@@ -96,12 +110,17 @@ export class ComboOfferComponent implements OnInit {
     if (new Date(this.form.endDate) < new Date(this.form.startDate))
       this.validationErrors['endDate'] = this.t('validation.endBeforeStart');
 
-    if (this.form.comboType === 'FixedPrice' && (!this.form.fixedComboPrice || this.form.fixedComboPrice <= 0))
-      this.validationErrors['fixedComboPrice'] = this.t('validation.fixedPriceRequired');
-    if (this.form.comboType !== 'FixedPrice' && (!this.form.discountValue || this.form.discountValue <= 0))
-      this.validationErrors['discountValue'] = this.t('validation.discountValueRequired');
-    if (this.form.comboType === 'PercentageDiscount' && (this.form.discountValue || 0) > 100)
-      this.validationErrors['discountValue'] = this.t('validation.percentTooHigh');
+    // A "Buy X, get Y free" combo (any line marked Free) is discounted purely
+    // by the free line(s)' own value — Combo Type / Discount Value / Bundle
+    // Price are hidden and irrelevant for it, so skip their validation here.
+    if (!this.anyFreeItem) {
+      if (this.form.comboType === 'FixedPrice' && (!this.form.fixedComboPrice || this.form.fixedComboPrice <= 0))
+        this.validationErrors['fixedComboPrice'] = this.t('validation.fixedPriceRequired');
+      if (this.form.comboType !== 'FixedPrice' && (!this.form.discountValue || this.form.discountValue <= 0))
+        this.validationErrors['discountValue'] = this.t('validation.discountValueRequired');
+      if (this.form.comboType === 'PercentageDiscount' && (this.form.discountValue || 0) > 100)
+        this.validationErrors['discountValue'] = this.t('validation.percentTooHigh');
+    }
 
     return Object.keys(this.validationErrors).length === 0;
   }

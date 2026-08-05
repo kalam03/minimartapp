@@ -20,7 +20,7 @@
             <p *ngIf="isFieldInvalid('comboName')" class="text-red-600 text-xs mt-1">{{ validationErrors['comboName'] }}</p>
           </div>
 
-          <div>
+          <div *ngIf="!anyFreeItem">
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.comboType' | transloco }}</label>
             <select [(ngModel)]="form.comboType" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none">
               <option value="FixedDiscount">{{ 'comboOffers.form.fixedDiscount' | transloco }}</option>
@@ -29,18 +29,22 @@
             </select>
           </div>
 
-          <div *ngIf="form.comboType !== 'FixedPrice'">
+          <div *ngIf="!anyFreeItem && form.comboType !== 'FixedPrice'">
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.discountValue' | transloco }}</label>
             <input type="number" min="0" [(ngModel)]="form.discountValue"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('discountValue') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('discountValue')" class="text-red-600 text-xs mt-1">{{ validationErrors['discountValue'] }}</p>
           </div>
 
-          <div *ngIf="form.comboType === 'FixedPrice'">
+          <div *ngIf="!anyFreeItem && form.comboType === 'FixedPrice'">
             <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.fixedComboPrice' | transloco }}</label>
             <input type="number" min="0" [(ngModel)]="form.fixedComboPrice"
               [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (isFieldInvalid('fixedComboPrice') ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
             <p *ngIf="isFieldInvalid('fixedComboPrice')" class="text-red-600 text-xs mt-1">{{ validationErrors['fixedComboPrice'] }}</p>
+          </div>
+
+          <div *ngIf="anyFreeItem" class="lg:col-span-2 flex items-center px-2 py-1.5 rounded-lg bg-green-50 border border-green-200 text-xs text-green-800">
+            {{ 'comboOffers.form.freeItemNote' | transloco }}
           </div>
 
           <div>
@@ -130,7 +134,10 @@
                 <span *ngFor="let i of c.items; let last = last">{{ i.requiredQty }}× {{ i.productName }}{{ i.isFreeItem ? ' (free)' : '' }}{{ last ? '' : ', ' }}</span>
               </td>
               <td class="px-3 py-2 whitespace-nowrap">
-                <ng-container [ngSwitch]="c.comboType">
+                <span *ngIf="hasFreeItem(c)" class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800">
+                  {{ 'comboOffers.table.freeItemBadge' | transloco }}
+                </span>
+                <ng-container *ngIf="!hasFreeItem(c)" [ngSwitch]="c.comboType">
                   <span *ngSwitchCase="'FixedDiscount'">−{{ c.discountValue }}</span>
                   <span *ngSwitchCase="'PercentageDiscount'">−{{ c.discountValue }}%</span>
                   <span *ngSwitchCase="'FixedPrice'">{{ c.fixedComboPrice }} flat</span>

@@ -45,12 +45,21 @@ export interface PromotionQuoteRequest {
   redeemCashback?: number | null;
 }
 
+/** One free line inside a "Buy X, get Y free" combo — see AppliedPromotion.freeItems. */
+export interface FreeItemLine {
+  productId: number;
+  qty: number;
+  value: number;
+}
+
 export interface AppliedPromotion {
   promotionType: string;
   referenceId: number;
   description: string;
   discountAmount: number;
   saleDetailProductId: number | null;
+  /** Populated only for a free-item combo — which product(s) went free and their value. */
+  freeItems: FreeItemLine[] | null;
 }
 
 /** Mirrors PromotionEngineResult — response of POST /sales/quote (and part of SaleResponseDto). */

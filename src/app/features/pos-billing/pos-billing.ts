@@ -1093,6 +1093,27 @@ export class PosBillingComponent implements OnInit {
     return this.promotionQuote?.lineDiscountByProductId?.[String(productId)] ?? 0;
   }
 
+  /**
+   * Itemized "Buy X, get Y free" lines from the live quote — one entry per
+   * qualifying combo, each listing the product(s) that went free (name
+   * resolved from the already-loaded product catalog, since the backend only
+   * knows ProductId) and the value made free. Feeds the small breakdown shown
+   * under "Promo Discount" so the cashier can see WHICH item is free, not
+   * just the lump total. Empty unless a free-item combo is currently applied.
+   */
+  get freeItemPromotions(): Array<{ description: string; lines: Array<{ name: string; qty: number; value: number }> }> {
+    return (this.promotionQuote?.appliedPromotions || [])
+      .filter(p => p.freeItems && p.freeItems.length > 0)
+      .map(p => ({
+        description: p.description,
+        lines: p.freeItems!.map(f => ({
+          name: this.products.find(pr => pr.productId === f.productId)?.productName || `#${f.productId}`,
+          qty: f.qty,
+          value: f.value
+        }))
+      }));
+  }
+
   // Calculate Totals
   /**
    * @param immediate Skip the debounce and fetch the promo quote right away.
@@ -1554,8 +1575,17 @@ buildReceiptFromCurrentSale(receipt: any): string {
   const discount = receipt.discount || 0;
   const discountPercent = receipt.discountPercent || 0;
   const promoDiscount = receipt.promoDiscount || 0;
-  const appliedPromotions: Array<{ promotionType: string; description: string; discountAmount: number }> =
-    receipt.appliedPromotions || [];
+  const appliedPromotions: Array<{
+    promotionType: string;
+    description: string;
+    discountAmount: number;
+    freeItems?: Array<{ productId: number; qty: number; value: number }> | null;
+  }> = receipt.appliedPromotions || [];
+  // Resolve a free combo line's ProductId back to a name using the cart items
+  // already on this receipt (the free product must be in the cart for the
+  // combo to have qualified in the first place, so it's always found here).
+  const freeItemProductName = (productId: number): string =>
+    receipt.items.find((it: any) => it.product?.productId === productId)?.product?.productName || `#${productId}`;
   const transportCost = receipt.transportCost || 0;
   const transport = receipt.transport || 'N/A';
   const transportDetail = receipt.transportDetail || '';
@@ -1838,6 +1868,12 @@ buildReceiptFromCurrentSale(receipt: any): string {
               <span>${p.promotionType === 'Combo' ? 'Combo' : 'Discount'}: ${escapeHtml(p.description || '')}</span>
               <span>-${formatTk(p.discountAmount || 0)}</span>
             </div>
+            ${(p.freeItems || []).map(f => `
+            <div class="total-line" style="padding-left:6px;font-size:10px">
+              <span>&nbsp;&nbsp;Free: ${escapeHtml(freeItemProductName(f.productId))} x${f.qty}</span>
+              <span>(${formatTk(f.value || 0)} value)</span>
+            </div>
+            `).join('')}
             `).join('') : (promoDiscount > 0 ? `
             <div class="total-line">
               <span>Promo Discount:</span>

@@ -89,6 +89,8 @@
     "transport": "Transport:",
     "discount": "Discount:",
     "promoDiscount": "Promo Discount:",
+    "freeTag": "FREE",
+    "freeValue": "(worth ৳{{amount}})",
     "previousDue": "Previous Due:",
     "advanceCredit": "Advance Credit:",
     "gross": "Gross:",

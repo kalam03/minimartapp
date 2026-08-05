@@ -19,6 +19,7 @@
     "items": "Combo Items *",
     "qty": "Qty",
     "freeItem": "Free",
+    "freeItemNote": "This combo has a free item — its discount is calculated automatically from the free product's value. Combo Type / Discount Value aren't needed.",
     "noLines": "No items added yet — click \"Add line\" to start."
   },
   "buttons": {
@@ -40,7 +41,8 @@
     "actions": "Actions",
     "active": "Active",
     "inactive": "Inactive",
-    "empty": "No combo offers found"
+    "empty": "No combo offers found",
+    "freeItemBadge": "Free item"
   },
   "search": {
     "placeholder": "Search by name…"

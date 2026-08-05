@@ -495,6 +495,14 @@
               </span>
               <span>-৳{{ promoDiscountAmount.toFixed(2) }}</span>
             </div>
+            <!-- "Buy X, get Y free" breakdown — which product(s) went free, already
+                 included in the Promo Discount total above (not an extra deduction). -->
+            <ng-container *ngFor="let promo of freeItemPromotions">
+              <div *ngFor="let line of promo.lines" class="flex justify-between text-xs text-green-700 pl-2">
+                <span>🎁 {{ line.name }} × {{ line.qty }} {{ 'posBilling.bill.freeTag' | transloco }} ({{ promo.description }})</span>
+                <span>{{ 'posBilling.bill.freeValue' | transloco: { amount: line.value.toFixed(2) } }}</span>
+              </div>
+            </ng-container>
             <div *ngIf="previousDue > 0" class="flex justify-between font-semibold" style="color:#ef4444">
               <span>{{ 'posBilling.bill.previousDue' | transloco }}</span>
               <span>+৳{{ previousDue.toFixed(2) }}</span>
