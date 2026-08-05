@@ -387,9 +387,14 @@ export class PosBillingComponent implements OnInit {
     this.selectedProductIndex = -1;
 
     if (term.length > 0 && this.filteredProducts.length > 0) {
-      const exactMatch = this.filteredProducts.find(
-        (product) => product.productName?.toLowerCase() === term.toLowerCase(),
-      );
+      const lower = term.toLowerCase();
+      // A barcode scanner types the code and (usually) sends it character by
+      // character just like a keyboard, so this fires on every keystroke same
+      // as manual typing — checked first since a scanned code is always meant
+      // to be an exact, unambiguous match, never a partial name.
+      const exactMatch =
+        this.filteredProducts.find((product) => product.barcode?.toLowerCase() === lower) ||
+        this.filteredProducts.find((product) => product.productName?.toLowerCase() === lower);
 
       if (exactMatch) {
         this.selectProduct(exactMatch);
@@ -656,7 +661,15 @@ export class PosBillingComponent implements OnInit {
 
     const term = this.searchProductTerm.toLowerCase();
 
-    let bestMatch = this.products.find((product) => product.productName?.toLowerCase() === term);
+    // Barcode scanners sometimes fire their trailing Enter fast enough that
+    // onProductSearch's per-keystroke exact-match check above never gets a
+    // chance to run before this Enter-triggered fallback fires — so barcode
+    // is checked here too, ahead of the name-based matching.
+    let bestMatch = this.products.find((product) => product.barcode?.toLowerCase() === term);
+
+    if (!bestMatch) {
+      bestMatch = this.products.find((product) => product.productName?.toLowerCase() === term);
+    }
 
     if (!bestMatch) {
       bestMatch = this.products.find((product) =>
