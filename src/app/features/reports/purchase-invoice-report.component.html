@@ -90,6 +90,7 @@
       <table class="w-full text-sm">
         <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
           <tr>
+            <th class="px-3 py-2 text-left">{{ 'reports.purchaseInvoiceReport.columns.actions' | transloco }}</th>
             <th class="px-3 py-2 text-left">{{ 'reports.purchaseInvoiceReport.columns.purchaseId' | transloco }}</th>
             <th class="px-3 py-2 text-left">{{ 'reports.purchaseInvoiceReport.columns.date' | transloco }}</th>
             <th class="px-3 py-2 text-left">{{ 'reports.purchaseInvoiceReport.columns.supplier' | transloco }}</th>
@@ -103,6 +104,16 @@
         </thead>
         <tbody>
           <tr *ngFor="let row of filteredRows" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+            <td class="px-3 py-2 text-gray-500">
+              <button type="button" (click)="printInvoice(row)"
+                [title]="'reports.purchaseInvoiceReport.printTooltip' | transloco"
+                class="px-2 py-1 text-xs rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m10 0v3a1 1 0 01-1 1H8a1 1 0 01-1-1v-3m10 0H7m0-10V4a1 1 0 011-1h8a1 1 0 011 1v3H7z"/>
+                </svg>
+                {{ 'reports.purchaseInvoiceReport.print' | transloco }}
+              </button>
+            </td>
             <td class="px-3 py-2 text-gray-500">{{ row.purchaseId }}</td>
             <td class="px-3 py-2 text-gray-600">{{ row.purchaseDate | date:'dd MMM yyyy' }}</td>
             <td class="px-3 py-2 font-medium text-gray-900">{{ row.supplierName }}</td>
@@ -116,13 +127,13 @@
             </td>
           </tr>
           <tr *ngIf="!isLoading && rows.length === 0">
-            <td colspan="9" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.purchaseInvoiceReport.noData' | transloco }}</td>
+            <td colspan="10" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.purchaseInvoiceReport.noData' | transloco }}</td>
           </tr>
           <tr *ngIf="!isLoading && rows.length > 0 && filteredRows.length === 0">
-            <td colspan="9" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.purchaseInvoiceReport.noMatch' | transloco: { search: searchText } }}</td>
+            <td colspan="10" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.purchaseInvoiceReport.noMatch' | transloco: { search: searchText } }}</td>
           </tr>
           <tr *ngIf="isLoading">
-            <td colspan="9" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.purchaseInvoiceReport.loading' | transloco }}</td>
+            <td colspan="10" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'reports.purchaseInvoiceReport.loading' | transloco }}</td>
           </tr>
         </tbody>
       </table>

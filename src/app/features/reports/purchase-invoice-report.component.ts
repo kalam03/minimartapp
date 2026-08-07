@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService, provideTranslocoScope } from '@jsverse/transloco';
 import { ReportsService, SupplierPurchaseDetailDto } from '../../services/reports.service';
 import { SupplierService } from '../../services/supplier.service';
+import { PurchaseService } from '../../services/purchase.service';
+import { AuthService } from '../../services/auth.service';
 import { toLocalDateString } from '../../shared/date-utils';
 import { downloadBlob } from '../../shared/pdf-export.util';
 
@@ -41,6 +43,8 @@ export class PurchaseInvoiceReportComponent implements OnInit {
   constructor(
     private reportsService: ReportsService,
     private supplierService: SupplierService,
+    private purchaseService: PurchaseService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService
   ) {}
@@ -148,6 +152,12 @@ export class PurchaseInvoiceReportComponent implements OnInit {
 
     this.activeQuick = period;
     this.loadReport();
+  }
+
+  //Plain window.open called synchronously (no blob fetch) so it's a real top-level navigation that can't be popup-blocked; token rides as ?access_token= since navigation can't carry an Authorization header
+  printInvoice(row: SupplierPurchaseDetailDto): void {
+    const url = this.purchaseService.getInvoicePdfUrl(row.purchaseId, this.authService.getToken());
+    window.open(url, '_blank');
   }
 
   exportPdf(): void {

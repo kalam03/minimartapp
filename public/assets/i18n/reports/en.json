@@ -318,6 +318,7 @@
     "tableTitle": "Purchases",
     "summary": "{{count}} purchase(s) · Net ৳{{net}} · Paid ৳{{paid}} · Due ৳{{due}}",
     "columns": {
+      "actions": "Actions",
       "purchaseId": "Purchase ID",
       "date": "Date",
       "supplier": "Supplier",
@@ -332,6 +333,8 @@
     "noData": "No purchases found for this range",
     "noMatch": "No purchases match \"{{search}}\"",
     "loading": "Loading…",
+    "print": "Print",
+    "printTooltip": "Open this purchase invoice as a PDF in a new tab to print or download",
     "errors": {
       "load": "Failed to load purchase invoice report",
       "pdf": "Failed to generate PDF"
