@@ -8,7 +8,8 @@
       "profitReport": "Profit Report",
       "paymentMethodSummary": "Payment Method Summary",
       "customerReport": "Customer Report",
-      "supplierReport": "Supplier Report"
+      "supplierReport": "Supplier Report",
+      "deliveryManReport": "Delivery Man Report"
     }
   },
   "filter": {
@@ -240,6 +241,35 @@
     "errors": {
       "load": "Failed to load supplier report",
       "detail": "Failed to load supplier details",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "deliveryManReport": {
+    "label": "Delivery Man Report",
+    "tableTitle": "Delivery Man Collection Summary",
+    "summary": "{{count}} delivery men · Collected ৳{{collected}} · Due ৳{{due}}",
+    "columns": {
+      "deliveryMan": "Delivery Man",
+      "invoices": "Invoices",
+      "cash": "Cash",
+      "bkash": "bKash",
+      "nagad": "Nagad",
+      "rocket": "Rocket",
+      "bank": "Bank",
+      "totalCollected": "Total Collected",
+      "due": "Due",
+      "actions": "Actions"
+    },
+    "viewDetails": "View Details",
+    "noData": "No delivery-man sales found for this range",
+    "loading": "Loading…",
+    "detail": {
+      "statementTitle": "Collections ({{from}} to {{to}})",
+      "noStatement": "No deliveries in this range"
+    },
+    "errors": {
+      "load": "Failed to load delivery man report",
+      "detail": "Failed to load delivery man details",
       "pdf": "Failed to generate PDF"
     }
   }

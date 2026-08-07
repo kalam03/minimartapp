@@ -8,8 +8,9 @@ import { ProfitReportComponent } from './profit-report.component';
 import { PaymentMethodSummaryReportComponent } from './payment-method-summary-report.component';
 import { CustomerReportComponent } from './customer-report.component';
 import { SupplierReportComponent } from './supplier-report.component';
+import { DeliveryManReportComponent } from './delivery-man-report.component';
 
-type ReportTab = 'sales-summary' | 'sales-details' | 'invoice-report' | 'profit-report' | 'payment-method-summary' | 'customer-report' | 'supplier-report';
+type ReportTab = 'sales-summary' | 'sales-details' | 'invoice-report' | 'profit-report' | 'payment-method-summary' | 'customer-report' | 'supplier-report' | 'delivery-man-report';
 
 @Component({
   selector: 'app-reports-hub',
@@ -23,7 +24,8 @@ type ReportTab = 'sales-summary' | 'sales-details' | 'invoice-report' | 'profit-
     ProfitReportComponent,
     PaymentMethodSummaryReportComponent,
     CustomerReportComponent,
-    SupplierReportComponent
+    SupplierReportComponent,
+    DeliveryManReportComponent
   ],
   //Loads assets/i18n/reports/{en,bn}.json only when this route is hit — see Multilingual_Localization_Architecture.md Section 5.1
   providers: [provideTranslocoScope('reports')],
@@ -40,7 +42,8 @@ export class ReportsHubComponent {
     { id: 'profit-report',  labelKey: 'reports.hub.tabs.profitReport' },
     { id: 'payment-method-summary', labelKey: 'reports.hub.tabs.paymentMethodSummary' },
     { id: 'customer-report', labelKey: 'reports.hub.tabs.customerReport' },
-    { id: 'supplier-report', labelKey: 'reports.hub.tabs.supplierReport' }
+    { id: 'supplier-report', labelKey: 'reports.hub.tabs.supplierReport' },
+    { id: 'delivery-man-report', labelKey: 'reports.hub.tabs.deliveryManReport' }
   ];
 
   setTab(tab: ReportTab): void {

@@ -208,6 +208,39 @@ export interface SupplierReportDetailResponse {
   data: SupplierReportDetailDto;
 }
 
+export interface DeliveryManCollectionSummaryDto {
+  deliveryManCode: string;
+  deliveryManName: string;
+  invoiceCount: number;
+  cashAmount: number;
+  bkashAmount: number;
+  nagadAmount: number;
+  rocketAmount: number;
+  bankAmount: number;
+  otherAmount: number;
+  totalCollected: number;
+  dueAmount: number;
+}
+
+export interface DeliveryManSummaryResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  totalDeliveryMen: number;
+  totalCollected: number;
+  totalDue: number;
+  data: DeliveryManCollectionSummaryDto[];
+}
+
+export interface DeliveryManDetailResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  deliveryManCode: string;
+  deliveryManName: string;
+  data: InvoiceReportDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private baseUrl = environment.baseUrl;
@@ -352,6 +385,32 @@ export class ReportsService {
   getSupplierDetailPdf(supplierId: number, fromDate: string, toDate: string): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/reports/supplier-detail/${supplierId}/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  getDeliveryManSummary(fromDate: string, toDate: string): Observable<DeliveryManSummaryResponse> {
+    return this.http.get<DeliveryManSummaryResponse>(
+      `${this.baseUrl}/reports/delivery-man-summary${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getDeliveryManSummaryPdf(fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/delivery-man-summary/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  getDeliveryManDetail(deliveryManCode: string, fromDate: string, toDate: string): Observable<DeliveryManDetailResponse> {
+    return this.http.get<DeliveryManDetailResponse>(
+      `${this.baseUrl}/reports/delivery-man-detail/${encodeURIComponent(deliveryManCode)}${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getDeliveryManDetailPdf(deliveryManCode: string, fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/delivery-man-detail/${encodeURIComponent(deliveryManCode)}/pdf${this.buildQuery({ fromDate, toDate })}`,
       { responseType: 'blob' }
     );
   }
