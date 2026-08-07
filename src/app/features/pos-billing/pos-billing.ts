@@ -137,6 +137,13 @@ export class PosBillingComponent implements OnInit {
   returnCash: number = 0;
   dueAmount: number = 0;
   grossAmount: number = 0;
+  // Cashier-entered adjustment so the collected total can be rounded to a clean cash amount
+  // (e.g. bill is 230.20, cashier "adjusts to" 231 so change back is a whole 19 taka rather
+  // than 19.80). grossAmountBeforeRoundOff is the calculated value before this override;
+  // grossAmount = grossAmountBeforeRoundOff + roundOffAmount. Persisted to Sales.RoundOffAmount
+  // and folded into NetAmount server-side by sp_AddSale so reports/due reflect the adjusted total.
+  roundOffAmount: number = 0;
+  grossAmountBeforeRoundOff: number = 0;
 
   // balances are informational only; all discount/redemption math happens server-side in PromotionEngineService
   customerRewardPointBalance: number = 0;
@@ -762,6 +769,7 @@ export class PosBillingComponent implements OnInit {
     this.pickupEmployeeCode = null;
     this.selectedPaymentMethod = DEFAULT_PAYMENT_METHOD;
     this.paymentCash = 0;
+    this.roundOffAmount = 0;
     this.customerRewardPointBalance = 0;
     this.customerCashbackBalance = 0;
     this.redeemPointsInput = null;
@@ -932,6 +940,28 @@ export class PosBillingComponent implements OnInit {
     this.calculateReturnAndDue();
   }
 
+  // Lets the cashier type the exact amount to actually charge (e.g. round 230.20 up to 231 so
+  // change is a clean whole taka). The difference from the calculated total is stored as
+  // roundOffAmount, shown on-screen/receipt, and persisted with the sale.
+  onGrossAmountChange(value: string | number): void {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    const target = isNaN(numValue) ? this.grossAmountBeforeRoundOff : Math.max(0, numValue);
+    this.roundOffAmount = +(target - this.grossAmountBeforeRoundOff).toFixed(2);
+    this.grossAmount = target;
+    this.calculateReturnAndDue();
+  }
+
+  // Quick one-click convenience: round the current total to the nearest whole taka instead of typing it manually.
+  roundToNearestTaka(): void {
+    this.onGrossAmountChange(Math.round(this.grossAmountBeforeRoundOff));
+  }
+
+  clearRoundOff(): void {
+    this.roundOffAmount = 0;
+    this.grossAmount = this.grossAmountBeforeRoundOff;
+    this.calculateReturnAndDue();
+  }
+
   async addToCart() {
     if (!this.selectedProduct) {
       this.alertService.info(this.t('messages.noProductSelectedBody'), this.t('messages.noProductSelectedTitle'));
@@ -1045,8 +1075,14 @@ export class PosBillingComponent implements OnInit {
     const saleNet = this.subtotal - this.discountAmount - this.promoDiscountAmount + this.transportCost;
 
     // positive due adds, negative credit deducts
-    this.grossAmount = saleNet + this.previousDue;
+    this.grossAmountBeforeRoundOff = saleNet + this.previousDue;
+    if (this.grossAmountBeforeRoundOff < 0) {
+      this.grossAmountBeforeRoundOff = 0;
+    }
 
+    // roundOffAmount is a persisted delta (see onGrossAmountChange), so it survives cart edits
+    // rather than being wiped out every time totals are recalculated.
+    this.grossAmount = this.grossAmountBeforeRoundOff + this.roundOffAmount;
     if (this.grossAmount < 0) {
       this.grossAmount = 0;
     }
@@ -1184,6 +1220,8 @@ export class PosBillingComponent implements OnInit {
         previousDue: this.previousDue,
         previousBalance: snapPreviousDue,
         netAmount: this.grossAmount,
+        // cashier's manual "adjust to" override (see onGrossAmountChange); 0 when the bill wasn't rounded
+        roundOffAmount: this.roundOffAmount,
         paymentType: this.selectedPaymentMethod,
         paidAmount: this.paymentCash,
         returnAmount: this.returnCash,
@@ -1404,7 +1442,8 @@ buildReceiptFromCurrentSale(receipt: any): string {
     receipt.transport === 'courier' ? 'Courier' :
     receipt.transport === 'pickup' ? 'Picked Up By' : 'Assigned To';
   const prevDue = receipt.previousDue || 0;
-  const netAmount = receipt.netAmount || (subtotal - discount - promoDiscount + transportCost + prevDue);
+  const roundOffAmount = receipt.roundOffAmount || 0;
+  const netAmount = receipt.netAmount || (subtotal - discount - promoDiscount + transportCost + prevDue + roundOffAmount);
   const paidAmount = receipt.paidAmount || 0;
   const returnAmount = receipt.returnAmount || 0;
   const dueAmount = receipt.dueAmount || (netAmount - paidAmount);
@@ -1713,6 +1752,12 @@ buildReceiptFromCurrentSale(receipt: any): string {
             <div class="total-line" style="color:#000; font-weight:bold">
               <span>Advance Credit:</span>
               <span>-${formatTk(Math.abs(prevDue))}</span>
+            </div>
+            ` : ''}
+            ${roundOffAmount !== 0 ? `
+            <div class="total-line" style="color:#000; font-weight:bold">
+              <span>Round Off:</span>
+              <span>${roundOffAmount > 0 ? '+' : '-'}${formatTk(Math.abs(roundOffAmount))}</span>
             </div>
             ` : ''}
           </div>

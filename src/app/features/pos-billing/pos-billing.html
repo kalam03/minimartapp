@@ -469,9 +469,27 @@
               <span>{{ 'posBilling.bill.advanceCredit' | transloco }}</span>
               <span>-৳{{ (Math.abs(previousDue)).toFixed(2) }}</span>
             </div>
-            <div class="flex justify-between pt-1 border-t font-bold">
-              <span>{{ 'posBilling.bill.gross' | transloco }}</span>
-              <span class="text-green-600">৳{{ grossAmount.toFixed(2) }}</span>
+            <div *ngIf="roundOffAmount !== 0" class="flex justify-between" [style.color]="roundOffAmount > 0 ? '#ef4444' : '#10b981'">
+              <span class="flex items-center gap-1">
+                {{ 'posBilling.bill.roundOff' | transloco }}
+                <button type="button" (click)="clearRoundOff()" class="text-gray-400 hover:text-gray-600" [title]="'posBilling.bill.clearRoundOff' | transloco">✕</button>
+              </span>
+              <span>{{ roundOffAmount > 0 ? '+' : '' }}৳{{ roundOffAmount.toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-1 border-t font-bold">
+              <span class="flex items-center gap-1">
+                {{ 'posBilling.bill.gross' | transloco }}
+                <button type="button" (click)="roundToNearestTaka()" class="px-1.5 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  [title]="'posBilling.bill.roundToNearestTitle' | transloco">
+                  {{ 'posBilling.bill.roundToNearest' | transloco }}
+                </button>
+              </span>
+              <app-financial-input
+                [ngModel]="grossAmount"
+                (ngModelChange)="onGrossAmountChange($event)"
+                className="w-24 px-2 py-0.5 text-right border rounded text-sm font-bold text-green-600 focus:outline-none focus:outline-none"
+                placeholder="0.00"
+              ></app-financial-input>
             </div>
           </div>
 
