@@ -267,13 +267,42 @@
     "viewDetails": "View Details",
     "noData": "No delivery-man sales found for this range",
     "loading": "Loading…",
+    "pendingBadge": "pending",
+    "pendingSettlementTitle": "{{count}} settlement(s) awaiting verification",
     "detail": {
       "statementTitle": "Collections ({{from}} to {{to}})",
       "noStatement": "No deliveries in this range"
     },
+    "invoiceDetail": {
+      "title": "Invoice",
+      "noItems": "No items found for this invoice"
+    },
+    "settlement": {
+      "title": "Delivery Settlement",
+      "invoiced": "Invoiced",
+      "collected": "Collected",
+      "amountMismatch": "Collected amount differs from the invoice by ৳{{amount}}. This is not applied automatically — reconcile manually if needed.",
+      "status": {
+        "Pending": "Pending Verification",
+        "Verified": "Verified",
+        "Disputed": "Disputed"
+      },
+      "submittedBy": "Submitted by {{name}} on {{date}}",
+      "verify": "Verify",
+      "dispute": "Dispute",
+      "disputeReasonPlaceholder": "Reason for dispute…",
+      "submitTitle": "Record what the delivery man actually collected",
+      "collectedAmount": "Collected Amount",
+      "collectedMethod": "Collected Method",
+      "remarks": "Remarks (optional)",
+      "submit": "Submit"
+    },
     "errors": {
       "load": "Failed to load delivery man report",
       "detail": "Failed to load delivery man details",
+      "invoiceDetail": "Failed to load invoice details",
+      "settlement": "Failed to process delivery settlement",
+      "disputeReasonRequired": "A reason is required to dispute a settlement",
       "pdf": "Failed to generate PDF"
     }
   },

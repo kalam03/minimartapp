@@ -220,6 +220,7 @@ export interface DeliveryManCollectionSummaryDto {
   otherAmount: number;
   totalCollected: number;
   dueAmount: number;
+  pendingSettlementCount: number;
 }
 
 export interface DeliveryManSummaryResponse {

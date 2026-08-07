@@ -79,6 +79,54 @@ export interface PromotionQuoteResult {
   combinedDiscountForSale: number;
 }
 
+// Full single-sale detail (header + line items) for the invoice-detail modal / printable PDF; mirrors backend SaleInvoiceDto.
+export interface SaleInvoiceItemDto {
+  productId: number;
+  productName: string;
+  unitType: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  discountAmount: number;
+}
+
+export interface AppliedPromotionSummaryDto {
+  promotionType: string;
+  description: string | null;
+  discountAmount: number;
+}
+
+export interface SaleInvoiceDto {
+  saleId: number;
+  invoiceNo: string;
+  saleDate: string;
+  customerId: number | null;
+  customerName: string;
+  customerPhone: string | null;
+  totalAmount: number;
+  discount: number;
+  transportCost: number;
+  transport: string | null;
+  deliveryManCode: string | null;
+  deliveryManName: string | null;
+  previousBalance: number;
+  roundOffAmount: number;
+  netAmount: number;
+  paymentType: string;
+  paidAmount: number;
+  returnAmount: number;
+  dueAmount: number;
+  createdBy: string | null;
+  promotionDiscountAmount: number;
+  cashbackEarned: number;
+  cashbackRedeemed: number;
+  rewardPointsEarned: number;
+  rewardPointsRedeemed: number;
+  rewardPointsRedeemedValue: number;
+  items: SaleInvoiceItemDto[];
+  appliedPromotions: AppliedPromotionSummaryDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class SaleService {
 
@@ -99,6 +147,11 @@ export class SaleService {
   getInvoicePdfUrl(saleId: number, token: string | null): string {
     const tokenParam = token ? `?access_token=${encodeURIComponent(token)}` : '';
     return `${this.baseUrl}/sales/${saleId}/invoice-pdf${tokenParam}`;
+  }
+
+  // JSON version of the same invoice, for showing a full item-level breakdown in an in-app modal (e.g. Delivery Man Report drill-down) instead of opening a PDF
+  getInvoiceDetail(saleId: number): Observable<{ success: boolean; data: SaleInvoiceDto }> {
+    return this.http.get<{ success: boolean; data: SaleInvoiceDto }>(`${this.baseUrl}/sales/${saleId}/invoice`);
   }
 
   // Type-guard for a 409 stock-conflict error response
