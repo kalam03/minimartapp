@@ -58,16 +58,24 @@
                 class="w-full px-2 py-1 text-sm border border-gray-300 rounded-lg" />
             </div>
             <div>
-              <label class="text-xs font-semibold" style="color:var(--theme-primary)">{{ 'purchases.form.qty' | transloco }}</label>
+              <label class="text-xs font-semibold flex items-center gap-1" style="color:var(--theme-primary)">
+                {{ 'purchases.form.qty' | transloco }}
+                <span *ngIf="selectedProduct" class="px-1.5 py-0.5 rounded text-xs font-semibold"
+                  [ngStyle]="{'background': isWeightProduct ? 'var(--theme-text)' : '#f3f4f6',
+                              'color':      isWeightProduct ? 'var(--theme-primary)'  : '#6b7280'}">
+                  {{ qtyUnit }}
+                </span>
+              </label>
               <div class="flex items-center gap-1">
-                <button (click)="productQuantity = Math.max(1, productQuantity - 1)"
+                <button (click)="onProductQuantityChange(isWeightProduct ? +(productQuantity - 0.1).toFixed(3) : productQuantity - 1)"
                   class="w-6 h-6 rounded text-sm font-bold border border-gray-300 hover:bg-gray-100">-</button>
                 <input #quantityInput type="number"
                   [ngModel]="productQuantity"
                   (ngModelChange)="onProductQuantityChange($event)"
                   (keydown)="onQuantityKeydown($event)"
+                  [step]="qtyStep"
                   class="w-full text-center px-1 py-1 text-sm border border-gray-300 rounded-lg" />
-                <button (click)="productQuantity = productQuantity + 1"
+                <button (click)="onProductQuantityChange(isWeightProduct ? +(productQuantity + 0.1).toFixed(3) : productQuantity + 1)"
                   class="w-6 h-6 rounded text-sm font-bold border border-gray-300 hover:bg-gray-100">+</button>
               </div>
             </div>

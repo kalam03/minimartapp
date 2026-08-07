@@ -463,9 +463,19 @@ export class PurchaseComponent implements OnInit {
     return this.suppliers.find((s) => s.supplierId === this.selectedSupplierId);
   }
 
+  //KG/G/L/ML products need fractional quantities (0.5, 0.004, …) — same list/logic as pos-billing.ts
+  get isWeightProduct(): boolean {
+    const wt = ['KG', 'G', 'L', 'ML'];
+    return !!this.selectedProduct && wt.includes((this.selectedProduct.unitType || '').toUpperCase());
+  }
+
+  get qtyStep(): string { return this.isWeightProduct ? '0.001' : '1'; }
+  get qtyUnit(): string { return this.selectedProduct?.unitType || 'PCS'; }
+
   onProductQuantityChange(value: string | number): void {
-    const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
-    this.productQuantity = isNaN(numValue) ? 1 : Math.max(1, numValue);
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    const min = this.isWeightProduct ? 0.001 : 1;
+    this.productQuantity = isNaN(numValue) ? min : Math.max(min, numValue);
   }
 
   //Only reachable when isBuyingEditable is true — the field is [readonly] otherwise
