@@ -241,6 +241,79 @@ export interface DeliveryManDetailResponse {
   data: InvoiceReportDto[];
 }
 
+export interface SupplierPaymentMethodSummaryDto {
+  supplierId: number;
+  supplierName: string;
+  phone: string | null;
+  purchaseCount: number;
+  cashAmount: number;
+  bkashAmount: number;
+  nagadAmount: number;
+  rocketAmount: number;
+  bankAmount: number;
+  otherAmount: number;
+  totalPaid: number;
+  dueAmount: number;
+}
+
+export interface PurchasePaymentSummaryResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  totalSuppliers: number;
+  totalPaid: number;
+  totalDue: number;
+  data: SupplierPaymentMethodSummaryDto[];
+}
+
+// Purchase-side mirror of SalesSummaryDto; totalInvoices here counts purchases, totalSales/totalPurchase mirrors sales
+export interface PurchaseSummaryDto {
+  totalInvoices: number;
+  totalPurchase: number;
+  totalDiscount: number;
+  totalTransport: number;
+  totalNetAmount: number;
+  totalPaid: number;
+  totalDue: number;
+  totalReturn: number;
+}
+
+export interface PurchaseSummaryResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: PurchaseSummaryDto;
+}
+
+// Purchase-side mirror of InvoiceReportResponse; rows reuse SupplierPurchaseDetailDto (one row per purchase)
+export interface PurchaseInvoiceReportResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: SupplierPurchaseDetailDto[];
+}
+
+// Purchase-side mirror of SalesDetailDto; line-item level (one row per product) via PurchaseDetails
+export interface PurchaseDetailLineDto {
+  purchaseId: number;
+  purchaseDate: string | null;
+  supplierId: number | null;
+  supplierName: string;
+  productId: number | null;
+  productName: string;
+  unitType: string;
+  quantity: number;
+  unitCostPrice: number;
+  total: number;
+}
+
+export interface PurchaseLineDetailsResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: PurchaseDetailLineDto[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private baseUrl = environment.baseUrl;
@@ -411,6 +484,62 @@ export class ReportsService {
   getDeliveryManDetailPdf(deliveryManCode: string, fromDate: string, toDate: string): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/reports/delivery-man-detail/${encodeURIComponent(deliveryManCode)}/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // Purchase-side mirror of getDeliveryManSummary; drill-down reuses getSupplierDetail/getSupplierDetailPdf (same Supplier concept)
+  getPurchasePaymentSummary(fromDate: string, toDate: string): Observable<PurchasePaymentSummaryResponse> {
+    return this.http.get<PurchasePaymentSummaryResponse>(
+      `${this.baseUrl}/reports/purchase-payment-summary${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getPurchasePaymentSummaryPdf(fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/purchase-payment-summary/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // Purchase-side mirror of getSalesSummary
+  getPurchaseSummary(fromDate: string, toDate: string): Observable<PurchaseSummaryResponse> {
+    return this.http.get<PurchaseSummaryResponse>(
+      `${this.baseUrl}/reports/purchase-summary${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getPurchaseSummaryPdf(fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/purchase-summary/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // Purchase-side mirror of getInvoiceReport; supplierId filters instead of customerId
+  getPurchaseInvoiceReport(fromDate: string, toDate: string, supplierId?: number | null): Observable<PurchaseInvoiceReportResponse> {
+    return this.http.get<PurchaseInvoiceReportResponse>(
+      `${this.baseUrl}/reports/purchase-invoice-report${this.buildQuery({ fromDate, toDate, supplierId })}`
+    );
+  }
+
+  getPurchaseInvoiceReportPdf(fromDate: string, toDate: string, supplierId?: number | null): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/purchase-invoice-report/pdf${this.buildQuery({ fromDate, toDate, supplierId })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // Purchase-side mirror of getSalesDetails; supplierId filters instead of customerId
+  getPurchaseLineDetails(fromDate: string, toDate: string, supplierId?: number | null): Observable<PurchaseLineDetailsResponse> {
+    return this.http.get<PurchaseLineDetailsResponse>(
+      `${this.baseUrl}/reports/purchase-line-details${this.buildQuery({ fromDate, toDate, supplierId })}`
+    );
+  }
+
+  getPurchaseLineDetailsPdf(fromDate: string, toDate: string, supplierId?: number | null): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/purchase-line-details/pdf${this.buildQuery({ fromDate, toDate, supplierId })}`,
       { responseType: 'blob' }
     );
   }

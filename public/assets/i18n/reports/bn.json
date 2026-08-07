@@ -9,7 +9,11 @@
       "paymentMethodSummary": "পরিশোধের মাধ্যম সারাংশ",
       "customerReport": "ক্রেতা প্রতিবেদন",
       "supplierReport": "সরবরাহকারী প্রতিবেদন",
-      "deliveryManReport": "ডেলিভারি ম্যান প্রতিবেদন"
+      "deliveryManReport": "ডেলিভারি ম্যান প্রতিবেদন",
+      "purchasePaymentReport": "ক্রয় পেমেন্ট প্রতিবেদন",
+      "purchaseSummary": "ক্রয় সারাংশ",
+      "purchaseInvoiceReport": "ক্রয় ইনভয়েস",
+      "purchaseDetailsReport": "ক্রয় বিবরণ"
     }
   },
   "filter": {
@@ -270,6 +274,91 @@
     "errors": {
       "load": "ডেলিভারি ম্যান প্রতিবেদন লোড করতে ব্যর্থ",
       "detail": "ডেলিভারি ম্যানের বিবরণ লোড করতে ব্যর্থ",
+      "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
+    }
+  },
+  "purchasePaymentReport": {
+    "label": "ক্রয় পেমেন্ট প্রতিবেদন",
+    "tableTitle": "ক্রয় পেমেন্ট সারাংশ",
+    "summary": "{{count}} সরবরাহকারী · পরিশোধিত ৳{{paid}} · বাকি ৳{{due}}",
+    "columns": {
+      "supplier": "সরবরাহকারী",
+      "purchases": "ক্রয়",
+      "totalPaid": "মোট পরিশোধিত"
+    },
+    "noData": "এই সময়সীমার জন্য কোনো ক্রয় পাওয়া যায়নি",
+    "errors": {
+      "load": "ক্রয় পেমেন্ট প্রতিবেদন লোড করতে ব্যর্থ",
+      "detail": "সরবরাহকারীর বিবরণ লোড করতে ব্যর্থ",
+      "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
+    }
+  },
+  "purchaseSummary": {
+    "label": "ক্রয় সারাংশ",
+    "cards": {
+      "totalInvoices": "মোট ক্রয়",
+      "totalPurchase": "মোট পরিমাণ",
+      "netAmount": "নেট পরিমাণ",
+      "totalDue": "মোট বাকি",
+      "totalDiscount": "মোট ছাড়",
+      "totalTransport": "মোট পরিবহন খরচ",
+      "totalPaid": "মোট পরিশোধিত",
+      "totalReturn": "মোট ফেরত"
+    },
+    "loading": "লোড হচ্ছে…",
+    "errors": {
+      "load": "ক্রয় সারাংশ লোড করতে ব্যর্থ",
+      "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
+    }
+  },
+  "purchaseInvoiceReport": {
+    "label": "ক্রয় ইনভয়েস",
+    "supplier": "সরবরাহকারী",
+    "allSuppliers": "সকল সরবরাহকারী",
+    "tableTitle": "ক্রয়সমূহ",
+    "summary": "{{count}}টি ক্রয় · নেট ৳{{net}} · পরিশোধিত ৳{{paid}} · বাকি ৳{{due}}",
+    "columns": {
+      "purchaseId": "ক্রয় আইডি",
+      "date": "তারিখ",
+      "supplier": "সরবরাহকারী",
+      "total": "মোট",
+      "discount": "ছাড়",
+      "netAmount": "নেট পরিমাণ",
+      "paid": "পরিশোধিত",
+      "due": "বাকি",
+      "payment": "পেমেন্ট"
+    },
+    "searchPlaceholder": "ক্রয় আইডি, সরবরাহকারী দিয়ে খুঁজুন…",
+    "noData": "এই সময়সীমার জন্য কোনো ক্রয় পাওয়া যায়নি",
+    "noMatch": "\"{{search}}\" এর সাথে মিলে এমন কোনো ক্রয় নেই",
+    "loading": "লোড হচ্ছে…",
+    "errors": {
+      "load": "ক্রয় ইনভয়েস প্রতিবেদন লোড করতে ব্যর্থ",
+      "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
+    }
+  },
+  "purchaseDetailsReport": {
+    "label": "ক্রয় বিবরণ",
+    "supplier": "সরবরাহকারী",
+    "allSuppliers": "সকল সরবরাহকারী",
+    "tableTitle": "ক্রয় বিবরণ",
+    "summary": "{{count}}টি লাইন · পরিমাণ {{qty}} · ৳{{amount}}",
+    "columns": {
+      "purchaseId": "ক্রয় আইডি",
+      "date": "তারিখ",
+      "supplier": "সরবরাহকারী",
+      "product": "পণ্য",
+      "qty": "পরিমাণ",
+      "unit": "একক",
+      "unitCost": "একক মূল্য",
+      "total": "মোট"
+    },
+    "searchProduct": "পণ্য দিয়ে খুঁজুন…",
+    "noData": "এই সময়সীমার জন্য কোনো ক্রয় পাওয়া যায়নি",
+    "noMatch": "\"{{search}}\" এর সাথে মিলে এমন কোনো লাইন নেই",
+    "loading": "লোড হচ্ছে…",
+    "errors": {
+      "load": "ক্রয় বিবরণ প্রতিবেদন লোড করতে ব্যর্থ",
       "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
     }
   }

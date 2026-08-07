@@ -9,7 +9,11 @@
       "paymentMethodSummary": "Payment Method Summary",
       "customerReport": "Customer Report",
       "supplierReport": "Supplier Report",
-      "deliveryManReport": "Delivery Man Report"
+      "deliveryManReport": "Delivery Man Report",
+      "purchasePaymentReport": "Purchase Payment Report",
+      "purchaseSummary": "Purchase Summary",
+      "purchaseInvoiceReport": "Purchase Invoice",
+      "purchaseDetailsReport": "Purchase Details"
     }
   },
   "filter": {
@@ -270,6 +274,91 @@
     "errors": {
       "load": "Failed to load delivery man report",
       "detail": "Failed to load delivery man details",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "purchasePaymentReport": {
+    "label": "Purchase Payment Report",
+    "tableTitle": "Purchase Payment Summary",
+    "summary": "{{count}} suppliers · Paid ৳{{paid}} · Due ৳{{due}}",
+    "columns": {
+      "supplier": "Supplier",
+      "purchases": "Purchases",
+      "totalPaid": "Total Paid"
+    },
+    "noData": "No purchases found for this range",
+    "errors": {
+      "load": "Failed to load purchase payment report",
+      "detail": "Failed to load supplier details",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "purchaseSummary": {
+    "label": "Purchase Summary",
+    "cards": {
+      "totalInvoices": "Total Purchases",
+      "totalPurchase": "Total Amount",
+      "netAmount": "Net Amount",
+      "totalDue": "Total Due",
+      "totalDiscount": "Total Discount",
+      "totalTransport": "Total Transport",
+      "totalPaid": "Total Paid",
+      "totalReturn": "Total Return"
+    },
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load purchase summary",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "purchaseInvoiceReport": {
+    "label": "Purchase Invoice",
+    "supplier": "Supplier",
+    "allSuppliers": "All Suppliers",
+    "tableTitle": "Purchases",
+    "summary": "{{count}} purchase(s) · Net ৳{{net}} · Paid ৳{{paid}} · Due ৳{{due}}",
+    "columns": {
+      "purchaseId": "Purchase ID",
+      "date": "Date",
+      "supplier": "Supplier",
+      "total": "Total",
+      "discount": "Discount",
+      "netAmount": "Net Amount",
+      "paid": "Paid",
+      "due": "Due",
+      "payment": "Payment"
+    },
+    "searchPlaceholder": "Search purchase ID, supplier…",
+    "noData": "No purchases found for this range",
+    "noMatch": "No purchases match \"{{search}}\"",
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load purchase invoice report",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "purchaseDetailsReport": {
+    "label": "Purchase Details",
+    "supplier": "Supplier",
+    "allSuppliers": "All Suppliers",
+    "tableTitle": "Purchase Details",
+    "summary": "{{count}} line(s) · Qty {{qty}} · ৳{{amount}}",
+    "columns": {
+      "purchaseId": "Purchase ID",
+      "date": "Date",
+      "supplier": "Supplier",
+      "product": "Product",
+      "qty": "Qty",
+      "unit": "Unit",
+      "unitCost": "Unit Cost",
+      "total": "Total"
+    },
+    "searchProduct": "Search by product…",
+    "noData": "No purchases found for this range",
+    "noMatch": "No lines match \"{{search}}\"",
+    "loading": "Loading…",
+    "errors": {
+      "load": "Failed to load purchase details report",
       "pdf": "Failed to generate PDF"
     }
   }
