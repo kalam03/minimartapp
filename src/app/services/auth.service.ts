@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 import { PermissionService } from './permission.service';
 import { LanguageService } from './language.service';
 import { of } from 'rxjs';
+import * as forge from 'node-forge';
 
 export interface LoginRequest {
   userName: string;
@@ -77,17 +78,17 @@ export class AuthService {
     );
   }
 
-  // RSA-OAEP-SHA256 via Web Crypto API; the embedded timestamp lets the backend reject a replayed ciphertext after ~2 minutes.
+  // RSA-OAEP-SHA256 via node-forge (pure JS, not the Web Crypto API) so this also works over plain HTTP — crypto.subtle is blocked outside secure contexts, which broke login on HTTP deployments. The embedded timestamp lets the backend reject a replayed ciphertext after ~2 minutes.
   private async encryptPassword(password: string, publicKeyBase64: string): Promise<string> {
-    const derBytes = Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0));
-    const cryptoKey = await crypto.subtle.importKey(
-      'spki', derBytes.buffer, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']
-    );
+    const der = forge.util.decode64(publicKeyBase64);
+    const asn1 = forge.asn1.fromDer(der);
+    const publicKey = forge.pki.publicKeyFromAsn1(asn1) as forge.pki.rsa.PublicKey;
     const payload = JSON.stringify({ password, ts: Date.now() });
-    const cipherBuffer = await crypto.subtle.encrypt(
-      { name: 'RSA-OAEP' }, cryptoKey, new TextEncoder().encode(payload)
-    );
-    return btoa(String.fromCharCode(...new Uint8Array(cipherBuffer)));
+    const encrypted = publicKey.encrypt(forge.util.encodeUtf8(payload), 'RSA-OAEP', {
+      md: forge.md.sha256.create(),
+      mgf1: { md: forge.md.sha256.create() }
+    });
+    return forge.util.encode64(encrypted);
   }
 
   // Creates the tenant + first admin user, then logs the caller straight in (same as login())

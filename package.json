@@ -32,9 +32,11 @@
     "@angular/router": "^21.2.7",
     "@angular/service-worker": "^21.2.7",
     "@jsverse/transloco": "^8.4.0",
+    "@types/node-forge": "^1.3.14",
     "esc-pos-encoder": "^3.0.0",
     "jsbarcode": "^3.12.3",
     "jszip": "^3.10.1",
+    "node-forge": "^1.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
