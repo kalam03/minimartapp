@@ -7,7 +7,8 @@
       "invoiceReport": "Invoice Report",
       "profitReport": "Profit Report",
       "paymentMethodSummary": "Payment Method Summary",
-      "customerReport": "Customer Report"
+      "customerReport": "Customer Report",
+      "supplierReport": "Supplier Report"
     }
   },
   "filter": {
@@ -206,6 +207,39 @@
     "errors": {
       "load": "Failed to load customer report",
       "detail": "Failed to load customer details",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "supplierReport": {
+    "label": "Supplier Report",
+    "amount": "Purchase Amount",
+    "above": "Above",
+    "below": "Below",
+    "amountPlaceholder": "e.g. 5000",
+    "tableTitle": "Supplier Purchase Summary",
+    "summary": "{{count}} supplier(s) · Total ৳{{amount}}",
+    "columns": {
+      "supplier": "Supplier",
+      "phone": "Phone",
+      "purchases": "Purchases",
+      "totalPurchase": "Total Purchase",
+      "actions": "Actions",
+      "purchaseId": "Purchase ID"
+    },
+    "viewDetails": "View Details",
+    "noData": "No suppliers found for this range/amount filter",
+    "loading": "Loading…",
+    "detail": {
+      "title": "Supplier Details",
+      "phone": "Phone",
+      "address": "Address",
+      "currentDue": "Current Due (Payable)",
+      "statementTitle": "Purchase Statement ({{from}} to {{to}})",
+      "noStatement": "No purchases in this range"
+    },
+    "errors": {
+      "load": "Failed to load supplier report",
+      "detail": "Failed to load supplier details",
       "pdf": "Failed to generate PDF"
     }
   }

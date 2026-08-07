@@ -162,6 +162,52 @@ export interface CustomerReportDetailResponse {
   data: CustomerReportDetailDto;
 }
 
+export interface SupplierPurchaseSummaryDto {
+  supplierId: number;
+  supplierName: string;
+  phone: string | null;
+  purchaseCount: number;
+  totalPurchase: number;
+}
+
+export interface SupplierPurchaseSummaryResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  totalSuppliers: number;
+  totalAmount: number;
+  data: SupplierPurchaseSummaryDto[];
+}
+
+export interface SupplierPurchaseDetailDto {
+  purchaseId: number;
+  purchaseDate: string | null;
+  supplierId: number | null;
+  supplierName: string;
+  totalAmount: number;
+  discount: number;
+  netAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+  paymentType: string;
+}
+
+export interface SupplierReportDetailDto {
+  supplierId: number;
+  supplierName: string;
+  phone: string | null;
+  address: string | null;
+  currentDue: number;
+  statement: SupplierPurchaseDetailDto[];
+}
+
+export interface SupplierReportDetailResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: SupplierReportDetailDto;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private baseUrl = environment.baseUrl;
@@ -274,6 +320,38 @@ export class ReportsService {
   getCustomerDetailPdf(customerId: number, fromDate: string, toDate: string): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/reports/customer-detail/${customerId}/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // minAmount = "above N", maxAmount = "below N"; pass both for a between-range
+  getSupplierPurchaseSummary(
+    fromDate: string, toDate: string, minAmount?: number | null, maxAmount?: number | null
+  ): Observable<SupplierPurchaseSummaryResponse> {
+    return this.http.get<SupplierPurchaseSummaryResponse>(
+      `${this.baseUrl}/reports/supplier-purchase-summary${this.buildQuery({ fromDate, toDate, minAmount, maxAmount })}`
+    );
+  }
+
+  getSupplierPurchaseSummaryPdf(
+    fromDate: string, toDate: string, minAmount?: number | null, maxAmount?: number | null
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/supplier-purchase-summary/pdf${this.buildQuery({ fromDate, toDate, minAmount, maxAmount })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // currentDue is always-current; fromDate/toDate only scope the statement
+  getSupplierDetail(supplierId: number, fromDate: string, toDate: string): Observable<SupplierReportDetailResponse> {
+    return this.http.get<SupplierReportDetailResponse>(
+      `${this.baseUrl}/reports/supplier-detail/${supplierId}${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getSupplierDetailPdf(supplierId: number, fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/supplier-detail/${supplierId}/pdf${this.buildQuery({ fromDate, toDate })}`,
       { responseType: 'blob' }
     );
   }
