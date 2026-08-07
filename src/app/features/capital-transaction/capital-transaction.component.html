@@ -124,6 +124,24 @@
               </option>
             </select>
             <p *ngIf="isFieldInvalid('customerId')" class="text-red-600 text-xs mt-1">{{ validationErrors['customerId'] }}</p>
+
+            <!-- Read-only lookup — reference only, never editable from this form -->
+            <div *ngIf="selectedCustomer" class="mt-1.5 px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-xs space-y-0.5">
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoPhone' | transloco }}:</span>
+                <span class="font-medium text-gray-700">{{ selectedCustomer.phone || '—' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoAddress' | transloco }}:</span>
+                <span class="font-medium text-gray-700">{{ selectedCustomer.address || '—' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoDue' | transloco }}:</span>
+                <span class="font-semibold" [class.text-red-600]="selectedCustomer.currentBalance > 0" [class.text-green-600]="selectedCustomer.currentBalance <= 0">
+                  ৳ {{ selectedCustomer.currentBalance | number:'1.2-2' }}
+                </span>
+              </div>
+            </div>
           </div>
 
           <!-- Supplier dropdown (PAYMENT, or REFUND-from-supplier) -->
@@ -137,6 +155,28 @@
               </option>
             </select>
             <p *ngIf="isFieldInvalid('vendorId')" class="text-red-600 text-xs mt-1">{{ validationErrors['vendorId'] }}</p>
+
+            <!-- Read-only lookup — reference only, never editable from this form -->
+            <div *ngIf="selectedSupplier" class="mt-1.5 px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-xs space-y-0.5">
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoPhone' | transloco }}:</span>
+                <span class="font-medium text-gray-700">{{ selectedSupplier.phone || '—' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoAddress' | transloco }}:</span>
+                <span class="font-medium text-gray-700">{{ selectedSupplier.address || '—' }}</span>
+              </div>
+              <div class="flex justify-between" *ngIf="selectedSupplier.email">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoEmail' | transloco }}:</span>
+                <span class="font-medium text-gray-700">{{ selectedSupplier.email }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{{ 'capital.form.partyInfoPayable' | transloco }}:</span>
+                <span class="font-semibold" [class.text-red-600]="selectedSupplier.currentBalance > 0" [class.text-green-600]="selectedSupplier.currentBalance <= 0">
+                  ৳ {{ selectedSupplier.currentBalance | number:'1.2-2' }}
+                </span>
+              </div>
+            </div>
           </div>
 
           <!-- Salary is no longer entered here — it flows only through the
