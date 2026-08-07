@@ -128,6 +128,40 @@ export interface PaymentMethodSummaryResponse {
   data: PaymentMethodSummaryDto[];
 }
 
+export interface CustomerPurchaseSummaryDto {
+  customerId: number;
+  customerName: string;
+  phone: string | null;
+  invoiceCount: number;
+  totalPurchase: number;
+}
+
+export interface CustomerPurchaseSummaryResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  totalCustomers: number;
+  totalAmount: number;
+  data: CustomerPurchaseSummaryDto[];
+}
+
+export interface CustomerReportDetailDto {
+  customerId: number;
+  customerName: string;
+  phone: string | null;
+  address: string | null;
+  currentDue: number;
+  rewardPointBalance: number;
+  statement: InvoiceReportDto[];
+}
+
+export interface CustomerReportDetailResponse {
+  success: boolean;
+  fromDate: string;
+  toDate: string;
+  data: CustomerReportDetailDto;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReportsService {
   private baseUrl = environment.baseUrl;
@@ -208,6 +242,38 @@ export class ReportsService {
   getPaymentMethodSummaryPdf(fromDate?: string | null, toDate?: string | null): Observable<Blob> {
     return this.http.get(
       `${this.baseUrl}/reports/payment-method-summary/pdf${this.buildQuery({ fromDate, toDate })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // minAmount = "above N", maxAmount = "below N"; pass both for a between-range
+  getCustomerPurchaseSummary(
+    fromDate: string, toDate: string, minAmount?: number | null, maxAmount?: number | null
+  ): Observable<CustomerPurchaseSummaryResponse> {
+    return this.http.get<CustomerPurchaseSummaryResponse>(
+      `${this.baseUrl}/reports/customer-purchase-summary${this.buildQuery({ fromDate, toDate, minAmount, maxAmount })}`
+    );
+  }
+
+  getCustomerPurchaseSummaryPdf(
+    fromDate: string, toDate: string, minAmount?: number | null, maxAmount?: number | null
+  ): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/customer-purchase-summary/pdf${this.buildQuery({ fromDate, toDate, minAmount, maxAmount })}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  // currentDue/rewardPointBalance are always-current; fromDate/toDate only scope the statement
+  getCustomerDetail(customerId: number, fromDate: string, toDate: string): Observable<CustomerReportDetailResponse> {
+    return this.http.get<CustomerReportDetailResponse>(
+      `${this.baseUrl}/reports/customer-detail/${customerId}${this.buildQuery({ fromDate, toDate })}`
+    );
+  }
+
+  getCustomerDetailPdf(customerId: number, fromDate: string, toDate: string): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/reports/customer-detail/${customerId}/pdf${this.buildQuery({ fromDate, toDate })}`,
       { responseType: 'blob' }
     );
   }

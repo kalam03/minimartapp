@@ -6,7 +6,8 @@
       "salesDetails": "বিক্রয় বিবরণ",
       "invoiceReport": "ইনভয়েস প্রতিবেদন",
       "profitReport": "মুনাফা প্রতিবেদন",
-      "paymentMethodSummary": "পরিশোধের মাধ্যম সারাংশ"
+      "paymentMethodSummary": "পরিশোধের মাধ্যম সারাংশ",
+      "customerReport": "ক্রেতা প্রতিবেদন"
     }
   },
   "filter": {
@@ -172,6 +173,39 @@
     "loading": "লোড হচ্ছে…",
     "errors": {
       "load": "পরিশোধের মাধ্যম সারাংশ লোড করতে ব্যর্থ",
+      "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
+    }
+  },
+  "customerReport": {
+    "label": "ক্রেতা প্রতিবেদন",
+    "amount": "ক্রয়ের পরিমাণ",
+    "above": "এর বেশি",
+    "below": "এর কম",
+    "amountPlaceholder": "যেমন ৫০০০",
+    "tableTitle": "ক্রেতা ক্রয় সারাংশ",
+    "summary": "{{count}} জন ক্রেতা · সর্বমোট ৳{{amount}}",
+    "columns": {
+      "customer": "ক্রেতা",
+      "phone": "ফোন",
+      "invoices": "ইনভয়েস",
+      "totalPurchase": "মোট ক্রয়",
+      "actions": "কার্যক্রম"
+    },
+    "viewDetails": "বিস্তারিত দেখুন",
+    "noData": "এই সময়সীমা/পরিমাণ ফিল্টারে কোনো ক্রেতা পাওয়া যায়নি",
+    "loading": "লোড হচ্ছে…",
+    "detail": {
+      "title": "ক্রেতার বিবরণ",
+      "phone": "ফোন",
+      "address": "ঠিকানা",
+      "currentDue": "বর্তমান বাকি",
+      "rewardPoints": "রিডিম পয়েন্ট",
+      "statementTitle": "ক্রয় বিবরণী ({{from}} থেকে {{to}})",
+      "noStatement": "এই সময়সীমায় কোনো ক্রয় নেই"
+    },
+    "errors": {
+      "load": "ক্রেতা প্রতিবেদন লোড করতে ব্যর্থ",
+      "detail": "ক্রেতার বিবরণ লোড করতে ব্যর্থ",
       "pdf": "পিডিএফ তৈরি করতে ব্যর্থ"
     }
   }

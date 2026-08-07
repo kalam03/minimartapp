@@ -6,7 +6,8 @@
       "salesDetails": "Sales Details",
       "invoiceReport": "Invoice Report",
       "profitReport": "Profit Report",
-      "paymentMethodSummary": "Payment Method Summary"
+      "paymentMethodSummary": "Payment Method Summary",
+      "customerReport": "Customer Report"
     }
   },
   "filter": {
@@ -172,6 +173,39 @@
     "loading": "Loading…",
     "errors": {
       "load": "Failed to load payment method summary",
+      "pdf": "Failed to generate PDF"
+    }
+  },
+  "customerReport": {
+    "label": "Customer Report",
+    "amount": "Purchase Amount",
+    "above": "Above",
+    "below": "Below",
+    "amountPlaceholder": "e.g. 5000",
+    "tableTitle": "Customer Purchase Summary",
+    "summary": "{{count}} customer(s) · Total ৳{{amount}}",
+    "columns": {
+      "customer": "Customer",
+      "phone": "Phone",
+      "invoices": "Invoices",
+      "totalPurchase": "Total Purchase",
+      "actions": "Actions"
+    },
+    "viewDetails": "View Details",
+    "noData": "No customers found for this range/amount filter",
+    "loading": "Loading…",
+    "detail": {
+      "title": "Customer Details",
+      "phone": "Phone",
+      "address": "Address",
+      "currentDue": "Current Due",
+      "rewardPoints": "Reward Points",
+      "statementTitle": "Purchase Statement ({{from}} to {{to}})",
+      "noStatement": "No purchases in this range"
+    },
+    "errors": {
+      "load": "Failed to load customer report",
+      "detail": "Failed to load customer details",
       "pdf": "Failed to generate PDF"
     }
   }
