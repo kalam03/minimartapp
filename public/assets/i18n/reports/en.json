@@ -93,9 +93,12 @@
     "loading": "Loading…",
     "print": "Print",
     "printTooltip": "Open this invoice as a PDF in a new tab to print or download",
+    "receipt": "Receipt",
+    "receiptTooltip": "Print this invoice as a thermal receipt, same format as the counter page",
     "errors": {
       "load": "Failed to load invoice report",
-      "pdf": "Failed to generate PDF"
+      "pdf": "Failed to generate PDF",
+      "receiptDetail": "Failed to load invoice details for the receipt"
     }
   },
   "profitReport": {

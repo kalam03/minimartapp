@@ -106,14 +106,25 @@
         <tbody>
           <tr *ngFor="let row of filteredRows" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
             <td class="px-3 py-2 text-gray-500">
-              <button type="button" (click)="printInvoice(row)"
-                [title]="'reports.invoiceReport.printTooltip' | transloco"
-                class="px-2 py-1 text-xs rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m10 0v3a1 1 0 01-1 1H8a1 1 0 01-1-1v-3m10 0H7m0-10V4a1 1 0 011-1h8a1 1 0 011 1v3H7z"/>
-                </svg>
-                {{ 'reports.invoiceReport.print' | transloco }}
-              </button>
+              <div class="flex items-center gap-1">
+                <button type="button" (click)="printInvoice(row)"
+                  [title]="'reports.invoiceReport.printTooltip' | transloco"
+                  class="px-2 py-1 text-xs rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m10 0v3a1 1 0 01-1 1H8a1 1 0 01-1-1v-3m10 0H7m0-10V4a1 1 0 011-1h8a1 1 0 011 1v3H7z"/>
+                  </svg>
+                  {{ 'reports.invoiceReport.print' | transloco }}
+                </button>
+                <!-- Reprints the same thermal-receipt format as the counter/POS page, instead of the A4 PDF above -->
+                <button type="button" (click)="printReceipt(row)" [disabled]="receiptPrintingSaleId === row.saleId"
+                  [title]="'reports.invoiceReport.receiptTooltip' | transloco"
+                  class="px-2 py-1 text-xs rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200 flex items-center gap-1 disabled:opacity-50">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17h6m-6-4h6m-7 8h8a2 2 0 002-2V7.414a1 1 0 00-.293-.707l-3.414-3.414A1 1 0 0013.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                  </svg>
+                  {{ 'reports.invoiceReport.receipt' | transloco }}
+                </button>
+              </div>
             </td>
             <td class="px-3 py-2 text-gray-500">{{ row.invoiceNo }}</td>
             <td class="px-3 py-2 text-gray-600">{{ row.saleDate | date:'dd MMM yyyy' }}</td>
