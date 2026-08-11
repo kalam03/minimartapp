@@ -63,6 +63,7 @@
     "pickupEmployeeRequired": "Your account isn't linked to an employee — contact an admin."
   },
   "messages": {
+    "printerSelectionRequiredWarning": "Select the receipt printer before submitting the bill.",
     "orderLoadedTitle": "Order Loaded",
     "orderLoadedBody": "Order #{{id}} loaded — {{count}} item(s)\nCustomer: {{customer}}",
     "walkIn": "Walk-in",
@@ -84,6 +85,9 @@
     "allowPopups": "Please allow pop-ups to view receipt preview"
   },
   "bill": {
+    "printer": "Printer",
+    "selectPrinter": "Select printer",
+    "printerLocked": "Printer selection is locked after it is saved.",
     "sectionTitle": "Bill",
     "total": "Total:",
     "transport": "Transport:",

@@ -1,4 +1,11 @@
-import { Component, HostListener, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +15,12 @@ import { Product, ProductFilter } from '../../models/product';
 import { FinancialInputComponent } from '../../shared/financial-input.component';
 import { AlertService } from '../../shared/alert.service';
 import { Customer, CustomerFilter, CustomerService } from '../../services/customer.service';
-import { SaleService, StockConflictError, PromotionQuoteRequest, PromotionQuoteResult } from '../../services/sale.service';
+import {
+  SaleService,
+  StockConflictError,
+  PromotionQuoteRequest,
+  PromotionQuoteResult,
+} from '../../services/sale.service';
 import { ReceiptService, ReceiptData, ReceiptItem } from '../../services/receipt.service';
 import { OrderService } from '../../services/order.service';
 import { PayrollService, Employee } from '../../services/payroll.service';
@@ -20,7 +32,6 @@ import { AppConfigService } from '../../services/app-config.service';
 import { BnDigitsPipe } from '../../shared/bn-digits.pipe';
 import { CashbackService } from '../../services/cashback.service';
 import { RewardPointService } from '../../services/reward-point.service';
-
 
 export interface CartItem {
   productId: number;
@@ -39,10 +50,65 @@ export interface Invoice {
   date: string;
 }
 
+export enum ThermalPrinterModel {
+  Pos58 = 'POS-58',
+  XprinterXp80 = 'XPRINTER-XP-80',
+}
+
+interface ReceiptPrintLayout {
+  paperWidthMm: number;
+  paddingMm: number;
+  shopNameFontSizePx: number;
+  itemFontSizePx: number;
+  priceColumnWidthPx: number;
+  quantityColumnWidthPx: number;
+  amountColumnWidthPx: number;
+  totalFontSizePx: number;
+  barcodeWidth: number;
+  barcodeHeight: number;
+}
+
+// Kept locally so each browser retains its deliberate, locked receipt format.
+const RECEIPT_PRINTER_STORAGE_KEY = 'pos-billing.receipt-printer-model';
+
+const RECEIPT_PRINT_LAYOUTS: Record<ThermalPrinterModel, ReceiptPrintLayout> = {
+  [ThermalPrinterModel.Pos58]: {
+    paperWidthMm: 58,
+    paddingMm: 2,
+    shopNameFontSizePx: 18,
+    itemFontSizePx: 10,
+    priceColumnWidthPx: 34,
+    quantityColumnWidthPx: 22,
+    amountColumnWidthPx: 40,
+    totalFontSizePx: 11,
+    barcodeWidth: 1.3,
+    barcodeHeight: 32,
+  },
+  [ThermalPrinterModel.XprinterXp80]: {
+    paperWidthMm: 80,
+    paddingMm: 3,
+    shopNameFontSizePx: 21,
+    itemFontSizePx: 12,
+    priceColumnWidthPx: 52,
+    quantityColumnWidthPx: 34,
+    amountColumnWidthPx: 60,
+    totalFontSizePx: 13,
+    barcodeWidth: 1.6,
+    barcodeHeight: 40,
+  },
+};
+
 @Component({
   selector: 'app-pos-billing',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinancialInputComponent, TranslocoModule, BnNumberAccessorDirective, BnDigitsPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FinancialInputComponent,
+    TranslocoModule,
+    BnNumberAccessorDirective,
+    BnDigitsPipe,
+  ],
   // scope name intentionally has no hyphen — a hyphenated name broke i18n lookups silently
   providers: [provideTranslocoScope('posBilling')],
   templateUrl: './pos-billing.html',
@@ -64,7 +130,7 @@ export class PosBillingComponent implements OnInit {
     private appConfigService: AppConfigService,
     private cashbackService: CashbackService,
     private rewardPointService: RewardPointService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.receiptData = this.receiptService.getReceiptData();
   }
@@ -82,10 +148,16 @@ export class PosBillingComponent implements OnInit {
   activeOrderId: number | null = null;
   orderLoading = false;
   Math = Math;
- @ViewChild('receiptContainer') receiptContainer!: ElementRef;
+  @ViewChild('receiptContainer') receiptContainer!: ElementRef;
 
   receiptData: ReceiptData;
   receiptHTML: string = '';
+  // Defaults to POS-58 so the field is never blank; sticky across sales/resets, only ever changed by the user's own dropdown pick (see onPrinterModelSelected).
+  selectedPrinterModel: ThermalPrinterModel = ThermalPrinterModel.Pos58;
+  readonly thermalPrinterModels = [
+    { value: ThermalPrinterModel.Pos58, label: 'POS-58 (58 mm)' },
+    { value: ThermalPrinterModel.XprinterXp80, label: 'Xprinter XP-80 (80 mm)' },
+  ];
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('customerSearchInput') customerSearchInput!: ElementRef;
   @ViewChild('quantityInput') quantityInput!: ElementRef;
@@ -169,12 +241,13 @@ export class PosBillingComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.loadSelectedPrinterModel();
     this.loadProducts();
     this.loadCustomers();
     this.loadEmployees();
     this.loadSampleInvoices();
 
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       const orderId = params['orderId'];
       if (orderId) {
         this.activeOrderId = +orderId;
@@ -183,57 +256,85 @@ export class PosBillingComponent implements OnInit {
     });
   }
 
+  // Freely changeable by the user at any time from the dropdown — only ever set here, never reset elsewhere (resetForm/submitBill don't touch it), so the choice sticks across sales and only moves when the user explicitly picks a different one.
+  onPrinterModelSelected(printerModel: ThermalPrinterModel): void {
+    if (!printerModel) return;
+    this.selectedPrinterModel = printerModel;
+    localStorage.setItem(RECEIPT_PRINTER_STORAGE_KEY, printerModel);
+  }
+
+  private loadSelectedPrinterModel(): void {
+    const storedPrinterModel = localStorage.getItem(RECEIPT_PRINTER_STORAGE_KEY);
+    if (
+      storedPrinterModel === ThermalPrinterModel.Pos58 ||
+      storedPrinterModel === ThermalPrinterModel.XprinterXp80
+    ) {
+      this.selectedPrinterModel = storedPrinterModel;
+    }
+    // else: keep the POS-58 default already set on the property.
+  }
+
+  private getReceiptPrintLayout(): ReceiptPrintLayout {
+    return RECEIPT_PRINT_LAYOUTS[this.selectedPrinterModel];
+  }
+
   loadOrderIntoCart(orderId: number): void {
     this.orderLoading = true;
     // Mark order as Processing so it's visible on the list
     this.orderService.updateOrderStatus(orderId, { status: 'Processing' }).subscribe();
 
     this.orderService.getOrderById(orderId).subscribe({
-      next: res => {
+      next: (res) => {
         const order = res?.data;
-        if (!order) { this.orderLoading = false; return; }
+        if (!order) {
+          this.orderLoading = false;
+          return;
+        }
 
         // Wait until products are loaded, then build cart
         const tryLoad = () => {
-          if (this.products.length === 0) { setTimeout(tryLoad, 200); return; }
+          if (this.products.length === 0) {
+            setTimeout(tryLoad, 200);
+            return;
+          }
 
           this.cartItems = [];
-          order.items.forEach(item => {
-            const product = this.products.find(p => p.productId === item.productId);
+          order.items.forEach((item) => {
+            const product = this.products.find((p) => p.productId === item.productId);
             if (product) {
               this.cartItems.push({
                 productId: item.productId,
-                product:   product,
-                quantity:  item.quantity,
+                product: product,
+                quantity: item.quantity,
                 unitPrice: item.unitPrice,
-                subtotal:  item.total
+                subtotal: item.total,
               });
             } else {
               // Product not found in list — create a minimal placeholder
               const placeholder: Product = {
-                productId:          item.productId,
-                productName:        item.productName,
-                unitType:           item.unitType,
-                salePrice:          item.unitPrice,
-                purchasePrice:      item.unitPrice,
-                stockQty:           999,
-                barcode:            '',
-                categoryId:         0,
-                categoryName:       '',
-                isActive:           true,
-                tenantId:           0,
-                tenantName:         '',
-                totalStockValue:    0,
-                profitMarginPercent:0,
-                stockStatus:        'In Stock',
-                retrievedDate:      new Date()
+                productId: item.productId,
+                productName: item.productName,
+                unitType: item.unitType,
+                salePrice: item.unitPrice,
+                purchasePrice: item.unitPrice,
+                stockQty: 999,
+                barcode: '',
+                categoryId: 0,
+                categoryName: '',
+                isActive: true,
+                tenantId: 0,
+                tenantName: '',
+                totalStockValue: 0,
+                profitMarginPercent: 0,
+                stockStatus: 'In Stock',
+                retrievedDate: new Date(),
               };
               this.cartItems.push({
                 productId: item.productId,
-                product:   placeholder,
-                quantity:  item.quantity,
+                product: placeholder,
+                quantity: item.quantity,
                 unitPrice: item.unitPrice,
-                subtotal:  item.total
+                subtotal: item.total,
               });
             }
           });
@@ -249,15 +350,16 @@ export class PosBillingComponent implements OnInit {
           if (order.customerName) {
             this.searchCustomerTerm = order.customerName;
             const match = this.customers.find(
-              c => c.customerName?.toLowerCase() === order.customerName?.toLowerCase()
-                || (order.customerPhone && c.phone === order.customerPhone)
+              (c) =>
+                c.customerName?.toLowerCase() === order.customerName?.toLowerCase() ||
+                (order.customerPhone && c.phone === order.customerPhone),
             );
             if (match) {
               this.selectedCustomerId = match.customerId;
-              this.customerPhone      = match.phone || order.customerPhone || '';
+              this.customerPhone = match.phone || order.customerPhone || '';
             } else {
               this.selectedCustomerId = null;
-              this.customerPhone      = order.customerPhone || '';
+              this.customerPhone = order.customerPhone || '';
             }
           } else if (order.customerPhone) {
             this.customerPhone = order.customerPhone;
@@ -268,14 +370,16 @@ export class PosBillingComponent implements OnInit {
             this.t('messages.orderLoadedBody', {
               id: orderId,
               count: order.items.length,
-              customer: order.customerName || this.t('messages.walkIn')
+              customer: order.customerName || this.t('messages.walkIn'),
             }),
-            this.t('messages.orderLoadedTitle')
+            this.t('messages.orderLoadedTitle'),
           );
         };
         tryLoad();
       },
-      error: () => { this.orderLoading = false; }
+      error: () => {
+        this.orderLoading = false;
+      },
     });
   }
 
@@ -316,7 +420,9 @@ export class PosBillingComponent implements OnInit {
         // API may return a paginated wrapper object instead of a plain array
         this.products = Array.isArray(data)
           ? data
-          : (data?.data ?? data?.items ?? data?.products ?? []).filter((p: Product) => p.stockQty > 0);
+          : (data?.data ?? data?.items ?? data?.products ?? []).filter(
+              (p: Product) => p.stockQty > 0,
+            );
       },
       error: (err: any) => {
         console.error('Error loading products:', err);
@@ -712,20 +818,22 @@ export class PosBillingComponent implements OnInit {
 
     this.rewardPointService.getCustomerSummary(customerId).subscribe({
       next: (res) => (this.customerRewardPointBalance = res.data?.rewardPointBalance || 0),
-      error: () => {} // module may not be configured for this tenant yet — fail silently
+      error: () => {}, // module may not be configured for this tenant yet — fail silently
     });
     this.cashbackService.getCustomerSummary(customerId).subscribe({
       next: (res) => (this.customerCashbackBalance = res.data?.cashbackBalance || 0),
-      error: () => {}
+      error: () => {},
     });
   }
 
   // builds a "what got auto-applied" line from SaleResponseDto's promotion breakdown fields (see SaleService.CreateSale on the backend)
   buildPromotionSummaryLine(sale: any): string {
     const parts: string[] = [];
-    if (sale?.promotionDiscountAmount > 0) parts.push(`৳${(+sale.promotionDiscountAmount).toFixed(2)} auto-discount`);
+    if (sale?.promotionDiscountAmount > 0)
+      parts.push(`৳${(+sale.promotionDiscountAmount).toFixed(2)} auto-discount`);
     if (sale?.cashbackEarned > 0) parts.push(`+৳${(+sale.cashbackEarned).toFixed(2)} cashback`);
-    if (sale?.cashbackRedeemed > 0) parts.push(`−৳${(+sale.cashbackRedeemed).toFixed(2)} cashback redeemed`);
+    if (sale?.cashbackRedeemed > 0)
+      parts.push(`−৳${(+sale.cashbackRedeemed).toFixed(2)} cashback redeemed`);
     if (sale?.rewardPointsEarned > 0) parts.push(`+${sale.rewardPointsEarned} pts`);
     if (sale?.rewardPointsRedeemed > 0) parts.push(`−${sale.rewardPointsRedeemed} pts redeemed`);
     if (Array.isArray(sale?.promotionWarnings) && sale.promotionWarnings.length > 0) {
@@ -809,10 +917,10 @@ export class PosBillingComponent implements OnInit {
         const sessionUser = this.authService.getUser();
         this.pickupEmployeeCode = sessionUser?.employeeCode || null;
         this.pickupByName = this.pickupEmployeeCode
-          ? (sessionUser?.employeeName
-              ? `${sessionUser.employeeName}-${this.pickupEmployeeCode}`
-              : this.pickupEmployeeCode)
-          : (sessionUser?.userName || '');
+          ? sessionUser?.employeeName
+            ? `${sessionUser.employeeName}-${this.pickupEmployeeCode}`
+            : this.pickupEmployeeCode
+          : sessionUser?.userName || '';
         break;
       }
     }
@@ -921,11 +1029,17 @@ export class PosBillingComponent implements OnInit {
 
   get isWeightProduct(): boolean {
     const wt = ['KG', 'G', 'L', 'ML'];
-    return !!this.selectedProduct && wt.includes((this.selectedProduct.unitType || '').toUpperCase());
+    return (
+      !!this.selectedProduct && wt.includes((this.selectedProduct.unitType || '').toUpperCase())
+    );
   }
 
-  get qtyStep(): string { return this.isWeightProduct ? '0.001' : '1'; }
-  get qtyUnit(): string { return this.selectedProduct?.unitType || 'PCS'; }
+  get qtyStep(): string {
+    return this.isWeightProduct ? '0.001' : '1';
+  }
+  get qtyUnit(): string {
+    return this.selectedProduct?.unitType || 'PCS';
+  }
 
   // discount is entered as an amount; percentage is derived
   onDiscountAmountChange(value: string | number): void {
@@ -964,7 +1078,10 @@ export class PosBillingComponent implements OnInit {
 
   async addToCart() {
     if (!this.selectedProduct) {
-      this.alertService.info(this.t('messages.noProductSelectedBody'), this.t('messages.noProductSelectedTitle'));
+      this.alertService.info(
+        this.t('messages.noProductSelectedBody'),
+        this.t('messages.noProductSelectedTitle'),
+      );
       setTimeout(() => {
         if (this.productSearchInput) {
           this.productSearchInput.nativeElement.focus();
@@ -987,7 +1104,9 @@ export class PosBillingComponent implements OnInit {
     if (existingItem) {
       const newQuantity = existingItem.quantity + this.productQuantity;
       if (newQuantity > product.stockQty) {
-        await this.alertService.warning(this.t('messages.stockAvailable', { qty: product.stockQty }));
+        await this.alertService.warning(
+          this.t('messages.stockAvailable', { qty: product.stockQty }),
+        );
         return;
       }
       existingItem.quantity = newQuantity;
@@ -1041,16 +1160,21 @@ export class PosBillingComponent implements OnInit {
   }
 
   // itemized "Buy X, get Y free" lines from the live quote; product names are resolved client-side since the backend quote only carries ProductId
-  get freeItemPromotions(): Array<{ description: string; lines: Array<{ name: string; qty: number; value: number }> }> {
+  get freeItemPromotions(): Array<{
+    description: string;
+    lines: Array<{ name: string; qty: number; value: number }>;
+  }> {
     return (this.promotionQuote?.appliedPromotions || [])
-      .filter(p => p.freeItems && p.freeItems.length > 0)
-      .map(p => ({
+      .filter((p) => p.freeItems && p.freeItems.length > 0)
+      .map((p) => ({
         description: p.description,
-        lines: p.freeItems!.map(f => ({
-          name: this.products.find(pr => pr.productId === f.productId)?.productName || `#${f.productId}`,
+        lines: p.freeItems!.map((f) => ({
+          name:
+            this.products.find((pr) => pr.productId === f.productId)?.productName ||
+            `#${f.productId}`,
           qty: f.qty,
-          value: f.value
-        }))
+          value: f.value,
+        })),
       }));
   }
 
@@ -1067,12 +1191,12 @@ export class PosBillingComponent implements OnInit {
 
     if (this.discountAmount < 0) this.discountAmount = 0;
     if (this.discountAmount > this.subtotal) this.discountAmount = this.subtotal;
-    this.discountPercent = this.subtotal > 0
-      ? +((this.discountAmount / this.subtotal) * 100).toFixed(2)
-      : 0;
+    this.discountPercent =
+      this.subtotal > 0 ? +((this.discountAmount / this.subtotal) * 100).toFixed(2) : 0;
 
     // auto (product) discount mirrors exactly what PromotionEngineService applies server-side at checkout — see refreshPromotionQuote()
-    const saleNet = this.subtotal - this.discountAmount - this.promoDiscountAmount + this.transportCost;
+    const saleNet =
+      this.subtotal - this.discountAmount - this.promoDiscountAmount + this.transportCost;
 
     // positive due adds, negative credit deducts
     this.grossAmountBeforeRoundOff = saleNet + this.previousDue;
@@ -1108,15 +1232,15 @@ export class PosBillingComponent implements OnInit {
     const fetchQuote = () => {
       const payload: PromotionQuoteRequest = {
         customerId: this.selectedCustomerId || 0,
-        items: this.cartItems.map(i => ({
+        items: this.cartItems.map((i) => ({
           productId: i.productId,
           quantity: i.quantity,
-          unitPrice: i.unitPrice
+          unitPrice: i.unitPrice,
         })),
         manualDiscount: this.discountAmount,
         transportCost: this.transportCost,
         redeemPoints: this.redeemPointsInput,
-        redeemCashback: this.redeemCashbackInput
+        redeemCashback: this.redeemCashbackInput,
       };
 
       this.quoteLoading = true;
@@ -1134,7 +1258,7 @@ export class PosBillingComponent implements OnInit {
           this.promotionQuote = null;
           this.applyLocalTotals();
           this.cdr.detectChanges();
-        }
+        },
       });
     };
 
@@ -1160,7 +1284,10 @@ export class PosBillingComponent implements OnInit {
       await this.alertService.warning(this.t('messages.cartEmptyWarning'));
       return;
     }
-    if ((this.transportType === 'delivery' || this.transportType === 'courier') && !this.selectedDeliveryManId) {
+    if (
+      (this.transportType === 'delivery' || this.transportType === 'courier') &&
+      !this.selectedDeliveryManId
+    ) {
       await this.alertService.warning(this.t('messages.deliveryManRequiredWarning'));
       return;
     }
@@ -1168,8 +1295,8 @@ export class PosBillingComponent implements OnInit {
       await this.alertService.warning(this.t('messages.pickupEmployeeRequiredWarning'));
       return;
     }
-    console.log("customer ",this.selectedCustomer)
-    console.log("customerq2 ",this.customers)
+    console.log('customer ', this.selectedCustomer);
+    console.log('customerq2 ', this.customers);
 
     const confirmed = await this.alertService.confirm(
       this.t('messages.confirmSubmitBody', { amount: this.grossAmount.toFixed(2) }),
@@ -1189,12 +1316,11 @@ export class PosBillingComponent implements OnInit {
         date: new Date().toLocaleDateString(),
       };
 
-
       const saleNet = this.subtotal - this.discountAmount + this.transportCost;
 
       // capture before resetForm() clears them
-      const snapCustomerId  = this.selectedCustomerId;
-      const snapDueAmount   = this.dueAmount;
+      const snapCustomerId = this.selectedCustomerId;
+      const snapDueAmount = this.dueAmount;
       const snapPreviousDue = this.previousDue;
 
       const receipt = {
@@ -1214,9 +1340,11 @@ export class PosBillingComponent implements OnInit {
         transportDetail: this.transportDetail,
         // only EmployeeCode is persisted (Sales.DeliveryManCode, varchar, no numeric FK); delivery/courier use the picked employee, pickup uses the session's own employee code
         deliveryManCode:
-          (this.transportType === 'delivery' || this.transportType === 'courier')
+          this.transportType === 'delivery' || this.transportType === 'courier'
             ? this.selectedDeliveryManCode
-            : (this.transportType === 'pickup' ? this.pickupEmployeeCode : null),
+            : this.transportType === 'pickup'
+              ? this.pickupEmployeeCode
+              : null,
         previousDue: this.previousDue,
         previousBalance: snapPreviousDue,
         netAmount: this.grossAmount,
@@ -1239,7 +1367,7 @@ export class PosBillingComponent implements OnInit {
       // auto-prints to the 58mm thermal printer via a hidden iframe (no preview/button); the native print dialog still appears unless the browser runs with a silent-print flag (e.g. Chrome's --kiosk-printing)
       this.printReceiptSilently(receiptHtml);
 
-    console.log('Submitting receipt:', receipt);
+      console.log('Submitting receipt:', receipt);
       this.saleService.createSale(receipt).subscribe({
         next: async (response: any) => {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
@@ -1250,14 +1378,16 @@ export class PosBillingComponent implements OnInit {
 
           // if this session was opened from an Order, mark it Completed
           if (this.activeOrderId) {
-            this.orderService.updateOrderStatus(this.activeOrderId, {
-              status: 'Completed',
-              completedSaleId: saleId ?? undefined
-            }).subscribe();
+            this.orderService
+              .updateOrderStatus(this.activeOrderId, {
+                status: 'Completed',
+                completedSaleId: saleId ?? undefined,
+              })
+              .subscribe();
             this.activeOrderId = null;
             await this.alertService.success(
               this.t('messages.orderCompleteBody', { invoiceNo }),
-              this.t('messages.orderCompleteTitle')
+              this.t('messages.orderCompleteTitle'),
             );
             this.router.navigate(['/orders']);
             return;
@@ -1265,7 +1395,8 @@ export class PosBillingComponent implements OnInit {
 
           const promoSummary = this.buildPromotionSummaryLine(response.data ?? response);
           await this.alertService.success(
-            this.t('messages.billSubmittedSuccess', { invoiceNo }) + (promoSummary ? ` ${promoSummary}` : '')
+            this.t('messages.billSubmittedSuccess', { invoiceNo }) +
+              (promoSummary ? ` ${promoSummary}` : ''),
           );
           this.resetForm();
           // reload products (updated stock) and customers (updated balance)
@@ -1281,18 +1412,22 @@ export class PosBillingComponent implements OnInit {
               this.t('messages.stockConflictBody', {
                 productName: c.productName,
                 available: c.available,
-                required: c.required
-              })
+                required: c.required,
+              }),
             );
             this.markConflictItem(c.productId);
           } else {
             console.error('Error recording sale:', error);
             // args are (message, title) — reversed from what you'd expect, pre-existing AlertService.error signature; only the title is localized
-            this.alertService.error(this.t('messages.submitBillErrorTitle'), error.error?.message || error.message || 'An error occurred while submitting the bill.');
+            this.alertService.error(
+              this.t('messages.submitBillErrorTitle'),
+              error.error?.message ||
+                error.message ||
+                'An error occurred while submitting the bill.',
+            );
           }
-        }
+        },
       });
-
     }
   }
   onQuantityKeydown(event: KeyboardEvent): void {
@@ -1309,95 +1444,102 @@ export class PosBillingComponent implements OnInit {
         total: invoice.totalAmount,
         discount: invoice.discountAmount,
         gross: invoice.grossAmount,
-        date: invoice.date
+        date: invoice.date,
       }),
     );
   }
 
   printInvoice(): void {
-  console.log('Printing invoice...');
-}
-
-// renders a CODE128 barcode to a standalone SVG string, dropped into the receipt HTML as static markup so the print iframe needs no script execution or network access
-private generateBarcodeSvg(value: string): string {
-  try {
-    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    JsBarcode(svgEl, value, {
-      format: 'CODE128',
-      width: 1.3,
-      height: 32,
-      displayValue: true,
-      fontSize: 9,
-      margin: 0,
-    });
-    return new XMLSerializer().serializeToString(svgEl);
-  } catch {
-    // shouldn't happen (invoiceNo is always "INV-<number>", valid CODE128); fall back to plain text
-    return `<div style="font-size:9px;">${value}</div>`;
+    console.log('Printing invoice...');
   }
-}
 
-buildReceiptFromCurrentSale(receipt: any): string {
-  const formatTk = (amount: number): string => {
-    return `৳ ${amount.toFixed(2)}`;
-  };
+  // renders a CODE128 barcode to a standalone SVG string, dropped into the receipt HTML as static markup so the print iframe needs no script execution or network access
+  private generateBarcodeSvg(value: string, layout: ReceiptPrintLayout): string {
+    try {
+      const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      JsBarcode(svgEl, value, {
+        format: 'CODE128',
+        width: layout.barcodeWidth,
+        height: layout.barcodeHeight,
+        displayValue: true,
+        fontSize: 9,
+        margin: 0,
+      });
+      return new XMLSerializer().serializeToString(svgEl);
+    } catch {
+      // shouldn't happen (invoiceNo is always "INV-<number>", valid CODE128); fall back to plain text
+      return `<div style="font-size:9px;">${value}</div>`;
+    }
+  }
 
-  const escapeHtml = (str: string): string => {
-    if (!str) return '';
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  };
+  buildReceiptFromCurrentSale(receipt: any): string {
+    const layout = this.getReceiptPrintLayout();
+    const formatTk = (amount: number): string => {
+      return `৳ ${amount.toFixed(2)}`;
+    };
 
-  const formatDate = (date: Date): string => {
-    const d = new Date(date);
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const year = d.getFullYear();
-    const hours = d.getHours().toString().padStart(2, '0');
-    const minutes = d.getMinutes().toString().padStart(2, '0');
-    const seconds = d.getSeconds().toString().padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-  };
+    const escapeHtml = (str: string): string => {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
 
-  // Generate items HTML with fixed-width columns for thermal printer
-  let itemsHtml = '';
+    const formatDate = (date: Date): string => {
+      const d = new Date(date);
+      const day = d.getDate().toString().padStart(2, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const year = d.getFullYear();
+      const hours = d.getHours().toString().padStart(2, '0');
+      const minutes = d.getMinutes().toString().padStart(2, '0');
+      const seconds = d.getSeconds().toString().padStart(2, '0');
+      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
 
-  // if (!receipt.items || receipt.items.length === 0) {
-  //   itemsHtml = '<pre class="item-pre">No items found</pre>';
-  // } else {
-  //   receipt.items.forEach((item: any) => {
-  //     // Format product name (max 20 chars)
-  //     let productName = item.product?.productName || item.productName || 'Unknown';
-  //     productName = productName.length > 20 ? productName.substring(0, 17) + '...' : productName;
+    // Generate items HTML with fixed-width columns for thermal printer
+    let itemsHtml = '';
 
-  //     const price = item.unitPrice || item.product?.salePrice || 0;
-  //     const qty = item.quantity || 0;
-  //     const amount = item.subtotal || (price * qty);
+    // if (!receipt.items || receipt.items.length === 0) {
+    //   itemsHtml = '<pre class="item-pre">No items found</pre>';
+    // } else {
+    //   receipt.items.forEach((item: any) => {
+    //     // Format product name (max 20 chars)
+    //     let productName = item.product?.productName || item.productName || 'Unknown';
+    //     productName = productName.length > 20 ? productName.substring(0, 17) + '...' : productName;
 
-  //     // Fixed-width column formatting for thermal printer
-  //     const productCol = productName.padEnd(20, ' ').substring(0, 20);
-  //     const priceCol = price.toFixed(2).padStart(8, ' ');
-  //     const qtyCol = qty.toString().padStart(5, ' ');
-  //     const amountCol = amount.toFixed(2).padStart(10, ' ');
+    //     const price = item.unitPrice || item.product?.salePrice || 0;
+    //     const qty = item.quantity || 0;
+    //     const amount = item.subtotal || (price * qty);
 
-  //     itemsHtml += `<pre class="item-pre">${escapeHtml(productCol)} ${priceCol} ${qtyCol} ${amountCol}</pre>`;
-  //   });
-  // }
+    //     // Fixed-width column formatting for thermal printer
+    //     const productCol = productName.padEnd(20, ' ').substring(0, 20);
+    //     const priceCol = price.toFixed(2).padStart(8, ' ');
+    //     const qtyCol = qty.toString().padStart(5, ' ');
+    //     const amountCol = amount.toFixed(2).padStart(10, ' ');
 
-  // Item table — a flexbox row (fixed-px numeric columns + flex:1 name),
-  // NOT monospace text padded to a character count. Character-padding
-  // (the previous approach) only lines up if every browser/printer driver
-  // measures "1 monospace char" as exactly the same pixel width, which in
-  // practice varies enough to either clip text past 58mm's ~204px printable
-  // width or leave columns misaligned between the header and item rows.
-  // Flexbox with explicit pixel widths lines up exactly, by construction,
-  // regardless of font metrics — the same technique already used for
-  // .total-line/.invoice-info elsewhere in this receipt.
-  const itemRow = (name: string, price: string, qty: string, amount: string, bold = false): string => `
+    //     itemsHtml += `<pre class="item-pre">${escapeHtml(productCol)} ${priceCol} ${qtyCol} ${amountCol}</pre>`;
+    //   });
+    // }
+
+    // Item table — a flexbox row (fixed-px numeric columns + flex:1 name),
+    // NOT monospace text padded to a character count. Character-padding
+    // (the previous approach) only lines up if every browser/printer driver
+    // measures "1 monospace char" as exactly the same pixel width, which in
+    // practice varies enough to either clip text past 58mm's ~204px printable
+    // width or leave columns misaligned between the header and item rows.
+    // Flexbox with explicit pixel widths lines up exactly, by construction,
+    // regardless of font metrics — the same technique already used for
+    // .total-line/.invoice-info elsewhere in this receipt.
+    const itemRow = (
+      name: string,
+      price: string,
+      qty: string,
+      amount: string,
+      bold = false,
+    ): string => `
     <div class="item-row"${bold ? ' style="font-weight:700"' : ''}>
       <span class="item-col-name">${escapeHtml(name)}</span>
       <span class="item-col-price">${escapeHtml(price)}</span>
@@ -1405,73 +1547,81 @@ buildReceiptFromCurrentSale(receipt: any): string {
       <span class="item-col-amount">${escapeHtml(amount)}</span>
     </div>`;
 
-  const itemsHeaderLine = itemRow('Item', 'Price', 'Qty', 'Amount', true);
+    const itemsHeaderLine = itemRow('Item', 'Price', 'Qty', 'Amount', true);
 
-  // Items
-  receipt.items.forEach((item: any) => {
-    itemsHtml += itemRow(
-      item.product.productName,
-      item.unitPrice.toFixed(0),
-      item.quantity.toString(),
-      item.subtotal.toFixed(0)
-    );
-  });
+    // Items
+    receipt.items.forEach((item: any) => {
+      itemsHtml += itemRow(
+        item.product.productName,
+        item.unitPrice.toFixed(0),
+        item.quantity.toString(),
+        item.subtotal.toFixed(0),
+      );
+    });
 
+    // Calculate values from receipt object
+    const subtotal = receipt.totalAmount || 0;
+    const discount = receipt.discount || 0;
+    const discountPercent = receipt.discountPercent || 0;
+    const promoDiscount = receipt.promoDiscount || 0;
+    const appliedPromotions: Array<{
+      promotionType: string;
+      description: string;
+      discountAmount: number;
+      freeItems?: Array<{ productId: number; qty: number; value: number }> | null;
+    }> = receipt.appliedPromotions || [];
+    // Resolve a free combo line's ProductId back to a name using the cart items
+    // already on this receipt (the free product must be in the cart for the
+    // combo to have qualified in the first place, so it's always found here).
+    const freeItemProductName = (productId: number): string =>
+      receipt.items.find((it: any) => it.product?.productId === productId)?.product?.productName ||
+      `#${productId}`;
+    const transportCost = receipt.transportCost || 0;
+    const transport = receipt.transport || 'N/A';
+    const transportDetail = receipt.transportDetail || '';
+    const transportDetailLabel =
+      receipt.transport === 'delivery'
+        ? 'Delivery Man'
+        : receipt.transport === 'courier'
+          ? 'Courier'
+          : receipt.transport === 'pickup'
+            ? 'Picked Up By'
+            : 'Assigned To';
+    const prevDue = receipt.previousDue || 0;
+    const roundOffAmount = receipt.roundOffAmount || 0;
+    const netAmount =
+      receipt.netAmount ||
+      subtotal - discount - promoDiscount + transportCost + prevDue + roundOffAmount;
+    const paidAmount = receipt.paidAmount || 0;
+    const returnAmount = receipt.returnAmount || 0;
+    const dueAmount = receipt.dueAmount || netAmount - paidAmount;
+    const paymentType = receipt.paymentType || 'CASH';
+    const invoiceNo = receipt.invoiceNo || 'N/A';
+    const customerId = receipt.customerId || 'WALK-IN';
+    const generatedBy = receipt.generatedBy || '';
+    const invoiceBarcodeSvg = this.generateBarcodeSvg(invoiceNo, layout);
 
-  // Calculate values from receipt object
-  const subtotal = receipt.totalAmount || 0;
-  const discount = receipt.discount || 0;
-  const discountPercent = receipt.discountPercent || 0;
-  const promoDiscount = receipt.promoDiscount || 0;
-  const appliedPromotions: Array<{
-    promotionType: string;
-    description: string;
-    discountAmount: number;
-    freeItems?: Array<{ productId: number; qty: number; value: number }> | null;
-  }> = receipt.appliedPromotions || [];
-  // Resolve a free combo line's ProductId back to a name using the cart items
-  // already on this receipt (the free product must be in the cart for the
-  // combo to have qualified in the first place, so it's always found here).
-  const freeItemProductName = (productId: number): string =>
-    receipt.items.find((it: any) => it.product?.productId === productId)?.product?.productName || `#${productId}`;
-  const transportCost = receipt.transportCost || 0;
-  const transport = receipt.transport || 'N/A';
-  const transportDetail = receipt.transportDetail || '';
-  const transportDetailLabel =
-    receipt.transport === 'delivery' ? 'Delivery Man' :
-    receipt.transport === 'courier' ? 'Courier' :
-    receipt.transport === 'pickup' ? 'Picked Up By' : 'Assigned To';
-  const prevDue = receipt.previousDue || 0;
-  const roundOffAmount = receipt.roundOffAmount || 0;
-  const netAmount = receipt.netAmount || (subtotal - discount - promoDiscount + transportCost + prevDue + roundOffAmount);
-  const paidAmount = receipt.paidAmount || 0;
-  const returnAmount = receipt.returnAmount || 0;
-  const dueAmount = receipt.dueAmount || (netAmount - paidAmount);
-  const paymentType = receipt.paymentType || 'CASH';
-  const invoiceNo = receipt.invoiceNo || 'N/A';
-  const customerId = receipt.customerId || 'WALK-IN';
-  const generatedBy = receipt.generatedBy || '';
-  const invoiceBarcodeSvg = this.generateBarcodeSvg(invoiceNo);
+    // Get customer info (if available)
+    const customerName = receipt.customerName || 'Walk-in Customer';
+    const customerPhone = receipt.customerPhone || 'N/A';
 
-  // Get customer info (if available)
-  const customerName = receipt.customerName || 'Walk-in Customer';
-  const customerPhone = receipt.customerPhone || 'N/A';
+    // Format date
+    const saleDate = formatDate(receipt.saleDate || new Date());
+    const dateStr = new Date(receipt.saleDate || new Date())
+      .toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+      .toUpperCase();
 
-  // Format date
-  const saleDate = formatDate(receipt.saleDate || new Date());
-  const dateStr = new Date(receipt.saleDate || new Date()).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  }).toUpperCase();
+    const timeStr = new Date(receipt.saleDate || new Date()).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
 
-  const timeStr = new Date(receipt.saleDate || new Date()).toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
-
-  return `
+    return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -1494,11 +1644,11 @@ buildReceiptFromCurrentSale(receipt: any): string {
           }
 
           .receipt {
-            width: 58mm;
+            width: ${layout.paperWidthMm}mm;
             margin: 0;
             background: #fff;
             color: #000;
-            padding: 2mm;
+            padding: ${layout.paddingMm}mm;
           }
 
           @media print {
@@ -1508,8 +1658,8 @@ buildReceiptFromCurrentSale(receipt: any): string {
               padding: 0;
             }
             .receipt {
-              padding: 2mm;
-              width: 58mm;
+              padding: ${layout.paddingMm}mm;
+              width: ${layout.paperWidthMm}mm;
             }
           }
 
@@ -1526,7 +1676,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
           }
 
           .shop-name {
-            font-size: 18px;
+            font-size: ${layout.shopNameFontSizePx}px;
             font-weight: bold;
             letter-spacing: 2px;
           }
@@ -1560,7 +1710,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
             display: flex;
             align-items: baseline;
             font-family: 'Courier New', monospace;
-            font-size: 10px;
+            font-size: ${layout.itemFontSizePx}px;
             font-weight: 600;
             color: #000;
             margin: 2px 0;
@@ -1578,22 +1728,22 @@ buildReceiptFromCurrentSale(receipt: any): string {
             text-align: right;
             white-space: nowrap;
           }
-          .item-col-price  { width: 34px; }
-          .item-col-qty    { width: 22px; }
-          .item-col-amount { width: 40px; }
+          .item-col-price  { width: ${layout.priceColumnWidthPx}px; }
+          .item-col-qty    { width: ${layout.quantityColumnWidthPx}px; }
+          .item-col-amount { width: ${layout.amountColumnWidthPx}px; }
 
           .total-line {
             display: flex;
             justify-content: space-between;
             margin: 4px 0;
-            font-size: 11px;
+            font-size: ${layout.totalFontSizePx}px;
             font-weight: 600;
             color: #000;
           }
 
           .total-line-bold {
             font-weight: bold;
-            font-size: 12px;
+            font-size: ${layout.totalFontSizePx + 1}px;
           }
 
           .due-line {
@@ -1649,7 +1799,7 @@ buildReceiptFromCurrentSale(receipt: any): string {
           }
 
           @page {
-            size: 58mm auto;
+            size: ${layout.paperWidthMm}mm auto;
             margin: 0mm;
           }
         </style>
@@ -1699,12 +1849,16 @@ buildReceiptFromCurrentSale(receipt: any): string {
               <span>${formatTk(subtotal)}</span>
             </div>
 
-            ${discount > 0 ? `
+            ${
+              discount > 0
+                ? `
             <div class="total-line">
               <span>Discount (${discountPercent}%):</span>
               <span>-${formatTk(discount)}</span>
             </div>
-            ` : ''}
+            `
+                : ''
+            }
 
             <!-- Auto product-wise/combo discounts (PromotionEngineService) —
                  one line per applied promotion so a combo discount is named
@@ -1712,54 +1866,88 @@ buildReceiptFromCurrentSale(receipt: any): string {
                  back to a single lump "Promo Discount" line if the list is
                  empty but a total is present, in case an older/partial
                  receipt payload doesn't carry the itemized list. -->
-            ${appliedPromotions.length > 0 ? appliedPromotions.map(p => `
+            ${
+              appliedPromotions.length > 0
+                ? appliedPromotions
+                    .map(
+                      (p) => `
             <div class="total-line">
               <span>${p.promotionType === 'Combo' ? 'Combo' : 'Discount'}: ${escapeHtml(p.description || '')}</span>
               <span>-${formatTk(p.discountAmount || 0)}</span>
             </div>
-            ${(p.freeItems || []).map(f => `
+            ${(p.freeItems || [])
+              .map(
+                (f) => `
             <div class="total-line" style="padding-left:6px;font-size:10px">
               <span>&nbsp;&nbsp;Free: ${escapeHtml(freeItemProductName(f.productId))} x${f.qty}</span>
               <span>(${formatTk(f.value || 0)} value)</span>
             </div>
-            `).join('')}
-            `).join('') : (promoDiscount > 0 ? `
+            `,
+              )
+              .join('')}
+            `,
+                    )
+                    .join('')
+                : promoDiscount > 0
+                  ? `
             <div class="total-line">
               <span>Promo Discount:</span>
               <span>-${formatTk(promoDiscount)}</span>
             </div>
-            ` : '')}
+            `
+                  : ''
+            }
 
-            ${transportCost > 0 ? `
+            ${
+              transportCost > 0
+                ? `
             <div class="total-line">
               <span>Transport (${escapeHtml(transport)}):</span>
               <span>${formatTk(transportCost)}</span>
             </div>
-            ` : ''}
-            ${transportDetail ? `
+            `
+                : ''
+            }
+            ${
+              transportDetail
+                ? `
             <div class="total-line">
               <span>${transportDetailLabel}:</span>
               <span>${escapeHtml(transportDetail)}</span>
             </div>
-            ` : ''}
-            ${prevDue > 0 ? `
+            `
+                : ''
+            }
+            ${
+              prevDue > 0
+                ? `
             <div class="total-line" style="color:#000; font-weight:bold">
               <span>Previous Due:</span>
               <span>+${formatTk(prevDue)}</span>
             </div>
-            ` : ''}
-            ${prevDue < 0 ? `
+            `
+                : ''
+            }
+            ${
+              prevDue < 0
+                ? `
             <div class="total-line" style="color:#000; font-weight:bold">
               <span>Advance Credit:</span>
               <span>-${formatTk(Math.abs(prevDue))}</span>
             </div>
-            ` : ''}
-            ${roundOffAmount !== 0 ? `
+            `
+                : ''
+            }
+            ${
+              roundOffAmount !== 0
+                ? `
             <div class="total-line" style="color:#000; font-weight:bold">
               <span>Round Off:</span>
               <span>${roundOffAmount > 0 ? '+' : '-'}${formatTk(Math.abs(roundOffAmount))}</span>
             </div>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
 
           <div class="separator"></div>
@@ -1782,31 +1970,43 @@ buildReceiptFromCurrentSale(receipt: any): string {
               <span>Paid Amount:</span>
               <span>${formatTk(paidAmount)}</span>
             </div>
-            ${returnAmount > 0 ? `
+            ${
+              returnAmount > 0
+                ? `
             <div class="total-line">
               <span>Return Amount:</span>
               <span>${formatTk(returnAmount)}</span>
             </div>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
 
-          ${dueAmount > 0 ? `
+          ${
+            dueAmount > 0
+              ? `
           <div class="due-line">
             <div class="total-line total-line-bold">
               <span>*** DUE AMOUNT ***:</span>
               <span style="color: #000;">${formatTk(dueAmount)}</span>
             </div>
           </div>
-          ` : ''}
+          `
+              : ''
+          }
 
-          ${dueAmount === 0 && paidAmount > 0 ? `
+          ${
+            dueAmount === 0 && paidAmount > 0
+              ? `
           <div class="due-line">
             <div class="total-line total-line-bold">
               <span>PAID IN FULL</span>
               <span>${formatTk(paidAmount)}</span>
             </div>
           </div>
-          ` : ''}
+          `
+              : ''
+          }
 
           <div class="separator"></div>
 
@@ -1833,91 +2033,95 @@ buildReceiptFromCurrentSale(receipt: any): string {
       </body>
     </html>
   `;
-}
-
-// private openInvoicePdf(saleId: number, preOpenedTab: Window | null): void {
-//   const token = this.authService.getToken();
-//   const url = this.saleService.getInvoicePdfUrl(saleId, token);
-
-//   if (preOpenedTab && !preOpenedTab.closed) {
-//     preOpenedTab.location.href = url;
-//   } else {
-//     // Pre-opened tab was blocked or already closed — best effort direct open.
-//    // window.open(url, '_blank');
-//     window.open(url, 'InvoiceWindow');
-//   }
-// }
-
-private openInvoicePdf(saleId: number): void {
-  const token = this.authService.getToken();
-  const url = this.saleService.getInvoicePdfUrl(saleId, token);
-
-  // Reuse the same "Invoice" tab every time
-  window.open(url, 'InvoiceWindow');
-}
-
-// Silently print the receipt to the thermal printer via a hidden iframe —
-// nothing is shown to the cashier and no click is required.
-private printReceiptSilently(receiptHtml: string): void {
-  const iframe = document.createElement('iframe');
-  iframe.style.position = 'fixed';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = '0';
-  iframe.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(iframe);
-
-  let cleaned = false;
-  const cleanup = () => {
-    if (cleaned) return;
-    cleaned = true;
-    // Small delay so the print job has actually been handed off before we
-    // tear down the iframe it's printing from.
-    setTimeout(() => {
-      if (iframe.parentNode) {
-        iframe.parentNode.removeChild(iframe);
-      }
-    }, 1000);
-  };
-
-  const doc = iframe.contentWindow?.document;
-  if (!doc) {
-    cleanup();
-    return;
   }
 
-  doc.open();
-  doc.write(receiptHtml);
-  doc.close();
+  // private openInvoicePdf(saleId: number, preOpenedTab: Window | null): void {
+  //   const token = this.authService.getToken();
+  //   const url = this.saleService.getInvoicePdfUrl(saleId, token);
 
-  iframe.onload = () => {
-    const win = iframe.contentWindow;
-    if (!win) {
+  //   if (preOpenedTab && !preOpenedTab.closed) {
+  //     preOpenedTab.location.href = url;
+  //   } else {
+  //     // Pre-opened tab was blocked or already closed — best effort direct open.
+  //    // window.open(url, '_blank');
+  //     window.open(url, 'InvoiceWindow');
+  //   }
+  // }
+
+  private openInvoicePdf(saleId: number): void {
+    const token = this.authService.getToken();
+    const url = this.saleService.getInvoicePdfUrl(saleId, token);
+
+    // Reuse the same "Invoice" tab every time
+    window.open(url, 'InvoiceWindow');
+  }
+
+  // Silently print the receipt to the thermal printer via a hidden iframe —
+  // nothing is shown to the cashier and no click is required.
+  private printReceiptSilently(receiptHtml: string): void {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(iframe);
+
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      // Small delay so the print job has actually been handed off before we
+      // tear down the iframe it's printing from.
+      setTimeout(() => {
+        if (iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+      }, 1000);
+    };
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) {
       cleanup();
       return;
     }
-    win.addEventListener('afterprint', cleanup, { once: true });
-    win.focus();
-    win.print();
-    // Fallback in case 'afterprint' never fires in some browser/driver setups.
-    cleanup();
-  };
-}
 
-// Open print preview window
-private openPrintPreview(receiptHTML: string): void {
-  const printWindow = window.open('', '_blank', 'width=500,height=700,toolbar=yes,scrollbars=yes,resizable=yes');
+    doc.open();
+    doc.write(receiptHtml);
+    doc.close();
 
-  if (!printWindow) {
-    this.alertService.warning(this.t('messages.allowPopups'));
-    return;
+    iframe.onload = () => {
+      const win = iframe.contentWindow;
+      if (!win) {
+        cleanup();
+        return;
+      }
+      win.addEventListener('afterprint', cleanup, { once: true });
+      win.focus();
+      win.print();
+      // Fallback in case 'afterprint' never fires in some browser/driver setups.
+      cleanup();
+    };
   }
 
-  const styles = this.getReceiptStyles();
+  // Open print preview window
+  private openPrintPreview(receiptHTML: string): void {
+    const printWindow = window.open(
+      '',
+      '_blank',
+      'width=500,height=700,toolbar=yes,scrollbars=yes,resizable=yes',
+    );
 
-  printWindow.document.write(`
+    if (!printWindow) {
+      this.alertService.warning(this.t('messages.allowPopups'));
+      return;
+    }
+
+    const styles = this.getReceiptStyles();
+
+    printWindow.document.write(`
     <!DOCTYPE html>
     <html>
       <head>
@@ -1954,12 +2158,12 @@ private openPrintPreview(receiptHTML: string): void {
     </html>
   `);
 
-  printWindow.document.close();
-}
+    printWindow.document.close();
+  }
 
-// Get receipt styles
-private getReceiptStyles(): string {
-  return `
+  // Get receipt styles
+  private getReceiptStyles(): string {
+    return `
     * {
       margin: 0;
       padding: 0;
@@ -2044,5 +2248,5 @@ private getReceiptStyles(): string {
       .receipt-wrapper { padding: 0; }
     }
   `;
-}
+  }
 }

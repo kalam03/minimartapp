@@ -72,8 +72,12 @@
     "submitBillErrorTitle": "বিল জমা দিতে সমস্যা হয়েছে",
     "invoiceDetails": "ইনভয়েস বিবরণ:\nনম্বর: {{number}}\nক্রেতা: {{customer}}\nমোট: ৳{{total}}\nছাড়: ৳{{discount}}\nসর্বমোট: ৳{{gross}}\nতারিখ: {{date}}",
     "allowPopups": "রসিদ প্রিভিউ দেখতে পপ-আপ অনুমতি দিন"
+    , "printerSelectionRequiredWarning": "বিল জমা দেওয়ার আগে রসিদ প্রিন্টার নির্বাচন করুন।"
   },
   "bill": {
+    "printer": "প্রিন্টার",
+    "selectPrinter": "প্রিন্টার নির্বাচন করুন",
+    "printerLocked": "সংরক্ষণের পর প্রিন্টার নির্বাচন পরিবর্তন করা যাবে না।",
     "sectionTitle": "বিল",
     "total": "মোট:",
     "transport": "পরিবহন:",

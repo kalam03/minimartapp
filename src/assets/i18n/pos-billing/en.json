@@ -69,6 +69,7 @@
     "stockConflictBody": "\"{{productName}}\" is out of stock.\nAvailable: {{available}} unit(s) · Requested: {{required}} unit(s).\nAnother counter completed a sale for this item just now.\nPlease remove or reduce the item and try again.",
     "deliveryManRequiredWarning": "Please select an employee before submitting.",
     "pickupEmployeeRequiredWarning": "Your account isn't linked to an employee. Please contact an admin before completing a pickup sale.",
+    "printerSelectionRequiredWarning": "Select the receipt printer before submitting the bill.",
     "submitBillErrorTitle": "Error submitting bill",
     "invoiceDetails": "Invoice Details:\nNumber: {{number}}\nCustomer: {{customer}}\nTotal: ৳{{total}}\nDiscount: ৳{{discount}}\nGross: ৳{{gross}}\nDate: {{date}}",
     "allowPopups": "Please allow pop-ups to view receipt preview"
@@ -82,6 +83,9 @@
     "advanceCredit": "Advance Credit:",
     "gross": "Gross:",
     "paymentMethod": "Payment Method",
+    "printer": "Printer",
+    "selectPrinter": "Select printer",
+    "printerLocked": "Printer selection is locked after it is saved.",
     "cash": "Cash",
     "bkash": "Bkash",
     "bank": "Bank",

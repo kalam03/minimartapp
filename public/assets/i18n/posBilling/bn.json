@@ -63,6 +63,7 @@
     "pickupEmployeeRequired": "আপনার একাউন্ট কোনো কর্মচারীর সাথে যুক্ত নয় — অ্যাডমিনের সাথে যোগাযোগ করুন।"
   },
   "messages": {
+    "printerSelectionRequiredWarning": "বিল জমা দেওয়ার আগে রসিদ প্রিন্টার নির্বাচন করুন।",
     "orderLoadedTitle": "অর্ডার লোড হয়েছে",
     "orderLoadedBody": "অর্ডার #{{id}} লোড হয়েছে — {{count}}টি আইটেম\nক্রেতা: {{customer}}",
     "walkIn": "ওয়াক-ইন",
@@ -84,6 +85,9 @@
     "allowPopups": "রসিদ প্রিভিউ দেখতে পপ-আপ অনুমতি দিন"
   },
   "bill": {
+    "printer": "প্রিন্টার",
+    "selectPrinter": "প্রিন্টার নির্বাচন করুন",
+    "printerLocked": "সংরক্ষণের পর প্রিন্টার নির্বাচন পরিবর্তন করা যাবে না।",
     "sectionTitle": "বিল",
     "total": "মোট:",
     "transport": "পরিবহন:",
