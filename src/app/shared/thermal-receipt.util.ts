@@ -15,6 +15,7 @@ import JsBarcode from 'jsbarcode';
 export enum ThermalPrinterModel {
   Pos58 = 'POS-58',
   XprinterXp80 = 'XPRINTER-XP-80',
+  XprinterXp365b = 'XPRINTER-XP-365B',
 }
 
 export interface ReceiptPrintLayout {
@@ -58,6 +59,21 @@ export const RECEIPT_PRINT_LAYOUTS: Record<ThermalPrinterModel, ReceiptPrintLayo
     barcodeWidth: 1.6,
     barcodeHeight: 40,
   },
+  // XP-365B is a portable Bluetooth printer in the same 58mm paper class as POS-58, so it reuses that
+  // layout as-is. If your unit actually takes 80mm paper, change paperWidthMm/columns here to match
+  // the XPRINTER-XP-80 entry above instead — everything else (storage key, dropdown, printing) already works either way.
+  [ThermalPrinterModel.XprinterXp365b]: {
+    paperWidthMm: 58,
+    paddingMm: 2,
+    shopNameFontSizePx: 18,
+    itemFontSizePx: 10,
+    priceColumnWidthPx: 34,
+    quantityColumnWidthPx: 22,
+    amountColumnWidthPx: 40,
+    totalFontSizePx: 11,
+    barcodeWidth: 1.3,
+    barcodeHeight: 32,
+  },
 };
 
 export function getReceiptPrintLayout(printerModel: ThermalPrinterModel): ReceiptPrintLayout {
@@ -69,7 +85,11 @@ export function readStoredPrinterModel(
   defaultModel: ThermalPrinterModel = ThermalPrinterModel.Pos58,
 ): ThermalPrinterModel {
   const stored = localStorage.getItem(RECEIPT_PRINTER_STORAGE_KEY);
-  if (stored === ThermalPrinterModel.Pos58 || stored === ThermalPrinterModel.XprinterXp80) {
+  if (
+    stored === ThermalPrinterModel.Pos58 ||
+    stored === ThermalPrinterModel.XprinterXp80 ||
+    stored === ThermalPrinterModel.XprinterXp365b
+  ) {
     return stored;
   }
   return defaultModel;

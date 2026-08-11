@@ -117,6 +117,7 @@ export class PosBillingComponent implements OnInit {
   readonly thermalPrinterModels = [
     { value: ThermalPrinterModel.Pos58, label: 'POS-58 (58 mm)' },
     { value: ThermalPrinterModel.XprinterXp80, label: 'Xprinter XP-80 (80 mm)' },
+    { value: ThermalPrinterModel.XprinterXp365b, label: 'Xprinter XP-365B (58 mm)' },
   ];
   @ViewChild('productSearchInput') productSearchInput!: ElementRef;
   @ViewChild('customerSearchInput') customerSearchInput!: ElementRef;
