@@ -229,8 +229,13 @@ export class BarcodeGeneratorComponent implements OnInit {
   }
 
   private renderBarcodes(): void {
+    // First pass: render every label at the configured bar width/height so we can measure each
+    // one's natural size. CODE128 encodes more characters into more bars, so a longer code (e.g.
+    // "PRD00000069") renders visibly wider than a shorter one (e.g. "BAR003") at the same per-bar
+    // width — nothing else here varies the width, so this pass is purely for measurement.
+    const rendered: { label: BarcodeLabel; canvas: HTMLCanvasElement }[] = [];
     this.generatedLabels.forEach(label => {
-      const canvas = document.getElementById(label.canvasId);
+      const canvas = document.getElementById(label.canvasId) as HTMLCanvasElement | null;
       if (!canvas) return;
       try {
         JsBarcode(canvas, label.barcodeValue, {
@@ -241,10 +246,34 @@ export class BarcodeGeneratorComponent implements OnInit {
           fontSize: 14,
           margin: 6
         });
+        rendered.push({ label, canvas });
       } catch {
         // Skip anything JsBarcode can't encode rather than breaking the whole preview.
       }
     });
+
+    // Second pass: normalize every barcode to the same overall width — the widest one, i.e.
+    // whichever code is longest at the configured bar width — by proportionally thickening the
+    // bars (and text) of the shorter ones. This scales each barcode up as a whole rather than
+    // stretching it unevenly, so it stays scannable; only its printed size changes.
+    const targetWidth = rendered.reduce((max, r) => Math.max(max, r.canvas.width), 0);
+    rendered.forEach(({ label, canvas }) => {
+      if (targetWidth <= 0 || canvas.width >= targetWidth) return;
+      const scale = targetWidth / canvas.width;
+      try {
+        JsBarcode(canvas, label.barcodeValue, {
+          format: 'CODE128',
+          width: this.barcodeWidth * scale,
+          height: this.barcodeHeight,
+          displayValue: true,
+          fontSize: 14 * scale,
+          margin: 6 * scale
+        });
+      } catch {
+        // Leave the first-pass render in place if the scaled re-render fails for any reason.
+      }
+    });
+
     this.isGenerating = false;
   }
 
