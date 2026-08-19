@@ -1312,10 +1312,15 @@ export class PosBillingComponent implements OnInit {
         redeemCashback: this.redeemCashbackInput || null,
       };
 
-      const receiptHtml = buildThermalReceiptHtml(receipt, this.selectedPrinterModel);
+      // Thermal receipt and PDF invoice are mutually exclusive, gated by config.json "isInvoice":
+      // isInvoice=true  -> skip the thermal receipt, only the PDF invoice opens (below, on success).
+      // isInvoice=false -> thermal receipt prints here, PDF invoice never opens.
+      if (!this.appConfigService.isInvoiceEnabled) {
+        const receiptHtml = buildThermalReceiptHtml(receipt, this.selectedPrinterModel);
 
-      // auto-prints to the selected thermal printer via a hidden iframe (no preview/button); the native print dialog still appears unless the browser runs with a silent-print flag (e.g. Chrome's --kiosk-printing)
-      printReceiptSilently(receiptHtml);
+        // auto-prints to the selected thermal printer via a hidden iframe (no preview/button); the native print dialog still appears unless the browser runs with a silent-print flag (e.g. Chrome's --kiosk-printing)
+        printReceiptSilently(receiptHtml);
+      }
 
       console.log('Submitting receipt:', receipt);
       this.saleService.createSale(receipt).subscribe({
