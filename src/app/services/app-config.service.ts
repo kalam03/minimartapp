@@ -20,6 +20,8 @@ export class AppConfigService {
   // Runtime-toggle via config.json (like apiBaseUrl above); defaults true if config.json is missing/outdated.
   isSellingEditable = true;
   isBuyingEditable  = true;
+  // Whether confirming a counter-page sale also opens the styled PDF invoice in a new tab (on top of the thermal receipt, which always prints). Off by default — see config.json "isInvoice".
+  isInvoiceEnabled = false;
   // Send Money instructions/account numbers for the subscription Payment page — no merchant account, so edit this array directly in config.json to change numbers/instructions without a rebuild.
   paymentMethods: PaymentMethodConfig[] = [];
 
@@ -38,6 +40,9 @@ export class AppConfigService {
       }
       if (typeof config?.isBuyingEditable === 'boolean') {
         this.isBuyingEditable = config.isBuyingEditable;
+      }
+      if (typeof config?.isInvoice === 'boolean') {
+        this.isInvoiceEnabled = config.isInvoice;
       }
       if (Array.isArray(config?.payment?.methods)) {
         this.paymentMethods = config.payment.methods;

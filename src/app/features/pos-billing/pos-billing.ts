@@ -1323,7 +1323,11 @@ export class PosBillingComponent implements OnInit {
           const invoiceNo = response.data?.invoiceNo ?? response.invoiceNo;
           const saleId = response.data?.saleId ?? response.saleId ?? null;
 
-          if (saleId) {
+          // Config-gated: opens the styled PDF invoice in its own tab, separate from the thermal
+          // receipt printed above. Off by default (config.json "isInvoice") since not every shop
+          // wants a second document per sale on top of the thermal receipt.
+          if (saleId && this.appConfigService.isInvoiceEnabled) {
+            this.openInvoicePdf(saleId);
           }
 
           // if this session was opened from an Order, mark it Completed
