@@ -43,7 +43,8 @@ export class ProductComponent implements OnInit {
     stockQty: 0.00,
     barcode: '',
     unitType: 'PCS',
-    isActive: true
+    isActive: true,
+    description: ''
   };
 
   validationErrors = {
@@ -266,7 +267,8 @@ export class ProductComponent implements OnInit {
       stockQty: product.stockQty || 0,
       barcode: product.barcode || '',
       unitType: product.unitType || 'PCS',
-      isActive: product.isActive
+      isActive: product.isActive,
+      description: product.description || ''
     };
     if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
     this.selectedImageFile = null;
@@ -411,7 +413,8 @@ export class ProductComponent implements OnInit {
       stockQty: 0.00,
       barcode: '',
       unitType: 'PCS',
-      isActive: true
+      isActive: true,
+      description: ''
     };
     if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
     this.selectedImageFile = null;

@@ -19,7 +19,12 @@
     "selectProduct": "Select a product…",
     "productGridName": "Product",
     "productGridRemove": "Remove",
-    "noProductsAdded": "No products added yet — pick one above and click Add."
+    "noProductsAdded": "No products added yet — pick one above and click Add.",
+    "image": "Banner Image",
+    "imageHint": "Shown in the storefront promo carousel. PNG/JPG/WEBP, max 5MB.",
+    "chooseImage": "Choose Image",
+    "description": "Description",
+    "descriptionHint": "Shown to customers when they view this offer's details in the storefront."
   },
   "buttons": {
     "add": "Add Discount",
@@ -66,6 +71,9 @@
     "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
     "deleteTitle": "Delete Discount",
     "deleteSuccess": "Discount deleted.",
-    "actionFailed": "Failed: {{error}}"
+    "actionFailed": "Failed: {{error}}",
+    "imageTypeInvalid": "Please choose a PNG, JPG, or WEBP image.",
+    "imageTooLarge": "Image must be 5MB or smaller.",
+    "imageUploadError": "Discount saved, but the image upload failed: {{error}}"
   }
 }

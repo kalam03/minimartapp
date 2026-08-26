@@ -68,6 +68,32 @@
         </div>
 
         <div class="mb-3">
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.image' | transloco }}</label>
+          <div class="flex items-center gap-3">
+            <div class="w-16 h-16 rounded-lg border border-gray-300 bg-gray-50 flex-shrink-0 overflow-hidden flex items-center justify-center">
+              <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl" alt="" class="w-full h-full object-cover">
+              <svg *ngIf="!imagePreviewUrl" class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+            </div>
+            <div>
+              <label class="inline-block px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-400 text-gray-600 hover:bg-gray-100 cursor-pointer transition">
+                {{ 'comboOffers.form.chooseImage' | transloco }}
+                <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" (change)="onImageSelected($event)">
+              </label>
+              <p class="text-gray-400 text-xs mt-1">{{ 'comboOffers.form.imageHint' | transloco }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'comboOffers.form.description' | transloco }}</label>
+          <textarea [(ngModel)]="form.description" rows="2" maxlength="1000"
+            class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none resize-none"></textarea>
+          <p class="text-gray-400 text-xs mt-1">{{ 'comboOffers.form.descriptionHint' | transloco }}</p>
+        </div>
+
+        <div class="mb-3">
           <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-semibold" style="color:var(--theme-primary)">{{ 'comboOffers.form.items' | transloco }}</label>
             <button type="button" (click)="addLine()" class="text-xs font-semibold" style="color:var(--theme-primary)">+ {{ 'comboOffers.buttons.addLine' | transloco }}</button>
@@ -121,6 +147,7 @@
         <table class="w-full text-sm">
           <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
             <tr>
+              <th class="px-3 py-2 text-left whitespace-nowrap"></th>
               <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.name' | transloco }}</th>
               <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.items' | transloco }}</th>
               <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'comboOffers.table.offer' | transloco }}</th>
@@ -131,6 +158,11 @@
           </thead>
           <tbody>
             <tr *ngFor="let c of pagedCombos" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+              <td class="px-3 py-2">
+                <div class="w-9 h-9 rounded border border-gray-200 bg-gray-50 overflow-hidden flex items-center justify-center">
+                  <img *ngIf="c.imageUrl" [src]="resolveMediaUrl(c.imageUrl)" alt="" class="w-full h-full object-cover">
+                </div>
+              </td>
               <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ c.comboName }}</td>
               <td class="px-3 py-2">
                 <span *ngFor="let i of c.items; let last = last">{{ i.requiredQty }}× {{ i.productName }}{{ i.isFreeItem ? ' (free)' : '' }}{{ last ? '' : ', ' }}</span>
@@ -157,7 +189,7 @@
               </td>
             </tr>
             <tr *ngIf="filteredCombos.length === 0">
-              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'comboOffers.table.empty' | transloco }}</td>
+              <td colspan="7" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'comboOffers.table.empty' | transloco }}</td>
             </tr>
           </tbody>
         </table>

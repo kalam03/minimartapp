@@ -15,6 +15,8 @@ export interface CashbackConfig {
   priority: number;
   isActive: boolean;
   createdAt: string;
+  imageUrl: string | null;
+  description: string | null;
 }
 
 export interface SaveCashbackConfigRequest {
@@ -27,6 +29,7 @@ export interface SaveCashbackConfigRequest {
   endDate: string;
   priority: number;
   isActive: boolean;
+  description: string | null;
 }
 
 export interface CashbackTransaction {
@@ -69,5 +72,11 @@ export class CashbackService {
 
   getCustomerSummary(customerId: number): Observable<{ success: boolean; data: CustomerCashbackSummary }> {
     return this.http.get<any>(`${this.baseUrl}/cashback/customers/${customerId}/summary`);
+  }
+
+  uploadImage(id: number, file: File): Observable<{ success: boolean; message?: string; data?: { imageUrl: string } }> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<any>(`${this.baseUrl}/cashback/configs/${id}/image`, formData);
   }
 }

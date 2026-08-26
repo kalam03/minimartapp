@@ -13,6 +13,7 @@ export interface Product {
   unitType: string;       // 'PCS' | 'KG' | 'G' | 'L' | 'ML' | 'DOZ' | 'BOX'
   isActive: boolean;
   imageUrl?: string | null;
+  description?: string | null;
   totalStockValue: number;
   profitMarginPercent: number;
   stockStatus: 'In Stock' | 'Low Stock' | 'Out of Stock';

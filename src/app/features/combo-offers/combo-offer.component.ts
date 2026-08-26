@@ -6,6 +6,7 @@ import { ComboOfferService, ComboOffer, SaveComboOfferItemRequest } from '../../
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
+import { resolveMediaUrl } from '../../shared/media-url';
 
 @Component({
   selector: 'app-combo-offer',
@@ -20,6 +21,12 @@ export class ComboOfferComponent implements OnInit {
   isSaving = false;
   searchText = '';
   Math = Math;
+  resolveMediaUrl = resolveMediaUrl;
+
+  // Picked in the form but uploaded separately, after the combo itself is created/updated — mirrors
+  // product.component.ts's picker (see combo-offer.service.ts's uploadImage()).
+  selectedImageFile: File | null = null;
+  imagePreviewUrl: string | null = null;
 
   //Client-side pagination, list is small enough not to need a server round trip per page
   pageSize = 10;
@@ -36,6 +43,7 @@ export class ComboOfferComponent implements OnInit {
     endDate: this.today(),
     priority: 0,
     isActive: true,
+    description: '' as string,
   };
 
   form = { ...this.emptyForm };
@@ -161,19 +169,58 @@ export class ComboOfferComponent implements OnInit {
     return !!this.validationErrors[field];
   }
 
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+      this.alertService.error(this.t('messages.imageTypeInvalid'));
+      input.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.alertService.error(this.t('messages.imageTooLarge'));
+      input.value = '';
+      return;
+    }
+
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = file;
+    this.imagePreviewUrl = URL.createObjectURL(file);
+  }
+
+  private finishSaveWithImage(comboId: number, file: File | null): void {
+    if (!file) {
+      this.load();
+      return;
+    }
+    this.service.uploadImage(comboId, file).subscribe({
+      next: () => this.load(),
+      error: (err: any) => {
+        this.alertService.error(this.t('messages.imageUploadError', { error: err.error?.message || err.message }));
+        this.load();
+      }
+    });
+  }
+
   save(): void {
     if (!this.validateForm()) return;
     this.isSaving = true;
 
-    const payload = { ...this.form, items: this.items };
-    const obs = this.editingId ? this.service.update(this.editingId, payload) : this.service.create(payload);
+    const payload = { ...this.form, description: this.form.description.trim() || null, items: this.items };
+    const editingId = this.editingId;
+    const pendingImageFile = this.selectedImageFile;
+    const obs = editingId ? this.service.update(editingId, payload) : this.service.create(payload);
 
     obs.subscribe({
       next: (res: any) => {
         this.isSaving = false;
-        this.alertService.success(res.message || this.t(this.editingId ? 'messages.updateSuccess' : 'messages.createSuccess'));
+        this.alertService.success(res.message || this.t(editingId ? 'messages.updateSuccess' : 'messages.createSuccess'));
+        const savedId = editingId ?? res?.data?.comboId;
         this.resetForm();
-        this.load();
+        if (savedId) this.finishSaveWithImage(savedId, pendingImageFile);
+        else this.load();
       },
       error: (err: any) => {
         this.isSaving = false;
@@ -193,9 +240,14 @@ export class ComboOfferComponent implements OnInit {
       endDate: c.endDate.slice(0, 10),
       priority: c.priority,
       isActive: c.isActive,
+      description: c.description || '',
     };
     this.items = c.items.map(i => ({ productId: i.productId, requiredQty: i.requiredQty, isFreeItem: i.isFreeItem }));
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = resolveMediaUrl(c.imageUrl);
     this.validationErrors = {};
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async remove(c: ComboOffer): Promise<void> {
@@ -215,6 +267,9 @@ export class ComboOfferComponent implements OnInit {
     this.editingId = null;
     this.form = { ...this.emptyForm };
     this.items = [];
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = null;
     this.validationErrors = {};
   }
 }

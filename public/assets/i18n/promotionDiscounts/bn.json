@@ -19,7 +19,12 @@
     "selectProduct": "একটি পণ্য নির্বাচন করুন…",
     "productGridName": "পণ্য",
     "productGridRemove": "মুছুন",
-    "noProductsAdded": "এখনও কোনো পণ্য যোগ করা হয়নি — উপরে একটি নির্বাচন করে যোগ করুন ক্লিক করুন।"
+    "noProductsAdded": "এখনও কোনো পণ্য যোগ করা হয়নি — উপরে একটি নির্বাচন করে যোগ করুন ক্লিক করুন।",
+    "image": "ব্যানার ছবি",
+    "imageHint": "স্টোরফ্রন্ট প্রোমো ক্যারোসেলে দেখানো হবে। PNG/JPG/WEBP, সর্বোচ্চ 5MB।",
+    "chooseImage": "ছবি নির্বাচন করুন",
+    "description": "বিবরণ",
+    "descriptionHint": "গ্রাহকরা স্টোরফ্রন্টে এই অফারের বিস্তারিত দেখলে এটি প্রদর্শিত হবে।"
   },
   "buttons": {
     "add": "ছাড় যোগ করুন",
@@ -66,6 +71,9 @@
     "deleteConfirm": "আপনি কি নিশ্চিত \"{{name}}\" মুছে ফেলতে চান?",
     "deleteTitle": "ছাড় মুছুন",
     "deleteSuccess": "ছাড় মুছে ফেলা হয়েছে।",
-    "actionFailed": "ব্যর্থ: {{error}}"
+    "actionFailed": "ব্যর্থ: {{error}}",
+    "imageTypeInvalid": "একটি PNG, JPG, বা WEBP ছবি নির্বাচন করুন।",
+    "imageTooLarge": "ছবি অবশ্যই 5MB বা তার কম হতে হবে।",
+    "imageUploadError": "ছাড় সংরক্ষিত হয়েছে, তবে ছবি আপলোড ব্যর্থ হয়েছে: {{error}}"
   }
 }

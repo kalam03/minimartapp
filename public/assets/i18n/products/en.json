@@ -17,7 +17,9 @@
     "unitTypeHint": "PCS = count by piece; KG/G/L/ML = sold by weight/volume",
     "barcode": "Barcode",
     "barcodePlaceholder": "Leave blank to auto-generate",
-    "barcodeHint": "Optional — leave blank and one is generated automatically after saving."
+    "barcodeHint": "Optional — leave blank and one is generated automatically after saving.",
+    "description": "Description",
+    "descriptionHint": "Shown to customers when they view this product's details in the storefront."
   },
   "buttons": {
     "save": "Save Product",

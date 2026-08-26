@@ -20,7 +20,12 @@
     "qty": "Qty",
     "freeItem": "Free",
     "freeItemNote": "This combo has a free item — its discount is calculated automatically from the free product's value. Combo Type / Discount Value aren't needed.",
-    "noLines": "No items added yet — click \"Add line\" to start."
+    "noLines": "No items added yet — click \"Add line\" to start.",
+    "image": "Banner Image",
+    "imageHint": "Shown in the storefront promo carousel. PNG/JPG/WEBP, max 5MB.",
+    "chooseImage": "Choose Image",
+    "description": "Description",
+    "descriptionHint": "Shown to customers when they view this offer's details in the storefront."
   },
   "buttons": {
     "add": "Add Combo",
@@ -66,6 +71,9 @@
     "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
     "deleteTitle": "Delete Combo",
     "deleteSuccess": "Combo deleted.",
-    "actionFailed": "Failed: {{error}}"
+    "actionFailed": "Failed: {{error}}",
+    "imageTypeInvalid": "Please choose a PNG, JPG, or WEBP image.",
+    "imageTooLarge": "Image must be 5MB or smaller.",
+    "imageUploadError": "Combo saved, but the image upload failed: {{error}}"
   }
 }

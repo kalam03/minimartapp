@@ -60,6 +60,9 @@
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "port": 4001
+          },
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {

@@ -6,6 +6,7 @@ import { PromotionDiscountService, PromotionMaster } from '../../services/promot
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
 import { AlertService } from '../../shared/alert.service';
+import { resolveMediaUrl } from '../../shared/media-url';
 
 @Component({
   selector: 'app-promotion-discount',
@@ -20,6 +21,13 @@ export class PromotionDiscountComponent implements OnInit {
   isSaving = false;
   searchText = '';
   Math = Math;
+  resolveMediaUrl = resolveMediaUrl;
+
+  // Picked in the form but uploaded separately, after the discount itself is created/updated — the
+  // upload endpoint needs an existing PromotionId to name the saved file after (see
+  // promotion-discount.service.ts's uploadImage()).
+  selectedImageFile: File | null = null;
+  imagePreviewUrl: string | null = null;
 
   //Client-side pagination, list is small enough not to need a server round trip per page
   pageSize = 10;
@@ -36,6 +44,7 @@ export class PromotionDiscountComponent implements OnInit {
     endDate: this.today(),
     priority: 0,
     isActive: true,
+    description: '' as string,
     productIds: [] as number[],
   };
 
@@ -164,19 +173,63 @@ export class PromotionDiscountComponent implements OnInit {
     return ids.map(id => this.productName(id)).join(', ');
   }
 
+  // Mirrors product.component.ts's picker: validates type/size, then just previews locally — the
+  // actual upload happens after the discount is saved (see save()), since the upload endpoint needs
+  // a real PromotionId.
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+      this.alertService.error(this.t('messages.imageTypeInvalid'));
+      input.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.alertService.error(this.t('messages.imageTooLarge'));
+      input.value = '';
+      return;
+    }
+
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = file;
+    this.imagePreviewUrl = URL.createObjectURL(file);
+  }
+
+  // Uploads the given file (if any) for the given promotion id, then refreshes the grid either way —
+  // takes the file as a parameter since resetForm() (called before this) clears selectedImageFile.
+  private finishSaveWithImage(promotionId: number, file: File | null): void {
+    if (!file) {
+      this.load();
+      return;
+    }
+    this.service.uploadImage(promotionId, file).subscribe({
+      next: () => this.load(),
+      error: (err: any) => {
+        this.alertService.error(this.t('messages.imageUploadError', { error: err.error?.message || err.message }));
+        this.load();
+      }
+    });
+  }
+
   save(): void {
     if (!this.validateForm()) return;
     this.isSaving = true;
 
-    const payload = { ...this.form };
-    const obs = this.editingId ? this.service.update(this.editingId, payload) : this.service.create(payload);
+    const payload = { ...this.form, description: this.form.description.trim() || null };
+    const editingId = this.editingId;
+    const pendingImageFile = this.selectedImageFile;
+    const obs = editingId ? this.service.update(editingId, payload) : this.service.create(payload);
 
     obs.subscribe({
       next: (res: any) => {
         this.isSaving = false;
-        this.alertService.success(res.message || this.t(this.editingId ? 'messages.updateSuccess' : 'messages.createSuccess'));
+        this.alertService.success(res.message || this.t(editingId ? 'messages.updateSuccess' : 'messages.createSuccess'));
+        const savedId = editingId ?? res?.data?.promotionId;
         this.resetForm();
-        this.load();
+        if (savedId) this.finishSaveWithImage(savedId, pendingImageFile);
+        else this.load();
       },
       error: (err: any) => {
         this.isSaving = false;
@@ -196,9 +249,14 @@ export class PromotionDiscountComponent implements OnInit {
       endDate: p.endDate.slice(0, 10),
       priority: p.priority,
       isActive: p.isActive,
+      description: p.description || '',
       productIds: [...p.productIds],
     };
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = resolveMediaUrl(p.imageUrl);
     this.validationErrors = {};
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async remove(p: PromotionMaster): Promise<void> {
@@ -218,6 +276,9 @@ export class PromotionDiscountComponent implements OnInit {
     this.editingId = null;
     this.form = { ...this.emptyForm, productIds: [] };
     this.selectedProductToAdd = null;
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = null;
     this.validationErrors = {};
   }
 }

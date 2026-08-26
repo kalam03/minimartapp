@@ -14,6 +14,8 @@ export interface PromotionMaster {
   priority: number;
   isActive: boolean;
   createdAt: string;
+  imageUrl: string | null;
+  description: string | null;
   productIds: number[];
 }
 
@@ -26,6 +28,7 @@ export interface SavePromotionMasterRequest {
   endDate: string;
   priority: number;
   isActive: boolean;
+  description: string | null;
   productIds: number[];
 }
 
@@ -49,5 +52,11 @@ export class PromotionDiscountService {
 
   delete(id: number): Observable<{ success: boolean; message: string }> {
     return this.http.delete<any>(`${this.baseUrl}/promotion-discounts/${id}`);
+  }
+
+  uploadImage(id: number, file: File): Observable<{ success: boolean; message?: string; data?: { imageUrl: string } }> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<any>(`${this.baseUrl}/promotion-discounts/${id}/image`, formData);
   }
 }

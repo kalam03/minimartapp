@@ -16,7 +16,12 @@
     "startDate": "Start Date",
     "endDate": "End Date",
     "priority": "Priority",
-    "active": "Active"
+    "active": "Active",
+    "image": "Banner Image",
+    "imageHint": "Shown in the storefront promo carousel. PNG/JPG/WEBP, max 5MB.",
+    "chooseImage": "Choose Image",
+    "description": "Description",
+    "descriptionHint": "Shown to customers when they view this offer's details in the storefront."
   },
   "buttons": {
     "add": "Add Rule",
@@ -59,6 +64,9 @@
     "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
     "deleteTitle": "Delete Cashback Rule",
     "deleteSuccess": "Cashback rule deleted.",
-    "actionFailed": "Failed: {{error}}"
+    "actionFailed": "Failed: {{error}}",
+    "imageTypeInvalid": "Please choose a PNG, JPG, or WEBP image.",
+    "imageTooLarge": "Image must be 5MB or smaller.",
+    "imageUploadError": "Rule saved, but the image upload failed: {{error}}"
   }
 }
