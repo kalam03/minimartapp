@@ -1,0 +1,71 @@
+{
+  "tabs": {
+    "zones": "Zones",
+    "customerRates": "Customer Rates",
+    "categorySurcharges": "Category Surcharges"
+  },
+  "table": {
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "buttons": {
+    "add": "Add",
+    "update": "Update",
+    "saving": "Saving...",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "zones": {
+    "addTitle": "Add Delivery Zone",
+    "editTitle": "Edit Delivery Zone",
+    "listTitle": "Delivery Zones",
+    "name": "Zone Name *",
+    "charge": "Charge (৳) *",
+    "displayOrder": "Display Order",
+    "active": "Active",
+    "empty": "No delivery zones found. Add one above so customers can pick it at checkout."
+  },
+  "customerRates": {
+    "addTitle": "Add Customer Delivery Rate",
+    "editTitle": "Edit Customer Delivery Rate",
+    "listTitle": "Customer Delivery Rates",
+    "customer": "Customer *",
+    "selectCustomer": "Select a customer…",
+    "isFree": "Free delivery for this customer",
+    "charge": "Charge (৳)",
+    "notes": "Notes",
+    "active": "Active",
+    "free": "Free",
+    "empty": "No customer-specific delivery rates set. This tab overrides the zone/default charge for a single customer."
+  },
+  "categorySurcharges": {
+    "addTitle": "Add Category Surcharge",
+    "editTitle": "Edit Category Surcharge",
+    "listTitle": "Category Surcharges",
+    "category": "Category *",
+    "selectCategory": "Select a category…",
+    "surcharge": "Surcharge (৳) *",
+    "active": "Active",
+    "empty": "No category surcharges set. These add on top of the base delivery charge when the cart contains that category."
+  },
+  "validation": {
+    "zoneNameRequired": "Zone name is required",
+    "chargeNonNegative": "Charge cannot be negative",
+    "customerRequired": "A customer must be selected",
+    "categoryRequired": "A category must be selected"
+  },
+  "messages": {
+    "loadError": "Failed to load: {{error}}",
+    "createSuccess": "Created successfully!",
+    "updateSuccess": "Updated successfully!",
+    "saveError": "Failed to save: {{error}}",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteTitle": "Confirm Delete",
+    "deleteSuccess": "Deleted.",
+    "actionFailed": "Failed: {{error}}"
+  }
+}

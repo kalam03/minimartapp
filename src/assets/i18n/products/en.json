@@ -14,7 +14,10 @@
     "salePrice": "Sale Price (৳) *",
     "salePricePlaceholder": "Enter selling price",
     "unitType": "Unit Type *",
-    "unitTypeHint": "PCS = count by piece; KG/G/L/ML = sold by weight/volume"
+    "unitTypeHint": "PCS = count by piece; KG/G/L/ML = sold by weight/volume",
+    "image": "Product Image",
+    "imageHint": "PNG, JPG or WEBP, up to 5 MB",
+    "chooseImage": "Choose Image"
   },
   "buttons": {
     "save": "Save Product",
@@ -70,6 +73,9 @@
     "deleteError": "Failed to delete product: {{error}}",
     "loadError": "Failed to load products: {{error}}",
     "loadCategoriesError": "Failed to load categories: {{error}}",
-    "unknownCategory": "Unknown"
+    "unknownCategory": "Unknown",
+    "imageTypeInvalid": "Please choose a PNG, JPG or WEBP image",
+    "imageTooLarge": "Image must be 5 MB or smaller",
+    "imageUploadError": "Product was saved, but the image upload failed: {{error}}"
   }
 }

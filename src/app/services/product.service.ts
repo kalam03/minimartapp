@@ -70,4 +70,16 @@ export class ProductService {
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/products/${id}`);
   }
+
+  // Separate from create/update on purpose — the backend endpoint (POST /products/{id}/image)
+  // takes multipart/form-data, not JSON, and needs an existing ProductId to name the saved file
+  // after. So the create/edit flow is: save the product fields first (create or update), then
+  // call this with the resulting id and the picked File.
+  uploadProductImage(id: number, file: File): Observable<{ success: boolean; message?: string; data?: { imageUrl: string } }> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<{ success: boolean; message?: string; data?: { imageUrl: string } }>(
+      `${this.baseUrl}/products/${id}/image`, formData
+    );
+  }
 }

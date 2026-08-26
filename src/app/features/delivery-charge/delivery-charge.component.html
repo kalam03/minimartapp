@@ -1,0 +1,279 @@
+<div class="px-3 py-2">
+  <div class="max-w-8xl mx-auto">
+
+    <!-- Tab bar -->
+    <div class="flex gap-1 mb-3">
+      <button (click)="setTab('zones')"
+        [class]="'px-4 py-2 text-xs font-semibold rounded-t-lg transition ' + (activeTab === 'zones' ? 'text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')"
+        [style.background]="activeTab === 'zones' ? 'var(--theme-primary)' : ''">
+        {{ 'deliveryCharge.tabs.zones' | transloco }}
+      </button>
+      <button (click)="setTab('customerRates')"
+        [class]="'px-4 py-2 text-xs font-semibold rounded-t-lg transition ' + (activeTab === 'customerRates' ? 'text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')"
+        [style.background]="activeTab === 'customerRates' ? 'var(--theme-primary)' : ''">
+        {{ 'deliveryCharge.tabs.customerRates' | transloco }}
+      </button>
+      <button (click)="setTab('categorySurcharges')"
+        [class]="'px-4 py-2 text-xs font-semibold rounded-t-lg transition ' + (activeTab === 'categorySurcharges' ? 'text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')"
+        [style.background]="activeTab === 'categorySurcharges' ? 'var(--theme-primary)' : ''">
+        {{ 'deliveryCharge.tabs.categorySurcharges' | transloco }}
+      </button>
+    </div>
+
+    <!-- ══════════════════ ZONES TAB ══════════════════ -->
+    <ng-container *ngIf="activeTab === 'zones'">
+      <div class="bg-white rounded-xl shadow-md border mb-3">
+        <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">
+            {{ (editingZoneId ? 'deliveryCharge.zones.editTitle' : 'deliveryCharge.zones.addTitle') | transloco }}
+          </h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.zones.name' | transloco }}</label>
+              <input type="text" [(ngModel)]="zoneForm.zoneName"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (zoneValidationErrors['zoneName'] ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="zoneValidationErrors['zoneName']" class="text-red-600 text-xs mt-1">{{ zoneValidationErrors['zoneName'] }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.zones.charge' | transloco }}</label>
+              <input type="number" min="0" [(ngModel)]="zoneForm.charge"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (zoneValidationErrors['charge'] ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="zoneValidationErrors['charge']" class="text-red-600 text-xs mt-1">{{ zoneValidationErrors['charge'] }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.zones.displayOrder' | transloco }}</label>
+              <input type="number" [(ngModel)]="zoneForm.displayOrder" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div class="flex items-center gap-2 mt-5">
+              <input type="checkbox" id="zoneActive" [(ngModel)]="zoneForm.isActive" />
+              <label for="zoneActive" class="text-xs font-semibold">{{ 'deliveryCharge.zones.active' | transloco }}</label>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="saveZone()" [disabled]="isSaving"
+              class="px-4 py-1.5 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+              {{ (isSaving ? 'deliveryCharge.buttons.saving' : (editingZoneId ? 'deliveryCharge.buttons.update' : 'deliveryCharge.buttons.add')) | transloco }}
+            </button>
+            <button (click)="resetZoneForm()" class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+              {{ (editingZoneId ? 'deliveryCharge.buttons.cancel' : 'deliveryCharge.buttons.reset') | transloco }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">{{ 'deliveryCharge.zones.listTitle' | transloco }}</h2>
+          <span class="text-xs" style="color:var(--theme-accent)">{{ zones.length }}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+              <tr>
+                <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'deliveryCharge.zones.name' | transloco }}</th>
+                <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'deliveryCharge.zones.charge' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.zones.displayOrder' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.table.status' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.table.actions' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let z of zones" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ z.zoneName }}</td>
+                <td class="px-3 py-2 text-right whitespace-nowrap">৳{{ z.charge }}</td>
+                <td class="px-3 py-2 text-center">{{ z.displayOrder }}</td>
+                <td class="px-3 py-2 text-center">
+                  <span [class]="z.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                    {{ (z.isActive ? 'deliveryCharge.table.active' : 'deliveryCharge.table.inactive') | transloco }}
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-center whitespace-nowrap">
+                  <button (click)="editZone(z)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'deliveryCharge.buttons.edit' | transloco }}</button>
+                  <button (click)="removeZone(z)" class="text-xs font-semibold text-red-600">{{ 'deliveryCharge.buttons.delete' | transloco }}</button>
+                </td>
+              </tr>
+              <tr *ngIf="zones.length === 0">
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'deliveryCharge.zones.empty' | transloco }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ══════════════════ CUSTOMER RATES TAB ══════════════════ -->
+    <ng-container *ngIf="activeTab === 'customerRates'">
+      <div class="bg-white rounded-xl shadow-md border mb-3">
+        <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">
+            {{ (editingCustomerRateId ? 'deliveryCharge.customerRates.editTitle' : 'deliveryCharge.customerRates.addTitle') | transloco }}
+          </h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.customerRates.customer' | transloco }}</label>
+              <select [(ngModel)]="customerRateForm.customerId"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (customerRateValidationErrors['customerId'] ? 'border-red-500 bg-red-50' : 'border-gray-400')"
+                [disabled]="editingCustomerRateId !== null">
+                <option [ngValue]="null">{{ 'deliveryCharge.customerRates.selectCustomer' | transloco }}</option>
+                <option *ngFor="let c of customers" [ngValue]="c.customerId">{{ customerLabel(c) }}</option>
+              </select>
+              <p *ngIf="customerRateValidationErrors['customerId']" class="text-red-600 text-xs mt-1">{{ customerRateValidationErrors['customerId'] }}</p>
+            </div>
+            <div class="flex items-center gap-2 mt-5">
+              <input type="checkbox" id="isFree" [(ngModel)]="customerRateForm.isFree" />
+              <label for="isFree" class="text-xs font-semibold">{{ 'deliveryCharge.customerRates.isFree' | transloco }}</label>
+            </div>
+            <div *ngIf="!customerRateForm.isFree">
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.customerRates.charge' | transloco }}</label>
+              <input type="number" min="0" [(ngModel)]="customerRateForm.charge"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (customerRateValidationErrors['charge'] ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="customerRateValidationErrors['charge']" class="text-red-600 text-xs mt-1">{{ customerRateValidationErrors['charge'] }}</p>
+            </div>
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.customerRates.notes' | transloco }}</label>
+              <input type="text" [(ngModel)]="customerRateForm.notes" class="w-full px-2 py-1.5 text-sm border border-gray-400 rounded-lg outline-none" />
+            </div>
+            <div class="flex items-center gap-2 mt-5">
+              <input type="checkbox" id="rateActive" [(ngModel)]="customerRateForm.isActive" />
+              <label for="rateActive" class="text-xs font-semibold">{{ 'deliveryCharge.customerRates.active' | transloco }}</label>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="saveCustomerRate()" [disabled]="isSaving"
+              class="px-4 py-1.5 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+              {{ (isSaving ? 'deliveryCharge.buttons.saving' : (editingCustomerRateId ? 'deliveryCharge.buttons.update' : 'deliveryCharge.buttons.add')) | transloco }}
+            </button>
+            <button (click)="resetCustomerRateForm()" class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+              {{ (editingCustomerRateId ? 'deliveryCharge.buttons.cancel' : 'deliveryCharge.buttons.reset') | transloco }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">{{ 'deliveryCharge.customerRates.listTitle' | transloco }}</h2>
+          <span class="text-xs" style="color:var(--theme-accent)">{{ customerRates.length }}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+              <tr>
+                <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'deliveryCharge.customerRates.customer' | transloco }}</th>
+                <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'deliveryCharge.customerRates.charge' | transloco }}</th>
+                <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'deliveryCharge.customerRates.notes' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.table.status' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.table.actions' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of customerRates" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ r.customerName }} ({{ r.phone }})</td>
+                <td class="px-3 py-2 text-right whitespace-nowrap">{{ r.isFree ? ('deliveryCharge.customerRates.free' | transloco) : ('৳' + r.charge) }}</td>
+                <td class="px-3 py-2 text-gray-500">{{ r.notes || '—' }}</td>
+                <td class="px-3 py-2 text-center">
+                  <span [class]="r.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                    {{ (r.isActive ? 'deliveryCharge.table.active' : 'deliveryCharge.table.inactive') | transloco }}
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-center whitespace-nowrap">
+                  <button (click)="editCustomerRate(r)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'deliveryCharge.buttons.edit' | transloco }}</button>
+                  <button (click)="removeCustomerRate(r)" class="text-xs font-semibold text-red-600">{{ 'deliveryCharge.buttons.delete' | transloco }}</button>
+                </td>
+              </tr>
+              <tr *ngIf="customerRates.length === 0">
+                <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'deliveryCharge.customerRates.empty' | transloco }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ══════════════════ CATEGORY SURCHARGES TAB ══════════════════ -->
+    <ng-container *ngIf="activeTab === 'categorySurcharges'">
+      <div class="bg-white rounded-xl shadow-md border mb-3">
+        <div class="px-3 py-2 rounded-t-xl" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">
+            {{ (editingCategorySurchargeId ? 'deliveryCharge.categorySurcharges.editTitle' : 'deliveryCharge.categorySurcharges.addTitle') | transloco }}
+          </h2>
+        </div>
+        <div class="p-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+            <div class="lg:col-span-2">
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.categorySurcharges.category' | transloco }}</label>
+              <select [(ngModel)]="categorySurchargeForm.categoryId"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (categorySurchargeValidationErrors['categoryId'] ? 'border-red-500 bg-red-50' : 'border-gray-400')"
+                [disabled]="editingCategorySurchargeId !== null">
+                <option [ngValue]="null">{{ 'deliveryCharge.categorySurcharges.selectCategory' | transloco }}</option>
+                <option *ngFor="let c of categories" [ngValue]="c.categoryId">{{ c.categoryName }}</option>
+              </select>
+              <p *ngIf="categorySurchargeValidationErrors['categoryId']" class="text-red-600 text-xs mt-1">{{ categorySurchargeValidationErrors['categoryId'] }}</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-0.5" style="color:var(--theme-primary)">{{ 'deliveryCharge.categorySurcharges.surcharge' | transloco }}</label>
+              <input type="number" min="0" [(ngModel)]="categorySurchargeForm.surchargeAmount"
+                [class]="'w-full px-2 py-1.5 text-sm border rounded-lg outline-none ' + (categorySurchargeValidationErrors['surchargeAmount'] ? 'border-red-500 bg-red-50' : 'border-gray-400')" />
+              <p *ngIf="categorySurchargeValidationErrors['surchargeAmount']" class="text-red-600 text-xs mt-1">{{ categorySurchargeValidationErrors['surchargeAmount'] }}</p>
+            </div>
+            <div class="flex items-center gap-2 mt-5">
+              <input type="checkbox" id="surchargeActive" [(ngModel)]="categorySurchargeForm.isActive" />
+              <label for="surchargeActive" class="text-xs font-semibold">{{ 'deliveryCharge.categorySurcharges.active' | transloco }}</label>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="saveCategorySurcharge()" [disabled]="isSaving"
+              class="px-4 py-1.5 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50" style="background:var(--theme-primary)">
+              {{ (isSaving ? 'deliveryCharge.buttons.saving' : (editingCategorySurchargeId ? 'deliveryCharge.buttons.update' : 'deliveryCharge.buttons.add')) | transloco }}
+            </button>
+            <button (click)="resetCategorySurchargeForm()" class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-xs font-semibold hover:bg-gray-200 transition">
+              {{ (editingCategorySurchargeId ? 'deliveryCharge.buttons.cancel' : 'deliveryCharge.buttons.reset') | transloco }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border">
+        <div class="px-3 py-2 flex items-center justify-between" style="background:var(--theme-primary)">
+          <h2 class="text-white font-semibold text-sm">{{ 'deliveryCharge.categorySurcharges.listTitle' | transloco }}</h2>
+          <span class="text-xs" style="color:var(--theme-accent)">{{ categorySurcharges.length }}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="text-xs" style="background:var(--theme-primary);color:var(--theme-text)">
+              <tr>
+                <th class="px-3 py-2 text-left whitespace-nowrap">{{ 'deliveryCharge.categorySurcharges.category' | transloco }}</th>
+                <th class="px-3 py-2 text-right whitespace-nowrap">{{ 'deliveryCharge.categorySurcharges.surcharge' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.table.status' | transloco }}</th>
+                <th class="px-3 py-2 text-center whitespace-nowrap">{{ 'deliveryCharge.table.actions' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of categorySurcharges" class="border-b hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                <td class="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">{{ s.categoryName }}</td>
+                <td class="px-3 py-2 text-right whitespace-nowrap">৳{{ s.surchargeAmount }}</td>
+                <td class="px-3 py-2 text-center">
+                  <span [class]="s.isActive ? 'px-2 py-1 text-xs rounded-full bg-green-100 text-green-800' : 'px-2 py-1 text-xs rounded-full bg-red-100 text-red-800'">
+                    {{ (s.isActive ? 'deliveryCharge.table.active' : 'deliveryCharge.table.inactive') | transloco }}
+                  </span>
+                </td>
+                <td class="px-3 py-2 text-center whitespace-nowrap">
+                  <button (click)="editCategorySurcharge(s)" class="text-xs font-semibold mr-2" style="color:var(--theme-primary)">{{ 'deliveryCharge.buttons.edit' | transloco }}</button>
+                  <button (click)="removeCategorySurcharge(s)" class="text-xs font-semibold text-red-600">{{ 'deliveryCharge.buttons.delete' | transloco }}</button>
+                </td>
+              </tr>
+              <tr *ngIf="categorySurcharges.length === 0">
+                <td colspan="4" class="px-4 py-8 text-center text-gray-400 text-sm">{{ 'deliveryCharge.categorySurcharges.empty' | transloco }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

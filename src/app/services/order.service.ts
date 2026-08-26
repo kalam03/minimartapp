@@ -15,19 +15,26 @@ export interface OrderItemDto {
 }
 
 export interface OrderListDto {
-  orderId:       number;
-  customerName:  string | null;
-  customerPhone: string | null;
-  orderDate:     string;
-  status:        'New' | 'Processing' | 'Completed' | 'Cancelled';
-  notes:         string | null;
-  discount:      number;
-  transport:     number;
-  subTotal:      number;
-  grossAmount:   number;
-  createdBy:     string | null;
-  createdAt:     string;
-  itemCount:     number;
+  orderId:          number;
+  customerId:       number | null;
+  customerName:     string | null;
+  customerPhone:    string | null;
+  orderDate:        string;
+  status:           'New' | 'Processing' | 'Completed' | 'Cancelled';
+  notes:            string | null;
+  discount:         number;
+  transport:        number;
+  subTotal:         number;
+  grossAmount:      number;
+  // 'Online' = placed from the customer storefront; 'Counter'/'Phone' = staff-entered (see order-entry.component.ts)
+  orderSource:      'Online' | 'Counter' | 'Phone';
+  deliveryAddress:  string | null;
+  paymentMethod:    string | null;   // 'COD' | 'Online', null for staff-entered orders
+  paymentStatus:    'Unpaid' | 'Paid';
+  cancelReason:     string | null;
+  createdBy:        string | null;
+  createdAt:        string;
+  itemCount:        number;
 }
 
 export interface OrderResponseDto extends OrderListDto {

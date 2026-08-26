@@ -7,6 +7,7 @@ import { AlertService } from '../../shared/alert.service';
 import { UnitTypeService } from '../../services/unit-type.service';
 import { CategoryService } from '../../services/category.service';
 import { BnNumberAccessorDirective } from '../../shared/bn-number-accessor.directive';
+import { resolveMediaUrl } from '../../shared/media-url';
 
 @Component({
   selector: 'app-product',
@@ -21,6 +22,14 @@ export class ProductComponent implements OnInit {
   products: any[] = [];
   editingId: number | null = null;
   Math = Math;
+  resolveMediaUrl = resolveMediaUrl;
+
+  // Picked in the form but uploaded separately, after the product itself is created/updated (the
+  // upload endpoint needs an existing ProductId to name the saved file after — see
+  // product.service.ts's uploadProductImage() comment). imagePreviewUrl is either an
+  // object URL for a freshly-picked file, or the existing product's resolved imageUrl when editing.
+  selectedImageFile: File | null = null;
+  imagePreviewUrl: string | null = null;
 
   //Fallback shown until the Unit Types API responds so the dropdown is never empty
   unitTypes: { code: string; label: string; isWeight: boolean }[] = [
@@ -182,17 +191,63 @@ export class ProductComponent implements OnInit {
     }
   }
 
+  // Triggered by the form's file input. Only stores the File + a local preview — the actual
+  // upload happens after the product is saved (see saveProduct()'s subscribe callbacks), since the
+  // upload endpoint needs a real ProductId.
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    if (!file) return;
+
+    if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+      this.alertService.error(this.t('messages.imageTypeInvalid'));
+      input.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.alertService.error(this.t('messages.imageTooLarge'));
+      input.value = '';
+      return;
+    }
+
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = file;
+    this.imagePreviewUrl = URL.createObjectURL(file);
+  }
+
+  // Uploads the given file (if any) for the given product id, then refreshes the grid either way
+  // — called after both create and update succeed. Takes the file as a parameter rather than
+  // reading this.selectedImageFile directly, because callers call resetForm() (which clears
+  // selectedImageFile) before this runs — so the file must be captured beforehand.
+  private finishSaveWithImage(productId: number, file: File | null): void {
+    if (!file) {
+      this.getAllProducts();
+      return;
+    }
+    this.productService.uploadProductImage(productId, file).subscribe({
+      next: () => this.getAllProducts(),
+      error: (err: any) => {
+        console.error('Error uploading product image:', err);
+        this.alertService.error(this.t('messages.imageUploadError', { error: err.error?.message || err.message }));
+        this.getAllProducts();
+      }
+    });
+  }
+
   createProduct(): void {
     const payload = {
       tenantId: 1,
       ...this.productForm
     };
+    const pendingImageFile = this.selectedImageFile;
 
     this.productService.createProduct(payload).subscribe({
       next: (response: any) => {
         this.alertService.success(this.t('messages.createSuccess'));
+        const newProductId = response?.data?.productId;
         this.resetForm();
-        this.getAllProducts();
+        if (newProductId) this.finishSaveWithImage(newProductId, pendingImageFile);
+        else this.getAllProducts();
       },
       error: (err: any) => {
         console.error('Error creating product:', err);
@@ -213,24 +268,29 @@ export class ProductComponent implements OnInit {
       unitType: product.unitType || 'PCS',
       isActive: product.isActive
     };
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = resolveMediaUrl(product.imageUrl);
     this.clearValidationErrors();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   updateProduct(): void {
     if (this.editingId === null) return;
+    const productId = this.editingId;
+    const pendingImageFile = this.selectedImageFile;
 
     const payload = {
       tenantId: 1,
       ...this.productForm
     };
 
-    this.productService.updateProduct(this.editingId, payload).subscribe({
+    this.productService.updateProduct(productId, payload).subscribe({
       next: (response: any) => {
         this.alertService.success(this.t('messages.updateSuccess'));
         this.resetForm();
         this.editingId = null;
-        this.getAllProducts();
+        this.finishSaveWithImage(productId, pendingImageFile);
       },
       error: (err: any) => {
         console.error('Error updating product:', err);
@@ -353,6 +413,9 @@ export class ProductComponent implements OnInit {
       unitType: 'PCS',
       isActive: true
     };
+    if (this.imagePreviewUrl?.startsWith('blob:')) URL.revokeObjectURL(this.imagePreviewUrl);
+    this.selectedImageFile = null;
+    this.imagePreviewUrl = null;
     this.clearValidationErrors();
   }
 

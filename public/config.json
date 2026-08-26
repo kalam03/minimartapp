@@ -2,7 +2,7 @@
   "apiBaseUrl": "http://localhost:5187/api",
   "isSellingEditable": true,
   "isBuyingEditable": true,
-  "isInvoice": true,
+  "isInvoice": false,
   "payment": {
     "methods": [
       {

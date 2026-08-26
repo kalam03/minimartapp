@@ -60,6 +60,17 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
           </button>
         </div>
 
+        <div class="flex flex-wrap gap-1.5 border-l pl-3" style="border-color:#e5e7eb">
+          <button *ngFor="let s of sourceOptions"
+            (click)="setSource(s.value)"
+            class="px-2.5 py-1 text-xs rounded-full font-medium border transition"
+            [style]="sourceFilter === s.value
+              ? 'background:var(--theme-primary);color:var(--theme-text);border-color:var(--theme-primary)'
+              : 'background:#f0f2fb;color:var(--theme-primary);border-color:var(--theme-text)'">
+            {{ s.label }}
+          </button>
+        </div>
+
         <div class="flex items-center gap-1.5 ml-auto flex-wrap">
           <span class="text-xs text-gray-400">{{ 'orders.list.from' | transloco }}</span>
           <input type="date" [(ngModel)]="fromDate"
@@ -152,7 +163,14 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
               </td>
 
               <td class="px-3 py-2">
-                <div class="font-medium text-gray-800">{{ o.customerName || ('orders.list.walkIn' | transloco) }}</div>
+                <div class="font-medium text-gray-800 flex items-center gap-1.5">
+                  {{ o.customerName || ('orders.list.walkIn' | transloco) }}
+                  <span *ngIf="o.orderSource === 'Online'"
+                        class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide"
+                        style="background:#ede9fe;color:#6d28d9">
+                    Online
+                  </span>
+                </div>
                 <div class="text-gray-400 flex items-center gap-1" *ngIf="o.customerPhone">
                   <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -160,8 +178,25 @@ type OrderRow = OrderListDto & { _cancelling?: boolean };
                   </svg>
                   {{ o.customerPhone }}
                 </div>
+                <div class="text-gray-400 flex items-start gap-1" *ngIf="o.deliveryAddress" [title]="o.deliveryAddress">
+                  <svg class="w-3 h-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>{{ o.deliveryAddress | slice:0:40 }}{{ o.deliveryAddress.length > 40 ? '…' : '' }}</span>
+                </div>
                 <div class="text-gray-400 italic" *ngIf="o.notes" [title]="o.notes">
                   {{ o.notes | slice:0:30 }}{{ (o.notes?.length ?? 0) > 30 ? '…' : '' }}
+                </div>
+                <div *ngIf="o.paymentMethod" class="flex items-center gap-1 mt-0.5">
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                        style="background:#f0f2fb;color:var(--theme-primary)">
+                    {{ o.paymentMethod === 'COD' ? 'Cash on Delivery' : o.paymentMethod }}
+                  </span>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                        [style]="o.paymentStatus === 'Paid' ? 'background:#d1fae5;color:#065f46' : 'background:#fef3c7;color:#b45309'">
+                    {{ o.paymentStatus }}
+                  </span>
                 </div>
               </td>
 
@@ -254,6 +289,7 @@ export class OrderListComponent implements OnInit {
   loaded  = false;   // true only after first successful search
 
   filterStatus = '';
+  sourceFilter = '';   // client-side only — Online/Counter/Phone, applied on top of the server-filtered status/date result
   fromDate     = '';
   toDate       = '';
 
@@ -263,6 +299,13 @@ export class OrderListComponent implements OnInit {
     { value: 'Processing',  label: 'Processing', color: '#f59e0b' },
     { value: 'Completed',   label: 'Completed',  color: '#10b981' },
     { value: 'Cancelled',   label: 'Cancelled',  color: '#ef4444' },
+  ];
+
+  sourceOptions = [
+    { value: '',        label: 'All Channels' },
+    { value: 'Online',  label: 'Online' },
+    { value: 'Counter', label: 'Counter' },
+    { value: 'Phone',   label: 'Phone' },
   ];
 
   constructor(
@@ -326,9 +369,17 @@ export class OrderListComponent implements OnInit {
     this.load();
   }
 
+  setSource(source: string): void {
+    this.sourceFilter = source;
+    this.applyStatusFilter();
+    this.cdr.detectChanges();
+  }
+
   applyStatusFilter(): void {
-    // allOrders already server-filtered; just copy to filteredOrders
-    this.filteredOrders = [...this.allOrders];
+    // allOrders already server-filtered by status/date; source filter is applied client-side on top of that
+    this.filteredOrders = this.sourceFilter
+      ? this.allOrders.filter(o => o.orderSource === this.sourceFilter)
+      : [...this.allOrders];
   }
 
   countByStatus(_status: string): number {

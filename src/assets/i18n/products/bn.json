@@ -14,7 +14,10 @@
     "salePrice": "বিক্রয় মূল্য (৳) *",
     "salePricePlaceholder": "বিক্রয় মূল্য লিখুন",
     "unitType": "একক প্রকার *",
-    "unitTypeHint": "PCS = সংখ্যা হিসেবে; KG/G/L/ML = ওজন/আয়তন হিসেবে বিক্রি"
+    "unitTypeHint": "PCS = সংখ্যা হিসেবে; KG/G/L/ML = ওজন/আয়তন হিসেবে বিক্রি",
+    "image": "পণ্যের ছবি",
+    "imageHint": "PNG, JPG অথবা WEBP, সর্বোচ্চ ৫ MB",
+    "chooseImage": "ছবি নির্বাচন করুন"
   },
   "buttons": {
     "save": "পণ্য সংরক্ষণ করুন",
@@ -70,6 +73,9 @@
     "deleteError": "পণ্য মুছতে ব্যর্থ: {{error}}",
     "loadError": "পণ্য লোড করতে ব্যর্থ: {{error}}",
     "loadCategoriesError": "বিভাগ লোড করতে ব্যর্থ: {{error}}",
-    "unknownCategory": "অজানা"
+    "unknownCategory": "অজানা",
+    "imageTypeInvalid": "অনুগ্রহ করে একটি PNG, JPG অথবা WEBP ছবি নির্বাচন করুন",
+    "imageTooLarge": "ছবির আকার ৫ MB বা তার কম হতে হবে",
+    "imageUploadError": "পণ্য সংরক্ষিত হয়েছে, কিন্তু ছবি আপলোড ব্যর্থ হয়েছে: {{error}}"
   }
 }

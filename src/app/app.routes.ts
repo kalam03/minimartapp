@@ -154,6 +154,15 @@ export const routes: Routes = [
             (m) => m.RewardPointComponent
           ),
       },
+      // ── Delivery Charge module ──────────────────────────────────────────────
+      {
+        path: 'delivery-charges',
+        canActivate: [PermissionGuard],
+        loadComponent: () =>
+          import('./features/delivery-charge/delivery-charge.component').then(
+            (m) => m.DeliveryChargeComponent
+          ),
+      },
       // ── Security Module ──────────────────────────────────────────────────
       {
         path: 'security/users',
